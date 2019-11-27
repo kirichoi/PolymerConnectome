@@ -441,6 +441,19 @@ plt.show()
 
 
 
+fig, ax = plt.subplots(1, 3, figsize=(24,6))
+for i in range(len(np.unique(np.array(branchNum)[sensory]))-1):
+    scttrInd = np.where(np.array(branchNum)[sensory] == np.unique(np.array(branchNum)[sensory])[i])[0]
+    ax[0].boxplot(np.array(length_total)[sensory][scttrInd], vert=True, positions=[i])
+for i in range(len(np.unique(np.array(branchNum)[inter]))-1):
+    scttrInd = np.where(np.array(branchNum)[inter] == np.unique(np.array(branchNum)[inter])[i])[0]
+    ax[1].boxplot(np.array(length_total)[inter][scttrInd], vert=True, positions=[i])
+for i in range(len(np.unique(np.array(branchNum)[motor]))-1):
+    scttrInd = np.where(np.array(branchNum)[motor] == np.unique(np.array(branchNum)[motor])[i])[0]
+    ax[2].boxplot(np.array(length_total)[motor][scttrInd], vert=True, positions=[i])
+plt.tight_layout()
+plt.show()
+
 
 
 
