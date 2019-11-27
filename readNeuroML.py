@@ -13,7 +13,7 @@ from mpl_toolkits.mplot3d import axes3d, Axes3D
 from matplotlib import cm
 import matplotlib.patches as mpatches
 import pandas as pd
-import scipy
+import scipy.optimize
 from collections import Counter
 import networkx as nx
 import pydot
@@ -161,16 +161,6 @@ length_branch_polymodal_flat = [item for sublist in length_branch_polymodal for 
 length_branch_other_flat = [item for sublist in length_branch_other for item in sublist]
 
 
-#def objFunc(param, data):
-#    y = param[0]*x**param[1]
-#    
-#    
-#    
-#
-#
-#res = scipy.optimize.least_squares(objFunc, param, args=())
-
-
 # Segment Length Histogram
 
 fig, ax = plt.subplots(1, 2, figsize=(20,6))
@@ -205,6 +195,24 @@ hist2centers = 0.5*(hist2[1][1:] + hist2[1][:-1])
 hist3centers = 0.5*(hist3[1][1:] + hist3[1][:-1])
 hist4centers = 0.5*(hist4[1][1:] + hist4[1][:-1])
 
+
+def objFunc(xdata, a, b):
+    y = a*np.power(xdata, b)
+    
+    return y
+    
+popt1, pcov1 = scipy.optimize.curve_fit(objFunc, hist1centers, hist1[0], p0=[0.1, -0.1], maxfev=10000)
+fitX = np.linspace(1, 10000, 1000)
+fitY1 = objFunc(fitX, popt1[0], popt1[1])
+
+popt2, pcov2 = scipy.optimize.curve_fit(objFunc, hist2centers, hist2[0], p0=[0.1, -0.1], maxfev=10000)
+popt3, pcov3 = scipy.optimize.curve_fit(objFunc, hist3centers, hist3[0], p0=[0.1, -0.1], maxfev=10000)
+popt4, pcov4 = scipy.optimize.curve_fit(objFunc, hist4centers, hist4[0], p0=[0.1, -0.1], maxfev=10000)
+
+fitY2 = objFunc(fitX, popt2[0], popt2[1])
+fitY3 = objFunc(fitX, popt3[0], popt3[1])
+fitY4 = objFunc(fitX, popt4[0], popt4[1])
+
 # Segment Length in Log-Log
 
 fig, ax = plt.subplots(1, 2, figsize=(20,6))
@@ -216,10 +224,13 @@ ax[0].set_yscale('log')
 ax[0].set_xscale('log')
 ax[0].set_xlim(1, 10000)
 ax[0].set_ylim(0.00001, 0.1)
+ax[0].plot(fitX, fitY1, 'r')
 ax[1].scatter(hist2centers, hist2[0])
 ax[1].scatter(hist3centers, hist3[0])
 ax[1].scatter(hist4centers, hist4[0])
-ax[1].scatter(hist1centers, hist1[0])
+ax[1].plot(fitX, fitY2)
+ax[1].plot(fitX, fitY3)
+ax[1].plot(fitX, fitY4)
 ax[1].set_title("Log-Log Plot of Segment Length by Type", fontsize=20)
 ax[1].set_ylabel("Normalized Density", fontsize=15)
 ax[1].set_xlabel("Segment Length", fontsize=15)
@@ -236,6 +247,7 @@ plt.show()
 
 fig, ax = plt.subplots(1, 3, figsize=(24,6))
 ax[0].scatter(hist2centers, hist2[0])
+ax[0].plot(fitX, fitY2, 'r')
 ax[0].set_yscale('log')
 ax[0].set_xscale('log')
 ax[0].set_xlim(1, 10000)
@@ -245,6 +257,7 @@ ax[0].set_ylabel("Normalized Density", fontsize=15)
 ax[0].set_xlabel("Segment Length", fontsize=15)
 
 ax[1].scatter(hist3centers, hist3[0])
+ax[1].plot(fitX, fitY3, 'r')
 ax[1].set_yscale('log')
 ax[1].set_xscale('log')
 ax[1].set_xlim(1, 10000)
@@ -254,6 +267,7 @@ ax[1].set_ylabel("Normalized Density", fontsize=15)
 ax[1].set_xlabel("Segment Length", fontsize=15)
 
 ax[2].scatter(hist4centers, hist4[0])
+ax[2].plot(fitX, fitY4, 'r')
 ax[2].set_yscale('log')
 ax[2].set_xscale('log')
 ax[2].set_xlim(1, 10000)
@@ -322,6 +336,7 @@ ax[1].set_ylim(0.0001, 0.1)
 ax[1].set_title("Average Segment Length by Type", fontsize=20)
 ax[1].set_ylabel("Normalized Density", fontsize=15)
 ax[1].set_xlabel("Segment Length", fontsize=15)
+ax[1].legend(['Sensory', 'Inter', 'Motor'], fontsize=15)
 plt.tight_layout()
 plt.show()
 
@@ -367,35 +382,35 @@ ax[0][0].set_title("Sensory Neuron", fontsize=20)
 ax[0][0].set_xlabel("Total Segment Length", fontsize=15)
 ax[0][0].set_ylabel("Number of Branches", fontsize=15)
 ax[0][0].set_xlim(-10, 1000)
-ax[0][0].set_ylim(-1, 10)
+ax[0][0].set_ylim(-1, 8)
 
 ax[0][1].scatter(np.array(length_total)[inter], np.array(branchNum)[inter])
 ax[0][1].set_title("Interneuron", fontsize=20)
 ax[0][1].set_xlabel("Total Segment Length", fontsize=15)
 ax[0][1].set_xlim(-10, 1000)
-ax[0][1].set_ylim(-1, 10)
+ax[0][1].set_ylim(-1, 8)
 
 ax[0][2].scatter(np.array(length_total)[motor], np.array(branchNum)[motor])
 ax[0][2].set_title("Motor Neuron", fontsize=20)
 ax[0][2].set_xlabel("Total Segment Length", fontsize=15)
 ax[0][2].set_xlim(-10, 1000)
-ax[0][2].set_ylim(-1, 10)
+ax[0][2].set_ylim(-1, 8)
 
 ax[1][0].scatter(np.array(length_average)[sensory], np.array(branchNum)[sensory])
 ax[1][0].set_xlabel("Average Segment Length", fontsize=15)
 ax[1][0].set_ylabel("Number of Branches", fontsize=15)
 ax[1][0].set_xlim(-10, 1000)
-ax[1][0].set_ylim(-1, 10)
+ax[1][0].set_ylim(-1, 8)
 
 ax[1][1].scatter(np.array(length_average)[inter], np.array(branchNum)[inter])
 ax[1][1].set_xlabel("Average Segment Length", fontsize=15)
 ax[1][1].set_xlim(-10, 1000)
-ax[1][1].set_ylim(-1, 10)
+ax[1][1].set_ylim(-1, 8)
 
 ax[1][2].scatter(np.array(length_average)[motor], np.array(branchNum)[motor])
 ax[1][2].set_xlabel("Average Segment Length", fontsize=15)
 ax[1][2].set_xlim(-10, 1000)
-ax[1][2].set_ylim(-1, 10)
+ax[1][2].set_ylim(-1, 8)
 
 for i in range(len(np.unique(np.array(branchNum)[sensory]))):
     scttrInd = np.where(np.array(branchNum)[sensory] == np.unique(np.array(branchNum)[sensory])[i])[0]
