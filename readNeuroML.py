@@ -171,6 +171,7 @@ length_branch_other_flat = [item for sublist in length_branch_other for item in 
 #res = scipy.optimize.least_squares(objFunc, param, args=())
 
 
+# Segment Length Histogram
 
 fig, ax = plt.subplots(1, 2, figsize=(20,6))
 hist1 = ax[0].hist(length_branch_flat, 
@@ -204,6 +205,8 @@ hist2centers = 0.5*(hist2[1][1:] + hist2[1][:-1])
 hist3centers = 0.5*(hist3[1][1:] + hist3[1][:-1])
 hist4centers = 0.5*(hist4[1][1:] + hist4[1][:-1])
 
+# Segment Length in Log-Log
+
 fig, ax = plt.subplots(1, 2, figsize=(20,6))
 ax[0].scatter(hist1centers, hist1[0])
 ax[0].set_title("Log-Log Plot of Segment Length", fontsize=20)
@@ -228,6 +231,8 @@ ax[1].set_ylim(0.00001, 0.1)
 plt.tight_layout()
 plt.show()
 
+
+# Segment Length in Log-Log by Type
 
 fig, ax = plt.subplots(1, 3, figsize=(24,6))
 ax[0].scatter(hist2centers, hist2[0])
@@ -260,6 +265,8 @@ plt.tight_layout()
 plt.show()
 
 
+# Average Segment Length Histogram
+
 fig, ax = plt.subplots(1, 2, figsize=(20,6))
 hist9 = ax[0].hist(length_average,
           bins=int((np.max(np.array(length_average)) - np.min(np.array(length_average)))/10),
@@ -267,43 +274,59 @@ hist9 = ax[0].hist(length_average,
 ax[0].set_title("Average Segment Length", fontsize=20)
 ax[0].set_ylabel("Normalized Density", fontsize=15)
 ax[0].set_xlabel("Segment Length", fontsize=15)
+
+hist5 = ax[1].hist(np.array(length_average)[sensory], 
+                 bins=int((np.max(np.array(length_average)[sensory]) - np.min(np.array(length_average)[sensory]))/10),
+                 density=True,
+                 alpha=0.5)
+hist6 = ax[1].hist(np.array(length_average)[inter], 
+                 bins=int((np.max(np.array(length_average)[inter]) - np.min(np.array(length_average)[inter]))/10),
+                 density=True,
+                 alpha=0.5)
+hist7 = ax[1].hist(np.array(length_average)[motor],
+                 bins=int((np.max(np.array(length_average)[motor]) - np.min(np.array(length_average)[motor]))/10),
+                 density=True, 
+                 alpha=0.5)
+ax[1].legend(['Sensory', 'Inter', 'Motor'], fontsize=15)
+ax[1].set_title("Average Segment Length", fontsize=20)
+ax[1].set_ylabel("Normalized Density", fontsize=15)
+ax[1].set_xlabel("Average Segment Length", fontsize=15)
+plt.tight_layout()
+plt.show()
+
+hist5centers = 0.5*(hist5[1][1:] + hist5[1][:-1])
+hist6centers = 0.5*(hist6[1][1:] + hist6[1][:-1])
+hist7centers = 0.5*(hist7[1][1:] + hist7[1][:-1])
 hist9centers = 0.5*(hist9[1][1:] + hist9[1][:-1])
-ax[1].scatter(hist9centers, hist9[0])
+
+
+# Average Segment Length in Log-Log
+
+fig, ax = plt.subplots(1, 2, figsize=(20,6))
+ax[0].scatter(hist9centers, hist9[0])
+ax[0].set_yscale('log')
+ax[0].set_xscale('log')
+ax[0].set_xlim(1, 10000)
+ax[0].set_ylim(0.0001, 0.1)
+ax[0].set_title("Average Segment Length", fontsize=20)
+ax[0].set_ylabel("Normalized Density", fontsize=15)
+ax[0].set_xlabel("Segment Length", fontsize=15)
+
+ax[1].scatter(hist5centers, hist5[0])
+ax[1].scatter(hist6centers, hist6[0])
+ax[1].scatter(hist7centers, hist7[0])
 ax[1].set_yscale('log')
 ax[1].set_xscale('log')
 ax[1].set_xlim(1, 10000)
-ax[1].set_ylim(0.00001, 0.1)
-ax[1].set_title("Average Segment Length", fontsize=20)
+ax[1].set_ylim(0.0001, 0.1)
+ax[1].set_title("Average Segment Length by Type", fontsize=20)
 ax[1].set_ylabel("Normalized Density", fontsize=15)
 ax[1].set_xlabel("Segment Length", fontsize=15)
 plt.tight_layout()
 plt.show()
 
 
-fig = plt.figure(figsize=(10, 6))
-hist5 = plt.hist(np.array(length_average)[sensory], 
-                 bins=int((np.max(np.array(length_average)[sensory]) - np.min(np.array(length_average)[sensory]))/10),
-                 density=True,
-                 alpha=0.5)
-hist6 = plt.hist(np.array(length_average)[inter], 
-                 bins=int((np.max(np.array(length_average)[inter]) - np.min(np.array(length_average)[inter]))/10),
-                 density=True,
-                 alpha=0.5)
-hist7 = plt.hist(np.array(length_average)[motor],
-                 bins=int((np.max(np.array(length_average)[motor]) - np.min(np.array(length_average)[motor]))/10),
-                 density=True, 
-                 alpha=0.5)
-plt.legend(['Sensory', 'Inter', 'Motor'], fontsize=15)
-plt.title("Average Segment Length", fontsize=20)
-plt.ylabel("Normalized Density", fontsize=15)
-plt.xlabel("Average Segment Length", fontsize=15)
-plt.tight_layout()
-plt.show()
-
-
-hist5centers = 0.5*(hist5[1][1:] + hist5[1][:-1])
-hist6centers = 0.5*(hist6[1][1:] + hist6[1][:-1])
-hist7centers = 0.5*(hist7[1][1:] + hist7[1][:-1])
+# Average Segment Length in Log-Log by type
 
 fig, ax = plt.subplots(1, 3, figsize=(24,6))
 ax[0].scatter(hist5centers, hist5[0])
@@ -335,6 +358,8 @@ ax[2].set_xlabel("Average Segment Length", fontsize=15)
 plt.tight_layout()
 plt.show()
 
+
+# BranchNum vs Total Segment Length vs Average Segment Length by Type
 
 fig, ax = plt.subplots(3, 3, figsize=(20,20))
 ax[0][0].scatter(np.array(length_total)[sensory], np.array(branchNum)[sensory])
@@ -377,7 +402,7 @@ for i in range(len(np.unique(np.array(branchNum)[sensory]))):
     ax[2][0].scatter(np.array(length_average)[sensory][scttrInd], np.array(length_total)[sensory][scttrInd])
 ax[2][0].set_xlabel("Average Segment Length", fontsize=15)
 ax[2][0].set_ylabel("Total Segment Length", fontsize=15)
-ax[2][0].legend(np.unique(np.array(branchNum)[sensory]), fontsize=15)
+ax[2][0].legend(np.unique(np.array(branchNum)[sensory])[:-1], fontsize=15)
 #ax.set_xlim(-10, 1000)
 ax[2][0].set_ylim(-1, 1000)
 
@@ -396,7 +421,6 @@ ax[2][2].set_xlabel("Average Segment Length", fontsize=15)
 ax[2][2].legend(np.unique(np.array(branchNum)[motor]), fontsize=15)
 #ax.set_xlim(-10, 1000)
 #ax.set_ylim(-1, 10)
-
 plt.tight_layout()
 plt.show()
 
