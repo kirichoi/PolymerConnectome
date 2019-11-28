@@ -196,22 +196,22 @@ hist3centers = 0.5*(hist3[1][1:] + hist3[1][:-1])
 hist4centers = 0.5*(hist4[1][1:] + hist4[1][:-1])
 
 
-def objFunc(xdata, a, b):
+def objFuncP(xdata, a, b):
     y = a*np.power(xdata, b)
     
     return y
     
-popt1, pcov1 = scipy.optimize.curve_fit(objFunc, hist1centers, hist1[0], p0=[0.1, -0.1], maxfev=10000)
+popt1, pcov1 = scipy.optimize.curve_fit(objFuncP, hist1centers, hist1[0], p0=[0.1, -0.1], maxfev=10000)
 fitX = np.linspace(1, 10000, 1000)
-fitY1 = objFunc(fitX, popt1[0], popt1[1])
+fitY1 = objFuncP(fitX, popt1[0], popt1[1])
 
-popt2, pcov2 = scipy.optimize.curve_fit(objFunc, hist2centers, hist2[0], p0=[0.1, -0.1], maxfev=10000)
-popt3, pcov3 = scipy.optimize.curve_fit(objFunc, hist3centers, hist3[0], p0=[0.1, -0.1], maxfev=10000)
-popt4, pcov4 = scipy.optimize.curve_fit(objFunc, hist4centers, hist4[0], p0=[0.1, -0.1], maxfev=10000)
+popt2, pcov2 = scipy.optimize.curve_fit(objFuncP, hist2centers, hist2[0], p0=[0.1, -0.1], maxfev=10000)
+popt3, pcov3 = scipy.optimize.curve_fit(objFuncP, hist3centers, hist3[0], p0=[0.1, -0.1], maxfev=10000)
+popt4, pcov4 = scipy.optimize.curve_fit(objFuncP, hist4centers, hist4[0], p0=[0.1, -0.1], maxfev=10000)
 
-fitY2 = objFunc(fitX, popt2[0], popt2[1])
-fitY3 = objFunc(fitX, popt3[0], popt3[1])
-fitY4 = objFunc(fitX, popt4[0], popt4[1])
+fitY2 = objFuncP(fitX, popt2[0], popt2[1])
+fitY3 = objFuncP(fitX, popt3[0], popt3[1])
+fitY4 = objFuncP(fitX, popt4[0], popt4[1])
 
 # Segment Length in Log-Log
 
@@ -374,7 +374,13 @@ plt.tight_layout()
 plt.show()
 
 
+def objFuncL(xdata, a):
+    y = a*xdata
+    
+    return y
 # BranchNum vs Total Segment Length vs Average Segment Length by Type
+
+poptL = []
 
 fig, ax = plt.subplots(3, 3, figsize=(20,20))
 ax[0][0].scatter(np.array(length_total)[sensory], np.array(branchNum)[sensory])
@@ -415,27 +421,70 @@ ax[1][2].set_ylim(-1, 8)
 for i in range(len(np.unique(np.array(branchNum)[sensory]))):
     scttrInd = np.where(np.array(branchNum)[sensory] == np.unique(np.array(branchNum)[sensory])[i])[0]
     ax[2][0].scatter(np.array(length_average)[sensory][scttrInd], np.array(length_total)[sensory][scttrInd])
+    fitX = np.linspace(0, 1000, 1000)
 ax[2][0].set_xlabel("Average Segment Length", fontsize=15)
 ax[2][0].set_ylabel("Total Segment Length", fontsize=15)
 ax[2][0].legend(np.unique(np.array(branchNum)[sensory])[:-1], fontsize=15)
+for i in range(len(np.unique(np.array(branchNum)[sensory]))):
+    scttrInd = np.where(np.array(branchNum)[sensory] == np.unique(np.array(branchNum)[sensory])[i])[0]
+    if np.unique(np.array(branchNum)[sensory])[i] == 0:
+        fitY = objFuncL(fitX, 1)
+        ax[2][0].plot(fitX, fitY)
+    elif np.unique(np.array(branchNum)[sensory])[i] == 1 or np.unique(np.array(branchNum)[sensory])[i] == 2:
+        popt, pcov = scipy.optimize.curve_fit(objFuncL, 
+                                                np.array(length_average)[sensory][scttrInd], 
+                                                np.array(length_total)[sensory][scttrInd],
+                                                p0=[1.],
+                                                maxfev=10000)
+        fitY = objFuncL(fitX, popt[0])
+        ax[2][0].plot(fitX, fitY)
+        poptL.append(popt[0])
 #ax.set_xlim(-10, 1000)
-ax[2][0].set_ylim(-1, 1000)
+ax[2][0].set_ylim(0, 1000)
 
 for i in range(len(np.unique(np.array(branchNum)[inter]))):
     scttrInd = np.where(np.array(branchNum)[inter] == np.unique(np.array(branchNum)[inter])[i])[0]
     ax[2][1].scatter(np.array(length_average)[inter][scttrInd], np.array(length_total)[inter][scttrInd])
 ax[2][1].set_xlabel("Average Segment Length", fontsize=15)
 ax[2][1].legend(np.unique(np.array(branchNum)[inter]), fontsize=15)
+for i in range(len(np.unique(np.array(branchNum)[inter]))):
+    scttrInd = np.where(np.array(branchNum)[inter] == np.unique(np.array(branchNum)[inter])[i])[0]
+    if np.unique(np.array(branchNum)[inter])[i] == 0:
+        fitY = objFuncL(fitX, 1)
+        ax[2][1].plot(fitX, fitY)
+    elif np.unique(np.array(branchNum)[inter])[i] == 1 or np.unique(np.array(branchNum)[inter])[i] == 2:
+        popt, pcov = scipy.optimize.curve_fit(objFuncL, 
+                                                np.array(length_average)[inter][scttrInd], 
+                                                np.array(length_total)[inter][scttrInd],
+                                                p0=[1.],
+                                                maxfev=10000)
+        fitY = objFuncL(fitX, popt[0])
+        ax[2][1].plot(fitX, fitY)
+        poptL.append(popt[0])
 #ax.set_xlim(-10, 1000)
-#ax.set_ylim(-1, 10)
+ax[2][1].set_ylim(0, 1000)
 
 for i in range(len(np.unique(np.array(branchNum)[motor]))):
     scttrInd = np.where(np.array(branchNum)[motor] == np.unique(np.array(branchNum)[motor])[i])[0]
     ax[2][2].scatter(np.array(length_average)[motor][scttrInd], np.array(length_total)[motor][scttrInd])
 ax[2][2].set_xlabel("Average Segment Length", fontsize=15)
 ax[2][2].legend(np.unique(np.array(branchNum)[motor]), fontsize=15)
+for i in range(len(np.unique(np.array(branchNum)[motor]))):
+    scttrInd = np.where(np.array(branchNum)[motor] == np.unique(np.array(branchNum)[motor])[i])[0]
+    if np.unique(np.array(branchNum)[motor])[i] == 0:
+        fitY = objFuncL(fitX, 1)
+        ax[2][2].plot(fitX, fitY)
+    elif np.unique(np.array(branchNum)[motor])[i] == 1 or np.unique(np.array(branchNum)[motor])[i] == 2:
+        popt, pcov = scipy.optimize.curve_fit(objFuncL, 
+                                                np.array(length_average)[motor][scttrInd], 
+                                                np.array(length_total)[motor][scttrInd],
+                                                p0=[1.],
+                                                maxfev=10000)
+        fitY = objFuncL(fitX, popt[0])
+        ax[2][2].plot(fitX, fitY)
+        poptL.append(popt[0])
 #ax.set_xlim(-10, 1000)
-#ax.set_ylim(-1, 10)
+ax[2][2].set_ylim(0, 1000)
 plt.tight_layout()
 plt.show()
 
