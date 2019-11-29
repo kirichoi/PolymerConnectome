@@ -12,12 +12,11 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import axes3d, Axes3D
 from matplotlib import cm
 import matplotlib.patches as mpatches
+import seaborn
 import pandas as pd
 import scipy.optimize
 from collections import Counter
 import networkx as nx
-import pydot
-from networkx.drawing.nx_pydot import graphviz_layout
 import copy
 
 path = r'./CElegansNeuroML-SNAPSHOT_030213/CElegans/generatedNeuroML2'
@@ -490,16 +489,14 @@ plt.show()
 
 
 
-fig, ax = plt.subplots(1, 3, figsize=(24,6))
-for i in range(len(np.unique(np.array(branchNum)[sensory]))-1):
-    scttrInd = np.where(np.array(branchNum)[sensory] == np.unique(np.array(branchNum)[sensory])[i])[0]
-    ax[0].boxplot(np.array(length_total)[sensory][scttrInd], vert=True, positions=[i])
-for i in range(len(np.unique(np.array(branchNum)[inter]))-1):
-    scttrInd = np.where(np.array(branchNum)[inter] == np.unique(np.array(branchNum)[inter])[i])[0]
-    ax[1].boxplot(np.array(length_total)[inter][scttrInd], vert=True, positions=[i])
-for i in range(len(np.unique(np.array(branchNum)[motor]))-1):
-    scttrInd = np.where(np.array(branchNum)[motor] == np.unique(np.array(branchNum)[motor])[i])[0]
-    ax[2].boxplot(np.array(length_total)[motor][scttrInd], vert=True, positions=[i])
+fig = plt.figure(figsize=(8,6))
+seaborn.kdeplot(np.delete(np.array(branchNum)[sensory], np.where(np.array(branchNum)[sensory] == 197)[0]), bw=.6, label="Sensory")
+seaborn.kdeplot(np.array(branchNum)[inter], bw=.6, label="Inter")
+seaborn.kdeplot(np.array(branchNum)[motor], bw=.6, label="Motor")
+plt.xlim(-2, 8)
+plt.xlabel("Number of Branches", fontsize=15)
+plt.ylabel("Estimated Probability Density", fontsize=15)
+plt.legend(['Sensory', 'Inter', 'Motor'], fontsize=15)
 plt.tight_layout()
 plt.show()
 
@@ -719,6 +716,8 @@ def _layer_pos(nodeList):
     
 
 def plotBranch(name, hier=1, prog='twopi'):
+    from networkx.drawing.nx_pydot import graphviz_layout
+    
     namec = copy.deepcopy(name)
     if type(namec) == list:
         for i in range(len(namec)):
