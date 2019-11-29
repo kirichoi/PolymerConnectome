@@ -40,7 +40,13 @@ morph_prox = []
 morph_dist = []
 length_total = []
 length_branch = []
+length_direct = []
 branchTrk = []
+branchP = []
+endP = []
+somaP = []
+cMassList = []
+rGyration = []
 neuron_id = []
 neuron_type = []
 branchNum = []
@@ -77,6 +83,7 @@ for f in range(len(fp)):
             morph_neu_parent.append(sgmt.parent.segments)
         else:
             morph_neu_parent.append(-1)
+            somaP.append(s)
         if sgmt.proximal != None:
             morph_neu_prox.append([sgmt.proximal.x, sgmt.proximal.y, sgmt.proximal.z, sgmt.proximal.diameter])
         else:
@@ -100,6 +107,8 @@ for f in range(len(fp)):
     
     list_end = np.setdiff1d(morph_id[f], morph_parent[f])
     
+    branchP.append(branchInd)
+    endP.append(list_end)
     bPoint = np.append(branchInd, list_end)
     
     for bp in range(len(bPoint)):
@@ -158,6 +167,19 @@ length_branch_inter_flat = [item for sublist in length_branch_inter for item in 
 length_branch_motor_flat = [item for sublist in length_branch_motor for item in sublist]
 length_branch_polymodal_flat = [item for sublist in length_branch_polymodal for item in sublist]
 length_branch_other_flat = [item for sublist in length_branch_other for item in sublist]
+
+morph_dist_len = [len(arr) for arr in morph_dist]
+
+for i in range(len(morph_dist)):
+    rList = []
+    cMassList.append(np.sum(morph_dist[i], axis=0)[:3]/len(morph_dist[i]))
+    for j in range(len(morph_dist[i])):
+        rList.append(np.linalg.norm(morph_dist[i][j][:3]-cMassList[i]))
+    
+    rGyration.append(np.sqrt(np.sum(np.square(rList))/len(rList)))
+
+dVal = np.log(rGyration)/np.log(morph_dist_len)
+
 
 
 # Segment Length Histogram
@@ -502,6 +524,15 @@ plt.show()
 
 
 
+fig = plt.figure(figsize=(8,6))
+plt.scatter(np.array(morph_dist_len), np.array(rGyration))
+plt.yscale('log')
+plt.xscale('log')
+plt.xlim(0, 200)
+plt.tight_layout()
+plt.show()
+
+
 
 cInfo = pd.read_excel(r'./CElegansNeuroML-SNAPSHOT_030213/CElegansNeuronTables.xls')
 cOrigin = cInfo["Origin"].to_numpy()
@@ -608,7 +639,7 @@ def plotAll():
         ax.scatter3D(tararr[somaIdx,0], tararr[somaIdx,1], tararr[somaIdx,2], color=cmap(f))
 
 
-def plotNeuron(idx, scale=False):
+def plotNeuron(idx, scale=False, cmass=False):
     fig = plt.figure(figsize=(24, 16))
     ax = plt.axes(projection='3d')
     if scale:
@@ -616,6 +647,11 @@ def plotNeuron(idx, scale=False):
         ax.set_ylim(-150, 150)
         ax.set_zlim(-300, 300)
     cmap = cm.get_cmap('viridis', len(morph_id))
+    
+    if cmass:
+        cMass = np.sum(morph_dist[idx], axis=0)/len(morph_dist[idx])
+        ax.scatter3D(cMass[0], cMass[1], cMass[2])
+    
     if type(idx) == list or type(idx) == np.ndarray:
         for i in idx:
             tararr = np.array(morph_dist[i])
