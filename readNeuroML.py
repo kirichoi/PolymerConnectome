@@ -169,16 +169,27 @@ length_branch_polymodal_flat = [item for sublist in length_branch_polymodal for 
 length_branch_other_flat = [item for sublist in length_branch_other for item in sublist]
 
 morph_dist_len = [len(arr) for arr in morph_dist]
+morph_dist_len_EP = np.empty((len(morph_dist_len)))
+rGyration_EP = []
+cMassList_EP = []
 
 for i in range(len(morph_dist)):
     rList = []
-    cMassList.append(np.sum(morph_dist[i], axis=0)[:3]/len(morph_dist[i]))
-    for j in range(len(morph_dist[i])):
-        rList.append(np.linalg.norm(morph_dist[i][j][:3]-cMassList[i]))
+    rList_EP = []
+    distInd = np.where(np.isin(np.unique(np.hstack([endP[i], somaP[i], branchP[i]])), morph_id[i]))[0]
+    morph_dist_len_EP[i] = len(distInd)
+    cMassList.append(np.sum(np.array(morph_dist[i]), axis=0)[:3]/len(np.array(morph_dist[i])))
+    cMassList_EP.append(np.sum(np.array(morph_dist[i])[distInd], axis=0)[:3]/len(np.array(morph_dist[i])[distInd]))
+    for j in range(len(np.array(morph_dist[i]))):
+        rList.append(np.linalg.norm(np.array(morph_dist[i])[j][:3]-cMassList[i]))
+    for k in range(len(np.array(morph_dist[i])[distInd])):
+        rList_EP.append(np.linalg.norm(np.array(morph_dist[i])[distInd[k]][:3]-cMassList_EP[i]))
     
     rGyration.append(np.sqrt(np.sum(np.square(rList))/len(rList)))
+    rGyration_EP.append(np.sqrt(np.sum(np.square(rList_EP))/len(rList_EP)))
 
 dVal = np.log(rGyration)/np.log(morph_dist_len)
+dVal_EP = np.log(rGyration_EP)/np.log(morph_dist_len_EP)
 
 
 
@@ -528,9 +539,24 @@ fig = plt.figure(figsize=(8,6))
 plt.scatter(np.array(morph_dist_len), np.array(rGyration))
 plt.yscale('log')
 plt.xscale('log')
-plt.xlim(0, 200)
+#plt.xlim(1, 10000)
+#plt.ylim(0.005, 1000)
+plt.xlabel("Number of Points", fontsize=15)
+plt.ylabel("Radius of Gyration", fontsize=15)
 plt.tight_layout()
 plt.show()
+
+fig = plt.figure(figsize=(8,6))
+plt.scatter(np.array(morph_dist_len_EP), np.array(rGyration_EP))
+plt.yscale('log')
+plt.xscale('log')
+#plt.xlim(1, 10000)
+#plt.ylim(0.005, 1000)
+plt.xlabel("Number of Nodes", fontsize=15)
+plt.ylabel("Radius of Gyration", fontsize=15)
+plt.tight_layout()
+plt.show()
+
 
 
 
@@ -815,6 +841,109 @@ def plotBranch(name, hier=1, prog='twopi'):
     
     return G, nodeList
 
+
+def plotMorphBranch(name, hier=1):
+    namec = copy.deepcopy(name)
+    if type(namec) == list:
+        for i in range(len(namec)):
+            if type(namec[i]) == int:
+                namec[i] = neuron_id[namec[i]]
+            if sum(cOrigin == namec[i]) == 0:
+                raise(Exception("Unknown neuron id"))
+    else:
+        if type(namec) == int:
+            namec = neuron_id[namec]
+        if sum(cOrigin == namec) == 0:
+            raise(Exception("Unknown neuron id"))
+    
+    color = []
+    branch = []
+    
+    
+    nodeList = _trackConnection(namec, hier)
+    
+    nodeListFlat = np.unique([item for sublist in nodeList for item in sublist])
+    
+    
+    fig = plt.figure(figsize=(24, 16))
+    ax = plt.axes(projection='3d')
+    ax.set_xlim(-300, 300)
+    ax.set_ylim(-150, 150)
+    ax.set_zlim(-300, 300)
+    cmap = cm.get_cmap('viridis', len(morph_id))
+    
+    for idx in range(len(nodeListFlat)):
+        i = neuron_id.index(nodeListFlat[idx])
+        tararr = np.array(morph_dist[i])
+        somaIdx = np.where(np.array(morph_parent[i]) < 0)[0]
+        for p in range(len(morph_parent[i])):
+            if morph_parent[i][p] < 0:
+                pass
+            else:
+                morph_line = np.vstack((morph_dist[i][morph_id[i].index(morph_parent[i][p])], morph_dist[i][p]))
+                ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(i))
+        ax.scatter3D(tararr[somaIdx,0], tararr[somaIdx,1], tararr[somaIdx,2], color=cmap(i))
+    
+    plt.show()
+    
+    return nodeList
+
+
+def plotScatterBranch(name, hier=1):
+    namec = copy.deepcopy(name)
+    if type(namec) == list:
+        for i in range(len(namec)):
+            if type(namec[i]) == int:
+                namec[i] = neuron_id[namec[i]]
+            if sum(cOrigin == namec[i]) == 0:
+                raise(Exception("Unknown neuron id"))
+    else:
+        if type(namec) == int:
+            namec = neuron_id[namec]
+        if sum(cOrigin == namec) == 0:
+            raise(Exception("Unknown neuron id"))
+    
+        nodeList = _trackConnection(namec, hier)
+        nodeListFlat = np.unique([item for sublist in nodeList for item in sublist])
+        selIdx = np.searchsorted(neuron_id,nodeListFlat)
+        _length_branch_flat = [item for sublist in list(np.array(length_branch)[selIdx]) for item in sublist]
+        
+        fig = plt.figure(figsize=(12, 8))
+        hist1 = plt.hist(_length_branch_flat, 
+                         bins=int((np.max(_length_branch_flat) - np.min(_length_branch_flat))/10),
+                         density=True)
+        plt.title("Histogram of Segment Length", fontsize=20)
+        plt.ylabel("Normalized Density", fontsize=15)
+        plt.xlabel("Segment Length", fontsize=15)
+        plt.tight_layout()
+        plt.show()
+        
+        hist1centers = 0.5*(hist1[1][1:] + hist1[1][:-1])
+    
+        def objFuncPLS(p, *args):
+            y = p[0]*np.power(args[0], p[1])
+            
+            return np.linalg.norm(y - args[1])
+        
+        res = scipy.optimize.differential_evolution(objFuncPLS, 
+                                                    [(-10, 10), (-10, 10)], 
+                                                    args=(hist1centers, hist1[0]))
+        fitX = np.linspace(1, 10000, 1000)
+        fitY1 = res.x[0]*np.power(fitX, res.x[1])
+        
+        fig = plt.figure(figsize=(12, 8))
+        plt.scatter(hist1centers, hist1[0])
+        plt.title("Log-Log Plot of Segment Length", fontsize=20)
+        plt.ylabel("Normalized Density", fontsize=15)
+        plt.xlabel("Segment Length", fontsize=15)
+        plt.yscale('log')
+        plt.xscale('log')
+    #    plt.xlim(1, 10000)
+    #    plt.ylim(0.00001, 0.1)
+        plt.plot(fitX, fitY1, 'r')
+        plt.tight_layout()
+        plt.show()
+    
 
 def _trackConnection(name, hier=1):
     if type(name) == list:
