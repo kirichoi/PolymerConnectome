@@ -254,6 +254,10 @@ def regularSegmentRadiusOfGyration():
     return (dVal_reg_seg, rGyration_reg_seg, cMassList_reg_seg, reg_seg_morph_dist_len)
 
 
+
+
+
+
 (dVal, rGyration, cMassList) = radiusOfGyration()
 (dVal_EP, rGyration_EP, cMassList_EP) = endPointRadiusOfGyration()
 (dVal_reg, rGyration_reg, cMassList_reg, reg_morph_dist_len) = regularRadiusOfGyration()
@@ -763,7 +767,7 @@ fitYreg = objFuncL(np.array(reg_morph_dist_len)/reg_len_scale, poptreg[0])
 
 fig = plt.figure(figsize=(8,6))
 plt.scatter(np.array(reg_morph_dist_len)/reg_len_scale, np.array(rGyration_reg))
-plt.plot(np.array(reg_morph_dist_len)/reg_len_scale, fitYreg)
+plt.plot(np.array(reg_morph_dist_len)/reg_len_scale, fitYreg, color='tab:red')
 plt.yscale('log')
 plt.xscale('log')
 #plt.xlim(1, 10000)
