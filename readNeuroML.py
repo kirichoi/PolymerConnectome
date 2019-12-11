@@ -172,96 +172,104 @@ endP_len = [len(arr) for arr in endP]
 
 
 def radiusOfGyration():
-    cMassList = []
-    rGyration = []
+    cML = []
+    rGy = []
     for i in range(len(morph_dist)):
-        cMassList.append(np.sum(np.array(morph_dist[i]), axis=0)[:3]/len(np.array(morph_dist[i])))
-        rList = scipy.spatial.distance.cdist(np.array(morph_dist[i])[:,:3], np.array([cMassList[i]])).flatten()
-        rGyration.append(np.sqrt(np.sum(np.square(rList))/len(rList)))
+        cML.append(np.sum(np.array(morph_dist[i]), axis=0)[:3]/len(np.array(morph_dist[i])))
+        rList = scipy.spatial.distance.cdist(np.array(morph_dist[i])[:,:3], np.array([cML[i]])).flatten()
+        rGy.append(np.sqrt(np.sum(np.square(rList))/len(rList)))
     
-    dVal = np.log(rGyration)/np.log(morph_dist_len)
+    dVal = np.log(rGy)/np.log(morph_dist_len)
     
-    return (dVal, rGyration, cMassList)
+    return (dVal, rGy, cML)
 
 def endPointRadiusOfGyration():
-    cMassList_EP = []
-    rGyration_EP = []
+    cMLEP = []
+    rGyEP = []
     for i in range(len(morph_dist)):
         distInd = np.where(np.isin(np.unique(np.hstack([endP[i], somaP[i], branchP[i]])), morph_id[i]))[0]
         morph_dist_len_EP[i] = len(distInd)
-        cMassList_EP.append(np.sum(np.array(morph_dist[i])[distInd], axis=0)[:3]/len(np.array(morph_dist[i])[distInd]))
-        rList_EP = scipy.spatial.distance.cdist(np.array(morph_dist[i])[distInd,:3], np.array([cMassList_EP[i]])).flatten()
-        rGyration_EP.append(np.sqrt(np.sum(np.square(rList_EP))/len(rList_EP)))
+        cMLEP.append(np.sum(np.array(morph_dist[i])[distInd], axis=0)[:3]/len(np.array(morph_dist[i])[distInd]))
+        rList_EP = scipy.spatial.distance.cdist(np.array(morph_dist[i])[distInd,:3], np.array([cMLEP[i]])).flatten()
+        rGyEP.append(np.sqrt(np.sum(np.square(rList_EP))/len(rList_EP)))
     
-    dVal_EP = np.log(rGyration_EP)/np.log(morph_dist_len_EP)
+    dVal_EP = np.log(rGyEP)/np.log(morph_dist_len_EP)
     
-    return (dVal_EP, rGyration_EP, cMassList_EP)
+    return (dVal_EP, rGyEP, cMLEP)
 
-def regularRadiusOfGyration():
-    reg_morph_dist = []
+def regularRadiusOfGyration(sSize):
+    regMDist = []
     
     for i in range(len(morph_dist)):
-        reg_morph_dist_temp = []
+        regMDist_temp = []
         for j in range(len(morph_dist[i])-1):
             dist = np.linalg.norm(np.array(morph_dist[i])[j+1][:3]-np.array(morph_dist[i])[j][:3])
-            l1 = np.linspace(0,1,max(1, int(dist/0.01)))
+            l1 = np.linspace(0,1,max(1, int(dist/sSize)))
             nArr = np.array(morph_dist[i])[j][:3]+(np.array(morph_dist[i])[j+1][:3]-np.array(morph_dist[i])[j][:3])*l1[:,None]
-            reg_morph_dist_temp.append(nArr.tolist())
-        reg_morph_dist_temp_flatten = [item for sublist in reg_morph_dist_temp for item in sublist]
-        _, Uidx = np.unique(np.array(reg_morph_dist_temp_flatten), return_index=True, axis=0)
-        uniqueUSorted = np.array(reg_morph_dist_temp_flatten)[np.sort(Uidx)].tolist()
-        reg_morph_dist.append(uniqueUSorted)
+            regMDist_temp.append(nArr.tolist())
+        regMDist_temp_flatten = [item for sublist in regMDist_temp for item in sublist]
+        _, Uidx = np.unique(np.array(regMDist_temp_flatten), return_index=True, axis=0)
+        uniqueUSorted = np.array(regMDist_temp_flatten)[np.sort(Uidx)].tolist()
+        regMDist.append(uniqueUSorted)
     
-    reg_morph_dist_len = [len(arr) for arr in reg_morph_dist]
+    regMDistLen = [len(arr) for arr in regMDist]
     
-    cMassList_reg = []
-    rGyration_reg = []
-    for i in range(len(reg_morph_dist)):
-        cMassList_reg.append(np.sum(np.array(reg_morph_dist[i]), axis=0)/len(np.array(reg_morph_dist[i])))
-        rList_reg = scipy.spatial.distance.cdist(np.array(reg_morph_dist[i]), np.array([cMassList_reg[i]])).flatten()
-        rGyration_reg.append(np.sqrt(np.sum(np.square(rList_reg))/len(rList_reg)))
+    cMLReg = []
+    rGyReg = []
+    for i in range(len(regMDist)):
+        cMLReg.append(np.sum(np.array(regMDist[i]), axis=0)/regMDistLen[i])
+        rList_reg = scipy.spatial.distance.cdist(np.array(regMDist[i]), np.array([cMLReg[i]])).flatten()
+        rGyReg.append(np.sqrt(np.sum(np.square(rList_reg))/regMDistLen[i]))
     
-    dVal_reg = np.log(rGyration_reg)/np.log(reg_morph_dist_len)
+    dVal_reg = np.log(rGyReg)/np.log(regMDistLen)
     
-    return (dVal_reg, rGyration_reg, cMassList_reg, reg_morph_dist_len)
+    return (dVal_reg, rGyReg, cMLReg, regMDistLen, regMDist)
 
-def regularSegmentRadiusOfGyration():
-    reg_seg_morph_dist = []
+def regularSegmentRadiusOfGyration(sSize, nSize, dSize):
+    regSegMDist = []
     
     for i in range(len(morph_dist)):
-        reg_seg_morph_dist_temp = []
+        regSegMDist_temp = []
         for j in range(len(morph_dist[i])-1):
             dist = np.linalg.norm(np.array(morph_dist[i])[j+1][:3]-np.array(morph_dist[i])[j][:3])
-            l1 = np.linspace(0,1,max(1, int(dist/0.01)))
+            l1 = np.linspace(0,1,max(1, int(dist/sSize)))
             nArr = np.array(morph_dist[i])[j][:3]+(np.array(morph_dist[i])[j+1][:3]-np.array(morph_dist[i])[j][:3])*l1[:,None]
-            reg_seg_morph_dist_temp.append(nArr.tolist())
-        reg_seg_morph_dist_temp_flatten = [item for sublist in reg_seg_morph_dist_temp for item in sublist]
-        _, Uidx = np.unique(np.array(reg_seg_morph_dist_temp_flatten), return_index=True, axis=0)
-        uniqueUSorted = np.array(reg_seg_morph_dist_temp_flatten)[np.sort(Uidx)].tolist()
-        reg_seg_morph_dist.append(uniqueUSorted)
+            regSegMDist_temp.append(nArr.tolist())
+        regSegMDist_temp_flatten = [item for sublist in regSegMDist_temp for item in sublist]
+        _, Uidx = np.unique(np.array(regSegMDist_temp_flatten), return_index=True, axis=0)
+        uniqueUSorted = np.array(regSegMDist_temp_flatten)[np.sort(Uidx)].tolist()
+        regSegMDist.append(uniqueUSorted)
     
-    reg_seg_morph_dist_len = [len(arr) for arr in reg_seg_morph_dist]
+    regSegMDistLen = [len(arr) for arr in regSegMDist]
     
-    cMassList_reg_seg = []
-    rGyration_reg_seg = []
-    for i in range(len(reg_seg_morph_dist)):
-        cMassList_reg_seg.append(np.sum(np.array(reg_seg_morph_dist[i]), axis=0)/len(np.array(reg_seg_morph_dist[i])))
-        rList_reg_seg = scipy.spatial.distance.cdist(np.array(reg_seg_morph_dist[i]), np.array([cMassList_reg_seg[i]])).flatten()
-        rGyration_reg_seg.append(np.sqrt(np.sum(np.square(rList_reg_seg))/len(rList_reg_seg)))
+    cMLRegSeg = []
+    rGyRegSeg = []
+    nSize = np.array(nSize)+1
+    regSegOrdN = []
     
-    dVal_reg_seg = np.log(rGyration_reg_seg)/np.log(reg_seg_morph_dist_len)
+    for k in range(len(nSize)):
+        for i in range(len(morph_dist)):
+            dInt = np.arange(0, regMDistLen[i]-nSize[k], dSize)
+            for j in range(len(dInt)-1):
+                regSegOrdN.append(nSize[k])
+                cMLRegSeg.append(np.sum(np.array(regSegMDist[i])[dInt[j]:dInt[j+1]+nSize[k]], axis=0)/nSize[k])
+                rList_reg_seg = scipy.spatial.distance.cdist(np.array(regSegMDist[i])[dInt[j]:dInt[j+1]+nSize[k]], np.array([cMLRegSeg[-1]])).flatten()
+                rGyRegSeg.append(np.sqrt(np.sum(np.square(rList_reg_seg))/nSize[k]))
+        
     
-    return (dVal_reg_seg, rGyration_reg_seg, cMassList_reg_seg, reg_seg_morph_dist_len)
+    return (rGyRegSeg, cMLRegSeg, regSegMDistLen, regSegMDist, regSegOrdN)
 
 
 
 
+sSize = 0.01
+nSize = [1, 10, 100, 1000]
+dSize = 1000
 
-
-(dVal, rGyration, cMassList) = radiusOfGyration()
-(dVal_EP, rGyration_EP, cMassList_EP) = endPointRadiusOfGyration()
-(dVal_reg, rGyration_reg, cMassList_reg, reg_morph_dist_len) = regularRadiusOfGyration()
-
+(dVal, rGy, cML) = radiusOfGyration()
+(dVal_EP, rGyEP, cMLEP) = endPointRadiusOfGyration()
+(dVal_reg, rGyReg, cMLReg, regMDistLen, regMDist) = regularRadiusOfGyration(sSize)
+#(rGyRegSeg, cMLRegSeg, regSegMDistLen, regSegMDist, regSegOrdN) = regularSegmentRadiusOfGyration(sSize, nSize, dSize)
 
 
 
@@ -733,7 +741,7 @@ plt.show()
 
 
 fig = plt.figure(figsize=(8,6))
-plt.scatter(np.array(morph_dist_len), np.array(rGyration))
+plt.scatter(np.array(morph_dist_len), np.array(rGy))
 plt.yscale('log')
 plt.xscale('log')
 #plt.xlim(1, 10000)
@@ -745,7 +753,7 @@ plt.tight_layout()
 plt.show()
 
 fig = plt.figure(figsize=(8,6))
-plt.scatter(np.array(morph_dist_len_EP), np.array(rGyration_EP))
+plt.scatter(np.array(morph_dist_len_EP), np.array(rGyEP))
 plt.yscale('log')
 plt.xscale('log')
 #plt.xlim(1, 10000)
@@ -757,24 +765,24 @@ plt.tight_layout()
 plt.show()
 
 
-reg_len_scale = np.average(np.divide(reg_morph_dist_len, morph_dist_len))
+#reg_len_scale = np.average(np.divide(regMDistLen, morph_dist_len))
 poptreg, pcovreg = scipy.optimize.curve_fit(objFuncL, 
-                                            np.array(reg_morph_dist_len)/reg_len_scale, 
-                                            np.array(rGyration_reg), 
+                                            np.array(regMDistLen)*sSize, 
+                                            np.sqrt(np.square(np.array(rGyReg))*1/sSize), 
                                             p0=[1.], 
                                             maxfev=100000)
-fitYreg = objFuncL(np.array(reg_morph_dist_len)/reg_len_scale, poptreg[0])
+fitYreg = objFuncL(np.array(regMDistLen)*sSize, poptreg[0])
 
 fig = plt.figure(figsize=(8,6))
-plt.scatter(np.array(reg_morph_dist_len)/reg_len_scale, np.array(rGyration_reg))
-plt.plot(np.array(reg_morph_dist_len)/reg_len_scale, fitYreg, color='tab:red')
+plt.scatter(np.array(regMDistLen)*sSize, np.sqrt(np.square(np.array(rGyReg))*1/sSize))
+plt.plot(np.array(regMDistLen)*sSize, fitYreg, color='tab:red')
 plt.yscale('log')
 plt.xscale('log')
 #plt.xlim(1, 10000)
 #plt.ylim(0.005, 1000)
 plt.title("Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
-plt.xlabel("Number of Regularized Points", fontsize=15)
-plt.ylabel("Radius of Gyration", fontsize=15)
+plt.xlabel("Number of Regularized Points ($a*N$)", fontsize=15)
+plt.ylabel("Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
 plt.tight_layout()
 plt.show()
 
