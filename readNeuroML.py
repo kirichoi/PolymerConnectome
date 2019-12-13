@@ -238,7 +238,7 @@ def regularSegmentRadiusOfGyration(nSize, dSize):
     regSegOrdN = []
     
     for k in range(len(nSize)):
-        for i in range(len(regMDist)):
+        for i in np.arange(0, 300, 10):
             dInt = np.arange(0, regMDistLen[i]-nSize[k], dSize)
             for j in range(len(dInt)-1):
                 regSegOrdN.append(nSize[k]-1)
@@ -246,14 +246,13 @@ def regularSegmentRadiusOfGyration(nSize, dSize):
                 rList_reg_seg = scipy.spatial.distance.cdist(np.array(regMDist[i])[dInt[j]:dInt[j]+nSize[k]], np.array([cMLRegSeg[-1]])).flatten()
                 rGyRegSeg.append(np.sqrt(np.sum(np.square(rList_reg_seg))/nSize[k]))
         
-    
     return (rGyRegSeg, cMLRegSeg, regSegOrdN)
 
 
 
-sSize = 0.01
-nSize = [1, 3, 5, 7, 10, 100, 1000]
-dSize = 1000
+sSize = 0.1
+nSize = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 50, 100, 500, 1000]
+dSize = 100
 
 
 (regMDist, regMDistLen) = segmentMorph(sSize)
@@ -515,6 +514,12 @@ def objFuncL(xdata, a):
     y = a*xdata
     
     return y
+
+def objFuncGL(xdata, a, b):
+    y = a*xdata + b
+    
+    return y
+
 # BranchNum vs Total Segment Length vs Average Segment Length by Type
 
 poptL = []
@@ -798,18 +803,44 @@ plt.show()
 
 
 
-poptRS, pcovRS = scipy.optimize.curve_fit(objFuncL, 
-                                          np.array(regSegOrdN)*sSize, 
-                                          np.sqrt(np.square(np.array(rGyRegSeg))*1/sSize), 
+rGyRegSeg_avg = []
+for i in range(len(nSize)):
+    RStemp = np.where(np.array(regSegOrdN) == nSize[i])[0]
+    rGyRegSeg_avg.append(np.average(np.array(rGyRegSeg)[RStemp]))
+
+RS1 = np.where(np.array(regSegOrdN) > 10)[0]
+RS2 = a = np.where((np.array(regSegOrdN) <= 10) & (np.array(regSegOrdN) >= 4))[0]
+RS3 = np.where(np.array(regSegOrdN) < 4)[0]
+
+poptRS1, pcovRS1 = scipy.optimize.curve_fit(objFuncL, 
+                                          np.array(regSegOrdN)[RS1]*sSize, 
+                                          np.sqrt(np.square(np.array(rGyRegSeg)[RS1])*1/sSize), 
                                           p0=[1.], 
                                           maxfev=100000)
-fitYregRS = objFuncL(np.unique(regSegOrdN)*sSize, poptRS[0])
+fitYregRS1 = objFuncL(np.unique(np.array(regSegOrdN)[RS1])*sSize, poptRS1[0])
+
+poptRS2, pcovRS2 = scipy.optimize.curve_fit(objFuncGL, 
+                                          np.array(regSegOrdN)[RS2]*sSize, 
+                                          np.sqrt(np.square(np.array(rGyRegSeg)[RS2])*1/sSize), 
+                                          p0=[1., 0.], 
+                                          maxfev=100000)
+fitYregRS2 = objFuncGL(np.unique(np.array(regSegOrdN)[RS2])*sSize, poptRS2[0], poptRS2[1])
+
+poptRS3, pcovRS3 = scipy.optimize.curve_fit(objFuncGL, 
+                                          np.array(regSegOrdN)[RS3]*sSize, 
+                                          np.sqrt(np.square(np.array(rGyRegSeg)[RS3])*1/sSize), 
+                                          p0=[1., 0.], 
+                                          maxfev=100000)
+fitYregRS3 = objFuncGL(np.unique(np.array(regSegOrdN)[RS3])*sSize, poptRS3[0], poptRS3[1])
 
 fig = plt.figure(figsize=(8,6))
 plt.scatter(np.array(regMDistLen)*sSize, np.sqrt(np.square(np.array(rGyReg))*1/sSize))
 plt.plot(np.array(regMDistLen)*sSize, fitYregR, color='tab:red')
 plt.scatter(np.array(regSegOrdN)*sSize, np.sqrt(np.square(np.array(rGyRegSeg))*1/sSize))
-plt.plot(np.unique(regSegOrdN)*sSize, fitYregRS, color='tab:red')
+plt.scatter(np.array(nSize)*sSize, np.sqrt(np.square(np.array(rGyRegSeg_avg))*1/sSize))
+plt.plot(np.unique(np.array(regSegOrdN)[RS1])*sSize, fitYregRS1, color='tab:red')
+plt.plot(np.unique(np.array(regSegOrdN)[RS2])*sSize, fitYregRS2, color='tab:red')
+plt.plot(np.unique(np.array(regSegOrdN)[RS3])*sSize, fitYregRS3, color='tab:red')
 plt.yscale('log')
 plt.xscale('log')
 #plt.xlim(1, 10000)
