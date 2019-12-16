@@ -10,6 +10,7 @@ import neuroml.loaders as loaders
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import axes3d, Axes3D
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes, InsetPosition, mark_inset
 from matplotlib import cm
 import matplotlib.patches as mpatches
 import seaborn
@@ -21,6 +22,8 @@ import copy
 import time
 
 path = r'./CElegansNeuroML-SNAPSHOT_030213/CElegans/generatedNeuroML2'
+
+SAVE = True
 
 fp = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
 fp = [f for f in fp if "Acetylcholine" not in f]
@@ -281,6 +284,9 @@ t5 = time.time()
 
 print('checkpoint 5: ' + str(t5-t4))
 
+if SAVE:
+    np.savetxt('./rGyRegSeg_1.csv', rGyRegSeg, delimiter=",")
+    np.savetxt('./regSegOrdN_1.csv', regSegOrdN, delimiter=",")
 
 
 fig, ax = plt.subplots(1, 2, figsize=(20,6))
@@ -820,9 +826,9 @@ for i in range(len(nSize)):
     RStemp = np.where(np.array(regSegOrdN) == nSize[i])[0]
     rGyRegSeg_avg.append(np.average(np.array(rGyRegSeg)[RStemp]))
 
-RS1 = np.where(np.array(regSegOrdN) > 10)[0]
-RS2 = np.where((np.array(regSegOrdN) <= 10) & (np.array(regSegOrdN) >= 4))[0]
-RS3 = np.where(np.array(regSegOrdN) < 4)[0]
+RS1 = np.where(np.array(regSegOrdN) > 7)[0]
+RS2 = np.where((np.array(regSegOrdN) <= 8) & (np.array(regSegOrdN) >= 4))[0]
+RS3 = np.where(np.array(regSegOrdN) < 5)[0]
 
 poptRS1, pcovRS1 = scipy.optimize.curve_fit(objFuncGL, 
                                           np.log10(np.array(regSegOrdN)[RS1]*sSize), 
@@ -830,6 +836,8 @@ poptRS1, pcovRS1 = scipy.optimize.curve_fit(objFuncGL,
                                           p0=[1., 0.], 
                                           maxfev=100000)
 fitYregRS1 = objFuncPpow(np.unique(np.array(regSegOrdN)[RS1])*sSize, poptRS1[0], poptRS1[1])
+
+fitYregRS12 = objFuncPpow(np.unique(np.array(regSegOrdN)[RS2])*sSize, poptRS1[0], poptRS1[1])
 
 poptRS2, pcovRS2 = scipy.optimize.curve_fit(objFuncGL, 
                                           np.log10(np.array(regSegOrdN)[RS2]*sSize), 
@@ -845,22 +853,74 @@ poptRS3, pcovRS3 = scipy.optimize.curve_fit(objFuncGL,
                                           maxfev=100000)
 fitYregRS3 = objFuncPpow(np.unique(np.array(regSegOrdN)[RS3])*sSize, poptRS3[0], poptRS3[1])
 
-fig = plt.figure(figsize=(8,6))
-plt.scatter(np.array(regMDistLen)*sSize, np.sqrt(np.square(np.array(rGyReg))*1/sSize))
-plt.plot(np.array(regMDistLen)*sSize, fitYregR, color='tab:red')
-plt.scatter(np.array(regSegOrdN)*sSize, np.sqrt(np.square(np.array(rGyRegSeg))*1/sSize))
-plt.scatter(np.array(nSize)*sSize, np.sqrt(np.square(np.array(rGyRegSeg_avg))*1/sSize))
-plt.plot(np.unique(np.array(regSegOrdN)[RS1])*sSize, fitYregRS1, color='tab:red')
-plt.plot(np.unique(np.array(regSegOrdN)[RS2])*sSize, fitYregRS2, color='tab:red')
-plt.plot(np.unique(np.array(regSegOrdN)[RS3])*sSize, fitYregRS3, color='tab:red')
-plt.yscale('log')
-plt.xscale('log')
-#plt.xlim(1, 10000)
-#plt.ylim(0.005, 1000)
+fitYregRS32 = objFuncPpow(np.unique(np.array(regSegOrdN)[RS2])*sSize, poptRS3[0], poptRS3[1])
+
+
+fig, ax1 = plt.subplots(figsize=(12,8))
+plt.rcParams['xtick.labelsize']=12
+plt.rcParams['xtick.major.size']=7
+plt.rcParams['xtick.minor.size']=5
+plt.rcParams['ytick.labelsize']=12
+plt.rcParams['ytick.major.size']=7
+plt.rcParams['ytick.minor.size']=5
+ax1.scatter(np.array(regMDistLen)*sSize, np.sqrt(np.square(np.array(rGyReg))*1/sSize), color='tab:blue')
+ax1.plot(np.array(regMDistLen)*sSize, fitYregR, color='tab:red', lw=2)
+ax1.scatter(np.array(regSegOrdN)*sSize, np.sqrt(np.square(np.array(rGyRegSeg))*1/sSize), color='tab:blue', facecolors='none')
+ax1.scatter(np.array(nSize)*sSize, np.sqrt(np.square(np.array(rGyRegSeg_avg))*1/sSize), color='tab:orange')
+ax1.plot(np.unique(np.array(regSegOrdN)[RS1])*sSize, fitYregRS1, color='tab:red', lw=2, linestyle='--')
+ax1.plot(np.unique(np.array(regSegOrdN)[RS2])*sSize, fitYregRS2, color='tab:red', lw=2, linestyle='--')
+ax1.plot(np.unique(np.array(regSegOrdN)[RS3])*sSize, fitYregRS3, color='tab:red', lw=2, linestyle='--')
+ax1.vlines(0.08, 0.01, 11000, linestyles='dashed')
+ax1.vlines(0.04, 0.01, 11000, linestyles='dashed')
+ax1.set_yscale('log')
+ax1.set_xscale('log')
+#ax1.xlim(0.01, 10500)
+ax1.set_ylim(0.03, 10000)
+
+ax2 = plt.axes([0, 0, 1, 1])
+ip1 = InsetPosition(ax1, [0.03, 0.57, 0.4, 0.4])
+ax2.set_axes_locator(ip1)
+mark_inset(ax1, ax2, loc1=3, loc2=4, fc="none", ec='0.5')
+
+ax2.scatter(np.array(regSegOrdN)*sSize, np.sqrt(np.square(np.array(rGyRegSeg))*1/sSize), color='tab:blue', facecolors='none')
+ax2.scatter(np.array(nSize)[1:11]*sSize, np.sqrt(np.square(np.array(rGyRegSeg_avg))[1:11]*1/sSize), color='tab:orange')
+ax2.plot(np.unique(np.array(regSegOrdN)[RS1])[:4]*sSize, fitYregRS1[:4], color='tab:red', lw=2, linestyle='--')
+ax2.plot(np.unique(np.array(regSegOrdN)[RS2])*sSize, fitYregRS2, color='tab:red', lw=2, linestyle='--')
+ax2.plot(np.unique(np.array(regSegOrdN)[RS3])*sSize, fitYregRS3, color='tab:red', lw=2, linestyle='--')
+ax2.xaxis.set_visible(False)
+ax2.yaxis.set_visible(False)
+ax2.set_yscale('log')
+ax2.set_xscale('log')
+ax2.vlines(0.08, 0.01, 1, linestyles='dashed')
+ax2.vlines(0.04, 0.01, 1, linestyles='dashed')
+ax2.set_xlim(0.022, 0.15)
+ax2.set_ylim(0.08, 0.6)
+
+ax3 = plt.axes([1, 1, 2, 2])
+ip2 = InsetPosition(ax1, [0.57, 0.08, 0.4, 0.4])
+ax3.set_axes_locator(ip2)
+mark_inset(ax1, ax3, loc1=2, loc2=4, fc="none", ec='0.5')
+
+ax3.plot(np.unique(np.array(regSegOrdN)[RS1])[:4]*sSize, fitYregRS1[:4], color='tab:red', lw=2, linestyle='-')
+ax3.plot(np.unique(np.array(regSegOrdN)[RS2])*sSize, fitYregRS12, color='tab:red', lw=2, linestyle='--')
+ax3.plot(np.unique(np.array(regSegOrdN)[RS2])*sSize, fitYregRS2, color='tab:green', lw=2, linestyle='-')
+ax3.plot(np.unique(np.array(regSegOrdN)[RS3])*sSize, fitYregRS3, color='tab:blue', lw=2, linestyle='-')
+ax3.plot(np.unique(np.array(regSegOrdN)[RS2])*sSize, fitYregRS32, color='tab:blue', lw=2, linestyle='--')
+ax3.xaxis.set_visible(False)
+ax3.yaxis.set_visible(False)
+ax3.set_yscale('log')
+ax3.set_xscale('log')
+ax3.vlines(0.08, 0.01, 1, linestyles='dashed')
+ax3.vlines(0.04, 0.01, 1, linestyles='dashed')
+ax3.set_xlim(0.035, 0.087)
+ax3.set_ylim(0.12, 0.28)
+
+
 #plt.title("Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
 #plt.xlabel("Number of Regularized Points ($a*N$)", fontsize=15)
 #plt.ylabel("Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
 plt.tight_layout()
+#plt.savefig('./images/regSegRG_morphScale.png', dpi=300)
 plt.show()
 
 
