@@ -46,6 +46,8 @@ length_total = []
 length_branch = []
 length_direct = []
 branchTrk = []
+indMorph_dist = []
+indBranchTrk = []
 branchP = []
 endP = []
 somaP = []
@@ -107,6 +109,7 @@ for f in range(len(fp)):
     branchInd = np.array(ctrKey)[np.where(np.array(ctrVal) > 1)[0]]
     
     neu_branchTrk = []
+    neu_indBranchTrk = []
     
     list_end = np.setdiff1d(morph_id[f], morph_parent[f])
     
@@ -125,6 +128,18 @@ for f in range(len(fp)):
         if len(neu_branchTrk_temp) > 1:
             neu_branchTrk.append(neu_branchTrk_temp)
     branchTrk.append(neu_branchTrk)
+    
+    for ep in range(len(list_end)):
+        neu_indBranchTrk_temp = []
+        neu_indBranchTrk_temp.append(list_end[ep])
+        parentTrck = list_end[ep]
+        while parentTrck != 0:
+            parentTrck = morph_parent[f][morph_id[f].index(parentTrck)]
+            neu_indBranchTrk_temp.append(parentTrck)
+        if len(neu_indBranchTrk_temp) > 1:
+            neu_indBranchTrk_temp.reverse()
+            neu_indBranchTrk.append(neu_indBranchTrk_temp)
+    indBranchTrk.append(neu_indBranchTrk)
 
 
 for b in range(len(branchTrk)):
@@ -175,6 +190,22 @@ morph_dist_len = [len(arr) for arr in morph_dist]
 morph_dist_len_EP = np.empty((len(morph_dist_len)))
 endP_len = [len(arr) for arr in endP]
 
+indMorph_dist_p = []
+
+for i in range(len(indBranchTrk)):
+    indMorph_dist_temp1 = []
+    for j in range(len(indBranchTrk[i])):
+        indMorph_dist_temp2 = []
+        indMorph_dist_p.append(1/len(indBranchTrk[i]))
+        for k in range(len(indBranchTrk[i][j])):
+            indMorph_dist_temp2.append(np.array(morph_dist[i])[np.where(morph_id[i] == np.array(indBranchTrk[i][j][k]))[0]].flatten().tolist())
+            
+        indMorph_dist_temp1.append(indMorph_dist_temp2)
+    indMorph_dist.append(indMorph_dist_temp1)
+
+indMorph_dist_flat = [item for sublist in indMorph_dist for item in sublist]
+
+indMorph_dist_p = indMorph_dist_p/np.sum(indMorph_dist_p)
 
 t1 = time.time()
 
@@ -198,7 +229,26 @@ def segmentMorph(sSize):
     regMDistLen = [len(arr) for arr in regMDist]
     
     return regMDist, regMDistLen
+   
+def indSegmentMorph(sSize):
+    indRegMDist = []
     
+    for i in range(len(indMorph_dist_flat)):
+        indRegMDist_temp = []
+        for j in range(len(indMorph_dist_flat[i])-1):
+            dist = np.linalg.norm(np.array(indMorph_dist_flat[i])[j+1][:3]-np.array(indMorph_dist_flat[i])[j][:3])
+            l1 = np.linspace(0,1,max(1, int(dist/sSize)))
+            nArr = np.array(indMorph_dist_flat[i])[j][:3]+(np.array(indMorph_dist_flat[i])[j+1][:3]-np.array(indMorph_dist_flat[i])[j][:3])*l1[:,None]
+            indRegMDist_temp.append(nArr.tolist())
+        indRegMDist_temp_flatten = [item for sublist in indRegMDist_temp for item in sublist]
+        _, Uidx = np.unique(np.array(indRegMDist_temp_flatten), return_index=True, axis=0)
+        uniqueUSorted = np.array(indRegMDist_temp_flatten)[np.sort(Uidx)].tolist()
+        indRegMDist.append(uniqueUSorted)
+    
+    indRegMDistLen = [len(arr) for arr in indRegMDist]
+    
+    return indRegMDist, indRegMDistLen    
+
 
 def radiusOfGyration():
     cML = []
@@ -233,25 +283,28 @@ def regularRadiusOfGyration(regMDist, regMDistLen):
     
     return (rGyReg, cMLReg)
 
-def regularSegmentRadiusOfGyration(regMDist, regMDistLen, nSize, dSize):
+def regularSegmentRadiusOfGyration(indRegMDist, indRegMDistLen, nSize, dSize):
 
     cMLRegSeg = []
     rGyRegSeg = []
     nSize = np.array(nSize)+1
     regSegOrdN = []
     
+    randIdx = np.sort(np.random.choice(np.arange(0, len(indRegMDistLen)), 100, p=indMorph_dist_p, replace=False))
+    
     for k in range(len(nSize)):
-        for i in np.arange(0, 300, 30):
-            dInt = np.arange(0, regMDistLen[i]-nSize[k], dSize)
+        for i in randIdx:
+            dInt = np.arange(0, indRegMDistLen[i]-nSize[k], dSize)
             for j in range(len(dInt)-1):
                 regSegOrdN.append(nSize[k]-1)
-                cMLRegSeg.append(np.sum(np.array(regMDist[i])[dInt[j]:dInt[j]+nSize[k]], axis=0)/nSize[k])
-                rList_reg_seg = scipy.spatial.distance.cdist(np.array(regMDist[i])[dInt[j]:dInt[j]+nSize[k]], np.array([cMLRegSeg[-1]])).flatten()
+                cMLRegSeg.append(np.sum(np.array(indRegMDist[i])[dInt[j]:dInt[j]+nSize[k]], axis=0)/nSize[k])
+                rList_reg_seg = scipy.spatial.distance.cdist(np.array(indRegMDist[i])[dInt[j]:dInt[j]+nSize[k]], np.array([cMLRegSeg[-1]])).flatten()
                 rGyRegSeg.append(np.sqrt(np.sum(np.square(rList_reg_seg))/nSize[k]))
         
     return (rGyRegSeg, cMLRegSeg, regSegOrdN)
 
 
+np.random.seed(1234)
 
 sSize = 0.01
 nSize = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 50, 100, 500, 1000]
@@ -259,6 +312,7 @@ dSize = 10
 
 
 (regMDist, regMDistLen) = segmentMorph(sSize)
+(indRegMDist, indRegMDistLen) = indSegmentMorph(sSize)
 
 t2 = time.time()
 
@@ -278,15 +332,15 @@ t4 = time.time()
 
 print('checkpoint 4: ' + str(t4-t3))
 
-(rGyRegSeg, cMLRegSeg, regSegOrdN) = regularSegmentRadiusOfGyration(regMDist, regMDistLen, nSize, dSize)
+(rGyRegSeg, cMLRegSeg, regSegOrdN) = regularSegmentRadiusOfGyration(indRegMDist, indRegMDistLen, nSize, dSize)
 
 t5 = time.time()
 
 print('checkpoint 5: ' + str(t5-t4))
 
 if SAVE:
-    np.savetxt('./rGyRegSeg_1.csv', rGyRegSeg, delimiter=",")
-    np.savetxt('./regSegOrdN_1.csv', regSegOrdN, delimiter=",")
+    np.savetxt('./rGyRegSeg_2.csv', rGyRegSeg, delimiter=",")
+    np.savetxt('./regSegOrdN_2.csv', regSegOrdN, delimiter=",")
 
 
 fig, ax = plt.subplots(1, 2, figsize=(20,6))
@@ -857,12 +911,12 @@ fitYregRS32 = objFuncPpow(np.unique(np.array(regSegOrdN)[RS2])*sSize, poptRS3[0]
 
 
 fig, ax1 = plt.subplots(figsize=(12,8))
-plt.rcParams['xtick.labelsize']=12
-plt.rcParams['xtick.major.size']=7
-plt.rcParams['xtick.minor.size']=5
-plt.rcParams['ytick.labelsize']=12
-plt.rcParams['ytick.major.size']=7
-plt.rcParams['ytick.minor.size']=5
+ax1.xaxis.label.set_fontsize(12)
+ax1.xaxis.set_tick_params(which='major', length=7)
+ax1.xaxis.set_tick_params(which='minor', length=5)
+ax1.yaxis.label.set_fontsize(12)
+ax1.yaxis.set_tick_params(which='major', length=7)
+ax1.yaxis.set_tick_params(which='minor', length=5)
 ax1.scatter(np.array(regMDistLen)*sSize, np.sqrt(np.square(np.array(rGyReg))*1/sSize), color='tab:blue')
 ax1.plot(np.array(regMDistLen)*sSize, fitYregR, color='tab:red', lw=2)
 ax1.scatter(np.array(regSegOrdN)*sSize, np.sqrt(np.square(np.array(rGyRegSeg))*1/sSize), color='tab:blue', facecolors='none')
@@ -920,7 +974,7 @@ ax3.set_ylim(0.12, 0.28)
 #plt.xlabel("Number of Regularized Points ($a*N$)", fontsize=15)
 #plt.ylabel("Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
 plt.tight_layout()
-#plt.savefig('./images/regSegRG_morphScale.png', dpi=300)
+plt.savefig('./images/regSegRG_morphScale_2.png', dpi=300)
 plt.show()
 
 
