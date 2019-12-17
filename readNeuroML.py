@@ -1015,16 +1015,36 @@ fig = plt.figure(figsize=(8,6))
 plt.scatter(RS_x, poptRS_sl)
 #plt.plot(np.array(regMDistLen)*sSize, fitYregR, color='tab:red')
 #plt.yscale('log')
+plt.hlines(poptR[0], 1, 1000, linestyles='--', color='tab:red')
+plt.hlines(poptRS1[0], 0.1, 1000, linestyles='--', color='tab:green')
+plt.hlines(poptRS3[0], 0.1, 1000, linestyles='--', color='tab:orange')
 plt.xscale('log')
-#plt.xlim(1, 10000)
+plt.xlim(2, 350)
 #plt.ylim(0.005, 1000)
 #plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
 plt.xlabel(r"Average Number of Regularized Points ($\lambda N_{avg}$)", fontsize=15)
-plt.ylabel(r"Slope ($\frac{dlog R^{l}_{g}}{dlog N_{avg}}$)", fontsize=15)
-plt.tight_layout()
+plt.ylabel(r"Slope ($\nu$)", fontsize=15)
+#plt.tight_layout()
+#plt.savefig('./images/regSegRG_slope_2.png', dpi=300, bbox_inches='tight')
 plt.show()
 
 
+
+randIdx = np.sort(np.random.choice(np.arange(0, len(indRegMDistLen)), 10, p=indMorph_dist_p, replace=False))
+
+fig = plt.figure(figsize=(24, 16))
+ax = plt.axes(projection='3d')
+
+#for i in range(1):
+for j in randIdx:
+    dInt = np.arange(0, indRegMDistLen[j]-nSize[0], dSize)
+    for k in range(len(dInt)-1):
+        listOfPoints = np.array(indRegMDist[j])[dInt[k]:dInt[k+nSize[0]]]
+        for f in range(len(listOfPoints)-1):
+            morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2])
+
+plt.show()
 
 
 
@@ -1113,6 +1133,29 @@ for i in range(len(cTargetCKey)):
 #ax.set_xscale('log')
 #plt.show()
 
+
+def plotFromPoints(listOfPoints, showPoint=False):
+    """
+    plot 3-D neuron morphology plot using a list of coordinates.
+    
+    :param listOfPoints: List of 3-D coordinates
+    :param showPoint: Flag to visualize points
+    """
+    
+    fig = plt.figure(figsize=(24, 16))
+    ax = plt.axes(projection='3d')
+#    ax.set_xlim(-300, 300)
+#    ax.set_ylim(-150, 150)
+#    ax.set_zlim(-300, 300)
+    cmap = cm.get_cmap('viridis', len(listOfPoints))
+    for f in range(len(listOfPoints)-1):
+#        tararr = np.array(morph_dist[f])
+#        somaIdx = np.where(np.array(morph_parent[f]) < 0)[0]
+        morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+        ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(f))
+        if showPoint:
+            ax.scatter3D(listOfPoints[f][0], listOfPoints[f][1], listOfPoints[f][2], color=cmap(f), marker='x')
+#        ax.scatter3D(tararr[somaIdx,0], tararr[somaIdx,1], tararr[somaIdx,2], color=cmap(f))
 
 
 def plotMorphAll(showPoint=False):
