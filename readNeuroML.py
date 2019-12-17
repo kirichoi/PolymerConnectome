@@ -308,7 +308,7 @@ np.random.seed(1234)
 
 sSize = 0.01
 nSize = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 50, 100, 500, 1000]
-dSize = 10
+dSize = 100
 
 
 (regMDist, regMDistLen) = segmentMorph(sSize)
@@ -339,8 +339,8 @@ t5 = time.time()
 print('checkpoint 5: ' + str(t5-t4))
 
 if SAVE:
-    np.savetxt('./rGyRegSeg_2.csv', rGyRegSeg, delimiter=",")
-    np.savetxt('./regSegOrdN_2.csv', regSegOrdN, delimiter=",")
+    np.savetxt('./rGyRegSeg_3.csv', rGyRegSeg, delimiter=",")
+    np.savetxt('./regSegOrdN_3.csv', regSegOrdN, delimiter=",")
 
 
 fig, ax = plt.subplots(1, 2, figsize=(20,6))
@@ -867,9 +867,27 @@ plt.yscale('log')
 plt.xscale('log')
 #plt.xlim(1, 10000)
 #plt.ylim(0.005, 1000)
-plt.title("Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
-plt.xlabel("Number of Regularized Points ($a*N$)", fontsize=15)
-plt.ylabel("Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
+plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
+plt.xlabel(r"Number of Regularized Points ($a*N$)", fontsize=15)
+plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
+plt.tight_layout()
+plt.show()
+
+
+
+fig = plt.figure(figsize=(8,6))
+plt.scatter(np.array(regMDistLen)[sensory]*sSize, np.sqrt(np.square(np.array(rGyReg))[sensory]*1/sSize))
+plt.scatter(np.array(regMDistLen)[inter]*sSize, np.sqrt(np.square(np.array(rGyReg))[inter]*1/sSize))
+plt.scatter(np.array(regMDistLen)[motor]*sSize, np.sqrt(np.square(np.array(rGyReg))[motor]*1/sSize))
+plt.legend(["Sensory Neuron", "Interneuron", "Motor Neuron"], fontsize=15)
+plt.plot(np.array(regMDistLen)*sSize, fitYregR, color='tab:red')
+plt.yscale('log')
+plt.xscale('log')
+#plt.xlim(1, 10000)
+#plt.ylim(0.005, 1000)
+plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
+plt.xlabel(r"Number of Regularized Points ($a*N$)", fontsize=15)
+plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
 plt.tight_layout()
 plt.show()
 
@@ -911,10 +929,10 @@ fitYregRS32 = objFuncPpow(np.unique(np.array(regSegOrdN)[RS2])*sSize, poptRS3[0]
 
 
 fig, ax1 = plt.subplots(figsize=(12,8))
-ax1.xaxis.label.set_fontsize(12)
+ax1.xaxis.label.set_fontsize(15)
 ax1.xaxis.set_tick_params(which='major', length=7)
 ax1.xaxis.set_tick_params(which='minor', length=5)
-ax1.yaxis.label.set_fontsize(12)
+ax1.yaxis.label.set_fontsize(15)
 ax1.yaxis.set_tick_params(which='major', length=7)
 ax1.yaxis.set_tick_params(which='minor', length=5)
 ax1.scatter(np.array(regMDistLen)*sSize, np.sqrt(np.square(np.array(rGyReg))*1/sSize), color='tab:blue')
@@ -969,13 +987,44 @@ ax3.vlines(0.04, 0.01, 1, linestyles='dashed')
 ax3.set_xlim(0.035, 0.087)
 ax3.set_ylim(0.12, 0.28)
 
-
-#plt.title("Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
-#plt.xlabel("Number of Regularized Points ($a*N$)", fontsize=15)
-#plt.ylabel("Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
-plt.tight_layout()
-plt.savefig('./images/regSegRG_morphScale_2.png', dpi=300)
+ax1.set_xlabel(r"Number of Regularized Points ($\lambda N$)", fontsize=15)
+ax1.set_ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
+#plt.tight_layout()
+#plt.savefig('./images/regSegRG_morphScale_2.png', dpi=300, bbox_inches='tight')
 plt.show()
+
+
+
+shift_N = 5
+poptRS_sl = []
+RS_x = []
+for i in range(len(nSize) - shift_N):
+    RS_s = np.where((np.array(regSegOrdN) <= nSize[i+shift_N]) & (np.array(regSegOrdN) >= nSize[i]))[0]
+    
+    RS_x.append(np.average(nSize[i:i+shift_N]))
+    
+    poptRS_s, pcovRS_s = scipy.optimize.curve_fit(objFuncGL, 
+                                                  np.log10(np.array(regSegOrdN)[RS_s]*sSize), 
+                                                  np.log10(np.sqrt(np.square(np.array(rGyRegSeg)[RS_s])*1/sSize)), 
+                                                  p0=[1., 0.], 
+                                                  maxfev=100000)
+    poptRS_sl.append(poptRS_s[0])
+
+
+fig = plt.figure(figsize=(8,6))
+plt.scatter(RS_x, poptRS_sl)
+#plt.plot(np.array(regMDistLen)*sSize, fitYregR, color='tab:red')
+#plt.yscale('log')
+plt.xscale('log')
+#plt.xlim(1, 10000)
+#plt.ylim(0.005, 1000)
+#plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
+plt.xlabel(r"Average Number of Regularized Points ($\lambda N_{avg}$)", fontsize=15)
+plt.ylabel(r"Slope ($\frac{dlog R^{l}_{g}}{dlog N_{avg}}$)", fontsize=15)
+plt.tight_layout()
+plt.show()
+
+
 
 
 
