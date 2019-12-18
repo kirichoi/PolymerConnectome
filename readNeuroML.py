@@ -23,8 +23,8 @@ import time
 
 path = r'./CElegansNeuroML-SNAPSHOT_030213/CElegans/generatedNeuroML2'
 
-RUN = False
-SAVE = False
+RUN = True
+SAVE = True
 
 fp = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
 fp = [f for f in fp if "Acetylcholine" not in f]
@@ -92,11 +92,17 @@ for f in range(len(fp)):
             morph_neu_parent.append(-1)
             somaP.append(s)
         if sgmt.proximal != None:
-            morph_neu_prox.append([sgmt.proximal.x, sgmt.proximal.y, sgmt.proximal.z, sgmt.proximal.diameter])
+            morph_neu_prox.append([sgmt.proximal.x, 
+                                   sgmt.proximal.y, 
+                                   sgmt.proximal.z, 
+                                   sgmt.proximal.diameter])
         else:
             morph_neu_prox.append([])
         if sgmt.distal != None:
-            morph_neu_dist.append([sgmt.distal.x, sgmt.distal.y, sgmt.distal.z, sgmt.distal.diameter])
+            morph_neu_dist.append([sgmt.distal.x, 
+                                   sgmt.distal.y, 
+                                   sgmt.distal.z, 
+                                   sgmt.distal.diameter])
         else:
             morph_neu_dist.append([])
     
@@ -151,7 +157,8 @@ for b in range(len(branchTrk)):
         dist = 0
         branch_dist_temp2 = []
         for sbp in range(len(branchTrk[b][sb])):
-            branch_dist_temp2.append(np.array(morph_dist[b])[np.where(morph_id[b] == np.array(branchTrk[b][sb][sbp]))[0]].flatten().tolist())
+            branch_dist_temp2.append(np.array(morph_dist[b])[np.where(morph_id[b] 
+                                  == np.array(branchTrk[b][sb][sbp]))[0]].flatten().tolist())
             bid = morph_id[b].index(branchTrk[b][sb][sbp])
             if morph_parent[b][bid] != -1:
                 pid = morph_id[b].index(morph_parent[b][bid])
@@ -208,7 +215,8 @@ for i in range(len(indBranchTrk)):
         indMorph_dist_temp2 = []
         indMorph_dist_p.append(1/len(indBranchTrk[i]))
         for k in range(len(indBranchTrk[i][j])):
-            indMorph_dist_temp2.append(np.array(morph_dist[i])[np.where(morph_id[i] == np.array(indBranchTrk[i][j][k]))[0]].flatten().tolist())
+            indMorph_dist_temp2.append(np.array(morph_dist[i])[np.where(morph_id[i] 
+                                    == np.array(indBranchTrk[i][j][k]))[0]].flatten().tolist())
             
         indMorph_dist_temp1.append(indMorph_dist_temp2)
     indMorph_dist.append(indMorph_dist_temp1)
@@ -229,9 +237,11 @@ def segmentMorph(sSize):
         for k in range(len(branch_dist[i])):
             regMDist_temp2 = []
             for j in range(len(branch_dist[i][k])-1):
-                dist = np.linalg.norm(np.array(branch_dist[i][k])[j+1][:3]-np.array(branch_dist[i][k])[j][:3])
+                dist = np.linalg.norm(np.array(branch_dist[i][k])[j+1][:3]-
+                                      np.array(branch_dist[i][k])[j][:3])
                 l1 = np.linspace(0,1,max(1, int(dist/sSize)))
-                nArr = np.array(branch_dist[i][k])[j][:3]+(np.array(branch_dist[i][k])[j+1][:3]-np.array(branch_dist[i][k])[j][:3])*l1[:,None]
+                nArr = np.array(branch_dist[i][k])[j][:3]+(np.array(branch_dist[i][k])[j+1][:3]-
+                                np.array(branch_dist[i][k])[j][:3])*l1[:,None]
                 regMDist_temp2.append(nArr.tolist())
             regMDist_temp1.append([item for sublist in regMDist_temp2 for item in sublist])
         regMDist_temp_flatten = [item for sublist in regMDist_temp1 for item in sublist]
@@ -249,9 +259,11 @@ def indSegmentMorph(sSize):
     for i in range(len(indMorph_dist_flat)):
         indRegMDist_temp = []
         for j in range(len(indMorph_dist_flat[i])-1):
-            dist = np.linalg.norm(np.array(indMorph_dist_flat[i])[j+1][:3]-np.array(indMorph_dist_flat[i])[j][:3])
+            dist = np.linalg.norm(np.array(indMorph_dist_flat[i])[j+1][:3]-
+                                  np.array(indMorph_dist_flat[i])[j][:3])
             l1 = np.linspace(0,1,max(1, int(dist/sSize)))
-            nArr = np.array(indMorph_dist_flat[i])[j][:3]+(np.array(indMorph_dist_flat[i])[j+1][:3]-np.array(indMorph_dist_flat[i])[j][:3])*l1[:,None]
+            nArr = np.array(indMorph_dist_flat[i])[j][:3]+(np.array(indMorph_dist_flat[i])[j+1][:3]-
+                            np.array(indMorph_dist_flat[i])[j][:3])*l1[:,None]
             indRegMDist_temp.append(nArr.tolist())
         indRegMDist_temp_flatten = [item for sublist in indRegMDist_temp for item in sublist]
         _, Uidx = np.unique(np.array(indRegMDist_temp_flatten), return_index=True, axis=0)
@@ -296,22 +308,45 @@ def regularRadiusOfGyration(regMDist, regMDistLen):
     
     return (rGyReg, cMLReg)
 
-def regularSegmentRadiusOfGyration(indRegMDist, indRegMDistLen, nSize, dSize):
+def regularSegmentRadiusOfGyration(indRegMDist, indRegMDistLen, nSize, dSize, stochastic=True):
 
     cMLRegSeg = []
     rGyRegSeg = []
     nSize = np.array(nSize)+1
     regSegOrdN = []
     
-    for k in range(len(nSize)):
-        randIdx = np.sort(np.random.choice(np.arange(0, len(indRegMDistLen)), 100, p=indMorph_dist_p, replace=False))
-        for i in randIdx:
-            dInt = np.arange(0, indRegMDistLen[i]-nSize[k], dSize)
-            for j in range(len(dInt)-1):
-                regSegOrdN.append(nSize[k]-1)
-                cMLRegSeg.append(np.sum(np.array(indRegMDist[i])[dInt[j]:dInt[j]+nSize[k]], axis=0)/nSize[k])
-                rList_reg_seg = scipy.spatial.distance.cdist(np.array(indRegMDist[i])[dInt[j]:dInt[j]+nSize[k]], np.array([cMLRegSeg[-1]])).flatten()
-                rGyRegSeg.append(np.sqrt(np.sum(np.square(rList_reg_seg))/nSize[k]))
+    if stochastic:
+        for i in range(len(nSize)):
+            for j in range(10000):
+                randIdx1 = np.random.choice(np.arange(0, len(indRegMDistLen)), 
+                                            1, 
+                                            p=indMorph_dist_p)[0]
+                while len(indRegMDist[randIdx1]) <= nSize[i]:
+                    randIdx1 = np.random.choice(np.arange(0, len(indRegMDistLen)),
+                                                1, 
+                                                p=indMorph_dist_p)[0]
+                
+                randIdx2 = np.random.choice(np.arange(0, len(indRegMDist[randIdx1])-nSize[i]), 1)[0]
+                
+                regSegOrdN.append(nSize[i]-1)
+                cMLRegSeg.append(np.sum(np.array(indRegMDist[randIdx1])[randIdx2:randIdx2+nSize[i]], axis=0)/nSize[i])
+                rList_reg_seg = scipy.spatial.distance.cdist(np.array(indRegMDist[randIdx1])[randIdx2:randIdx2+nSize[i]], 
+                                                             np.array([cMLRegSeg[-1]])).flatten()
+                rGyRegSeg.append(np.sqrt(np.sum(np.square(rList_reg_seg))/nSize[i]))
+    else:
+        for i in range(len(nSize)):
+            randIdx = np.sort(np.random.choice(np.arange(0, len(indRegMDistLen)), 
+                                               100, 
+                                               p=indMorph_dist_p, 
+                                               replace=False))
+            for j in randIdx:
+                dInt = np.arange(0, indRegMDistLen[j]-nSize[i], dSize)
+                for k in range(len(dInt)-1):
+                    regSegOrdN.append(nSize[i]-1)
+                    cMLRegSeg.append(np.sum(np.array(indRegMDist[i])[dInt[k]:dInt[k]+nSize[i]], axis=0)/nSize[i])
+                    rList_reg_seg = scipy.spatial.distance.cdist(np.array(indRegMDist[i])[dInt[k]:dInt[k]+nSize[i]], 
+                                                                 np.array([cMLRegSeg[-1]])).flatten()
+                    rGyRegSeg.append(np.sqrt(np.sum(np.square(rList_reg_seg))/nSize[i]))
         
     return (rGyRegSeg, cMLRegSeg, regSegOrdN)
 
@@ -320,7 +355,7 @@ np.random.seed(1234)
 
 sSize = 0.01
 nSize = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 50, 100, 500, 1000]
-dSize = 100
+dSize = 10
 
 
 (regMDist, regMDistLen) = segmentMorph(sSize)
@@ -345,7 +380,11 @@ t4 = time.time()
 print('checkpoint 4: ' + str(t4-t3))
 
 if RUN:
-    (rGyRegSeg, cMLRegSeg, regSegOrdN) = regularSegmentRadiusOfGyration(indRegMDist, indRegMDistLen, nSize, dSize)
+    (rGyRegSeg, cMLRegSeg, regSegOrdN) = regularSegmentRadiusOfGyration(indRegMDist, 
+                                                                        indRegMDistLen, 
+                                                                        nSize, 
+                                                                        dSize, 
+                                                                        stochastic=True)
 else:
     rGyRegSeg = np.genfromtxt('./rGyRegSeg_2.csv', delimiter=',')
     regSegOrdN = np.genfromtxt('./regSegOrdN_2.csv', delimiter=',')
@@ -1006,12 +1045,12 @@ ax3.set_ylim(0.12, 0.28)
 ax1.set_xlabel(r"Number of Regularized Points ($\lambda N$)", fontsize=15)
 ax1.set_ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
 #plt.tight_layout()
-#plt.savefig('./images/regSegRG_morphScale_2.png', dpi=300, bbox_inches='tight')
+plt.savefig('./images/regSegRG_morphScale_3.png', dpi=300, bbox_inches='tight')
 plt.show()
 
 
 
-shift_N = 4
+shift_N = 1
 poptRS_sl = []
 RS_x = []
 for i in range(len(nSize) - shift_N):
@@ -1042,26 +1081,26 @@ plt.xlim(2, 350)
 plt.xlabel(r"Average Number of Regularized Points ($\lambda N_{avg}$)", fontsize=15)
 plt.ylabel(r"Slope ($\nu$)", fontsize=15)
 #plt.tight_layout()
-#plt.savefig('./images/regSegRG_slope_2.png', dpi=300, bbox_inches='tight')
+plt.savefig('./images/regSegRG_slope_3.png', dpi=300, bbox_inches='tight')
 plt.show()
 
 
 
-randIdx = np.sort(np.random.choice(np.arange(0, len(indRegMDistLen)), 10, p=indMorph_dist_p, replace=False))
-
-fig = plt.figure(figsize=(24, 16))
-ax = plt.axes(projection='3d')
-
-#for i in range(1):
-for j in randIdx:
-    dInt = np.arange(0, indRegMDistLen[j]-nSize[0], dSize)
-    for k in range(len(dInt)-1):
-        listOfPoints = np.array(indRegMDist[j])[dInt[k]:dInt[k+nSize[0]]]
-        for f in range(len(listOfPoints)-1):
-            morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
-            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2])
-
-plt.show()
+#randIdx = np.sort(np.random.choice(np.arange(0, len(indRegMDistLen)), 10, p=indMorph_dist_p, replace=False))
+#
+#fig = plt.figure(figsize=(24, 16))
+#ax = plt.axes(projection='3d')
+#
+##for i in range(1):
+#for j in randIdx:
+#    dInt = np.arange(0, indRegMDistLen[j]-nSize[0], dSize)
+#    for k in range(len(dInt)-1):
+#        listOfPoints = np.array(indRegMDist[j])[dInt[k]:dInt[k+nSize[0]]]
+#        for f in range(len(listOfPoints)-1):
+#            morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+#            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2])
+#
+#plt.show()
 
 
 
