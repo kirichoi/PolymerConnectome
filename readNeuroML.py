@@ -23,7 +23,8 @@ import time
 
 path = r'./CElegansNeuroML-SNAPSHOT_030213/CElegans/generatedNeuroML2'
 
-SAVE = True
+RUN = False
+SAVE = False
 
 fp = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
 fp = [f for f in fp if "Acetylcholine" not in f]
@@ -46,6 +47,7 @@ length_total = []
 length_branch = []
 length_direct = []
 branchTrk = []
+branch_dist = []
 indMorph_dist = []
 indBranchTrk = []
 branchP = []
@@ -143,10 +145,13 @@ for f in range(len(fp)):
 
 
 for b in range(len(branchTrk)):
+    branch_dist_temp1 = []
     length_branch_temp = []
     for sb in range(len(branchTrk[b])):
         dist = 0
+        branch_dist_temp2 = []
         for sbp in range(len(branchTrk[b][sb])):
+            branch_dist_temp2.append(np.array(morph_dist[b])[np.where(morph_id[b] == np.array(branchTrk[b][sb][sbp]))[0]].flatten().tolist())
             bid = morph_id[b].index(branchTrk[b][sb][sbp])
             if morph_parent[b][bid] != -1:
                 pid = morph_id[b].index(morph_parent[b][bid])
@@ -154,8 +159,13 @@ for b in range(len(branchTrk)):
                 lhs = morph_dist[b][bid][:3]
                 
                 dist += np.linalg.norm(np.subtract(rhs, lhs))
+        branch_dist_temp2.reverse()
+        branch_dist_temp1.append(branch_dist_temp2)
         length_branch_temp.append(dist)
+    branch_dist.append(branch_dist_temp1)
     length_branch.append(length_branch_temp)
+
+#branch_dist_flat = [item for sublist in branch_dist for item in sublist]
 
 length_branch_flat = [item for sublist in length_branch for item in sublist]
 length_branch_sensory = []
@@ -214,14 +224,17 @@ print('checkpoint 1: ' + str(t1-t0))
 def segmentMorph(sSize):
     regMDist = []
     
-    for i in range(len(morph_dist)):
-        regMDist_temp = []
-        for j in range(len(morph_dist[i])-1):
-            dist = np.linalg.norm(np.array(morph_dist[i])[j+1][:3]-np.array(morph_dist[i])[j][:3])
-            l1 = np.linspace(0,1,max(1, int(dist/sSize)))
-            nArr = np.array(morph_dist[i])[j][:3]+(np.array(morph_dist[i])[j+1][:3]-np.array(morph_dist[i])[j][:3])*l1[:,None]
-            regMDist_temp.append(nArr.tolist())
-        regMDist_temp_flatten = [item for sublist in regMDist_temp for item in sublist]
+    for i in range(len(branch_dist)):
+        regMDist_temp1 = []
+        for k in range(len(branch_dist[i])):
+            regMDist_temp2 = []
+            for j in range(len(branch_dist[i][k])-1):
+                dist = np.linalg.norm(np.array(branch_dist[i][k])[j+1][:3]-np.array(branch_dist[i][k])[j][:3])
+                l1 = np.linspace(0,1,max(1, int(dist/sSize)))
+                nArr = np.array(branch_dist[i][k])[j][:3]+(np.array(branch_dist[i][k])[j+1][:3]-np.array(branch_dist[i][k])[j][:3])*l1[:,None]
+                regMDist_temp2.append(nArr.tolist())
+            regMDist_temp1.append([item for sublist in regMDist_temp2 for item in sublist])
+        regMDist_temp_flatten = [item for sublist in regMDist_temp1 for item in sublist]
         _, Uidx = np.unique(np.array(regMDist_temp_flatten), return_index=True, axis=0)
         uniqueUSorted = np.array(regMDist_temp_flatten)[np.sort(Uidx)].tolist()
         regMDist.append(uniqueUSorted)
@@ -290,9 +303,8 @@ def regularSegmentRadiusOfGyration(indRegMDist, indRegMDistLen, nSize, dSize):
     nSize = np.array(nSize)+1
     regSegOrdN = []
     
-    randIdx = np.sort(np.random.choice(np.arange(0, len(indRegMDistLen)), 100, p=indMorph_dist_p, replace=False))
-    
     for k in range(len(nSize)):
+        randIdx = np.sort(np.random.choice(np.arange(0, len(indRegMDistLen)), 100, p=indMorph_dist_p, replace=False))
         for i in randIdx:
             dInt = np.arange(0, indRegMDistLen[i]-nSize[k], dSize)
             for j in range(len(dInt)-1):
@@ -332,8 +344,12 @@ t4 = time.time()
 
 print('checkpoint 4: ' + str(t4-t3))
 
-(rGyRegSeg, cMLRegSeg, regSegOrdN) = regularSegmentRadiusOfGyration(indRegMDist, indRegMDistLen, nSize, dSize)
-
+if RUN:
+    (rGyRegSeg, cMLRegSeg, regSegOrdN) = regularSegmentRadiusOfGyration(indRegMDist, indRegMDistLen, nSize, dSize)
+else:
+    rGyRegSeg = np.genfromtxt('./rGyRegSeg_2.csv', delimiter=',')
+    regSegOrdN = np.genfromtxt('./regSegOrdN_2.csv', delimiter=',')
+    
 t5 = time.time()
 
 print('checkpoint 5: ' + str(t5-t4))
@@ -995,7 +1011,7 @@ plt.show()
 
 
 
-shift_N = 5
+shift_N = 4
 poptRS_sl = []
 RS_x = []
 for i in range(len(nSize) - shift_N):
@@ -1018,6 +1034,7 @@ plt.scatter(RS_x, poptRS_sl)
 plt.hlines(poptR[0], 1, 1000, linestyles='--', color='tab:red')
 plt.hlines(poptRS1[0], 0.1, 1000, linestyles='--', color='tab:green')
 plt.hlines(poptRS3[0], 0.1, 1000, linestyles='--', color='tab:orange')
+#plt.yscale('log')
 plt.xscale('log')
 plt.xlim(2, 350)
 #plt.ylim(0.005, 1000)
