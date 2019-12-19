@@ -23,8 +23,8 @@ import time
 
 path = r'./CElegansNeuroML-SNAPSHOT_030213/CElegans/generatedNeuroML2'
 
-RUN = True
-SAVE = True
+RUN = False
+SAVE = False
 
 fp = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
 fp = [f for f in fp if "Acetylcholine" not in f]
@@ -354,7 +354,7 @@ def regularSegmentRadiusOfGyration(indRegMDist, indRegMDistLen, nSize, dSize, st
 np.random.seed(1234)
 
 sSize = 0.01
-nSize = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 50, 100, 500, 1000]
+nSize = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 20, 25, 50, 100, 500, 1000]
 dSize = 10
 
 
@@ -1045,7 +1045,7 @@ ax3.set_ylim(0.12, 0.28)
 ax1.set_xlabel(r"Number of Regularized Points ($\lambda N$)", fontsize=15)
 ax1.set_ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
 #plt.tight_layout()
-plt.savefig('./images/regSegRG_morphScale_3.png', dpi=300, bbox_inches='tight')
+#plt.savefig('./images/regSegRG_morphScale_3.png', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -1070,18 +1070,18 @@ fig = plt.figure(figsize=(8,6))
 plt.scatter(RS_x, poptRS_sl)
 #plt.plot(np.array(regMDistLen)*sSize, fitYregR, color='tab:red')
 #plt.yscale('log')
-plt.hlines(poptR[0], 1, 1000, linestyles='--', color='tab:red')
+plt.hlines(poptR[0], 0.1, 1000, linestyles='--', color='tab:red')
 plt.hlines(poptRS1[0], 0.1, 1000, linestyles='--', color='tab:green')
 plt.hlines(poptRS3[0], 0.1, 1000, linestyles='--', color='tab:orange')
 #plt.yscale('log')
 plt.xscale('log')
-plt.xlim(2, 350)
+plt.xlim(0.5, 1000)
 #plt.ylim(0.005, 1000)
 #plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
 plt.xlabel(r"Average Number of Regularized Points ($\lambda N_{avg}$)", fontsize=15)
 plt.ylabel(r"Slope ($\nu$)", fontsize=15)
 #plt.tight_layout()
-plt.savefig('./images/regSegRG_slope_3.png', dpi=300, bbox_inches='tight')
+#plt.savefig('./images/regSegRG_slope_3.png', dpi=300, bbox_inches='tight')
 plt.show()
 
 
