@@ -21,12 +21,14 @@ import networkx as nx
 import copy
 import time
 
-path = r'./CElegansNeuroML-SNAPSHOT_030213/CElegans/generatedNeuroML2'
+PATH = r'./CElegansNeuroML-SNAPSHOT_030213/CElegans/generatedNeuroML2'
 
-RUN = False
-SAVE = False
+RUN = True
+SAVE = True
+RN = '4'
 
-fp = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+
+fp = [f for f in os.listdir(PATH) if os.path.isfile(os.path.join(PATH, f))]
 fp = [f for f in fp if "Acetylcholine" not in f]
 fp = [f for f in fp if "CElegans" not in f]
 fp = [f for f in fp if "Dopamine" not in f]
@@ -37,7 +39,7 @@ fp = [f for f in fp if "LeakConductance" not in f]
 fp = [f for f in fp if "Octapamine" not in f]
 fp = [f for f in fp if "Serotonin" not in f]
 fp = [f for f in fp if "README" not in f]
-fp = [os.path.join(path, f) for f in fp]
+fp = [os.path.join(PATH, f) for f in fp]
 
 morph_id = []
 morph_parent = []
@@ -208,6 +210,7 @@ morph_dist_len_EP = np.empty((len(morph_dist_len)))
 endP_len = [len(arr) for arr in endP]
 
 indMorph_dist_p = []
+indMorph_dist_id = []
 
 for i in range(len(indBranchTrk)):
     indMorph_dist_temp1 = []
@@ -217,7 +220,8 @@ for i in range(len(indBranchTrk)):
         for k in range(len(indBranchTrk[i][j])):
             indMorph_dist_temp2.append(np.array(morph_dist[i])[np.where(morph_id[i] 
                                     == np.array(indBranchTrk[i][j][k]))[0]].flatten().tolist())
-            
+    
+        indMorph_dist_id.append(i)
         indMorph_dist_temp1.append(indMorph_dist_temp2)
     indMorph_dist.append(indMorph_dist_temp1)
 
@@ -272,7 +276,7 @@ def indSegmentMorph(sSize):
     
     indRegMDistLen = [len(arr) for arr in indRegMDist]
     
-    return indRegMDist, indRegMDistLen    
+    return indRegMDist, indRegMDistLen
 
 
 def radiusOfGyration():
@@ -314,18 +318,28 @@ def regularSegmentRadiusOfGyration(indRegMDist, indRegMDistLen, nSize, dSize, st
     rGyRegSeg = []
     nSize = np.array(nSize)+1
     regSegOrdN = []
+    sensory_choice = []
+    inter_choice = []
+    motor_choice = []
     
     if stochastic:
         for i in range(len(nSize)):
             for j in range(10000):
-                randIdx1 = np.random.choice(np.arange(0, len(indRegMDistLen)), 
+                randIdx1 = np.random.choice(np.arange(0, len(indRegMDist)), 
                                             1, 
                                             p=indMorph_dist_p)[0]
                 while len(indRegMDist[randIdx1]) <= nSize[i]:
-                    randIdx1 = np.random.choice(np.arange(0, len(indRegMDistLen)),
+                    randIdx1 = np.random.choice(np.arange(0, len(indRegMDist)),
                                                 1, 
                                                 p=indMorph_dist_p)[0]
                 
+                if indMorph_dist_id[randIdx1] in sensory:
+                    sensory_choice.append(randIdx1)
+                elif indMorph_dist_id[randIdx1] in inter:
+                    inter_choice.append(randIdx1)
+                elif indMorph_dist_id[randIdx1] in motor:
+                    motor_choice.append(randIdx1)
+                    
                 randIdx2 = np.random.choice(np.arange(0, len(indRegMDist[randIdx1])-nSize[i]), 1)[0]
                 
                 regSegOrdN.append(nSize[i]-1)
@@ -348,7 +362,7 @@ def regularSegmentRadiusOfGyration(indRegMDist, indRegMDistLen, nSize, dSize, st
                                                                  np.array([cMLRegSeg[-1]])).flatten()
                     rGyRegSeg.append(np.sqrt(np.sum(np.square(rList_reg_seg))/nSize[i]))
         
-    return (rGyRegSeg, cMLRegSeg, regSegOrdN)
+    return (rGyRegSeg, cMLRegSeg, regSegOrdN, sensory_choice, inter_choice, motor_choice)
 
 
 np.random.seed(1234)
@@ -380,22 +394,27 @@ t4 = time.time()
 print('checkpoint 4: ' + str(t4-t3))
 
 if RUN:
-    (rGyRegSeg, cMLRegSeg, regSegOrdN) = regularSegmentRadiusOfGyration(indRegMDist, 
-                                                                        indRegMDistLen, 
-                                                                        nSize, 
-                                                                        dSize, 
-                                                                        stochastic=True)
+    (rGyRegSeg, 
+     cMLRegSeg, 
+     regSegOrdN, 
+     sensory_choice, 
+     inter_choice,
+     motor_choice) = regularSegmentRadiusOfGyration(indRegMDist, 
+                                                    indRegMDistLen, 
+                                                    nSize, 
+                                                    dSize, 
+                                                    stochastic=True)
 else:
-    rGyRegSeg = np.genfromtxt('./rGyRegSeg_2.csv', delimiter=',')
-    regSegOrdN = np.genfromtxt('./regSegOrdN_2.csv', delimiter=',')
+    rGyRegSeg = np.genfromtxt('./rGyRegSeg_' + str(RN) + '.csv', delimiter=',')
+    regSegOrdN = np.genfromtxt('./regSegOrdN_' + str(RN) + '.csv', delimiter=',')
     
 t5 = time.time()
 
 print('checkpoint 5: ' + str(t5-t4))
 
 if SAVE:
-    np.savetxt('./rGyRegSeg_3.csv', rGyRegSeg, delimiter=",")
-    np.savetxt('./regSegOrdN_3.csv', regSegOrdN, delimiter=",")
+    np.savetxt('./rGyRegSeg_' + str(RN) + '.csv', rGyRegSeg, delimiter=",")
+    np.savetxt('./regSegOrdN_' + str(RN) + '.csv', regSegOrdN, delimiter=",")
 
 
 fig, ax = plt.subplots(1, 2, figsize=(20,6))
@@ -920,8 +939,8 @@ plt.scatter(np.array(regMDistLen)*sSize, np.sqrt(np.square(np.array(rGyReg))*1/s
 plt.plot(np.array(regMDistLen)*sSize, fitYregR, color='tab:red')
 plt.yscale('log')
 plt.xscale('log')
-#plt.xlim(1, 10000)
-#plt.ylim(0.005, 1000)
+plt.xlim(20, 10000)
+plt.ylim(20, 6000)
 plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
 plt.xlabel(r"Number of Regularized Points ($a*N$)", fontsize=15)
 plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
@@ -930,16 +949,40 @@ plt.show()
 
 
 
+poptR_sensory, pcovR_sensory = scipy.optimize.curve_fit(objFuncGL, 
+                                        np.log10(np.array(regMDistLen)[sensory]*sSize), 
+                                        np.log10(np.sqrt(np.square(np.array(rGyReg))[sensory]*1/sSize)), 
+                                        p0=[1., 0.], 
+                                        maxfev=100000)
+fitYregR_sensory = objFuncPpow(np.array(regMDistLen)*sSize, poptR_sensory[0], poptR_sensory[1])
+
+poptR_inter, pcovR_inter = scipy.optimize.curve_fit(objFuncGL, 
+                                        np.log10(np.array(regMDistLen)[inter]*sSize), 
+                                        np.log10(np.sqrt(np.square(np.array(rGyReg))[inter]*1/sSize)), 
+                                        p0=[1., 0.], 
+                                        maxfev=100000)
+fitYregR_inter = objFuncPpow(np.array(regMDistLen)*sSize, poptR_inter[0], poptR_inter[1])
+
+poptR_motor, pcovR_motor = scipy.optimize.curve_fit(objFuncGL, 
+                                        np.log10(np.array(regMDistLen)[motor]*sSize), 
+                                        np.log10(np.sqrt(np.square(np.array(rGyReg))[motor]*1/sSize)), 
+                                        p0=[1., 0.], 
+                                        maxfev=100000)
+fitYregR_motor = objFuncPpow(np.array(regMDistLen)*sSize, poptR_motor[0], poptR_motor[1])
+
+
 fig = plt.figure(figsize=(8,6))
 plt.scatter(np.array(regMDistLen)[sensory]*sSize, np.sqrt(np.square(np.array(rGyReg))[sensory]*1/sSize))
 plt.scatter(np.array(regMDistLen)[inter]*sSize, np.sqrt(np.square(np.array(rGyReg))[inter]*1/sSize))
 plt.scatter(np.array(regMDistLen)[motor]*sSize, np.sqrt(np.square(np.array(rGyReg))[motor]*1/sSize))
 plt.legend(["Sensory Neuron", "Interneuron", "Motor Neuron"], fontsize=15)
-plt.plot(np.array(regMDistLen)*sSize, fitYregR, color='tab:red')
+plt.plot(np.array(regMDistLen)*sSize, fitYregR_sensory, color='tab:blue')
+plt.plot(np.array(regMDistLen)*sSize, fitYregR_inter, color='tab:orange')
+plt.plot(np.array(regMDistLen)*sSize, fitYregR_motor, color='tab:green')
 plt.yscale('log')
 plt.xscale('log')
-#plt.xlim(1, 10000)
-#plt.ylim(0.005, 1000)
+plt.xlim(20, 10000)
+plt.ylim(20, 6000)
 plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
 plt.xlabel(r"Number of Regularized Points ($a*N$)", fontsize=15)
 plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
@@ -1045,8 +1088,39 @@ ax3.set_ylim(0.12, 0.28)
 ax1.set_xlabel(r"Number of Regularized Points ($\lambda N$)", fontsize=15)
 ax1.set_ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
 #plt.tight_layout()
-#plt.savefig('./images/regSegRG_morphScale_3.png', dpi=300, bbox_inches='tight')
+if SAVE:
+    plt.savefig('./images/regSegRG_morphScale_' + str(RN) + '.png', dpi=300, bbox_inches='tight')
 plt.show()
+
+
+
+
+
+fig, ax1 = plt.subplots(figsize=(12,8))
+ax1.xaxis.label.set_fontsize(15)
+ax1.xaxis.set_tick_params(which='major', length=7)
+ax1.xaxis.set_tick_params(which='minor', length=5)
+ax1.yaxis.label.set_fontsize(15)
+ax1.yaxis.set_tick_params(which='major', length=7)
+ax1.yaxis.set_tick_params(which='minor', length=5)
+ax1.scatter(np.array(regMDistLen)[sensory]*sSize, np.sqrt(np.square(np.array(rGyReg))[sensory]*1/sSize))
+ax1.scatter(np.array(regMDistLen)[inter]*sSize, np.sqrt(np.square(np.array(rGyReg))[inter]*1/sSize))
+ax1.scatter(np.array(regMDistLen)[motor]*sSize, np.sqrt(np.square(np.array(rGyReg))[motor]*1/sSize))
+ax1.legend(["Sensory Neuron", "Interneuron", "Motor Neuron"], fontsize=15)
+ax1.scatter(np.array(regSegOrdN)[sensory_choice]*sSize, np.sqrt(np.square(np.array(rGyRegSeg))[sensory_choice]*1/sSize), color='tab:blue', facecolors='none')
+ax1.scatter(np.array(regSegOrdN)[inter_choice]*sSize, np.sqrt(np.square(np.array(rGyRegSeg))[inter_choice]*1/sSize), color='tab:orange', facecolors='none')
+ax1.scatter(np.array(regSegOrdN)[motor_choice]*sSize, np.sqrt(np.square(np.array(rGyRegSeg))[motor_choice]*1/sSize), color='tab:green', facecolors='none')
+ax1.vlines(0.08, 0.01, 11000, linestyles='dashed')
+ax1.vlines(0.04, 0.01, 11000, linestyles='dashed')
+ax1.set_yscale('log')
+ax1.set_xscale('log')
+#ax1.xlim(0.01, 10500)
+ax1.set_ylim(0.03, 10000)
+if SAVE:
+    plt.savefig('./images/regSegRG_morphScale_type_' + str(RN) + '.png', dpi=300, bbox_inches='tight')
+plt.show()
+
+
 
 
 
@@ -1081,7 +1155,8 @@ plt.xlim(0.5, 1000)
 plt.xlabel(r"Average Number of Regularized Points ($\lambda N_{avg}$)", fontsize=15)
 plt.ylabel(r"Slope ($\nu$)", fontsize=15)
 #plt.tight_layout()
-#plt.savefig('./images/regSegRG_slope_3.png', dpi=300, bbox_inches='tight')
+if SAVE:
+    plt.savefig('./images/regSegRG_slope_' + str(RN) + '.png', dpi=300, bbox_inches='tight')
 plt.show()
 
 
