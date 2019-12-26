@@ -24,7 +24,7 @@ import time
 PATH = r'./CElegansNeuroML-SNAPSHOT_030213/CElegans/generatedNeuroML2'
 
 RUN = True
-SAVE = True
+SAVE = False
 RN = '3'
 
 outputdir = './output/RN_' + str(RN)
@@ -1242,7 +1242,11 @@ plt.show()
 
 
 
-a = np.array(randTrk)[np.array(sChoice)[np.where((np.array(sChoice) > 110000) & (np.array(sChoice) < 120000))[0]]]
+sRnTrkIRge = np.array(randTrk)[np.array(sChoice)[np.where((np.array(sChoice) > 180000) & (np.array(sChoice) < 210000))[0]]]
+
+
+
+
 
 #randIdx = np.sort(np.random.choice(np.arange(0, len(indRegMDistLen)), 10, p=indMorph_dist_p, replace=False))
 #
@@ -1370,6 +1374,33 @@ def plotFromPoints(listOfPoints, showPoint=False):
         if showPoint:
             ax.scatter3D(listOfPoints[f][0], listOfPoints[f][1], listOfPoints[f][2], color=cmap(f), marker='x')
 #        ax.scatter3D(tararr[somaIdx,0], tararr[somaIdx,1], tararr[somaIdx,2], color=cmap(f))
+
+
+def plotFromListPoints(multListOfPoints, scale=False, showPoint=False):
+    """
+    plot 3-D neuron morphology plot using a list of coordinates.
+    
+    :param listOfPoints: List of 3-D coordinates
+    :param showPoint: Flag to visualize points
+    """
+    
+    fig = plt.figure(figsize=(24, 16))
+    ax = plt.axes(projection='3d')
+    if scale:
+        ax.set_xlim(-300, 300)
+        ax.set_ylim(-150, 150)
+        ax.set_zlim(-300, 300)
+    cmap = cm.get_cmap('viridis', len(multListOfPoints))
+    for i in range(len(multListOfPoints)):
+        listOfPoints = indRegMDist[multListOfPoints[i][0]][multListOfPoints[i][1]:multListOfPoints[i][2]]
+        for f in range(len(listOfPoints)-1):
+    #        tararr = np.array(morph_dist[f])
+    #        somaIdx = np.where(np.array(morph_parent[f]) < 0)[0]
+            morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(i))
+            if showPoint:
+                ax.scatter3D(listOfPoints[f][0], listOfPoints[f][1], listOfPoints[f][2], color=cmap(i), marker='x')
+    #        ax.scatter3D(tararr[somaIdx,0], tararr[somaIdx,1], tararr[somaIdx,2], color=cmap(f))
 
 
 def plotMorphAll(showPoint=False):
