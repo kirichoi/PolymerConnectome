@@ -24,7 +24,7 @@ import time
 PATH = r'./CElegansNeuroML-SNAPSHOT_030213/CElegans/generatedNeuroML2'
 
 RUN = True
-SAVE = False
+SAVE = True
 RN = '3'
 
 
@@ -414,9 +414,17 @@ if RUN:
     if SAVE:
         np.savetxt('./rGyRegSeg_' + str(RN) + '.csv', rGyRegSeg, delimiter=",")
         np.savetxt('./regSegOrdN_' + str(RN) + '.csv', regSegOrdN, delimiter=",")
+        np.savetxt('./sensory_choice_' + str(RN) + '.csv', sensory_choice, delimiter=",")
+        np.savetxt('./inter_choice_' + str(RN) + '.csv', inter_choice, delimiter=",")
+        np.savetxt('./motor_choice_' + str(RN) + '.csv', motor_choice, delimiter=",")
+        np.savetxt('./randTrk_' + str(RN) + '.csv', randTrk, delimiter=",")
 else:
     rGyRegSeg = np.genfromtxt('./rGyRegSeg_' + str(RN) + '.csv', delimiter=',')
     regSegOrdN = np.genfromtxt('./regSegOrdN_' + str(RN) + '.csv', delimiter=',')
+    sensory_choice = np.genfromtxt('./sensory_choice_' + str(RN) + '.csv', delimiter=',')
+    inter_choice = np.genfromtxt('./inter_choice_' + str(RN) + '.csv', delimiter=',')
+    motor_choice = np.genfromtxt('./motor_choice_' + str(RN) + '.csv', delimiter=',')
+    randTrk = np.genfromtxt('./randTrk_' + str(RN) + '.csv', delimiter=',')
     
 t5 = time.time()
 
@@ -1127,7 +1135,7 @@ ax1.set_xscale('log')
 #ax1.xlim(0.01, 10500)
 ax1.set_ylim(0.03, 10000)
 if SAVE:
-    plt.savefig('./images/regSegRG_morphScale_type_' + str(RN) + '.png', dpi=300, bbox_inches='tight')
+    plt.savefig('./images/regSegRG_morphScale_sep_' + str(RN) + '.png', dpi=300, bbox_inches='tight')
 plt.show()
 
 
