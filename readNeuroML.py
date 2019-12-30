@@ -25,7 +25,7 @@ PATH = r'./CElegansNeuroML-SNAPSHOT_030213/CElegans/generatedNeuroML2'
 
 RUN = True
 SAVE = False
-RN = '3'
+RN = '4'
 
 outputdir = './output/RN_' + str(RN)
 
@@ -326,6 +326,7 @@ def regularSegmentRadiusOfGyration(indRegMDist, indRegMDistLen, nSize, dSize, st
     randTrk = []
     idxTrk = 0
     
+#    indMorph_dist_p = np.ones(len(indRegMDist))/len(indRegMDist)
     
     if stochastic:
         for i in range(len(nSize)):
@@ -375,8 +376,8 @@ def regularSegmentRadiusOfGyration(indRegMDist, indRegMDistLen, nSize, dSize, st
 
 np.random.seed(1234)
 
-sSize = 0.01
-nSize = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 20, 25, 50, 100, 500, 1000]
+sSize = 0.1
+nSize = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 20, 25, 50, 75, 100, 250]
 dSize = 10
 
 
@@ -425,11 +426,11 @@ if RUN:
         np.savetxt(outputdir + '/randTrk_' + str(RN) + '.csv', randTrk, delimiter=",")
 else:
     rGyRegSeg = np.genfromtxt(outputdir + '/rGyRegSeg_' + str(RN) + '.csv', delimiter=',')
-    regSegOrdN = np.genfromtxt(outputdir + '/regSegOrdN_' + str(RN) + '.csv', delimiter=',')
-    sChoice = np.genfromtxt(outputdir + '/sChoice_' + str(RN) + '.csv', delimiter=',')
-    iChoice = np.genfromtxt(outputdir + '/iChoice_' + str(RN) + '.csv', delimiter=',')
-    mChoice = np.genfromtxt(outputdir + '/mChoice_' + str(RN) + '.csv', delimiter=',')
-    randTrk = np.genfromtxt(outputdir + '/randTrk_' + str(RN) + '.csv', delimiter=',')
+    regSegOrdN = np.genfromtxt(outputdir + '/regSegOrdN_' + str(RN) + '.csv', dtype=int, delimiter=',')
+    sChoice = np.genfromtxt(outputdir + '/sChoice_' + str(RN) + '.csv', dtype=int, delimiter=',')
+    iChoice = np.genfromtxt(outputdir + '/iChoice_' + str(RN) + '.csv', dtype=int, delimiter=',')
+    mChoice = np.genfromtxt(outputdir + '/mChoice_' + str(RN) + '.csv', dtype=int, delimiter=',')
+    randTrk = np.genfromtxt(outputdir + '/randTrk_' + str(RN) + '.csv', dtype=int, delimiter=',')
     
 t5 = time.time()
 
@@ -959,8 +960,8 @@ plt.scatter(np.array(regMDistLen)*sSize, np.sqrt(np.square(np.array(rGyReg))*1/s
 plt.plot(np.array(regMDistLen)*sSize, fitYregR, color='tab:red')
 plt.yscale('log')
 plt.xscale('log')
-plt.xlim(20, 10000)
-plt.ylim(20, 6000)
+plt.xlim(10, 10000)
+plt.ylim(7, 4000)
 plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
 plt.xlabel(r"Number of Regularized Points ($a*N$)", fontsize=15)
 plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
@@ -1001,8 +1002,8 @@ plt.plot(np.array(regMDistLen)*sSize, fitYregR_inter, color='tab:orange')
 plt.plot(np.array(regMDistLen)*sSize, fitYregR_motor, color='tab:green')
 plt.yscale('log')
 plt.xscale('log')
-plt.xlim(20, 10000)
-plt.ylim(20, 6000)
+plt.xlim(10, 10000)
+plt.ylim(7, 4000)
 plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
 plt.xlabel(r"Number of Regularized Points ($a*N$)", fontsize=15)
 plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
@@ -1060,15 +1061,15 @@ ax1.scatter(np.array(nSize)*sSize, np.sqrt(np.square(np.array(rGyRegSeg_avg))*1/
 ax1.plot(np.unique(np.array(regSegOrdN)[RS1])*sSize, fitYregRS1, color='tab:red', lw=2, linestyle='--')
 ax1.plot(np.unique(np.array(regSegOrdN)[RS2])*sSize, fitYregRS2, color='tab:red', lw=2, linestyle='--')
 ax1.plot(np.unique(np.array(regSegOrdN)[RS3])*sSize, fitYregRS3, color='tab:red', lw=2, linestyle='--')
-ax1.vlines(0.08, 0.01, 11000, linestyles='dashed')
-ax1.vlines(0.04, 0.01, 11000, linestyles='dashed')
+ax1.vlines(0.8, 0.01, 11000, linestyles='dashed')
+ax1.vlines(0.4, 0.01, 11000, linestyles='dashed')
 ax1.set_yscale('log')
 ax1.set_xscale('log')
 #ax1.xlim(0.01, 10500)
 ax1.set_ylim(0.03, 10000)
 
 ax2 = plt.axes([0, 0, 1, 1])
-ip1 = InsetPosition(ax1, [0.03, 0.57, 0.4, 0.4])
+ip1 = InsetPosition(ax1, [0.01, 0.57, 0.4, 0.4])
 ax2.set_axes_locator(ip1)
 mark_inset(ax1, ax2, loc1=3, loc2=4, fc="none", ec='0.5')
 
@@ -1081,13 +1082,13 @@ ax2.xaxis.set_visible(False)
 ax2.yaxis.set_visible(False)
 ax2.set_yscale('log')
 ax2.set_xscale('log')
-ax2.vlines(0.08, 0.01, 1, linestyles='dashed')
-ax2.vlines(0.04, 0.01, 1, linestyles='dashed')
-ax2.set_xlim(0.022, 0.15)
-ax2.set_ylim(0.08, 0.6)
+ax2.vlines(0.8, 0.01, 5, linestyles='dashed')
+ax2.vlines(0.4, 0.01, 5, linestyles='dashed')
+ax2.set_xlim(0.22, 1.4)
+ax2.set_ylim(0.25, 1.6)
 
 ax3 = plt.axes([1, 1, 2, 2])
-ip2 = InsetPosition(ax1, [0.57, 0.08, 0.4, 0.4])
+ip2 = InsetPosition(ax1, [0.57, 0.02, 0.4, 0.4])
 ax3.set_axes_locator(ip2)
 mark_inset(ax1, ax3, loc1=2, loc2=4, fc="none", ec='0.5')
 
@@ -1100,10 +1101,10 @@ ax3.xaxis.set_visible(False)
 ax3.yaxis.set_visible(False)
 ax3.set_yscale('log')
 ax3.set_xscale('log')
-ax3.vlines(0.08, 0.01, 1, linestyles='dashed')
-ax3.vlines(0.04, 0.01, 1, linestyles='dashed')
-ax3.set_xlim(0.035, 0.087)
-ax3.set_ylim(0.12, 0.28)
+ax3.vlines(0.8, 0.01, 1, linestyles='dashed')
+ax3.vlines(0.4, 0.01, 1, linestyles='dashed')
+ax3.set_xlim(0.35, 0.89)
+ax3.set_ylim(0.4, .95)
 
 ax1.set_xlabel(r"Number of Regularized Points ($\lambda N$)", fontsize=15)
 ax1.set_ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
@@ -1242,27 +1243,11 @@ plt.show()
 
 
 
-sRnTrkIRge = np.array(randTrk)[np.array(sChoice)[np.where((np.array(sChoice) > 180000) & (np.array(sChoice) < 210000))[0]]]
+sRnTrkIRge = np.array(randTrk)[np.array(sChoice)[np.where((np.array(sChoice) > 80000) & (np.array(sChoice) < 110000))[0]]]
 
 
 
 
-
-#randIdx = np.sort(np.random.choice(np.arange(0, len(indRegMDistLen)), 10, p=indMorph_dist_p, replace=False))
-#
-#fig = plt.figure(figsize=(24, 16))
-#ax = plt.axes(projection='3d')
-#
-##for i in range(1):
-#for j in randIdx:
-#    dInt = np.arange(0, indRegMDistLen[j]-nSize[0], dSize)
-#    for k in range(len(dInt)-1):
-#        listOfPoints = np.array(indRegMDist[j])[dInt[k]:dInt[k+nSize[0]]]
-#        for f in range(len(listOfPoints)-1):
-#            morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
-#            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2])
-#
-#plt.show()
 
 
 
