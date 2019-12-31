@@ -24,7 +24,7 @@ import time
 PATH = r'./CElegansNeuroML-SNAPSHOT_030213/CElegans/generatedNeuroML2'
 
 RUN = True
-SAVE = False
+SAVE = True
 RN = '4'
 
 sSize = 0.1
@@ -249,6 +249,7 @@ t1 = time.time()
 
 print('checkpoint 1: ' + str(t1-t0))
 
+
 def exportOutput(outputdir):
     
     if not os.path.exists(outputdir):
@@ -272,6 +273,7 @@ def exportOutput(outputdir):
     np.savetxt(outputdir + '/rGyRegSegm_' + str(RN) + '.csv', rGyRegSegm, delimiter=",")
     np.savetxt(outputdir + '/regSegOrdNm_' + str(RN) + '.csv', regSegOrdNm, delimiter=",")
     np.savetxt(outputdir + '/randTrkm_' + str(RN) + '.csv', randTrkm, delimiter=",")
+
 
 def importData(inputdir):
     
@@ -1133,13 +1135,13 @@ ax2.set_yscale('log')
 ax2.set_xscale('log')
 ax2.vlines(0.8, 0.01, 5, linestyles='dashed')
 ax2.vlines(0.4, 0.01, 5, linestyles='dashed')
-ax2.set_xlim(0.22, 1.4)
-ax2.set_ylim(0.25, 1.6)
+ax2.set_xlim(0.24, 1.4)
+ax2.set_ylim(0.28, 1.6)
 
 ax3 = plt.axes([1, 1, 2, 2])
 ip2 = InsetPosition(ax1, [0.57, 0.02, 0.4, 0.4])
 ax3.set_axes_locator(ip2)
-mark_inset(ax1, ax3, loc1=2, loc2=4, fc="none", ec='0.5')
+mark_inset(ax1, ax3, loc1=2, loc2=3, fc="none", ec='0.5')
 
 ax3.plot(np.unique(np.array(regSegOrdN)[RS1])[:4]*sSize, fitYregRS1[:4], color='tab:red', lw=2, linestyle='-')
 ax3.plot(np.unique(np.array(regSegOrdN)[RS2])*sSize, fitYregRS12, color='tab:red', lw=2, linestyle='--')
@@ -1152,8 +1154,8 @@ ax3.set_yscale('log')
 ax3.set_xscale('log')
 ax3.vlines(0.8, 0.01, 1, linestyles='dashed')
 ax3.vlines(0.4, 0.01, 1, linestyles='dashed')
-ax3.set_xlim(0.35, 0.89)
-ax3.set_ylim(0.4, 0.95)
+ax3.set_xlim(0.36, 0.89)
+ax3.set_ylim(0.42, 0.95)
 
 ax1.set_xlabel(r"Number of Regularized Points ($\lambda N$)", fontsize=15)
 ax1.set_ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
