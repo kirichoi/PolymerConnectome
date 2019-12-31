@@ -27,6 +27,12 @@ RUN = True
 SAVE = False
 RN = '4'
 
+sSize = 0.1
+nSize = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 50, 75, 100, 250]
+dSize = 10
+
+SEED = 1234
+
 outputdir = './output/RN_' + str(RN)
 
 
@@ -211,29 +217,77 @@ morph_dist_len = [len(arr) for arr in morph_dist]
 morph_dist_len_EP = np.empty((len(morph_dist_len)))
 endP_len = [len(arr) for arr in endP]
 
-indMorph_dist_p = []
+indMorph_dist_p_us = []
 indMorph_dist_id = []
+indMorph_dist_id_s = []
+indMorph_dist_id_i = []
+indMorph_dist_id_m = []
 
 for i in range(len(indBranchTrk)):
     indMorph_dist_temp1 = []
     for j in range(len(indBranchTrk[i])):
         indMorph_dist_temp2 = []
-        indMorph_dist_p.append(1/len(indBranchTrk[i]))
+        indMorph_dist_p_us.append(1/len(indBranchTrk[i]))
         for k in range(len(indBranchTrk[i][j])):
             indMorph_dist_temp2.append(np.array(morph_dist[i])[np.where(morph_id[i] 
                                     == np.array(indBranchTrk[i][j][k]))[0]].flatten().tolist())
     
         indMorph_dist_id.append(i)
+        if i in sensory:
+            indMorph_dist_id_s.append(len(indMorph_dist_id)-1)
+        elif i in inter:
+            indMorph_dist_id_i.append(len(indMorph_dist_id)-1)
+        elif i in motor:
+            indMorph_dist_id_m.append(len(indMorph_dist_id)-1)
+            
         indMorph_dist_temp1.append(indMorph_dist_temp2)
     indMorph_dist.append(indMorph_dist_temp1)
 
 indMorph_dist_flat = [item for sublist in indMorph_dist for item in sublist]
 
-indMorph_dist_p = indMorph_dist_p/np.sum(indMorph_dist_p)
-
 t1 = time.time()
 
 print('checkpoint 1: ' + str(t1-t0))
+
+def exportOutput(outputdir):
+    
+    if not os.path.exists(outputdir):
+            os.mkdir(outputdir)
+            
+    outputtxt = open(os.path.join(outputdir, 'settings.txt'), 'w')
+    outputtxt.writelines('------------------------- SETTINGS -----------------------\n')
+    outputtxt.writelines('RUN COMPLETE. HERE ARE SOME METRIC YOU MIGHT BE INTERESTED\n')
+    outputtxt.writelines('sSize: ' + str(sSize) + '\n')
+    outputtxt.writelines('nSize: ' + str(nSize) + '\n')
+    outputtxt.writelines('dSize: ' + str(dSize) + '\n')
+    outputtxt.writelines('SEED: ' + str(SEED) + ' s\n')
+    outputtxt.close()
+    
+    np.savetxt(outputdir + '/rGyRegSegs_' + str(RN) + '.csv', rGyRegSegs, delimiter=",")
+    np.savetxt(outputdir + '/regSegOrdNs_' + str(RN) + '.csv', regSegOrdNs, delimiter=",")
+    np.savetxt(outputdir + '/randTrks_' + str(RN) + '.csv', randTrks, delimiter=",")
+    np.savetxt(outputdir + '/rGyRegSegi_' + str(RN) + '.csv', rGyRegSegi, delimiter=",")
+    np.savetxt(outputdir + '/regSegOrdNi_' + str(RN) + '.csv', regSegOrdNi, delimiter=",")
+    np.savetxt(outputdir + '/randTrki_' + str(RN) + '.csv', randTrki, delimiter=",")
+    np.savetxt(outputdir + '/rGyRegSegm_' + str(RN) + '.csv', rGyRegSegm, delimiter=",")
+    np.savetxt(outputdir + '/regSegOrdNm_' + str(RN) + '.csv', regSegOrdNm, delimiter=",")
+    np.savetxt(outputdir + '/randTrkm_' + str(RN) + '.csv', randTrkm, delimiter=",")
+
+def importData(inputdir):
+    
+    rGyRegSegs = np.genfromtxt(inputdir + '/rGyRegSegs_' + str(RN) + '.csv', delimiter=',')
+    regSegOrdNs = np.genfromtxt(inputdir + '/regSegOrdNs_' + str(RN) + '.csv', dtype=int, delimiter=',')
+    randTrks = np.genfromtxt(inputdir + '/randTrks_' + str(RN) + '.csv', dtype=int, delimiter=',')
+    rGyRegSegi = np.genfromtxt(inputdir + '/rGyRegSegi_' + str(RN) + '.csv', delimiter=',')
+    regSegOrdNi = np.genfromtxt(inputdir + '/regSegOrdNi_' + str(RN) + '.csv', dtype=int, delimiter=',')
+    randTrki = np.genfromtxt(inputdir + '/randTrki_' + str(RN) + '.csv', dtype=int, delimiter=',')
+    rGyRegSegm = np.genfromtxt(inputdir + '/rGyRegSegm_' + str(RN) + '.csv', delimiter=',')
+    regSegOrdNm = np.genfromtxt(inputdir + '/regSegOrdNm_' + str(RN) + '.csv', dtype=int, delimiter=',')
+    randTrkm = np.genfromtxt(inputdir + '/randTrkm_' + str(RN) + '.csv', dtype=int, delimiter=',')
+    
+    return (rGyRegSegs, regSegOrdNs, randTrks, rGyRegSegi, regSegOrdNi, 
+            randTrki, rGyRegSegm, regSegOrdNm, randTrkm)
+
 
 def segmentMorph(sSize):
     regMDist = []
@@ -314,23 +368,21 @@ def regularRadiusOfGyration(regMDist, regMDistLen):
     
     return (rGyReg, cMLReg)
 
-def regularSegmentRadiusOfGyration(indRegMDist, indRegMDistLen, nSize, dSize, stochastic=True):
+def regularSegmentRadiusOfGyration(indRegMDist, indRegMDistLen, nSize, dSize, numSample=10000, stochastic=True):
 
     cMLRegSeg = []
     rGyRegSeg = []
     nSize = np.array(nSize)+1
     regSegOrdN = []
-    sChoice = []
-    iChoice = []
-    mChoice = []
     randTrk = []
     idxTrk = 0
     
-#    indMorph_dist_p = np.ones(len(indRegMDist))/len(indRegMDist)
+#    indMorph_dist_p = indMorph_dist_p_us/np.sum(indMorph_dist_p_us)
+    indMorph_dist_p = np.ones(len(indRegMDist))/len(indRegMDist)
     
     if stochastic:
         for i in range(len(nSize)):
-            for j in range(10000):
+            for j in range(numSample):
                 randIdx1 = np.random.choice(np.arange(0, len(indRegMDist)), 
                                             1, 
                                             p=indMorph_dist_p)[0]
@@ -338,13 +390,6 @@ def regularSegmentRadiusOfGyration(indRegMDist, indRegMDistLen, nSize, dSize, st
                     randIdx1 = np.random.choice(np.arange(0, len(indRegMDist)),
                                                 1, 
                                                 p=indMorph_dist_p)[0]
-                
-                if indMorph_dist_id[randIdx1] in sensory:
-                    sChoice.append(idxTrk)
-                elif indMorph_dist_id[randIdx1] in inter:
-                    iChoice.append(idxTrk)
-                elif indMorph_dist_id[randIdx1] in motor:
-                    mChoice.append(idxTrk)
                 
                 idxTrk += 1
                 randIdx2 = np.random.choice(np.arange(0, len(indRegMDist[randIdx1])-nSize[i]), 1)[0]
@@ -371,15 +416,11 @@ def regularSegmentRadiusOfGyration(indRegMDist, indRegMDistLen, nSize, dSize, st
                                                                  np.array([cMLRegSeg[-1]])).flatten()
                     rGyRegSeg.append(np.sqrt(np.sum(np.square(rList_reg_seg))/nSize[i]))
         
-    return (rGyRegSeg, cMLRegSeg, regSegOrdN, sChoice, iChoice, mChoice, randTrk)
+    return (rGyRegSeg, cMLRegSeg, regSegOrdN, randTrk)
 
 
-np.random.seed(1234)
 
-sSize = 0.1
-nSize = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 20, 25, 50, 75, 100, 250]
-dSize = 10
-
+np.random.seed(SEED)
 
 (regMDist, regMDistLen) = segmentMorph(sSize)
 (indRegMDist, indRegMDistLen) = indSegmentMorph(sSize)
@@ -403,39 +444,47 @@ t4 = time.time()
 print('checkpoint 4: ' + str(t4-t3))
 
 if RUN:
-    (rGyRegSeg, 
-     cMLRegSeg, 
-     regSegOrdN, 
-     sChoice, 
-     iChoice,
-     mChoice,
-     randTrk) = regularSegmentRadiusOfGyration(indRegMDist, 
-                                                indRegMDistLen, 
+    (rGyRegSegs, 
+     cMLRegSegs, 
+     regSegOrdNs, 
+     randTrks) = regularSegmentRadiusOfGyration(np.array(indRegMDist)[indMorph_dist_id_s], 
+                                                np.array(indRegMDistLen)[indMorph_dist_id_s], 
                                                 nSize, 
                                                 dSize, 
+                                                numSample=1000,
                                                 stochastic=True)
-    if SAVE:
-        if not os.path.exists(outputdir):
-            os.mkdir(outputdir)
-        
-        np.savetxt(outputdir + '/rGyRegSeg_' + str(RN) + '.csv', rGyRegSeg, delimiter=",")
-        np.savetxt(outputdir + '/regSegOrdN_' + str(RN) + '.csv', regSegOrdN, delimiter=",")
-        np.savetxt(outputdir + '/sChoice_' + str(RN) + '.csv', sChoice, delimiter=",")
-        np.savetxt(outputdir + '/iChoice_' + str(RN) + '.csv', iChoice, delimiter=",")
-        np.savetxt(outputdir + '/mChoice_' + str(RN) + '.csv', mChoice, delimiter=",")
-        np.savetxt(outputdir + '/randTrk_' + str(RN) + '.csv', randTrk, delimiter=",")
-else:
-    rGyRegSeg = np.genfromtxt(outputdir + '/rGyRegSeg_' + str(RN) + '.csv', delimiter=',')
-    regSegOrdN = np.genfromtxt(outputdir + '/regSegOrdN_' + str(RN) + '.csv', dtype=int, delimiter=',')
-    sChoice = np.genfromtxt(outputdir + '/sChoice_' + str(RN) + '.csv', dtype=int, delimiter=',')
-    iChoice = np.genfromtxt(outputdir + '/iChoice_' + str(RN) + '.csv', dtype=int, delimiter=',')
-    mChoice = np.genfromtxt(outputdir + '/mChoice_' + str(RN) + '.csv', dtype=int, delimiter=',')
-    randTrk = np.genfromtxt(outputdir + '/randTrk_' + str(RN) + '.csv', dtype=int, delimiter=',')
+    (rGyRegSegi, 
+     cMLRegSegi, 
+     regSegOrdNi, 
+     randTrki) = regularSegmentRadiusOfGyration(np.array(indRegMDist)[indMorph_dist_id_i], 
+                                                np.array(indRegMDistLen)[indMorph_dist_id_i], 
+                                                nSize, 
+                                                dSize, 
+                                                numSample=1000,
+                                                stochastic=True)
+    (rGyRegSegm, 
+     cMLRegSegm, 
+     regSegOrdNm, 
+     randTrkm) = regularSegmentRadiusOfGyration(np.array(indRegMDist)[indMorph_dist_id_m], 
+                                                np.array(indRegMDistLen)[indMorph_dist_id_m], 
+                                                nSize, 
+                                                dSize, 
+                                                numSample=1000,
+                                                stochastic=True)
     
+    if SAVE:
+        exportOutput(outputdir)
+        
+else:
+    (rGyRegSegs, regSegOrdNs, randTrks, rGyRegSegi, regSegOrdNi, 
+                 randTrki, rGyRegSegm, regSegOrdNm, randTrkm) = importData(outputdir)
+
+rGyRegSeg = np.concatenate((rGyRegSegs, rGyRegSegi, rGyRegSegm))
+regSegOrdN = np.concatenate((regSegOrdNs, regSegOrdNi, regSegOrdNm))
+
 t5 = time.time()
 
 print('checkpoint 5: ' + str(t5-t4))
-
 
 
 fig, ax = plt.subplots(1, 2, figsize=(20,6))
@@ -500,6 +549,17 @@ def objFuncPpow(xdata, a, b):
     y = np.power(10, b)*np.power(xdata, a)
     
     return y
+
+def objFuncL(xdata, a):
+    y = a*xdata
+    
+    return y
+
+def objFuncGL(xdata, a, b):
+    y = a*xdata + b
+    
+    return y
+
 
 
 popt1, pcov1 = scipy.optimize.curve_fit(objFuncP, hist1centers, hist1[0], p0=[0.1, -0.1], maxfev=10000)
@@ -674,17 +734,6 @@ ax[2].set_ylabel("Normalized Density", fontsize=15)
 ax[2].set_xlabel("Average Segment Length", fontsize=15)
 plt.tight_layout()
 plt.show()
-
-
-def objFuncL(xdata, a):
-    y = a*xdata
-    
-    return y
-
-def objFuncGL(xdata, a, b):
-    y = a*xdata + b
-    
-    return y
 
 
 # BranchNum vs Total Segment Length vs Average Segment Length by Type
@@ -1104,7 +1153,7 @@ ax3.set_xscale('log')
 ax3.vlines(0.8, 0.01, 1, linestyles='dashed')
 ax3.vlines(0.4, 0.01, 1, linestyles='dashed')
 ax3.set_xlim(0.35, 0.89)
-ax3.set_ylim(0.4, .95)
+ax3.set_ylim(0.4, 0.95)
 
 ax1.set_xlabel(r"Number of Regularized Points ($\lambda N$)", fontsize=15)
 ax1.set_ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
@@ -1130,9 +1179,9 @@ ax1.yaxis.set_tick_params(which='minor', length=5)
 #ax1.scatter(np.array(regMDistLen)[sensory]*sSize, np.sqrt(np.square(np.array(rGyReg))[sensory]*1/sSize))
 #ax1.scatter(np.array(regMDistLen)[inter]*sSize, np.sqrt(np.square(np.array(rGyReg))[inter]*1/sSize))
 #ax1.scatter(np.array(regMDistLen)[motor]*sSize, np.sqrt(np.square(np.array(rGyReg))[motor]*1/sSize))
-ax1.scatter(np.array(regSegOrdN)[sChoice]*sSize, np.sqrt(np.square(np.array(rGyRegSeg))[sChoice]*1/sSize), color='tab:blue', facecolors='none')
-ax1.scatter(np.array(regSegOrdN)[iChoice]*sSize, np.sqrt(np.square(np.array(rGyRegSeg))[iChoice]*1/sSize), color='tab:orange', facecolors='none')
-ax1.scatter(np.array(regSegOrdN)[mChoice]*sSize, np.sqrt(np.square(np.array(rGyRegSeg))[mChoice]*1/sSize), color='tab:green', facecolors='none')
+ax1.scatter(np.array(regSegOrdNs)*sSize, np.sqrt(np.square(np.array(rGyRegSegs))*1/sSize), color='tab:blue', facecolors='none')
+ax1.scatter(np.array(regSegOrdNi)*sSize, np.sqrt(np.square(np.array(rGyRegSegi))*1/sSize), color='tab:orange', facecolors='none')
+ax1.scatter(np.array(regSegOrdNm)*sSize, np.sqrt(np.square(np.array(rGyRegSegm))*1/sSize), color='tab:green', facecolors='none')
 ax1.legend(["Sensory Neuron", "Interneuron", "Motor Neuron"], fontsize=15)
 ax1.vlines(0.08, 0.01, 11000, linestyles='dashed')
 ax1.vlines(0.04, 0.01, 11000, linestyles='dashed')
@@ -1190,25 +1239,25 @@ poptRS_sl_sep_int = []
 poptRS_sl_sep_mot = []
 RS_x_sep = []
 for i in range(len(nSize) - shift_N):
-    RS_s_sep_sen = np.where((np.array(regSegOrdN)[sChoice] <= nSize[i+shift_N]) & (np.array(regSegOrdN)[sChoice] >= nSize[i]))[0]
-    RS_s_sep_int = np.where((np.array(regSegOrdN)[iChoice] <= nSize[i+shift_N]) & (np.array(regSegOrdN)[iChoice] >= nSize[i]))[0]
-    RS_s_sep_mot = np.where((np.array(regSegOrdN)[mChoice] <= nSize[i+shift_N]) & (np.array(regSegOrdN)[mChoice] >= nSize[i]))[0]
+    RS_s_sep_sen = np.where((np.array(regSegOrdNs) <= nSize[i+shift_N]) & (np.array(regSegOrdNs) >= nSize[i]))[0]
+    RS_s_sep_int = np.where((np.array(regSegOrdNi) <= nSize[i+shift_N]) & (np.array(regSegOrdNi) >= nSize[i]))[0]
+    RS_s_sep_mot = np.where((np.array(regSegOrdNm) <= nSize[i+shift_N]) & (np.array(regSegOrdNm) >= nSize[i]))[0]
     
     RS_x_sep.append(np.average(nSize[i:i+shift_N]))
     
     poptRS_s_sep_sen, pcovRS_s_sep_sep = scipy.optimize.curve_fit(objFuncGL, 
-                                                  np.log10(np.array(regSegOrdN)[RS_s_sep_sen]*sSize), 
-                                                  np.log10(np.sqrt(np.square(np.array(rGyRegSeg)[RS_s_sep_sen])*1/sSize)), 
+                                                  np.log10(np.array(regSegOrdNs)[RS_s_sep_sen]*sSize), 
+                                                  np.log10(np.sqrt(np.square(np.array(rGyRegSegs)[RS_s_sep_sen])*1/sSize)), 
                                                   p0=[1., 0.], 
                                                   maxfev=100000)
     poptRS_s_sep_int, pcovRS_s_sep_int = scipy.optimize.curve_fit(objFuncGL, 
-                                                  np.log10(np.array(regSegOrdN)[RS_s_sep_int]*sSize), 
-                                                  np.log10(np.sqrt(np.square(np.array(rGyRegSeg)[RS_s_sep_int])*1/sSize)), 
+                                                  np.log10(np.array(regSegOrdNi)[RS_s_sep_int]*sSize), 
+                                                  np.log10(np.sqrt(np.square(np.array(rGyRegSegi)[RS_s_sep_int])*1/sSize)), 
                                                   p0=[1., 0.], 
                                                   maxfev=100000)
     poptRS_s_sep_mot, pcovRS_s_sep_mot = scipy.optimize.curve_fit(objFuncGL, 
-                                                  np.log10(np.array(regSegOrdN)[RS_s_sep_mot]*sSize), 
-                                                  np.log10(np.sqrt(np.square(np.array(rGyRegSeg)[RS_s_sep_mot])*1/sSize)), 
+                                                  np.log10(np.array(regSegOrdNm)[RS_s_sep_mot]*sSize), 
+                                                  np.log10(np.sqrt(np.square(np.array(rGyRegSegm)[RS_s_sep_mot])*1/sSize)), 
                                                   p0=[1., 0.], 
                                                   maxfev=100000)
     
@@ -1243,7 +1292,7 @@ plt.show()
 
 
 
-sRnTrkIRge = np.array(randTrk)[np.array(sChoice)[np.where((np.array(sChoice) > 80000) & (np.array(sChoice) < 110000))[0]]]
+#sRnTrkIRge = np.array(randTrk)[np.array(sChoice)[np.where((np.array(sChoice) > 180000) & (np.array(sChoice) < 210000))[0]]]
 
 
 
