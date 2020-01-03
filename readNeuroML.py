@@ -24,7 +24,7 @@ import time
 PATH = r'./CElegansNeuroML-SNAPSHOT_030213/CElegans/generatedNeuroML2'
 
 RUN = True
-SAVE = True
+SAVE = False
 RN = '4'
 
 sSize = 0.1
@@ -243,6 +243,7 @@ for i in range(len(indBranchTrk)):
         indMorph_dist_temp1.append(indMorph_dist_temp2)
     indMorph_dist.append(indMorph_dist_temp1)
 
+indMorph_dist_p_us = np.array(indMorph_dist_p_us)
 indMorph_dist_flat = [item for sublist in indMorph_dist for item in sublist]
 
 t1 = time.time()
@@ -370,7 +371,7 @@ def regularRadiusOfGyration(regMDist, regMDistLen):
     
     return (rGyReg, cMLReg)
 
-def regularSegmentRadiusOfGyration(indRegMDist, indRegMDistLen, nSize, dSize, numSample=10000, stochastic=True):
+def regularSegmentRadiusOfGyration(indRegMDist, indRegMDistLen, nSize, dSize, numSample=10000, stochastic=True, p=None):
 
     cMLRegSeg = []
     rGyRegSeg = []
@@ -379,8 +380,11 @@ def regularSegmentRadiusOfGyration(indRegMDist, indRegMDistLen, nSize, dSize, nu
     randTrk = []
     idxTrk = 0
     
-#    indMorph_dist_p = indMorph_dist_p_us/np.sum(indMorph_dist_p_us)
-    indMorph_dist_p = np.ones(len(indRegMDist))/len(indRegMDist)
+    if p == None:
+        indMorph_dist_p = indMorph_dist_p_us/np.sum(indMorph_dist_p_us)
+    else:
+        indMorph_dist_p = indMorph_dist_p_us[p]/np.sum(indMorph_dist_p_us[p])
+#    indMorph_dist_p = np.ones(len(indRegMDist))/len(indRegMDist)
     
     if stochastic:
         for i in range(len(nSize)):
@@ -454,7 +458,8 @@ if RUN:
                                                 nSize, 
                                                 dSize, 
                                                 numSample=1000,
-                                                stochastic=True)
+                                                stochastic=True,
+                                                p=indMorph_dist_id_s)
     (rGyRegSegi, 
      cMLRegSegi, 
      regSegOrdNi, 
@@ -463,7 +468,8 @@ if RUN:
                                                 nSize, 
                                                 dSize, 
                                                 numSample=1000,
-                                                stochastic=True)
+                                                stochastic=True,
+                                                p=indMorph_dist_id_i)
     (rGyRegSegm, 
      cMLRegSegm, 
      regSegOrdNm, 
@@ -472,7 +478,8 @@ if RUN:
                                                 nSize, 
                                                 dSize, 
                                                 numSample=1000,
-                                                stochastic=True)
+                                                stochastic=True,
+                                                p=indMorph_dist_id_m)
     
     if SAVE:
         exportOutput(outputdir)
@@ -564,6 +571,8 @@ def objFuncGL(xdata, a, b):
 
 
 
+#==============================================================================
+
 popt1, pcov1 = scipy.optimize.curve_fit(objFuncP, hist1centers, hist1[0], p0=[0.1, -0.1], maxfev=10000)
 fitX = np.linspace(1, 10000, 1000)
 fitY1 = objFuncP(fitX, popt1[0], popt1[1])
@@ -606,7 +615,7 @@ plt.tight_layout()
 plt.show()
 
 
-
+#==============================================================================
 # Segment Length in Log-Log by Type
 
 fig, ax = plt.subplots(1, 3, figsize=(24,6))
@@ -642,7 +651,7 @@ ax[2].set_xlabel("Segment Length", fontsize=15)
 plt.tight_layout()
 plt.show()
 
-
+#==============================================================================
 # Average Segment Length Histogram
 
 fig, ax = plt.subplots(1, 2, figsize=(20,6))
@@ -677,7 +686,7 @@ hist6centers = 0.5*(hist6[1][1:] + hist6[1][:-1])
 hist7centers = 0.5*(hist7[1][1:] + hist7[1][:-1])
 hist9centers = 0.5*(hist9[1][1:] + hist9[1][:-1])
 
-
+#==============================================================================
 # Average Segment Length in Log-Log
 
 fig, ax = plt.subplots(1, 2, figsize=(20,6))
@@ -704,7 +713,7 @@ ax[1].legend(['Sensory', 'Inter', 'Motor'], fontsize=15)
 plt.tight_layout()
 plt.show()
 
-
+#==============================================================================
 # Average Segment Length in Log-Log by type
 
 fig, ax = plt.subplots(1, 3, figsize=(24,6))
@@ -738,6 +747,7 @@ plt.tight_layout()
 plt.show()
 
 
+#==============================================================================
 # BranchNum vs Total Segment Length vs Average Segment Length by Type
 
 poptL = []
@@ -944,6 +954,8 @@ plt.tight_layout()
 plt.show()
 
 
+#==============================================================================
+
 
 branchEndPDict = {'branch': branchNum, 'endP': endP_len}
 branchEndPDF = pd.DataFrame(data=branchEndPDict)
@@ -958,6 +970,8 @@ plt.tight_layout()
 plt.show()
 
 
+#==============================================================================
+
 
 fig = plt.figure(figsize=(8,6))
 seaborn.kdeplot(np.delete(np.array(branchNum)[sensory], np.where(np.array(branchNum)[sensory] == 197)[0]), bw=.6, label="Sensory")
@@ -971,6 +985,8 @@ plt.legend(['Sensory', 'Inter', 'Motor'], fontsize=15)
 plt.tight_layout()
 plt.show()
 
+
+#==============================================================================
 
 
 fig = plt.figure(figsize=(8,6))
@@ -998,6 +1014,8 @@ plt.tight_layout()
 plt.show()
 
 
+#==============================================================================
+
 #reg_len_scale = np.average(np.divide(regMDistLen, morph_dist_len))
 poptR, pcovR = scipy.optimize.curve_fit(objFuncGL, 
                                         np.log10(np.array(regMDistLen)*sSize), 
@@ -1020,37 +1038,32 @@ plt.tight_layout()
 plt.show()
 
 
+#==============================================================================
 
-poptR_sensory, pcovR_sensory = scipy.optimize.curve_fit(objFuncGL, 
-                                        np.log10(np.array(regMDistLen)[sensory]*sSize), 
-                                        np.log10(np.sqrt(np.square(np.array(rGyReg))[sensory]*1/sSize)), 
+sidx1 = np.where(np.array(regMDistLen)[sensory]*sSize < 176)[0]
+sidx2 = np.where((np.array(regMDistLen)[sensory]*sSize > 176) & (np.array(regMDistLen)[sensory]*sSize < 1e3))[0]
+
+poptR_sidx1, pcovR_sidx1 = scipy.optimize.curve_fit(objFuncGL, 
+                                        np.log10(np.array(regMDistLen)[sensory][sidx1]*sSize), 
+                                        np.log10(np.sqrt(np.square(np.array(rGyReg))[sensory][sidx1]*1/sSize)), 
                                         p0=[1., 0.], 
                                         maxfev=100000)
-fitYregR_sensory = objFuncPpow(np.array(regMDistLen)*sSize, poptR_sensory[0], poptR_sensory[1])
+fitYregR_sidx1 = objFuncPpow(np.array(regMDistLen)*sSize, poptR_sidx1[0], poptR_sidx1[1])
 
-poptR_inter, pcovR_inter = scipy.optimize.curve_fit(objFuncGL, 
-                                        np.log10(np.array(regMDistLen)[inter]*sSize), 
-                                        np.log10(np.sqrt(np.square(np.array(rGyReg))[inter]*1/sSize)), 
+poptR_sidx2, pcovR_sidx2 = scipy.optimize.curve_fit(objFuncGL, 
+                                        np.log10(np.array(regMDistLen)[sensory][sidx2]*sSize), 
+                                        np.log10(np.sqrt(np.square(np.array(rGyReg))[sensory][sidx2]*1/sSize)), 
                                         p0=[1., 0.], 
                                         maxfev=100000)
-fitYregR_inter = objFuncPpow(np.array(regMDistLen)*sSize, poptR_inter[0], poptR_inter[1])
-
-poptR_motor, pcovR_motor = scipy.optimize.curve_fit(objFuncGL, 
-                                        np.log10(np.array(regMDistLen)[motor]*sSize), 
-                                        np.log10(np.sqrt(np.square(np.array(rGyReg))[motor]*1/sSize)), 
-                                        p0=[1., 0.], 
-                                        maxfev=100000)
-fitYregR_motor = objFuncPpow(np.array(regMDistLen)*sSize, poptR_motor[0], poptR_motor[1])
-
+fitYregR_sidx2 = objFuncPpow(np.array(regMDistLen)*sSize, poptR_sidx2[0], poptR_sidx2[1])
 
 fig = plt.figure(figsize=(8,6))
 plt.scatter(np.array(regMDistLen)[sensory]*sSize, np.sqrt(np.square(np.array(rGyReg))[sensory]*1/sSize))
-plt.scatter(np.array(regMDistLen)[inter]*sSize, np.sqrt(np.square(np.array(rGyReg))[inter]*1/sSize))
-plt.scatter(np.array(regMDistLen)[motor]*sSize, np.sqrt(np.square(np.array(rGyReg))[motor]*1/sSize))
-plt.legend(["Sensory Neuron", "Interneuron", "Motor Neuron"], fontsize=15)
-plt.plot(np.array(regMDistLen)*sSize, fitYregR_sensory, color='tab:blue')
-plt.plot(np.array(regMDistLen)*sSize, fitYregR_inter, color='tab:orange')
-plt.plot(np.array(regMDistLen)*sSize, fitYregR_motor, color='tab:green')
+plt.plot(np.array(regMDistLen)*sSize, fitYregR_sidx1, color='tab:red')
+plt.plot(np.array(regMDistLen)*sSize, fitYregR_sidx2, color='tab:red')
+plt.vlines(56, 0.1, 1e4, linestyles='dashed')
+plt.vlines(176, 0.1, 1e4, linestyles='dashed')
+plt.vlines(1000, 0.1, 1e4, linestyles='dashed')
 plt.yscale('log')
 plt.xscale('log')
 plt.xlim(10, 10000)
@@ -1061,6 +1074,55 @@ plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
 plt.tight_layout()
 plt.show()
 
+poptR_inter, pcovR_inter = scipy.optimize.curve_fit(objFuncGL, 
+                                        np.log10(np.array(regMDistLen)[inter]*sSize), 
+                                        np.log10(np.sqrt(np.square(np.array(rGyReg))[inter]*1/sSize)), 
+                                        p0=[1., 0.], 
+                                        maxfev=100000)
+fitYregR_inter = objFuncPpow(np.array(regMDistLen)*sSize, poptR_inter[0], poptR_inter[1])
+
+fig = plt.figure(figsize=(8,6))
+plt.scatter(np.array(regMDistLen)[inter]*sSize, np.sqrt(np.square(np.array(rGyReg))[inter]*1/sSize))
+plt.plot(np.array(regMDistLen)*sSize, fitYregR_inter, color='tab:red')
+plt.vlines(56, 0.1, 1e4, linestyles='dashed')
+plt.vlines(176, 0.1, 1e4, linestyles='dashed')
+plt.vlines(1000, 0.1, 1e4, linestyles='dashed')
+plt.yscale('log')
+plt.xscale('log')
+plt.xlim(10, 10000)
+plt.ylim(7, 4000)
+plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
+plt.xlabel(r"Number of Regularized Points ($a*N$)", fontsize=15)
+plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
+plt.tight_layout()
+plt.show()
+
+poptR_motor, pcovR_motor = scipy.optimize.curve_fit(objFuncGL, 
+                                        np.log10(np.array(regMDistLen)[motor]*sSize), 
+                                        np.log10(np.sqrt(np.square(np.array(rGyReg))[motor]*1/sSize)), 
+                                        p0=[1., 0.], 
+                                        maxfev=100000)
+fitYregR_motor = objFuncPpow(np.array(regMDistLen)*sSize, poptR_motor[0], poptR_motor[1])
+
+
+fig = plt.figure(figsize=(8,6))
+plt.scatter(np.array(regMDistLen)[motor]*sSize, np.sqrt(np.square(np.array(rGyReg))[motor]*1/sSize))
+plt.plot(np.array(regMDistLen)*sSize, fitYregR_motor, color='tab:red')
+plt.vlines(56, 0.1, 1e4, linestyles='dashed')
+plt.vlines(176, 0.1, 1e4, linestyles='dashed')
+plt.vlines(1000, 0.1, 1e4, linestyles='dashed')
+plt.yscale('log')
+plt.xscale('log')
+plt.xlim(10, 10000)
+plt.ylim(7, 4000)
+plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
+plt.xlabel(r"Number of Regularized Points ($a*N$)", fontsize=15)
+plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
+plt.tight_layout()
+plt.show()
+
+
+#==============================================================================
 
 
 rGyRegSeg_avg = []
@@ -1167,7 +1229,7 @@ plt.show()
 
 
 
-
+#==============================================================================
 
 
 
@@ -1196,7 +1258,7 @@ if SAVE:
 plt.show()
 
 
-
+#==============================================================================
 
 
 shift_N = 4
@@ -1224,7 +1286,7 @@ plt.hlines(poptRS1[0], 0.1, 1000, linestyles='--', color='tab:green')
 plt.hlines(poptRS3[0], 0.1, 1000, linestyles='--', color='tab:orange')
 #plt.yscale('log')
 plt.xscale('log')
-plt.xlim(0.5, 1000)
+plt.xlim(1, 200)
 #plt.ylim(0.005, 1000)
 #plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
 plt.xlabel(r"Average Number of Regularized Points ($\lambda N_{avg}$)", fontsize=15)
@@ -1234,6 +1296,8 @@ if SAVE:
     plt.savefig('./images/regSegRG_slope_' + str(RN) + '.png', dpi=300, bbox_inches='tight')
 plt.show()
 
+
+#==============================================================================
 
 
 poptRS_sl_sep_sen = []
@@ -1280,7 +1344,7 @@ plt.legend(["Sensory Neuron", "Interneuron", "Motor Neuron"], fontsize=15)
 #plt.hlines(poptRS3[0], 0.1, 1000, linestyles='--', color='tab:orange')
 #plt.yscale('log')
 plt.xscale('log')
-plt.xlim(0.5, 1000)
+plt.xlim(1, 200)
 #plt.ylim(0.005, 1000)
 #plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
 plt.xlabel(r"Average Number of Regularized Points ($\lambda N_{avg}$)", fontsize=15)
@@ -1292,7 +1356,7 @@ plt.show()
 
 
 
-
+#==============================================================================
 
 #sRnTrkIRge = np.array(randTrk)[np.array(sChoice)[np.where((np.array(sChoice) > 180000) & (np.array(sChoice) < 210000))[0]]]
 
