@@ -26,7 +26,7 @@ PATH = r'./CElegansNeuroML-SNAPSHOT_030213/CElegans/generatedNeuroML2'
 
 RUN = True
 SAVE = False
-RN = '4'
+RN = '7'
 
 sSize = 0.1
 nSize = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 50, 75, 100, 250]
@@ -1043,27 +1043,45 @@ plt.show()
 
 #==============================================================================
 
+s0 = np.array(sensory)[np.where(physLoc[sensory] == 0)[0]]
+s1 = np.array(sensory)[np.where(physLoc[sensory] == 1)[0]]
+s1 = np.delete(s1, [7,8])
+s2 = np.array(sensory)[np.where(physLoc[sensory] == 2)[0]]
+
 sidx1 = np.where(np.array(regMDistLen)[sensory]*sSize < 176)[0]
 sidx2 = np.where((np.array(regMDistLen)[sensory]*sSize > 176) & (np.array(regMDistLen)[sensory]*sSize < 1e3))[0]
 
+poptR_sidx0, pcovR_sidx0 = scipy.optimize.curve_fit(objFuncGL, 
+                                        np.log10(np.array(regMDistLen)[s0]*sSize), 
+                                        np.log10(np.sqrt(np.square(np.array(rGyReg))[s0]*1/sSize)), 
+                                        p0=[1., 0.], 
+                                        maxfev=100000)
+fitYregR_sidx0 = objFuncPpow(np.array(regMDistLen)*sSize, poptR_sidx0[0], poptR_sidx0[1])
+
+
 poptR_sidx1, pcovR_sidx1 = scipy.optimize.curve_fit(objFuncGL, 
-                                        np.log10(np.array(regMDistLen)[sensory][sidx1]*sSize), 
-                                        np.log10(np.sqrt(np.square(np.array(rGyReg))[sensory][sidx1]*1/sSize)), 
+                                        np.log10(np.array(regMDistLen)[s1]*sSize), 
+                                        np.log10(np.sqrt(np.square(np.array(rGyReg))[s1]*1/sSize)), 
                                         p0=[1., 0.], 
                                         maxfev=100000)
 fitYregR_sidx1 = objFuncPpow(np.array(regMDistLen)*sSize, poptR_sidx1[0], poptR_sidx1[1])
 
 poptR_sidx2, pcovR_sidx2 = scipy.optimize.curve_fit(objFuncGL, 
-                                        np.log10(np.array(regMDistLen)[sensory][sidx2]*sSize), 
-                                        np.log10(np.sqrt(np.square(np.array(rGyReg))[sensory][sidx2]*1/sSize)), 
+                                        np.log10(np.array(regMDistLen)[s2]*sSize), 
+                                        np.log10(np.sqrt(np.square(np.array(rGyReg))[s2]*1/sSize)), 
                                         p0=[1., 0.], 
                                         maxfev=100000)
 fitYregR_sidx2 = objFuncPpow(np.array(regMDistLen)*sSize, poptR_sidx2[0], poptR_sidx2[1])
 
+
 fig = plt.figure(figsize=(8,6))
-plt.scatter(np.array(regMDistLen)[sensory]*sSize, np.sqrt(np.square(np.array(rGyReg))[sensory]*1/sSize))
-plt.plot(np.array(regMDistLen)*sSize, fitYregR_sidx1, color='tab:red')
-plt.plot(np.array(regMDistLen)*sSize, fitYregR_sidx2, color='tab:red')
+#plt.scatter(np.array(regMDistLen)[sensory]*sSize, np.sqrt(np.square(np.array(rGyReg))[sensory]*1/sSize))
+plt.scatter(np.array(regMDistLen)[s0]*sSize, np.sqrt(np.square(np.array(rGyReg))[s0]*1/sSize))
+plt.scatter(np.array(regMDistLen)[s1]*sSize, np.sqrt(np.square(np.array(rGyReg))[s1]*1/sSize))
+plt.scatter(np.array(regMDistLen)[s2]*sSize, np.sqrt(np.square(np.array(rGyReg))[s2]*1/sSize))
+plt.plot(np.array(regMDistLen)*sSize, fitYregR_sidx0, color='tab:blue')
+plt.plot(np.array(regMDistLen)*sSize, fitYregR_sidx1, color='tab:orange')
+plt.plot(np.array(regMDistLen)*sSize, fitYregR_sidx2, color='tab:green')
 plt.vlines(56, 0.1, 1e4, linestyles='dashed')
 plt.vlines(176, 0.1, 1e4, linestyles='dashed')
 plt.vlines(1000, 0.1, 1e4, linestyles='dashed')
@@ -1072,21 +1090,51 @@ plt.xscale('log')
 plt.xlim(10, 10000)
 plt.ylim(7, 4000)
 plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
-plt.xlabel(r"Number of Regularized Points ($a*N$)", fontsize=15)
+plt.xlabel(r"Length", fontsize=15)
 plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
 plt.tight_layout()
 plt.show()
 
-poptR_inter, pcovR_inter = scipy.optimize.curve_fit(objFuncGL, 
-                                        np.log10(np.array(regMDistLen)[inter]*sSize), 
-                                        np.log10(np.sqrt(np.square(np.array(rGyReg))[inter]*1/sSize)), 
+
+
+i0 = np.array(inter)[np.where(physLoc[inter] == 0)[0]]
+i1 = np.array(inter)[np.where(physLoc[inter] == 1)[0]]
+i2 = np.array(inter)[np.where(physLoc[inter] == 2)[0]]
+
+iidx1 = np.where(np.array(regMDistLen)[inter]*sSize < 176)[0]
+iidx2 = np.where((np.array(regMDistLen)[inter]*sSize > 176) & (np.array(regMDistLen)[inter]*sSize < 1e3))[0]
+
+poptR_iidx0, pcovR_iidx0 = scipy.optimize.curve_fit(objFuncGL, 
+                                        np.log10(np.array(regMDistLen)[i0]*sSize), 
+                                        np.log10(np.sqrt(np.square(np.array(rGyReg))[i0]*1/sSize)), 
                                         p0=[1., 0.], 
                                         maxfev=100000)
-fitYregR_inter = objFuncPpow(np.array(regMDistLen)*sSize, poptR_inter[0], poptR_inter[1])
+fitYregR_iidx0 = objFuncPpow(np.array(regMDistLen)*sSize, poptR_iidx0[0], poptR_iidx0[1])
+
+
+poptR_iidx1, pcovR_iidx1 = scipy.optimize.curve_fit(objFuncGL, 
+                                        np.log10(np.array(regMDistLen)[i1]*sSize), 
+                                        np.log10(np.sqrt(np.square(np.array(rGyReg))[i1]*1/sSize)), 
+                                        p0=[1., 0.], 
+                                        maxfev=100000)
+fitYregR_iidx1 = objFuncPpow(np.array(regMDistLen)*sSize, poptR_iidx1[0], poptR_iidx1[1])
+
+poptR_iidx2, pcovR_iidx2 = scipy.optimize.curve_fit(objFuncGL, 
+                                        np.log10(np.array(regMDistLen)[i2]*sSize), 
+                                        np.log10(np.sqrt(np.square(np.array(rGyReg))[i2]*1/sSize)), 
+                                        p0=[1., 0.], 
+                                        maxfev=100000)
+fitYregR_iidx2 = objFuncPpow(np.array(regMDistLen)*sSize, poptR_iidx2[0], poptR_iidx2[1])
+
 
 fig = plt.figure(figsize=(8,6))
-plt.scatter(np.array(regMDistLen)[inter]*sSize, np.sqrt(np.square(np.array(rGyReg))[inter]*1/sSize))
-plt.plot(np.array(regMDistLen)*sSize, fitYregR_inter, color='tab:red')
+#plt.scatter(np.array(regMDistLen)[inter]*sSize, np.sqrt(np.square(np.array(rGyReg))[inter]*1/sSize))
+plt.scatter(np.array(regMDistLen)[i0]*sSize, np.sqrt(np.square(np.array(rGyReg))[i0]*1/sSize))
+plt.scatter(np.array(regMDistLen)[i1]*sSize, np.sqrt(np.square(np.array(rGyReg))[i1]*1/sSize))
+plt.scatter(np.array(regMDistLen)[i2]*sSize, np.sqrt(np.square(np.array(rGyReg))[i2]*1/sSize))
+plt.plot(np.array(regMDistLen)*sSize, fitYregR_iidx0, color='tab:blue')
+plt.plot(np.array(regMDistLen)*sSize, fitYregR_iidx1, color='tab:orange')
+plt.plot(np.array(regMDistLen)*sSize, fitYregR_iidx2, color='tab:green')
 plt.vlines(56, 0.1, 1e4, linestyles='dashed')
 plt.vlines(176, 0.1, 1e4, linestyles='dashed')
 plt.vlines(1000, 0.1, 1e4, linestyles='dashed')
@@ -1095,22 +1143,51 @@ plt.xscale('log')
 plt.xlim(10, 10000)
 plt.ylim(7, 4000)
 plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
-plt.xlabel(r"Number of Regularized Points ($a*N$)", fontsize=15)
+plt.xlabel(r"Length", fontsize=15)
 plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
 plt.tight_layout()
 plt.show()
 
-poptR_motor, pcovR_motor = scipy.optimize.curve_fit(objFuncGL, 
-                                        np.log10(np.array(regMDistLen)[motor]*sSize), 
-                                        np.log10(np.sqrt(np.square(np.array(rGyReg))[motor]*1/sSize)), 
+
+
+m0 = np.array(motor)[np.where(physLoc[motor] == 0)[0]]
+m1 = np.array(motor)[np.where(physLoc[motor] == 1)[0]]
+m2 = np.array(motor)[np.where(physLoc[motor] == 2)[0]]
+
+midx1 = np.where(np.array(regMDistLen)[motor]*sSize < 176)[0]
+midx2 = np.where((np.array(regMDistLen)[motor]*sSize > 176) & (np.array(regMDistLen)[motor]*sSize < 1e3))[0]
+
+poptR_midx0, pcovR_midx0 = scipy.optimize.curve_fit(objFuncGL, 
+                                        np.log10(np.array(regMDistLen)[m0]*sSize), 
+                                        np.log10(np.sqrt(np.square(np.array(rGyReg))[m0]*1/sSize)), 
                                         p0=[1., 0.], 
                                         maxfev=100000)
-fitYregR_motor = objFuncPpow(np.array(regMDistLen)*sSize, poptR_motor[0], poptR_motor[1])
+fitYregR_midx0 = objFuncPpow(np.array(regMDistLen)*sSize, poptR_midx0[0], poptR_midx0[1])
+
+
+poptR_midx1, pcovR_midx1 = scipy.optimize.curve_fit(objFuncGL, 
+                                        np.log10(np.array(regMDistLen)[m1]*sSize), 
+                                        np.log10(np.sqrt(np.square(np.array(rGyReg))[m1]*1/sSize)), 
+                                        p0=[1., 0.], 
+                                        maxfev=100000)
+fitYregR_midx1 = objFuncPpow(np.array(regMDistLen)*sSize, poptR_midx1[0], poptR_midx1[1])
+
+poptR_midx2, pcovR_midx2 = scipy.optimize.curve_fit(objFuncGL, 
+                                        np.log10(np.array(regMDistLen)[m2]*sSize), 
+                                        np.log10(np.sqrt(np.square(np.array(rGyReg))[m2]*1/sSize)), 
+                                        p0=[1., 0.], 
+                                        maxfev=100000)
+fitYregR_midx2 = objFuncPpow(np.array(regMDistLen)*sSize, poptR_midx2[0], poptR_midx2[1])
 
 
 fig = plt.figure(figsize=(8,6))
-plt.scatter(np.array(regMDistLen)[motor]*sSize, np.sqrt(np.square(np.array(rGyReg))[motor]*1/sSize))
-plt.plot(np.array(regMDistLen)*sSize, fitYregR_motor, color='tab:red')
+#plt.scatter(np.array(regMDistLen)[motor]*sSize, np.sqrt(np.square(np.array(rGyReg))[motor]*1/sSize))
+plt.scatter(np.array(regMDistLen)[m0]*sSize, np.sqrt(np.square(np.array(rGyReg))[m0]*1/sSize))
+plt.scatter(np.array(regMDistLen)[m1]*sSize, np.sqrt(np.square(np.array(rGyReg))[m1]*1/sSize))
+plt.scatter(np.array(regMDistLen)[m2]*sSize, np.sqrt(np.square(np.array(rGyReg))[m2]*1/sSize))
+plt.plot(np.array(regMDistLen)*sSize, fitYregR_iidx0, color='tab:blue')
+plt.plot(np.array(regMDistLen)*sSize, fitYregR_iidx1, color='tab:orange')
+plt.plot(np.array(regMDistLen)*sSize, fitYregR_iidx2, color='tab:green')
 plt.vlines(56, 0.1, 1e4, linestyles='dashed')
 plt.vlines(176, 0.1, 1e4, linestyles='dashed')
 plt.vlines(1000, 0.1, 1e4, linestyles='dashed')
@@ -1119,7 +1196,7 @@ plt.xscale('log')
 plt.xlim(10, 10000)
 plt.ylim(7, 4000)
 plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
-plt.xlabel(r"Number of Regularized Points ($a*N$)", fontsize=15)
+plt.xlabel(r"Length", fontsize=15)
 plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
 plt.tight_layout()
 plt.show()
