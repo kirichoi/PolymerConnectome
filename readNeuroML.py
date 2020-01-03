@@ -20,6 +20,7 @@ from collections import Counter
 import networkx as nx
 import copy
 import time
+import utils
 
 PATH = r'./CElegansNeuroML-SNAPSHOT_030213/CElegans/generatedNeuroML2'
 
@@ -245,6 +246,8 @@ for i in range(len(indBranchTrk)):
 
 indMorph_dist_p_us = np.array(indMorph_dist_p_us)
 indMorph_dist_flat = [item for sublist in indMorph_dist for item in sublist]
+
+physLoc = utils.sortPhysLoc(morph_dist)
 
 t1 = time.time()
 
