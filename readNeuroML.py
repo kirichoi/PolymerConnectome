@@ -399,7 +399,6 @@ def regularSegmentRadiusOfGyration(indRegMDist, indRegMDistLen, nSize, dSize, nu
                     randIdx1 = np.random.choice(np.arange(0, len(indRegMDist)),
                                                 1, 
                                                 p=indMorph_dist_p)[0]
-                
                 idxTrk += 1
                 randIdx2 = np.random.choice(np.arange(0, len(indRegMDist[randIdx1])-nSize[i]), 1)[0]
                 
@@ -424,7 +423,7 @@ def regularSegmentRadiusOfGyration(indRegMDist, indRegMDistLen, nSize, dSize, nu
                     rList_reg_seg = scipy.spatial.distance.cdist(np.array(indRegMDist[i])[dInt[k]:dInt[k]+nSize[i]], 
                                                                  np.array([cMLRegSeg[-1]])).flatten()
                     rGyRegSeg.append(np.sqrt(np.sum(np.square(rList_reg_seg))/nSize[i]))
-        
+    
     return (rGyRegSeg, cMLRegSeg, regSegOrdN, randTrk)
 
 
@@ -460,7 +459,7 @@ if RUN:
                                                 np.array(indRegMDistLen)[indMorph_dist_id_s], 
                                                 nSize, 
                                                 dSize, 
-                                                numSample=1000,
+                                                numSample=3000,
                                                 stochastic=True,
                                                 p=indMorph_dist_id_s)
     (rGyRegSegi, 
@@ -470,7 +469,7 @@ if RUN:
                                                 np.array(indRegMDistLen)[indMorph_dist_id_i], 
                                                 nSize, 
                                                 dSize, 
-                                                numSample=1000,
+                                                numSample=3000,
                                                 stochastic=True,
                                                 p=indMorph_dist_id_i)
     (rGyRegSegm, 
@@ -480,7 +479,7 @@ if RUN:
                                                 np.array(indRegMDistLen)[indMorph_dist_id_m], 
                                                 nSize, 
                                                 dSize, 
-                                                numSample=1000,
+                                                numSample=3000,
                                                 stochastic=True,
                                                 p=indMorph_dist_id_m)
     
@@ -1082,6 +1081,7 @@ plt.scatter(np.array(regMDistLen)[s2]*sSize, np.sqrt(np.square(np.array(rGyReg))
 plt.plot(np.array(regMDistLen)*sSize, fitYregR_sidx0, color='tab:blue')
 plt.plot(np.array(regMDistLen)*sSize, fitYregR_sidx1, color='tab:orange')
 plt.plot(np.array(regMDistLen)*sSize, fitYregR_sidx2, color='tab:green')
+plt.legend(['Head', 'Body', 'Tail'], fontsize=15)
 plt.vlines(56, 0.1, 1e4, linestyles='dashed')
 plt.vlines(176, 0.1, 1e4, linestyles='dashed')
 plt.vlines(1000, 0.1, 1e4, linestyles='dashed')
@@ -1089,7 +1089,7 @@ plt.yscale('log')
 plt.xscale('log')
 plt.xlim(10, 10000)
 plt.ylim(7, 4000)
-plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
+plt.title(r"$R_{g}$ to Length for Sensory Neurons", fontsize=20)
 plt.xlabel(r"Length", fontsize=15)
 plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
 plt.tight_layout()
@@ -1135,6 +1135,7 @@ plt.scatter(np.array(regMDistLen)[i2]*sSize, np.sqrt(np.square(np.array(rGyReg))
 plt.plot(np.array(regMDistLen)*sSize, fitYregR_iidx0, color='tab:blue')
 plt.plot(np.array(regMDistLen)*sSize, fitYregR_iidx1, color='tab:orange')
 plt.plot(np.array(regMDistLen)*sSize, fitYregR_iidx2, color='tab:green')
+plt.legend(['Head', 'Body', 'Tail'], fontsize=15)
 plt.vlines(56, 0.1, 1e4, linestyles='dashed')
 plt.vlines(176, 0.1, 1e4, linestyles='dashed')
 plt.vlines(1000, 0.1, 1e4, linestyles='dashed')
@@ -1142,7 +1143,7 @@ plt.yscale('log')
 plt.xscale('log')
 plt.xlim(10, 10000)
 plt.ylim(7, 4000)
-plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
+plt.title(r"$R_{g}$ to Length for Intereurons", fontsize=20)
 plt.xlabel(r"Length", fontsize=15)
 plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
 plt.tight_layout()
@@ -1188,6 +1189,7 @@ plt.scatter(np.array(regMDistLen)[m2]*sSize, np.sqrt(np.square(np.array(rGyReg))
 plt.plot(np.array(regMDistLen)*sSize, fitYregR_iidx0, color='tab:blue')
 plt.plot(np.array(regMDistLen)*sSize, fitYregR_iidx1, color='tab:orange')
 plt.plot(np.array(regMDistLen)*sSize, fitYregR_iidx2, color='tab:green')
+plt.legend(['Head', 'Body', 'Tail'], fontsize=15)
 plt.vlines(56, 0.1, 1e4, linestyles='dashed')
 plt.vlines(176, 0.1, 1e4, linestyles='dashed')
 plt.vlines(1000, 0.1, 1e4, linestyles='dashed')
@@ -1195,7 +1197,7 @@ plt.yscale('log')
 plt.xscale('log')
 plt.xlim(10, 10000)
 plt.ylim(7, 4000)
-plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
+plt.title(r"$R_{g}$ to Length for Motor Neurons", fontsize=20)
 plt.xlabel(r"Length", fontsize=15)
 plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
 plt.tight_layout()
@@ -1323,9 +1325,9 @@ ax1.yaxis.set_tick_params(which='minor', length=5)
 #ax1.scatter(np.array(regMDistLen)[sensory]*sSize, np.sqrt(np.square(np.array(rGyReg))[sensory]*1/sSize))
 #ax1.scatter(np.array(regMDistLen)[inter]*sSize, np.sqrt(np.square(np.array(rGyReg))[inter]*1/sSize))
 #ax1.scatter(np.array(regMDistLen)[motor]*sSize, np.sqrt(np.square(np.array(rGyReg))[motor]*1/sSize))
-ax1.scatter(np.array(regSegOrdNs)*sSize, np.sqrt(np.square(np.array(rGyRegSegs))*1/sSize), color='tab:blue', facecolors='none')
 ax1.scatter(np.array(regSegOrdNi)*sSize, np.sqrt(np.square(np.array(rGyRegSegi))*1/sSize), color='tab:orange', facecolors='none')
 ax1.scatter(np.array(regSegOrdNm)*sSize, np.sqrt(np.square(np.array(rGyRegSegm))*1/sSize), color='tab:green', facecolors='none')
+ax1.scatter(np.array(regSegOrdNs)*sSize, np.sqrt(np.square(np.array(rGyRegSegs))*1/sSize), color='tab:blue', facecolors='none')
 ax1.legend(["Sensory Neuron", "Interneuron", "Motor Neuron"], fontsize=15)
 ax1.vlines(0.08, 0.01, 11000, linestyles='dashed')
 ax1.vlines(0.04, 0.01, 11000, linestyles='dashed')
@@ -1433,6 +1435,10 @@ plt.ylabel(r"Slope ($\nu$)", fontsize=15)
 if SAVE:
     plt.savefig('./images/regSegRG_slope_sep_' + str(RN) + '.png', dpi=300, bbox_inches='tight')
 plt.show()
+
+
+
+
 
 
 
