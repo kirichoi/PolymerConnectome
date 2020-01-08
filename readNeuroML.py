@@ -256,7 +256,7 @@ class MorphData():
         return pos
         
     
-    def plotConnectionNetwork(self, name, hier=1, prog='twopi'):
+    def plotConnectionNetwork(self, name, hier=1, prog='twopi', gapjunction=False):
         from networkx.drawing.nx_pydot import graphviz_layout
         
         namec = copy.deepcopy(name)
@@ -303,6 +303,8 @@ class MorphData():
                 for i in range(sum(cOrigin == nodeList[h][n])):
                     cTarind = np.where(cOrigin == nodeList[h][n])[0][i]
                     G.add_edges_from([(cOrigin[cTarind], cTarget[cTarind])])
+                    if cType[cTarind] == 'GapJunction' and gapjunction:
+                        G.add_edges_from([(cTarget[cTarind], cOrigin[cTarind])])
     
     #    pos = nx.kamada_kawai_layout(G)
         pos = graphviz_layout(G, prog=prog)
@@ -362,6 +364,52 @@ class MorphData():
         plt.show()
         
         return nodeList
+    
+    
+    def plotFullConnectionNetwork(self, prog='fdp', gapjunction=False):
+        from networkx.drawing.nx_pydot import graphviz_layout
+        
+        color = []
+        branch = []
+        
+        cmap = cm.get_cmap('Set1')
+        
+        G = nx.DiGraph()
+        
+        G.add_nodes_from(self.neuron_id)
+        
+        for i in range(len(self.neuron_id)):
+            if i in self.sensory:
+                color.append(cmap(1))
+            elif i in self.inter:
+                color.append(cmap(2))
+            elif i in self.motor:
+                color.append(cmap(3))
+            elif i in self.polymodal:
+                color.append(cmap(4))
+            elif i in self.other:
+                color.append(cmap(5))
+        
+        for h in range(len(cOrigin)):
+            G.add_edges_from([(cOrigin[h], cTarget[h])])
+            if cType[i] == 'GapJunction' and gapjunction:
+                        G.add_edges_from([(cTarget[h], cOrigin[h])])
+    
+    #    pos = nx.kamada_kawai_layout(G)
+        pos = graphviz_layout(G, prog=prog)
+    #    pos = _layer_pos(nodeList)
+    
+        fig = plt.figure(figsize=(22, 14))
+        nx.draw(G, pos, node_color=color, with_labels=True, node_size=1000)
+        target_p = mpatches.Patch(color=cmap(0), label='Target Neuron')
+        target_s = mpatches.Patch(color=cmap(1), label='Sensory Neuron')
+        target_i = mpatches.Patch(color=cmap(2), label='Interneuron')
+        target_m = mpatches.Patch(color=cmap(3), label='Motor Neuron')
+        target_y = mpatches.Patch(color=cmap(4), label='Polymodal Neuron')
+        target_o = mpatches.Patch(color=cmap(5), label='Other Neuron')
+        plt.legend(handles=[target_p, target_s, target_i, target_m, target_y, target_o], fontsize=15)
+        
+        return G
     
     
     def _trackConnection(self, name, hier=1):
@@ -615,6 +663,58 @@ BranchData.indMorph_dist_p_us = np.array(indMorph_dist_p_us)
 BranchData.indMorph_dist_flat = [item for sublist in BranchData.indMorph_dist for item in sublist]
 
 MorphData.physLoc = utils.sortPhysLoc(MorphData.morph_dist)
+
+cInfo = pd.read_excel(r'./CElegansNeuroML-SNAPSHOT_030213/CElegansNeuronTables.xls')
+cOrigin = cInfo["Origin"].to_numpy()
+cTarget = cInfo["Target"].to_numpy()
+cType = cInfo["Type"].to_numpy()
+cNum = cInfo["Number of Connections"].to_numpy()
+
+cOriginCVal = list(Counter(cOrigin).values())
+cOriginCKey = list(Counter(cOrigin).keys())
+cTargetCVal = list(Counter(cTarget).values())
+cTargetCKey = list(Counter(cTarget).keys())
+
+cOriginNeuronCorr = []
+cOriginNeuronCorrS = []
+cOriginS = []
+cOriginNeuronCorrI = []
+cOriginI = []
+cOriginNeuronCorrM = []
+cOriginM = []
+
+for i in range(len(cOriginCKey)):
+    cOriginNeuronCorr.append(MorphData.neuron_id.index(cOriginCKey[i]))
+    if cOriginCKey[i] in np.array(MorphData.neuron_id)[MorphData.sensory].tolist():
+        cOriginS.append(i)
+        cOriginNeuronCorrS.append(MorphData.neuron_id.index(cOriginCKey[i]))
+    elif cOriginCKey[i] in np.array(MorphData.neuron_id)[MorphData.inter].tolist():
+        cOriginI.append(i)
+        cOriginNeuronCorrI.append(MorphData.neuron_id.index(cOriginCKey[i]))
+    elif cOriginCKey[i] in np.array(MorphData.neuron_id)[MorphData.motor].tolist():
+        cOriginM.append(i)
+        cOriginNeuronCorrM.append(MorphData.neuron_id.index(cOriginCKey[i]))
+    
+cTargetNeuronCorr = []
+cTargetNeuronCorrS = []
+cTargetS = []
+cTargetNeuronCorrI = []
+cTargetI = []
+cTargetNeuronCorrM = []
+cTargetM = []
+
+for i in range(len(cTargetCKey)):
+    cTargetNeuronCorr.append(MorphData.neuron_id.index(cTargetCKey[i]))
+    if cOriginCKey[i] in np.array(MorphData.neuron_id)[MorphData.sensory].tolist():
+        cTargetS.append(i)
+        cTargetNeuronCorrS.append(MorphData.neuron_id.index(cTargetCKey[i]))
+    elif cOriginCKey[i] in np.array(MorphData.neuron_id)[MorphData.inter].tolist():
+        cTargetI.append(i)
+        cTargetNeuronCorrI.append(MorphData.neuron_id.index(cTargetCKey[i]))
+    elif cOriginCKey[i] in np.array(MorphData.neuron_id)[MorphData.motor].tolist():
+        cTargetM.append(i)
+        cTargetNeuronCorrM.append(MorphData.neuron_id.index(cTargetCKey[i]))
+
 
 t1 = time.time()
 
@@ -1706,62 +1806,6 @@ plt.show()
 #sRnTrkIRge = np.array(randTrk)[np.array(sChoice)[np.where((np.array(sChoice) > 180000) & (np.array(sChoice) < 210000))[0]]]
 
 
-
-
-
-
-
-
-cInfo = pd.read_excel(r'./CElegansNeuroML-SNAPSHOT_030213/CElegansNeuronTables.xls')
-cOrigin = cInfo["Origin"].to_numpy()
-cTarget = cInfo["Target"].to_numpy()
-cType = cInfo["Type"].to_numpy()
-cNum = cInfo["Number of Connections"].to_numpy()
-
-cOriginCVal = list(Counter(cOrigin).values())
-cOriginCKey = list(Counter(cOrigin).keys())
-cTargetCVal = list(Counter(cTarget).values())
-cTargetCKey = list(Counter(cTarget).keys())
-
-cOriginNeuronCorr = []
-cOriginNeuronCorrS = []
-cOriginS = []
-cOriginNeuronCorrI = []
-cOriginI = []
-cOriginNeuronCorrM = []
-cOriginM = []
-
-for i in range(len(cOriginCKey)):
-    cOriginNeuronCorr.append(MorphData.neuron_id.index(cOriginCKey[i]))
-    if cOriginCKey[i] in np.array(MorphData.neuron_id)[MorphData.sensory].tolist():
-        cOriginS.append(i)
-        cOriginNeuronCorrS.append(MorphData.neuron_id.index(cOriginCKey[i]))
-    elif cOriginCKey[i] in np.array(MorphData.neuron_id)[MorphData.inter].tolist():
-        cOriginI.append(i)
-        cOriginNeuronCorrI.append(MorphData.neuron_id.index(cOriginCKey[i]))
-    elif cOriginCKey[i] in np.array(MorphData.neuron_id)[MorphData.motor].tolist():
-        cOriginM.append(i)
-        cOriginNeuronCorrM.append(MorphData.neuron_id.index(cOriginCKey[i]))
-    
-cTargetNeuronCorr = []
-cTargetNeuronCorrS = []
-cTargetS = []
-cTargetNeuronCorrI = []
-cTargetI = []
-cTargetNeuronCorrM = []
-cTargetM = []
-
-for i in range(len(cTargetCKey)):
-    cTargetNeuronCorr.append(MorphData.neuron_id.index(cTargetCKey[i]))
-    if cOriginCKey[i] in np.array(MorphData.neuron_id)[MorphData.sensory].tolist():
-        cTargetS.append(i)
-        cTargetNeuronCorrS.append(MorphData.neuron_id.index(cTargetCKey[i]))
-    elif cOriginCKey[i] in np.array(MorphData.neuron_id)[MorphData.inter].tolist():
-        cTargetI.append(i)
-        cTargetNeuronCorrI.append(MorphData.neuron_id.index(cTargetCKey[i]))
-    elif cOriginCKey[i] in np.array(MorphData.neuron_id)[MorphData.motor].tolist():
-        cTargetM.append(i)
-        cTargetNeuronCorrM.append(MorphData.neuron_id.index(cTargetCKey[i]))
 
 
 #fig = plt.figure()
