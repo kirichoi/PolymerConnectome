@@ -28,6 +28,8 @@ class Parameter:
     
     RUN = True
     SAVE = False
+    PLOT = False
+    numSample = 1
     RN = '7'
     
     sSize = 0.1
@@ -239,20 +241,13 @@ class MorphData():
         plt.show()
     
     
-    def _layer_pos(nodeList):
+    def _layer_pos(self, nodeList):
         pos = {}
-        maxdist = 0
-        for i in range(len(nodeList)):
-            if len(nodeList[i]) > maxdist:
-                maxdist = len(nodeList[i])
         
         for i in range(len(nodeList)):
-            dist = maxdist/len(nodeList[i])
-            print(dist)
-            for j in range(len(nodeList[i])):
-                if not nodeList[i][j] in pos.keys():
-                    pos[nodeList[i][j]] = (maxdist - len(nodeList[i]) + dist*j, 0 - i/5)
-            
+            pos[nodeList[i]] = np.array([self.morph_dist[i][self.somaP[i]][1],
+                                         self.morph_dist[i][self.somaP[i]][0]])
+        
         return pos
         
     
@@ -306,9 +301,7 @@ class MorphData():
                     if cType[cTarind] == 'GapJunction' and gapjunction:
                         G.add_edges_from([(cTarget[cTarind], cOrigin[cTarind])])
     
-    #    pos = nx.kamada_kawai_layout(G)
         pos = graphviz_layout(G, prog=prog)
-    #    pos = _layer_pos(nodeList)
     
         fig = plt.figure(figsize=(22, 14))
         nx.draw(G, pos, node_color=color, with_labels=True, node_size=1000)
@@ -395,9 +388,12 @@ class MorphData():
             if cType[i] == 'GapJunction' and gapjunction:
                         G.add_edges_from([(cTarget[h], cOrigin[h])])
     
-    #    pos = nx.kamada_kawai_layout(G)
-        pos = graphviz_layout(G, prog=prog)
-    #    pos = _layer_pos(nodeList)
+        if prog == 'spatial':
+            pos = self._layer_pos(self.neuron_id)
+        elif prog == 'kamada':
+            pos = nx.kamada_kawai_layout(G)
+        else:
+            pos = graphviz_layout(G, prog=prog)
     
         fig = plt.figure(figsize=(22, 14))
         nx.draw(G, pos, node_color=color, with_labels=True, node_size=1000)
@@ -751,7 +747,7 @@ if Parameter.RUN:
                         BranchData,
                         np.array(MorphData.indRegMDist)[indMorph_dist_id_s], 
                         MorphData.indRegMDistLen[indMorph_dist_id_s], 
-                        numSample=100,
+                        numSample=Parameter.numSample,
                         stochastic=True,
                         p=indMorph_dist_id_s)
     (OutputData.rGyRegSegi, 
@@ -761,7 +757,7 @@ if Parameter.RUN:
                         BranchData,
                         np.array(MorphData.indRegMDist)[indMorph_dist_id_i], 
                         MorphData.indRegMDistLen[indMorph_dist_id_i], 
-                        numSample=100,
+                        numSample=Parameter.numSample,
                         stochastic=True,
                         p=indMorph_dist_id_i)
     (OutputData.rGyRegSegm, 
@@ -771,7 +767,7 @@ if Parameter.RUN:
                         BranchData,
                         np.array(MorphData.indRegMDist)[indMorph_dist_id_m], 
                         MorphData.indRegMDistLen[indMorph_dist_id_m], 
-                        numSample=100,
+                        numSample=Parameter.numSample,
                         stochastic=True,
                         p=indMorph_dist_id_m)
     
@@ -795,1005 +791,1008 @@ t5 = time.time()
 print('checkpoint 5: ' + str(t5-t4))
 
 
-fig, ax = plt.subplots(1, 2, figsize=(20,6))
-hist1 = ax[0].hist(LengthData.length_total, 
-          bins=int((np.max(LengthData.length_total) - np.min(LengthData.length_total))/10),
-          density=True)
-ax[0].set_title("Distribution of Segment Length", fontsize=20)
-ax[0].set_ylabel("Normalized Density", fontsize=15)
-ax[0].set_xlabel("Total Length", fontsize=15)
-ax[0].set_xlim(0, 1000)
-plt.tight_layout()
-plt.show()
 
+if Parameter.PLOT:
 
-
-# Segment Length Histogram
-
-fig, ax = plt.subplots(1, 2, figsize=(20,6))
-hist1 = ax[0].hist(LengthData.length_branch_flat, 
-          bins=int((np.max(LengthData.length_branch_flat) - np.min(LengthData.length_branch_flat))/10),
-          density=True)
-ax[0].set_title("Distribution of Segment Length", fontsize=20)
-ax[0].set_ylabel("Normalized Density", fontsize=15)
-ax[0].set_xlabel("Segment Length", fontsize=15)
-
-hist2 = ax[1].hist(LengthData.length_branch_sensory_flat, 
-                 bins=int((np.max(LengthData.length_branch_sensory_flat) - 
-                           np.min(LengthData.length_branch_sensory_flat))/10), 
-                 density=True, 
-                 alpha=0.5)
-hist3 = ax[1].hist(LengthData.length_branch_inter_flat, 
-                 bins=int((np.max(LengthData.length_branch_inter_flat) - 
-                           np.min(LengthData.length_branch_inter_flat))/10),
-                 density=True, 
-                 alpha=0.5)
-hist4 = ax[1].hist(LengthData.length_branch_motor_flat,
-                 bins=int((np.max(LengthData.length_branch_motor_flat) - 
-                           np.min(LengthData.length_branch_motor_flat))/10), 
-                 density=True,
-                 alpha=0.5)
-ax[1].set_title("Distribution of Segment Length by Type", fontsize=20)
-ax[1].set_ylabel("Normalized Density", fontsize=15)
-ax[1].set_xlabel("Segment Length", fontsize=15)
-ax[1].legend(['Sensory', 'Inter', 'Motor'], fontsize=15)
-plt.tight_layout()
-plt.show()
-
-hist1centers = 0.5*(hist1[1][1:] + hist1[1][:-1])
-hist2centers = 0.5*(hist2[1][1:] + hist2[1][:-1])
-hist3centers = 0.5*(hist3[1][1:] + hist3[1][:-1])
-hist4centers = 0.5*(hist4[1][1:] + hist4[1][:-1])
-
-
-def objFuncP(xdata, a, b):
-    y = a*np.power(xdata, b)
+    fig, ax = plt.subplots(1, 2, figsize=(20,6))
+    hist1 = ax[0].hist(LengthData.length_total, 
+              bins=int((np.max(LengthData.length_total) - np.min(LengthData.length_total))/10),
+              density=True)
+    ax[0].set_title("Distribution of Segment Length", fontsize=20)
+    ax[0].set_ylabel("Normalized Density", fontsize=15)
+    ax[0].set_xlabel("Total Length", fontsize=15)
+    ax[0].set_xlim(0, 1000)
+    plt.tight_layout()
+    plt.show()
     
-    return y
     
-def objFuncPL(xdata, a):
-    y = np.power(xdata, a)
     
-    return y
-
-def objFuncPpow(xdata, a, b):
-    y = np.power(10, b)*np.power(xdata, a)
+    # Segment Length Histogram
     
-    return y
-
-def objFuncL(xdata, a):
-    y = a*xdata
+    fig, ax = plt.subplots(1, 2, figsize=(20,6))
+    hist1 = ax[0].hist(LengthData.length_branch_flat, 
+              bins=int((np.max(LengthData.length_branch_flat) - np.min(LengthData.length_branch_flat))/10),
+              density=True)
+    ax[0].set_title("Distribution of Segment Length", fontsize=20)
+    ax[0].set_ylabel("Normalized Density", fontsize=15)
+    ax[0].set_xlabel("Segment Length", fontsize=15)
     
-    return y
-
-def objFuncGL(xdata, a, b):
-    y = a*xdata + b
+    hist2 = ax[1].hist(LengthData.length_branch_sensory_flat, 
+                     bins=int((np.max(LengthData.length_branch_sensory_flat) - 
+                               np.min(LengthData.length_branch_sensory_flat))/10), 
+                     density=True, 
+                     alpha=0.5)
+    hist3 = ax[1].hist(LengthData.length_branch_inter_flat, 
+                     bins=int((np.max(LengthData.length_branch_inter_flat) - 
+                               np.min(LengthData.length_branch_inter_flat))/10),
+                     density=True, 
+                     alpha=0.5)
+    hist4 = ax[1].hist(LengthData.length_branch_motor_flat,
+                     bins=int((np.max(LengthData.length_branch_motor_flat) - 
+                               np.min(LengthData.length_branch_motor_flat))/10), 
+                     density=True,
+                     alpha=0.5)
+    ax[1].set_title("Distribution of Segment Length by Type", fontsize=20)
+    ax[1].set_ylabel("Normalized Density", fontsize=15)
+    ax[1].set_xlabel("Segment Length", fontsize=15)
+    ax[1].legend(['Sensory', 'Inter', 'Motor'], fontsize=15)
+    plt.tight_layout()
+    plt.show()
     
-    return y
-
-
-
-#==============================================================================
-
-popt1, pcov1 = scipy.optimize.curve_fit(objFuncP, hist1centers, hist1[0], p0=[0.1, -0.1], maxfev=10000)
-fitX = np.linspace(1, 10000, 1000)
-fitY1 = objFuncP(fitX, popt1[0], popt1[1])
-
-popt2, pcov2 = scipy.optimize.curve_fit(objFuncP, hist2centers, hist2[0], p0=[0.1, -0.1], maxfev=10000)
-popt3, pcov3 = scipy.optimize.curve_fit(objFuncP, hist3centers, hist3[0], p0=[0.1, -0.1], maxfev=10000)
-popt4, pcov4 = scipy.optimize.curve_fit(objFuncP, hist4centers, hist4[0], p0=[0.1, -0.1], maxfev=10000)
-
-fitY2 = objFuncP(fitX, popt2[0], popt2[1])
-fitY3 = objFuncP(fitX, popt3[0], popt3[1])
-fitY4 = objFuncP(fitX, popt4[0], popt4[1])
-
-# Segment Length in Log-Log
-
-fig, ax = plt.subplots(1, 2, figsize=(20,6))
-ax[0].scatter(hist1centers, hist1[0])
-ax[0].set_title("Distribution of Segment Length", fontsize=20)
-ax[0].set_ylabel("Normalized Density", fontsize=15)
-ax[0].set_xlabel("Segment Length", fontsize=15)
-ax[0].set_yscale('log')
-ax[0].set_xscale('log')
-ax[0].set_xlim(1, 10000)
-ax[0].set_ylim(0.00001, 0.1)
-ax[0].plot(fitX, fitY1, 'r')
-ax[1].scatter(hist2centers, hist2[0])
-ax[1].scatter(hist3centers, hist3[0])
-ax[1].scatter(hist4centers, hist4[0])
-ax[1].plot(fitX, fitY2)
-ax[1].plot(fitX, fitY3)
-ax[1].plot(fitX, fitY4)
-ax[1].set_title("Distribution of Segment Length by Type", fontsize=20)
-ax[1].set_ylabel("Normalized Density", fontsize=15)
-ax[1].set_xlabel("Segment Length", fontsize=15)
-ax[1].set_yscale('log')
-ax[1].set_xscale('log')
-ax[1].legend(['Sensory', 'Inter', 'Motor'], fontsize=15)
-ax[1].set_xlim(1, 10000)
-ax[1].set_ylim(0.00001, 0.1)
-plt.tight_layout()
-plt.show()
-
-
-#==============================================================================
-# Segment Length in Log-Log by Type
-
-fig, ax = plt.subplots(1, 3, figsize=(24,6))
-ax[0].scatter(hist2centers, hist2[0])
-ax[0].plot(fitX, fitY2, 'r')
-ax[0].set_yscale('log')
-ax[0].set_xscale('log')
-ax[0].set_xlim(1, 10000)
-ax[0].set_ylim(0.00001, 0.1)
-ax[0].set_title("Sensory Neuron Segment Length", fontsize=20)
-ax[0].set_ylabel("Normalized Density", fontsize=15)
-ax[0].set_xlabel("Segment Length", fontsize=15)
-
-ax[1].scatter(hist3centers, hist3[0])
-ax[1].plot(fitX, fitY3, 'r')
-ax[1].set_yscale('log')
-ax[1].set_xscale('log')
-ax[1].set_xlim(1, 10000)
-ax[1].set_ylim(0.00001, 0.1)
-ax[1].set_title("Interneuron Segment Length", fontsize=20)
-ax[1].set_ylabel("Normalized Density", fontsize=15)
-ax[1].set_xlabel("Segment Length", fontsize=15)
-
-ax[2].scatter(hist4centers, hist4[0])
-ax[2].plot(fitX, fitY4, 'r')
-ax[2].set_yscale('log')
-ax[2].set_xscale('log')
-ax[2].set_xlim(1, 10000)
-ax[2].set_ylim(0.00001, 0.1)
-ax[2].set_title("Motor Neuron Segment Length", fontsize=20)
-ax[2].set_ylabel("Normalized Density", fontsize=15)
-ax[2].set_xlabel("Segment Length", fontsize=15)
-plt.tight_layout()
-plt.show()
-
-#==============================================================================
-# Average Segment Length Histogram
-
-fig, ax = plt.subplots(1, 2, figsize=(20,6))
-hist9 = ax[0].hist(LengthData.length_average,
-          bins=int((np.max(LengthData.length_average) - np.min(LengthData.length_average))/10),
-          density=True)
-ax[0].set_title("Distribution of Average Segment Length", fontsize=20)
-ax[0].set_ylabel("Normalized Density", fontsize=15)
-ax[0].set_xlabel("Segment Length", fontsize=15)
-
-hist5 = ax[1].hist(LengthData.length_average[MorphData.sensory], 
-                 bins=int((np.max(LengthData.length_average[MorphData.sensory]) - 
-                           np.min(LengthData.length_average[MorphData.sensory]))/10),
-                 density=True,
-                 alpha=0.5)
-hist6 = ax[1].hist(LengthData.length_average[MorphData.inter], 
-                 bins=int((np.max(LengthData.length_average[MorphData.inter]) -
-                           np.min(LengthData.length_average[MorphData.inter]))/10),
-                 density=True,
-                 alpha=0.5)
-hist7 = ax[1].hist(LengthData.length_average[MorphData.motor],
-                 bins=int((np.max(LengthData.length_average[MorphData.motor]) -
-                           np.min(LengthData.length_average[MorphData.motor]))/10),
-                 density=True, 
-                 alpha=0.5)
-ax[1].legend(['Sensory', 'Inter', 'Motor'], fontsize=15)
-ax[1].set_title("Distribution of Average Segment Length", fontsize=20)
-ax[1].set_ylabel("Normalized Density", fontsize=15)
-ax[1].set_xlabel("Average Segment Length", fontsize=15)
-plt.tight_layout()
-plt.show()
-
-hist5centers = 0.5*(hist5[1][1:] + hist5[1][:-1])
-hist6centers = 0.5*(hist6[1][1:] + hist6[1][:-1])
-hist7centers = 0.5*(hist7[1][1:] + hist7[1][:-1])
-hist9centers = 0.5*(hist9[1][1:] + hist9[1][:-1])
-
-#==============================================================================
-# Average Segment Length in Log-Log
-
-fig, ax = plt.subplots(1, 2, figsize=(20,6))
-ax[0].scatter(hist9centers, hist9[0])
-ax[0].set_yscale('log')
-ax[0].set_xscale('log')
-ax[0].set_xlim(1, 10000)
-ax[0].set_ylim(0.0001, 0.1)
-ax[0].set_title("Distribution of Average Segment Length", fontsize=20)
-ax[0].set_ylabel("Normalized Density", fontsize=15)
-ax[0].set_xlabel("Segment Length", fontsize=15)
-
-ax[1].scatter(hist5centers, hist5[0])
-ax[1].scatter(hist6centers, hist6[0])
-ax[1].scatter(hist7centers, hist7[0])
-ax[1].set_yscale('log')
-ax[1].set_xscale('log')
-ax[1].set_xlim(1, 10000)
-ax[1].set_ylim(0.0001, 0.1)
-ax[1].set_title("Distribution of Average Segment Length by Type", fontsize=20)
-ax[1].set_ylabel("Normalized Density", fontsize=15)
-ax[1].set_xlabel("Segment Length", fontsize=15)
-ax[1].legend(['Sensory', 'Inter', 'Motor'], fontsize=15)
-plt.tight_layout()
-plt.show()
-
-#==============================================================================
-# Average Segment Length in Log-Log by type
-
-fig, ax = plt.subplots(1, 3, figsize=(24,6))
-ax[0].scatter(hist5centers, hist5[0])
-ax[0].set_yscale('log')
-ax[0].set_xscale('log')
-ax[0].set_xlim(1, 10000)
-ax[0].set_ylim(0.00001, 1)
-ax[0].set_title("Average Sensory Neuron Segment Length", fontsize=20)
-ax[0].set_ylabel("Normalized Density", fontsize=15)
-ax[0].set_xlabel("Average Segment Length", fontsize=15)
-
-ax[1].scatter(hist6centers, hist6[0])
-ax[1].set_yscale('log')
-ax[1].set_xscale('log')
-ax[1].set_xlim(1, 10000)
-ax[1].set_ylim(0.00001, 1)
-ax[1].set_title("Average Interneuron Segment Length", fontsize=20)
-ax[1].set_ylabel("Normalized Density", fontsize=15)
-ax[1].set_xlabel("Average Segment Length", fontsize=15)
-
-ax[2].scatter(hist7centers, hist7[0])
-ax[2].set_yscale('log')
-ax[2].set_xscale('log')
-ax[2].set_xlim(1, 10000)
-ax[2].set_ylim(0.00001, 1)
-ax[2].set_title("Average Motor Neuron Segment Length", fontsize=20)
-ax[2].set_ylabel("Normalized Density", fontsize=15)
-ax[2].set_xlabel("Average Segment Length", fontsize=15)
-plt.tight_layout()
-plt.show()
-
-
-#==============================================================================
-# BranchNum vs Total Segment Length vs Average Segment Length by Type
-
-poptL = []
-
-fig, ax = plt.subplots(4, 3, figsize=(18,24))
-ax[0][0].scatter(LengthData.length_total[MorphData.sensory], BranchData.branchNum[MorphData.sensory])
-ax[0][0].set_title("Sensory Neuron", fontsize=20)
-ax[0][0].set_xlabel("Total Segment Length", fontsize=15)
-ax[0][0].set_ylabel("Number of Branches", fontsize=15)
-ax[0][0].set_xlim(-50, 1000)
-ax[0][0].set_ylim(-1, 8)
-
-ax[0][1].scatter(LengthData.length_total[MorphData.inter], BranchData.branchNum[MorphData.inter])
-ax[0][1].set_title("Interneuron", fontsize=20)
-ax[0][1].set_xlabel("Total Segment Length", fontsize=15)
-ax[0][1].set_xlim(-50, 1000)
-ax[0][1].set_ylim(-1, 8)
-
-ax[0][2].scatter(LengthData.length_total[MorphData.motor], BranchData.branchNum[MorphData.motor])
-ax[0][2].set_title("Motor Neuron", fontsize=20)
-ax[0][2].set_xlabel("Total Segment Length", fontsize=15)
-ax[0][2].set_xlim(-50, 1000)
-ax[0][2].set_ylim(-1, 8)
-
-ax[1][0].scatter(LengthData.length_average[MorphData.sensory], BranchData.branchNum[MorphData.sensory])
-ax[1][0].set_xlabel("Average Segment Length", fontsize=15)
-ax[1][0].set_ylabel("Number of Branches", fontsize=15)
-ax[1][0].set_xlim(-50, 1000)
-ax[1][0].set_ylim(-1, 8)
-
-ax[1][1].scatter(LengthData.length_average[MorphData.inter], BranchData.branchNum[MorphData.inter])
-ax[1][1].set_xlabel("Average Segment Length", fontsize=15)
-ax[1][1].set_xlim(-50, 1000)
-ax[1][1].set_ylim(-1, 8)
-
-ax[1][2].scatter(LengthData.length_average[MorphData.motor], BranchData.branchNum[MorphData.motor])
-ax[1][2].set_xlabel("Average Segment Length", fontsize=15)
-ax[1][2].set_xlim(-50, 1000)
-ax[1][2].set_ylim(-1, 8)
-
-for i in range(len(np.unique(BranchData.branchNum[MorphData.sensory]))):
-    scttrInd = np.where(BranchData.branchNum[MorphData.sensory] ==
-                        np.unique(BranchData.branchNum[MorphData.sensory])[i])[0]
-    ax[2][0].scatter(LengthData.length_average[MorphData.sensory][scttrInd], 
-                     LengthData.length_total[MorphData.sensory][scttrInd])
-    fitX = np.linspace(0, 1000, 1000)
-ax[2][0].set_xlabel("Average Segment Length", fontsize=15)
-ax[2][0].set_ylabel("Total Segment Length", fontsize=15)
-ax[2][0].legend(np.unique(BranchData.branchNum[MorphData.sensory])[:-1], fontsize=15)
-for i in range(len(np.unique(BranchData.branchNum[MorphData.sensory]))):
-    scttrInd = np.where(BranchData.branchNum[MorphData.sensory] == 
-                        np.unique(BranchData.branchNum[MorphData.sensory])[i])[0]
-    if np.unique(BranchData.branchNum[MorphData.sensory])[i] == 0:
-        fitY = objFuncL(fitX, 1)
-        ax[2][0].plot(fitX, fitY)
-    elif (np.unique(BranchData.branchNum[MorphData.sensory])[i] == 1 or 
-          np.unique(BranchData.branchNum[MorphData.sensory])[i] == 2):
-        popt, pcov = scipy.optimize.curve_fit(objFuncL, 
-                                                LengthData.length_average[MorphData.sensory][scttrInd], 
-                                                LengthData.length_total[MorphData.sensory][scttrInd],
-                                                p0=[1.],
-                                                maxfev=10000)
-        fitY = objFuncL(fitX, popt[0])
-        ax[2][0].plot(fitX, fitY)
-        poptL.append(popt[0])
-ax[2][0].set_xlim(-50, 1000)
-ax[2][0].set_ylim(0, 1000)
-
-for i in range(len(np.unique(BranchData.branchNum[MorphData.inter]))):
-    scttrInd = np.where(BranchData.branchNum[MorphData.inter] == 
-                        np.unique(BranchData.branchNum[MorphData.inter])[i])[0]
-    ax[2][1].scatter(LengthData.length_average[MorphData.inter][scttrInd], 
-                     LengthData.length_total[MorphData.inter][scttrInd])
-ax[2][1].set_xlabel("Average Segment Length", fontsize=15)
-ax[2][1].legend(np.unique(BranchData.branchNum[MorphData.inter]), fontsize=15)
-for i in range(len(np.unique(BranchData.branchNum[MorphData.inter]))):
-    scttrInd = np.where(BranchData.branchNum[MorphData.inter] == 
-                        np.unique(BranchData.branchNum[MorphData.inter])[i])[0]
-    if np.unique(BranchData.branchNum[MorphData.inter])[i] == 0:
-        fitY = objFuncL(fitX, 1)
-        ax[2][1].plot(fitX, fitY)
-    elif (np.unique(BranchData.branchNum[MorphData.inter])[i] == 1 or 
-          np.unique(BranchData.branchNum[MorphData.inter])[i] == 2):
-        popt, pcov = scipy.optimize.curve_fit(objFuncL, 
-                                                LengthData.length_average[MorphData.inter][scttrInd], 
-                                                LengthData.length_total[MorphData.inter][scttrInd],
-                                                p0=[1.],
-                                                maxfev=10000)
-        fitY = objFuncL(fitX, popt[0])
-        ax[2][1].plot(fitX, fitY)
-        poptL.append(popt[0])
-ax[2][1].set_xlim(-50, 1000)
-ax[2][1].set_ylim(0, 1000)
-
-for i in range(len(np.unique(BranchData.branchNum[MorphData.motor]))):
-    scttrInd = np.where(BranchData.branchNum[MorphData.motor] == 
-                        np.unique(BranchData.branchNum[MorphData.motor])[i])[0]
-    ax[2][2].scatter(LengthData.length_average[MorphData.motor][scttrInd], 
-                     LengthData.length_total[MorphData.motor][scttrInd])
-ax[2][2].set_xlabel("Average Segment Length", fontsize=15)
-ax[2][2].legend(np.unique(BranchData.branchNum[MorphData.motor]), fontsize=15)
-for i in range(len(np.unique(BranchData.branchNum[MorphData.motor]))):
-    scttrInd = np.where(BranchData.branchNum[MorphData.motor] == 
-                        np.unique(BranchData.branchNum[MorphData.motor])[i])[0]
-    if np.unique(BranchData.branchNum[MorphData.motor])[i] == 0:
-        fitY = objFuncL(fitX, 1)
-        ax[2][2].plot(fitX, fitY)
-    elif (np.unique(BranchData.branchNum[MorphData.motor])[i] == 1 or 
-          np.unique(BranchData.branchNum[MorphData.motor])[i] == 2):
-        popt, pcov = scipy.optimize.curve_fit(objFuncL, 
-                                                LengthData.length_average[MorphData.motor][scttrInd], 
-                                                LengthData.length_total[MorphData.motor][scttrInd],
-                                                p0=[1.],
-                                                maxfev=10000)
-        fitY = objFuncL(fitX, popt[0])
-        ax[2][2].plot(fitX, fitY)
-        poptL.append(popt[0])
-ax[2][2].set_xlim(-50, 1000)
-ax[2][2].set_ylim(0, 1000)
-
-
-
-
-length_branch_len = np.array([len(arr) for arr in LengthData.length_branch])
-repeated_length_total = np.repeat(LengthData.length_total, length_branch_len)
-
-for i in range(len(np.unique(BranchData.branchNum[MorphData.sensory]))):
-    scttrInd = np.where(BranchData.branchNum[MorphData.sensory] == 
-                        np.unique(BranchData.branchNum[MorphData.sensory])[i])[0]
-    length_branch_len_sensory = [len(arr) for arr in np.array(LengthData.length_branch)[MorphData.sensory][scttrInd]]
-    repeated_length_total_sensory = np.repeat(LengthData.length_total[MorphData.sensory][scttrInd], 
-                                              length_branch_len[MorphData.sensory][scttrInd])
-    ax[3][0].scatter([item for sublist in np.array(LengthData.length_branch)[MorphData.sensory][scttrInd].tolist() for item in sublist], 
-                     repeated_length_total_sensory)
-ax[3][0].set_xlabel("Segment Length", fontsize=15)
-ax[3][0].set_ylabel("Total Segment Length", fontsize=15)
-ax[3][0].legend(np.unique(BranchData.branchNum[MorphData.sensory])[:-1], fontsize=15)
-for i in range(len(np.unique(BranchData.branchNum[MorphData.sensory]))):
-    scttrInd = np.where(BranchData.branchNum[MorphData.sensory] == 
-                        np.unique(BranchData.branchNum[MorphData.sensory])[i])[0]
-    length_branch_len_sensory = [len(arr) for arr in np.array(LengthData.length_branch)[MorphData.sensory][scttrInd]]
-    repeated_length_total_sensory = np.repeat(LengthData.length_total[MorphData.sensory][scttrInd], 
-                                              length_branch_len[MorphData.sensory][scttrInd])
-    if np.unique(BranchData.branchNum[MorphData.sensory])[i] == 0:
-        fitY = objFuncL(fitX, 1)
-        ax[3][0].plot(fitX, fitY)
-    elif (np.unique(BranchData.branchNum[MorphData.sensory])[i] == 1 or 
-        np.unique(BranchData.branchNum[MorphData.sensory])[i] == 2):
-        popt, pcov = scipy.optimize.curve_fit(objFuncL, 
-                                              [item for sublist in 
-                                               np.array(LengthData.length_branch)[MorphData.sensory][scttrInd].tolist() for item in sublist], 
-                                              repeated_length_total_sensory,
-                                              p0=[1.],
-                                              maxfev=10000)
-        fitY = objFuncL(fitX, popt[0])
-        ax[3][0].plot(fitX, fitY)
-        poptL.append(popt[0])
-ax[3][0].set_xlim(-50, 1000)
-ax[3][0].set_ylim(0, 1000)
-
-for i in range(len(np.unique(BranchData.branchNum[MorphData.inter]))):
-    scttrInd = np.where(BranchData.branchNum[MorphData.inter] == 
-                        np.unique(BranchData.branchNum[MorphData.inter])[i])[0]
-    length_branch_len_inter = [len(arr) for arr in np.array(LengthData.length_branch)[MorphData.inter][scttrInd]]
-    repeated_length_total_inter = np.repeat(LengthData.length_total[MorphData.inter][scttrInd], 
-                                            length_branch_len[MorphData.inter][scttrInd])
-    ax[3][1].scatter([item for sublist in np.array(LengthData.length_branch)[MorphData.inter][scttrInd].tolist() for item in sublist], 
-                     repeated_length_total_inter)
-ax[3][1].set_xlabel("Segment Length", fontsize=15)
-ax[3][1].legend(np.unique(BranchData.branchNum[MorphData.inter]), fontsize=15)
-for i in range(len(np.unique(BranchData.branchNum[MorphData.inter]))):
-    scttrInd = np.where(BranchData.branchNum[MorphData.inter] == np.unique(BranchData.branchNum[MorphData.inter])[i])[0]
-    length_branch_len_inter = [len(arr) for arr in np.array(LengthData.length_branch)[MorphData.inter][scttrInd]]
-    repeated_length_total_inter = np.repeat(LengthData.length_total[MorphData.inter][scttrInd], 
-                                            length_branch_len[MorphData.inter][scttrInd])
-    if np.unique(BranchData.branchNum[MorphData.inter])[i] == 0:
-        fitY = objFuncL(fitX, 1)
-        ax[3][1].plot(fitX, fitY)
-    elif (np.unique(BranchData.branchNum[MorphData.inter])[i] == 1 or 
-          np.unique(BranchData.branchNum[MorphData.inter])[i] == 2):
-        popt, pcov = scipy.optimize.curve_fit(objFuncL, 
-                                              [item for sublist in 
-                                               np.array(LengthData.length_branch)[MorphData.inter][scttrInd].tolist() for item in sublist], 
-                                              repeated_length_total_inter,
-                                              p0=[1.],
-                                              maxfev=10000)
-        fitY = objFuncL(fitX, popt[0])
-        ax[3][1].plot(fitX, fitY)
-        poptL.append(popt[0])
-ax[3][1].set_xlim(-50, 1000)
-ax[3][1].set_ylim(0, 1000)
-
-for i in range(len(np.unique(BranchData.branchNum[MorphData.motor]))):
-    scttrInd = np.where(BranchData.branchNum[MorphData.motor] == 
-                        np.unique(BranchData.branchNum[MorphData.motor])[i])[0]
-    length_branch_len_motor = [len(arr) for arr in np.array(LengthData.length_branch)[MorphData.motor][scttrInd]]
-    repeated_length_total_motor = np.repeat(LengthData.length_total[MorphData.motor][scttrInd], 
-                                            length_branch_len[MorphData.motor][scttrInd])
-    ax[3][2].scatter([item for sublist in np.array(LengthData.length_branch)[MorphData.motor][scttrInd].tolist() for item in sublist], 
-                     repeated_length_total_motor)
-ax[3][2].set_xlabel("Segment Length", fontsize=15)
-ax[3][2].legend(np.unique(BranchData.branchNum[MorphData.motor]), fontsize=15)
-for i in range(len(np.unique(BranchData.branchNum[MorphData.motor]))):
-    scttrInd = np.where(BranchData.branchNum[MorphData.motor] == 
-                        np.unique(BranchData.branchNum[MorphData.motor])[i])[0]
-    length_branch_len_motor = [len(arr) for arr in np.array(LengthData.length_branch)[MorphData.motor][scttrInd]]
-    repeated_length_total_motor = np.repeat(LengthData.length_total[MorphData.motor][scttrInd], 
-                                            length_branch_len[MorphData.motor][scttrInd])
-    if np.unique(BranchData.branchNum[MorphData.motor])[i] == 0:
-        fitY = objFuncL(fitX, 1)
-        ax[3][2].plot(fitX, fitY)
-    elif (np.unique(BranchData.branchNum[MorphData.motor])[i] == 1 or 
-          np.unique(BranchData.branchNum[MorphData.motor])[i] == 2):
-        popt, pcov = scipy.optimize.curve_fit(objFuncL, 
-                                              [item for sublist in 
-                                               np.array(LengthData.length_branch)[MorphData.motor][scttrInd].tolist() for item in sublist], 
-                                              repeated_length_total_motor,
-                                              p0=[1.],
-                                              maxfev=10000)
-        fitY = objFuncL(fitX, popt[0])
-        ax[3][2].plot(fitX, fitY)
-        poptL.append(popt[0])
-ax[3][2].set_xlim(-50, 1000)
-ax[3][2].set_ylim(0, 1000)
-
-plt.tight_layout()
-plt.show()
-
-
-#==============================================================================
-
-
-branchEndPDict = {'branch': BranchData.branchNum, 'endP': MorphData.endP_len}
-branchEndPDF = pd.DataFrame(data=branchEndPDict)
-fig = plt.figure(figsize=(8,6))
-seaborn.swarmplot(x='branch', y='endP', data=branchEndPDF.loc[branchEndPDF['branch'] < 197])
-plt.title("Distribution of Number of Endpoints\n for Given Branch Number", fontsize=20)
-plt.xlabel("Branch Number", fontsize=15)
-plt.ylabel("Number of Endpoints", fontsize=15)
-#plt.xlim(-1, 10)
-#plt.ylim(-1, 10)
-plt.tight_layout()
-plt.show()
-
-
-#==============================================================================
-
-
-fig = plt.figure(figsize=(8,6))
-seaborn.kdeplot(np.delete(BranchData.branchNum[MorphData.sensory], 
-                          np.where(BranchData.branchNum[MorphData.sensory] == 197)[0]), 
-                bw=.6, 
-                label="Sensory")
-seaborn.kdeplot(BranchData.branchNum[MorphData.inter], bw=.6, label="Inter")
-seaborn.kdeplot(BranchData.branchNum[MorphData.motor], bw=.6, label="Motor")
-plt.xlim(-2, 8)
-plt.title("Estimated Distribution of Branch Number by Type", fontsize=20)
-plt.xlabel("Number of Branches", fontsize=15)
-plt.ylabel("Estimated Probability Density", fontsize=15)
-plt.legend(['Sensory', 'Inter', 'Motor'], fontsize=15)
-plt.tight_layout()
-plt.show()
-
-
-#==============================================================================
-
-
-fig = plt.figure(figsize=(8,6))
-plt.scatter(MorphData.morph_dist_len, rGy)
-plt.yscale('log')
-plt.xscale('log')
-#plt.xlim(1, 10000)
-#plt.ylim(0.005, 1000)
-plt.title("Scaling Behavior of $R_{g}$ to $N$", fontsize=20)
-plt.xlabel("Number of Points", fontsize=15)
-plt.ylabel("Radius of Gyration", fontsize=15)
-plt.tight_layout()
-plt.show()
-
-fig = plt.figure(figsize=(8,6))
-plt.scatter(MorphData.morph_dist_len_EP, rGyEP)
-plt.yscale('log')
-plt.xscale('log')
-#plt.xlim(1, 10000)
-#plt.ylim(0.005, 1000)
-plt.title("Scaling Behavior of $R_{g}$ to $N_{EP}$", fontsize=20)
-plt.xlabel("Number of Nodes", fontsize=15)
-plt.ylabel("Radius of Gyration", fontsize=15)
-plt.tight_layout()
-plt.show()
-
-
-#==============================================================================
-
-#reg_len_scale = np.average(np.divide(regMDistLen, morph_dist_len))
-poptR, pcovR = scipy.optimize.curve_fit(objFuncGL, 
-                                        np.log10(MorphData.regMDistLen*Parameter.sSize), 
-                                        np.log10(np.sqrt(np.square(rGyReg)*1/Parameter.sSize)), 
-                                        p0=[1., 0.], 
-                                        maxfev=100000)
-fitYregR = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR[0], poptR[1])
-
-fig = plt.figure(figsize=(8,6))
-plt.scatter(MorphData.regMDistLen*Parameter.sSize, np.sqrt(np.square(rGyReg)*1/Parameter.sSize))
-plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR, color='tab:red')
-plt.yscale('log')
-plt.xscale('log')
-plt.xlim(10, 10000)
-plt.ylim(7, 4000)
-plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
-plt.xlabel(r"Number of Regularized Points ($a*N$)", fontsize=15)
-plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
-plt.tight_layout()
-plt.show()
-
-
-#==============================================================================
-
-s0 = np.array(MorphData.sensory)[np.where(MorphData.physLoc[MorphData.sensory] == 0)[0]]
-s1 = np.array(MorphData.sensory)[np.where(MorphData.physLoc[MorphData.sensory] == 1)[0]]
-s1 = np.delete(s1, [7,8])
-s2 = np.array(MorphData.sensory)[np.where(MorphData.physLoc[MorphData.sensory] == 2)[0]]
-
-sidx1 = np.where(MorphData.regMDistLen[MorphData.sensory]*Parameter.sSize < 176)[0]
-sidx2 = np.where((MorphData.regMDistLen[MorphData.sensory]*Parameter.sSize > 176) &
-                 (MorphData.regMDistLen[MorphData.sensory]*Parameter.sSize < 1e3))[0]
-
-poptR_sidx0, pcovR_sidx0 = scipy.optimize.curve_fit(objFuncGL, 
-                                        np.log10(MorphData.regMDistLen[s0]*Parameter.sSize), 
-                                        np.log10(np.sqrt(np.square(rGyReg)[s0]*1/Parameter.sSize)), 
-                                        p0=[1., 0.], 
-                                        maxfev=100000)
-fitYregR_sidx0 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_sidx0[0], poptR_sidx0[1])
-
-
-poptR_sidx1, pcovR_sidx1 = scipy.optimize.curve_fit(objFuncGL, 
-                                        np.log10(MorphData.regMDistLen[s1]*Parameter.sSize), 
-                                        np.log10(np.sqrt(np.square(rGyReg)[s1]*1/Parameter.sSize)), 
-                                        p0=[1., 0.], 
-                                        maxfev=100000)
-fitYregR_sidx1 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_sidx1[0], poptR_sidx1[1])
-
-poptR_sidx2, pcovR_sidx2 = scipy.optimize.curve_fit(objFuncGL, 
-                                        np.log10(MorphData.regMDistLen[s2]*Parameter.sSize), 
-                                        np.log10(np.sqrt(np.square(rGyReg)[s2]*1/Parameter.sSize)), 
-                                        p0=[1., 0.], 
-                                        maxfev=100000)
-fitYregR_sidx2 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_sidx2[0], poptR_sidx2[1])
-
-
-fig = plt.figure(figsize=(8,6))
-#plt.scatter(regMDistLen[MorphData.sensory]*Parameter.sSize, np.sqrt(np.square(rGyReg)[MorphData.sensory]*1/Parameter.sSize))
-plt.scatter(MorphData.regMDistLen[s0]*Parameter.sSize, np.sqrt(np.square(rGyReg)[s0]*1/Parameter.sSize))
-plt.scatter(MorphData.regMDistLen[s1]*Parameter.sSize, np.sqrt(np.square(rGyReg)[s1]*1/Parameter.sSize))
-plt.scatter(MorphData.regMDistLen[s2]*Parameter.sSize, np.sqrt(np.square(rGyReg)[s2]*1/Parameter.sSize))
-plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_sidx0, color='tab:blue')
-plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_sidx1, color='tab:orange')
-plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_sidx2, color='tab:green')
-plt.legend(['Head', 'Body', 'Tail'], fontsize=15)
-plt.vlines(56, 0.1, 1e4, linestyles='dashed')
-plt.vlines(176, 0.1, 1e4, linestyles='dashed')
-plt.vlines(1000, 0.1, 1e4, linestyles='dashed')
-plt.yscale('log')
-plt.xscale('log')
-plt.xlim(10, 10000)
-plt.ylim(7, 4000)
-plt.title(r"$R_{g}$ to Length for Sensory Neurons", fontsize=20)
-plt.xlabel(r"Length", fontsize=15)
-plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
-plt.tight_layout()
-plt.show()
-
-
-
-i0 = np.array(MorphData.inter)[np.where(MorphData.physLoc[MorphData.inter] == 0)[0]]
-i1 = np.array(MorphData.inter)[np.where(MorphData.physLoc[MorphData.inter] == 1)[0]]
-i2 = np.array(MorphData.inter)[np.where(MorphData.physLoc[MorphData.inter] == 2)[0]]
-
-iidx1 = np.where(MorphData.regMDistLen[MorphData.inter]*Parameter.sSize < 176)[0]
-iidx2 = np.where((MorphData.regMDistLen[MorphData.inter]*Parameter.sSize > 176) &
-                 (MorphData.regMDistLen[MorphData.inter]*Parameter.sSize < 1e3))[0]
-
-poptR_iidx0, pcovR_iidx0 = scipy.optimize.curve_fit(objFuncGL, 
-                                        np.log10(MorphData.regMDistLen[i0]*Parameter.sSize), 
-                                        np.log10(np.sqrt(np.square(rGyReg)[i0]*1/Parameter.sSize)), 
-                                        p0=[1., 0.], 
-                                        maxfev=100000)
-fitYregR_iidx0 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_iidx0[0], poptR_iidx0[1])
-
-
-poptR_iidx1, pcovR_iidx1 = scipy.optimize.curve_fit(objFuncGL, 
-                                        np.log10(MorphData.regMDistLen[i1]*Parameter.sSize), 
-                                        np.log10(np.sqrt(np.square(rGyReg)[i1]*1/Parameter.sSize)), 
-                                        p0=[1., 0.], 
-                                        maxfev=100000)
-fitYregR_iidx1 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_iidx1[0], poptR_iidx1[1])
-
-poptR_iidx2, pcovR_iidx2 = scipy.optimize.curve_fit(objFuncGL, 
-                                        np.log10(MorphData.regMDistLen[i2]*Parameter.sSize), 
-                                        np.log10(np.sqrt(np.square(rGyReg)[i2]*1/Parameter.sSize)), 
-                                        p0=[1., 0.], 
-                                        maxfev=100000)
-fitYregR_iidx2 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_iidx2[0], poptR_iidx2[1])
-
-
-fig = plt.figure(figsize=(8,6))
-#plt.scatter(regMDistLen[MorphData.inter]*Parameter.sSize, np.sqrt(np.square(rGyReg)[MorphData.inter]*1/Parameter.sSize))
-plt.scatter(MorphData.regMDistLen[i0]*Parameter.sSize, 
-            np.sqrt(np.square(rGyReg)[i0]*1/Parameter.sSize))
-plt.scatter(MorphData.regMDistLen[i1]*Parameter.sSize, 
-            np.sqrt(np.square(rGyReg)[i1]*1/Parameter.sSize))
-plt.scatter(MorphData.regMDistLen[i2]*Parameter.sSize, 
-            np.sqrt(np.square(rGyReg)[i2]*1/Parameter.sSize))
-plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_iidx0, color='tab:blue')
-plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_iidx1, color='tab:orange')
-plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_iidx2, color='tab:green')
-plt.legend(['Head', 'Body', 'Tail'], fontsize=15)
-plt.vlines(56, 0.1, 1e4, linestyles='dashed')
-plt.vlines(176, 0.1, 1e4, linestyles='dashed')
-plt.vlines(1000, 0.1, 1e4, linestyles='dashed')
-plt.yscale('log')
-plt.xscale('log')
-plt.xlim(10, 10000)
-plt.ylim(7, 4000)
-plt.title(r"$R_{g}$ to Length for Interneurons", fontsize=20)
-plt.xlabel(r"Length", fontsize=15)
-plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
-plt.tight_layout()
-plt.show()
-
-
-
-m0 = np.array(MorphData.motor)[np.where(MorphData.physLoc[MorphData.motor] == 0)[0]]
-m1 = np.array(MorphData.motor)[np.where(MorphData.physLoc[MorphData.motor] == 1)[0]]
-m2 = np.array(MorphData.motor)[np.where(MorphData.physLoc[MorphData.motor] == 2)[0]]
-
-midx1 = np.where(MorphData.regMDistLen[MorphData.motor]*Parameter.sSize < 176)[0]
-midx2 = np.where((MorphData.regMDistLen[MorphData.motor]*Parameter.sSize > 176) &
-                 (MorphData.regMDistLen[MorphData.motor]*Parameter.sSize < 1e3))[0]
-
-poptR_midx0, pcovR_midx0 = scipy.optimize.curve_fit(objFuncGL, 
-                                        np.log10(MorphData.regMDistLen[m0]*Parameter.sSize), 
-                                        np.log10(np.sqrt(np.square(rGyReg)[m0]*1/Parameter.sSize)), 
-                                        p0=[1., 0.], 
-                                        maxfev=100000)
-fitYregR_midx0 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_midx0[0], poptR_midx0[1])
-
-
-poptR_midx1, pcovR_midx1 = scipy.optimize.curve_fit(objFuncGL, 
-                                        np.log10(MorphData.regMDistLen[m1]*Parameter.sSize), 
-                                        np.log10(np.sqrt(np.square(rGyReg)[m1]*1/Parameter.sSize)), 
-                                        p0=[1., 0.], 
-                                        maxfev=100000)
-fitYregR_midx1 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_midx1[0], poptR_midx1[1])
-
-poptR_midx2, pcovR_midx2 = scipy.optimize.curve_fit(objFuncGL, 
-                                        np.log10(MorphData.regMDistLen[m2]*Parameter.sSize), 
-                                        np.log10(np.sqrt(np.square(rGyReg)[m2]*1/Parameter.sSize)), 
-                                        p0=[1., 0.], 
-                                        maxfev=100000)
-fitYregR_midx2 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_midx2[0], poptR_midx2[1])
-
-
-fig = plt.figure(figsize=(8,6))
-#plt.scatter(regMDistLen[MorphData.motor]*Parameter.sSize, np.sqrt(np.square(rGyReg)[MorphData.motor]*1/Parameter.sSize))
-plt.scatter(MorphData.regMDistLen[m0]*Parameter.sSize, np.sqrt(np.square(rGyReg)[m0]*1/Parameter.sSize))
-plt.scatter(MorphData.regMDistLen[m1]*Parameter.sSize, np.sqrt(np.square(rGyReg)[m1]*1/Parameter.sSize))
-plt.scatter(MorphData.regMDistLen[m2]*Parameter.sSize, np.sqrt(np.square(rGyReg)[m2]*1/Parameter.sSize))
-plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_midx0, color='tab:blue')
-plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_midx1, color='tab:orange')
-plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_midx2, color='tab:green')
-plt.legend(['Head', 'Body', 'Tail'], fontsize=15)
-plt.vlines(56, 0.1, 1e4, linestyles='dashed')
-plt.vlines(176, 0.1, 1e4, linestyles='dashed')
-plt.vlines(1000, 0.1, 1e4, linestyles='dashed')
-plt.yscale('log')
-plt.xscale('log')
-plt.xlim(10, 10000)
-plt.ylim(7, 4000)
-plt.title(r"$R_{g}$ to Length for Motor Neurons", fontsize=20)
-plt.xlabel(r"Length", fontsize=15)
-plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
-plt.tight_layout()
-plt.show()
-
-
-#==============================================================================
-
-
-rGyRegSeg_avg = np.empty(len(Parameter.nSize))
-for i in range(len(Parameter.nSize)):
-    RStemp = np.where(OutputData.regSegOrdN == Parameter.nSize[i])[0]
-    rGyRegSeg_avg[i] = np.average(OutputData.rGyRegSeg[RStemp])
-
-RS1 = np.where(OutputData.regSegOrdN > 7)[0]
-RS2 = np.where((OutputData.regSegOrdN <= 8) & (OutputData.regSegOrdN >= 4))[0]
-RS3 = np.where(OutputData.regSegOrdN < 5)[0]
-
-poptRS1, pcovRS1 = scipy.optimize.curve_fit(objFuncGL, 
-                                          np.log10(OutputData.regSegOrdN[RS1]*Parameter.sSize), 
-                                          np.log10(np.sqrt(np.square(OutputData.rGyRegSeg[RS1])*1/Parameter.sSize)), 
-                                          p0=[1., 0.], 
-                                          maxfev=100000)
-fitYregRS1 = objFuncPpow(np.unique(OutputData.regSegOrdN[RS1])*Parameter.sSize, poptRS1[0], poptRS1[1])
-
-fitYregRS12 = objFuncPpow(np.unique(OutputData.regSegOrdN[RS2])*Parameter.sSize, poptRS1[0], poptRS1[1])
-
-poptRS2, pcovRS2 = scipy.optimize.curve_fit(objFuncGL, 
-                                          np.log10(OutputData.regSegOrdN[RS2]*Parameter.sSize), 
-                                          np.log10(np.sqrt(np.square(OutputData.rGyRegSeg[RS2])*1/Parameter.sSize)), 
-                                          p0=[1., 0.], 
-                                          maxfev=100000)
-fitYregRS2 = objFuncPpow(np.unique(OutputData.regSegOrdN[RS2])*Parameter.sSize, poptRS2[0], poptRS2[1])
-
-poptRS3, pcovRS3 = scipy.optimize.curve_fit(objFuncGL, 
-                                          np.log10(OutputData.regSegOrdN[RS3]*Parameter.sSize), 
-                                          np.log10(np.sqrt(np.square(OutputData.rGyRegSeg[RS3])*1/Parameter.sSize)), 
-                                          p0=[1., 0.], 
-                                          maxfev=100000)
-fitYregRS3 = objFuncPpow(np.unique(OutputData.regSegOrdN[RS3])*Parameter.sSize, poptRS3[0], poptRS3[1])
-
-fitYregRS32 = objFuncPpow(np.unique(OutputData.regSegOrdN[RS2])*Parameter.sSize, poptRS3[0], poptRS3[1])
-
-
-fig, ax1 = plt.subplots(figsize=(12,8))
-ax1.xaxis.label.set_fontsize(15)
-ax1.xaxis.set_tick_params(which='major', length=7)
-ax1.xaxis.set_tick_params(which='minor', length=5)
-ax1.yaxis.label.set_fontsize(15)
-ax1.yaxis.set_tick_params(which='major', length=7)
-ax1.yaxis.set_tick_params(which='minor', length=5)
-ax1.scatter(MorphData.regMDistLen*Parameter.sSize, 
-            np.sqrt(np.square(rGyReg)*1/Parameter.sSize), color='tab:blue')
-ax1.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR, color='tab:red', lw=2)
-ax1.scatter(OutputData.regSegOrdN*Parameter.sSize, 
-            np.sqrt(np.square(OutputData.rGyRegSeg)*1/Parameter.sSize), 
-            color='tab:blue',
-            facecolors='none')
-ax1.scatter(np.array(Parameter.nSize)*Parameter.sSize, 
-            np.sqrt(np.square(rGyRegSeg_avg)*1/Parameter.sSize), 
-            color='tab:orange')
-ax1.plot(np.unique(OutputData.regSegOrdN[RS1])*Parameter.sSize, fitYregRS1, color='tab:red', lw=2, linestyle='--')
-ax1.plot(np.unique(OutputData.regSegOrdN[RS2])*Parameter.sSize, fitYregRS2, color='tab:red', lw=2, linestyle='--')
-ax1.plot(np.unique(OutputData.regSegOrdN[RS3])*Parameter.sSize, fitYregRS3, color='tab:red', lw=2, linestyle='--')
-ax1.vlines(0.8, 0.01, 11000, linestyles='dashed')
-ax1.vlines(0.4, 0.01, 11000, linestyles='dashed')
-ax1.set_yscale('log')
-ax1.set_xscale('log')
-#ax1.xlim(0.01, 10500)
-ax1.set_ylim(0.03, 10000)
-
-ax2 = plt.axes([0, 0, 1, 1])
-ip1 = InsetPosition(ax1, [0.01, 0.57, 0.4, 0.4])
-ax2.set_axes_locator(ip1)
-mark_inset(ax1, ax2, loc1=3, loc2=4, fc="none", ec='0.5')
-
-ax2.scatter(OutputData.regSegOrdN*Parameter.sSize, 
-            np.sqrt(np.square(OutputData.rGyRegSeg)*1/Parameter.sSize), 
-            color='tab:blue', 
-            facecolors='none')
-ax2.scatter(np.array(Parameter.nSize)[1:11]*Parameter.sSize,
-            np.sqrt(np.square(rGyRegSeg_avg)[1:11]*1/Parameter.sSize), 
-            color='tab:orange')
-ax2.plot(np.unique(OutputData.regSegOrdN[RS1])[:4]*Parameter.sSize, fitYregRS1[:4], color='tab:red', lw=2, linestyle='--')
-ax2.plot(np.unique(OutputData.regSegOrdN[RS2])*Parameter.sSize, fitYregRS2, color='tab:red', lw=2, linestyle='--')
-ax2.plot(np.unique(OutputData.regSegOrdN[RS3])*Parameter.sSize, fitYregRS3, color='tab:red', lw=2, linestyle='--')
-ax2.xaxis.set_visible(False)
-ax2.yaxis.set_visible(False)
-ax2.set_yscale('log')
-ax2.set_xscale('log')
-ax2.vlines(0.8, 0.01, 5, linestyles='dashed')
-ax2.vlines(0.4, 0.01, 5, linestyles='dashed')
-ax2.set_xlim(0.24, 1.4)
-ax2.set_ylim(0.28, 1.6)
-
-ax3 = plt.axes([1, 1, 2, 2])
-ip2 = InsetPosition(ax1, [0.57, 0.02, 0.4, 0.4])
-ax3.set_axes_locator(ip2)
-mark_inset(ax1, ax3, loc1=2, loc2=3, fc="none", ec='0.5')
-
-ax3.plot(np.unique(OutputData.regSegOrdN[RS1])[:4]*Parameter.sSize, fitYregRS1[:4], color='tab:red', lw=2, linestyle='-')
-ax3.plot(np.unique(OutputData.regSegOrdN[RS2])*Parameter.sSize, fitYregRS12, color='tab:red', lw=2, linestyle='--')
-ax3.plot(np.unique(OutputData.regSegOrdN[RS2])*Parameter.sSize, fitYregRS2, color='tab:green', lw=2, linestyle='-')
-ax3.plot(np.unique(OutputData.regSegOrdN[RS3])*Parameter.sSize, fitYregRS3, color='tab:blue', lw=2, linestyle='-')
-ax3.plot(np.unique(OutputData.regSegOrdN[RS2])*Parameter.sSize, fitYregRS32, color='tab:blue', lw=2, linestyle='--')
-ax3.xaxis.set_visible(False)
-ax3.yaxis.set_visible(False)
-ax3.set_yscale('log')
-ax3.set_xscale('log')
-ax3.vlines(0.8, 0.01, 1, linestyles='dashed')
-ax3.vlines(0.4, 0.01, 1, linestyles='dashed')
-ax3.set_xlim(0.36, 0.89)
-ax3.set_ylim(0.42, 0.95)
-
-ax1.set_xlabel(r"Number of Regularized Points ($\lambda N$)", fontsize=15)
-ax1.set_ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
-#plt.tight_layout()
-if Parameter.SAVE:
-    plt.savefig('./images/regSegRG_morphScale_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
-plt.show()
-
-
-
-
-#==============================================================================
-
-
-
-fig, ax1 = plt.subplots(figsize=(12,8))
-ax1.xaxis.label.set_fontsize(15)
-ax1.xaxis.set_tick_params(which='major', length=7)
-ax1.xaxis.set_tick_params(which='minor', length=5)
-ax1.yaxis.label.set_fontsize(15)
-ax1.yaxis.set_tick_params(which='major', length=7)
-ax1.yaxis.set_tick_params(which='minor', length=5)
-#ax1.scatter(regMDistLen[MorphData.sensory]*Parameter.sSize, np.sqrt(np.square(rGyReg)[MorphData.sensory]*1/Parameter.sSize))
-#ax1.scatter(regMDistLen[MorphData.inter]*Parameter.sSize, np.sqrt(np.square(rGyReg)[MorphData.inter]*1/Parameter.sSize))
-#ax1.scatter(regMDistLen[MorphData.motor]*Parameter.sSize, np.sqrt(np.square(rGyReg)[MorphData.motor]*1/Parameter.sSize))
-ax1.scatter(OutputData.regSegOrdNi*Parameter.sSize, 
-            np.sqrt(np.square(OutputData.rGyRegSegi)*1/Parameter.sSize), 
-            color='tab:orange',
-            facecolors='none')
-ax1.scatter(OutputData.regSegOrdNm*Parameter.sSize, 
-            np.sqrt(np.square(OutputData.rGyRegSegm)*1/Parameter.sSize),
-            color='tab:green', 
-            facecolors='none')
-ax1.scatter(OutputData.regSegOrdNs*Parameter.sSize,
-            np.sqrt(np.square(OutputData.rGyRegSegs)*1/Parameter.sSize),
-            color='tab:blue', 
-            facecolors='none')
-ax1.legend(["Sensory Neuron", "Interneuron", "Motor Neuron"], fontsize=15)
-ax1.vlines(0.08, 0.01, 11000, linestyles='dashed')
-ax1.vlines(0.04, 0.01, 11000, linestyles='dashed')
-ax1.set_yscale('log')
-ax1.set_xscale('log')
-#ax1.xlim(0.01, 10500)
-ax1.set_ylim(0.03, 10000)
-if Parameter.SAVE:
-    plt.savefig('./images/regSegRG_morphScale_sep_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
-plt.show()
-
-
-#==============================================================================
-
-
-shift_N = 4
-poptRS_sl = []
-RS_x = []
-for i in range(len(Parameter.nSize) - shift_N):
-    RS_s = np.where((OutputData.regSegOrdN <= Parameter.nSize[i+shift_N]) &
-                    (OutputData.regSegOrdN >= Parameter.nSize[i]))[0]
+    hist1centers = 0.5*(hist1[1][1:] + hist1[1][:-1])
+    hist2centers = 0.5*(hist2[1][1:] + hist2[1][:-1])
+    hist3centers = 0.5*(hist3[1][1:] + hist3[1][:-1])
+    hist4centers = 0.5*(hist4[1][1:] + hist4[1][:-1])
     
-    RS_x.append(np.average(Parameter.nSize[i:i+shift_N]))
     
-    poptRS_s, pcovRS_s = scipy.optimize.curve_fit(objFuncGL, 
-                                                  np.log10(OutputData.regSegOrdN[RS_s]*Parameter.sSize), 
-                                                  np.log10(np.sqrt(np.square(OutputData.rGyRegSeg[RS_s])*1/Parameter.sSize)), 
-                                                  p0=[1., 0.], 
-                                                  maxfev=100000)
-    poptRS_sl.append(poptRS_s[0])
-
-
-fig = plt.figure(figsize=(8,6))
-plt.scatter(RS_x, poptRS_sl)
-#plt.plot(regMDistLen*Parameter.sSize, fitYregR, color='tab:red')
-#plt.yscale('log')
-plt.hlines(poptR[0], 0.1, 1000, linestyles='--', color='tab:red')
-plt.hlines(poptRS1[0], 0.1, 1000, linestyles='--', color='tab:green')
-plt.hlines(poptRS3[0], 0.1, 1000, linestyles='--', color='tab:orange')
-#plt.yscale('log')
-plt.xscale('log')
-plt.xlim(1, 200)
-#plt.ylim(0.005, 1000)
-#plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
-plt.xlabel(r"Average Number of Regularized Points ($\lambda N_{avg}$)", fontsize=15)
-plt.ylabel(r"Slope ($\nu$)", fontsize=15)
-#plt.tight_layout()
-if Parameter.SAVE:
-    plt.savefig('./images/regSegRG_slope_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
-plt.show()
-
-
-#==============================================================================
-
-
-poptRS_sl_sep_sen = []
-poptRS_sl_sep_int = []
-poptRS_sl_sep_mot = []
-RS_x_sep = []
-for i in range(len(Parameter.nSize) - shift_N):
-    RS_s_sep_sen = np.where((OutputData.regSegOrdNs <= Parameter.nSize[i+shift_N]) & 
-                            (OutputData.regSegOrdNs >= Parameter.nSize[i]))[0]
-    RS_s_sep_int = np.where((OutputData.regSegOrdNi <= Parameter.nSize[i+shift_N]) & 
-                            (OutputData.regSegOrdNi >= Parameter.nSize[i]))[0]
-    RS_s_sep_mot = np.where((OutputData.regSegOrdNm <= Parameter.nSize[i+shift_N]) &
-                            (OutputData.regSegOrdNm >= Parameter.nSize[i]))[0]
+    def objFuncP(xdata, a, b):
+        y = a*np.power(xdata, b)
+        
+        return y
+        
+    def objFuncPL(xdata, a):
+        y = np.power(xdata, a)
+        
+        return y
     
-    RS_x_sep.append(np.average(Parameter.nSize[i:i+shift_N]))
+    def objFuncPpow(xdata, a, b):
+        y = np.power(10, b)*np.power(xdata, a)
+        
+        return y
     
-    poptRS_s_sep_sen, pcovRS_s_sep_sep = scipy.optimize.curve_fit(objFuncGL, 
-                                                  np.log10(OutputData.regSegOrdNs[RS_s_sep_sen]*Parameter.sSize), 
-                                                  np.log10(np.sqrt(np.square(OutputData.rGyRegSegs[RS_s_sep_sen])*1/Parameter.sSize)), 
-                                                  p0=[1., 0.], 
-                                                  maxfev=100000)
-    poptRS_s_sep_int, pcovRS_s_sep_int = scipy.optimize.curve_fit(objFuncGL, 
-                                                  np.log10(OutputData.regSegOrdNi[RS_s_sep_int]*Parameter.sSize), 
-                                                  np.log10(np.sqrt(np.square(OutputData.rGyRegSegi[RS_s_sep_int])*1/Parameter.sSize)), 
-                                                  p0=[1., 0.], 
-                                                  maxfev=100000)
-    poptRS_s_sep_mot, pcovRS_s_sep_mot = scipy.optimize.curve_fit(objFuncGL, 
-                                                  np.log10(OutputData.regSegOrdNm[RS_s_sep_mot]*Parameter.sSize), 
-                                                  np.log10(np.sqrt(np.square(OutputData.rGyRegSegm[RS_s_sep_mot])*1/Parameter.sSize)), 
-                                                  p0=[1., 0.], 
-                                                  maxfev=100000)
+    def objFuncL(xdata, a):
+        y = a*xdata
+        
+        return y
     
-    poptRS_sl_sep_sen.append(poptRS_s_sep_sen[0])
-    poptRS_sl_sep_int.append(poptRS_s_sep_int[0])
-    poptRS_sl_sep_mot.append(poptRS_s_sep_mot[0])
-
-
-fig = plt.figure(figsize=(8,6))
-plt.scatter(RS_x_sep, poptRS_sl_sep_sen)
-plt.scatter(RS_x_sep, poptRS_sl_sep_int)
-plt.scatter(RS_x_sep, poptRS_sl_sep_mot)
-plt.legend(["Sensory Neuron", "Interneuron", "Motor Neuron"], fontsize=15)
-#plt.plot(regMDistLen*Parameter.sSize, fitYregR, color='tab:red')
-#plt.yscale('log')
-#plt.hlines(poptR[0], 0.1, 1000, linestyles='--', color='tab:red')
-#plt.hlines(poptRS1[0], 0.1, 1000, linestyles='--', color='tab:green')
-#plt.hlines(poptRS3[0], 0.1, 1000, linestyles='--', color='tab:orange')
-#plt.yscale('log')
-plt.xscale('log')
-plt.xlim(1, 200)
-#plt.ylim(0.005, 1000)
-#plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
-plt.xlabel(r"Average Number of Regularized Points ($\lambda N_{avg}$)", fontsize=15)
-plt.ylabel(r"Slope ($\nu$)", fontsize=15)
-#plt.tight_layout()
-if Parameter.SAVE:
-    plt.savefig('./images/regSegRG_slope_sep_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
-plt.show()
+    def objFuncGL(xdata, a, b):
+        y = a*xdata + b
+        
+        return y
+    
+    
+    
+    #==============================================================================
+    
+    popt1, pcov1 = scipy.optimize.curve_fit(objFuncP, hist1centers, hist1[0], p0=[0.1, -0.1], maxfev=10000)
+    fitX = np.linspace(1, 10000, 1000)
+    fitY1 = objFuncP(fitX, popt1[0], popt1[1])
+    
+    popt2, pcov2 = scipy.optimize.curve_fit(objFuncP, hist2centers, hist2[0], p0=[0.1, -0.1], maxfev=10000)
+    popt3, pcov3 = scipy.optimize.curve_fit(objFuncP, hist3centers, hist3[0], p0=[0.1, -0.1], maxfev=10000)
+    popt4, pcov4 = scipy.optimize.curve_fit(objFuncP, hist4centers, hist4[0], p0=[0.1, -0.1], maxfev=10000)
+    
+    fitY2 = objFuncP(fitX, popt2[0], popt2[1])
+    fitY3 = objFuncP(fitX, popt3[0], popt3[1])
+    fitY4 = objFuncP(fitX, popt4[0], popt4[1])
+    
+    # Segment Length in Log-Log
+    
+    fig, ax = plt.subplots(1, 2, figsize=(20,6))
+    ax[0].scatter(hist1centers, hist1[0])
+    ax[0].set_title("Distribution of Segment Length", fontsize=20)
+    ax[0].set_ylabel("Normalized Density", fontsize=15)
+    ax[0].set_xlabel("Segment Length", fontsize=15)
+    ax[0].set_yscale('log')
+    ax[0].set_xscale('log')
+    ax[0].set_xlim(1, 10000)
+    ax[0].set_ylim(0.00001, 0.1)
+    ax[0].plot(fitX, fitY1, 'r')
+    ax[1].scatter(hist2centers, hist2[0])
+    ax[1].scatter(hist3centers, hist3[0])
+    ax[1].scatter(hist4centers, hist4[0])
+    ax[1].plot(fitX, fitY2)
+    ax[1].plot(fitX, fitY3)
+    ax[1].plot(fitX, fitY4)
+    ax[1].set_title("Distribution of Segment Length by Type", fontsize=20)
+    ax[1].set_ylabel("Normalized Density", fontsize=15)
+    ax[1].set_xlabel("Segment Length", fontsize=15)
+    ax[1].set_yscale('log')
+    ax[1].set_xscale('log')
+    ax[1].legend(['Sensory', 'Inter', 'Motor'], fontsize=15)
+    ax[1].set_xlim(1, 10000)
+    ax[1].set_ylim(0.00001, 0.1)
+    plt.tight_layout()
+    plt.show()
+    
+    
+    #==============================================================================
+    # Segment Length in Log-Log by Type
+    
+    fig, ax = plt.subplots(1, 3, figsize=(24,6))
+    ax[0].scatter(hist2centers, hist2[0])
+    ax[0].plot(fitX, fitY2, 'r')
+    ax[0].set_yscale('log')
+    ax[0].set_xscale('log')
+    ax[0].set_xlim(1, 10000)
+    ax[0].set_ylim(0.00001, 0.1)
+    ax[0].set_title("Sensory Neuron Segment Length", fontsize=20)
+    ax[0].set_ylabel("Normalized Density", fontsize=15)
+    ax[0].set_xlabel("Segment Length", fontsize=15)
+    
+    ax[1].scatter(hist3centers, hist3[0])
+    ax[1].plot(fitX, fitY3, 'r')
+    ax[1].set_yscale('log')
+    ax[1].set_xscale('log')
+    ax[1].set_xlim(1, 10000)
+    ax[1].set_ylim(0.00001, 0.1)
+    ax[1].set_title("Interneuron Segment Length", fontsize=20)
+    ax[1].set_ylabel("Normalized Density", fontsize=15)
+    ax[1].set_xlabel("Segment Length", fontsize=15)
+    
+    ax[2].scatter(hist4centers, hist4[0])
+    ax[2].plot(fitX, fitY4, 'r')
+    ax[2].set_yscale('log')
+    ax[2].set_xscale('log')
+    ax[2].set_xlim(1, 10000)
+    ax[2].set_ylim(0.00001, 0.1)
+    ax[2].set_title("Motor Neuron Segment Length", fontsize=20)
+    ax[2].set_ylabel("Normalized Density", fontsize=15)
+    ax[2].set_xlabel("Segment Length", fontsize=15)
+    plt.tight_layout()
+    plt.show()
+    
+    #==============================================================================
+    # Average Segment Length Histogram
+    
+    fig, ax = plt.subplots(1, 2, figsize=(20,6))
+    hist9 = ax[0].hist(LengthData.length_average,
+              bins=int((np.max(LengthData.length_average) - np.min(LengthData.length_average))/10),
+              density=True)
+    ax[0].set_title("Distribution of Average Segment Length", fontsize=20)
+    ax[0].set_ylabel("Normalized Density", fontsize=15)
+    ax[0].set_xlabel("Segment Length", fontsize=15)
+    
+    hist5 = ax[1].hist(LengthData.length_average[MorphData.sensory], 
+                     bins=int((np.max(LengthData.length_average[MorphData.sensory]) - 
+                               np.min(LengthData.length_average[MorphData.sensory]))/10),
+                     density=True,
+                     alpha=0.5)
+    hist6 = ax[1].hist(LengthData.length_average[MorphData.inter], 
+                     bins=int((np.max(LengthData.length_average[MorphData.inter]) -
+                               np.min(LengthData.length_average[MorphData.inter]))/10),
+                     density=True,
+                     alpha=0.5)
+    hist7 = ax[1].hist(LengthData.length_average[MorphData.motor],
+                     bins=int((np.max(LengthData.length_average[MorphData.motor]) -
+                               np.min(LengthData.length_average[MorphData.motor]))/10),
+                     density=True, 
+                     alpha=0.5)
+    ax[1].legend(['Sensory', 'Inter', 'Motor'], fontsize=15)
+    ax[1].set_title("Distribution of Average Segment Length", fontsize=20)
+    ax[1].set_ylabel("Normalized Density", fontsize=15)
+    ax[1].set_xlabel("Average Segment Length", fontsize=15)
+    plt.tight_layout()
+    plt.show()
+    
+    hist5centers = 0.5*(hist5[1][1:] + hist5[1][:-1])
+    hist6centers = 0.5*(hist6[1][1:] + hist6[1][:-1])
+    hist7centers = 0.5*(hist7[1][1:] + hist7[1][:-1])
+    hist9centers = 0.5*(hist9[1][1:] + hist9[1][:-1])
+    
+    #==============================================================================
+    # Average Segment Length in Log-Log
+    
+    fig, ax = plt.subplots(1, 2, figsize=(20,6))
+    ax[0].scatter(hist9centers, hist9[0])
+    ax[0].set_yscale('log')
+    ax[0].set_xscale('log')
+    ax[0].set_xlim(1, 10000)
+    ax[0].set_ylim(0.0001, 0.1)
+    ax[0].set_title("Distribution of Average Segment Length", fontsize=20)
+    ax[0].set_ylabel("Normalized Density", fontsize=15)
+    ax[0].set_xlabel("Segment Length", fontsize=15)
+    
+    ax[1].scatter(hist5centers, hist5[0])
+    ax[1].scatter(hist6centers, hist6[0])
+    ax[1].scatter(hist7centers, hist7[0])
+    ax[1].set_yscale('log')
+    ax[1].set_xscale('log')
+    ax[1].set_xlim(1, 10000)
+    ax[1].set_ylim(0.0001, 0.1)
+    ax[1].set_title("Distribution of Average Segment Length by Type", fontsize=20)
+    ax[1].set_ylabel("Normalized Density", fontsize=15)
+    ax[1].set_xlabel("Segment Length", fontsize=15)
+    ax[1].legend(['Sensory', 'Inter', 'Motor'], fontsize=15)
+    plt.tight_layout()
+    plt.show()
+    
+    #==============================================================================
+    # Average Segment Length in Log-Log by type
+    
+    fig, ax = plt.subplots(1, 3, figsize=(24,6))
+    ax[0].scatter(hist5centers, hist5[0])
+    ax[0].set_yscale('log')
+    ax[0].set_xscale('log')
+    ax[0].set_xlim(1, 10000)
+    ax[0].set_ylim(0.00001, 1)
+    ax[0].set_title("Average Sensory Neuron Segment Length", fontsize=20)
+    ax[0].set_ylabel("Normalized Density", fontsize=15)
+    ax[0].set_xlabel("Average Segment Length", fontsize=15)
+    
+    ax[1].scatter(hist6centers, hist6[0])
+    ax[1].set_yscale('log')
+    ax[1].set_xscale('log')
+    ax[1].set_xlim(1, 10000)
+    ax[1].set_ylim(0.00001, 1)
+    ax[1].set_title("Average Interneuron Segment Length", fontsize=20)
+    ax[1].set_ylabel("Normalized Density", fontsize=15)
+    ax[1].set_xlabel("Average Segment Length", fontsize=15)
+    
+    ax[2].scatter(hist7centers, hist7[0])
+    ax[2].set_yscale('log')
+    ax[2].set_xscale('log')
+    ax[2].set_xlim(1, 10000)
+    ax[2].set_ylim(0.00001, 1)
+    ax[2].set_title("Average Motor Neuron Segment Length", fontsize=20)
+    ax[2].set_ylabel("Normalized Density", fontsize=15)
+    ax[2].set_xlabel("Average Segment Length", fontsize=15)
+    plt.tight_layout()
+    plt.show()
+    
+    
+    #==============================================================================
+    # BranchNum vs Total Segment Length vs Average Segment Length by Type
+    
+    poptL = []
+    
+    fig, ax = plt.subplots(4, 3, figsize=(18,24))
+    ax[0][0].scatter(LengthData.length_total[MorphData.sensory], BranchData.branchNum[MorphData.sensory])
+    ax[0][0].set_title("Sensory Neuron", fontsize=20)
+    ax[0][0].set_xlabel("Total Segment Length", fontsize=15)
+    ax[0][0].set_ylabel("Number of Branches", fontsize=15)
+    ax[0][0].set_xlim(-50, 1000)
+    ax[0][0].set_ylim(-1, 8)
+    
+    ax[0][1].scatter(LengthData.length_total[MorphData.inter], BranchData.branchNum[MorphData.inter])
+    ax[0][1].set_title("Interneuron", fontsize=20)
+    ax[0][1].set_xlabel("Total Segment Length", fontsize=15)
+    ax[0][1].set_xlim(-50, 1000)
+    ax[0][1].set_ylim(-1, 8)
+    
+    ax[0][2].scatter(LengthData.length_total[MorphData.motor], BranchData.branchNum[MorphData.motor])
+    ax[0][2].set_title("Motor Neuron", fontsize=20)
+    ax[0][2].set_xlabel("Total Segment Length", fontsize=15)
+    ax[0][2].set_xlim(-50, 1000)
+    ax[0][2].set_ylim(-1, 8)
+    
+    ax[1][0].scatter(LengthData.length_average[MorphData.sensory], BranchData.branchNum[MorphData.sensory])
+    ax[1][0].set_xlabel("Average Segment Length", fontsize=15)
+    ax[1][0].set_ylabel("Number of Branches", fontsize=15)
+    ax[1][0].set_xlim(-50, 1000)
+    ax[1][0].set_ylim(-1, 8)
+    
+    ax[1][1].scatter(LengthData.length_average[MorphData.inter], BranchData.branchNum[MorphData.inter])
+    ax[1][1].set_xlabel("Average Segment Length", fontsize=15)
+    ax[1][1].set_xlim(-50, 1000)
+    ax[1][1].set_ylim(-1, 8)
+    
+    ax[1][2].scatter(LengthData.length_average[MorphData.motor], BranchData.branchNum[MorphData.motor])
+    ax[1][2].set_xlabel("Average Segment Length", fontsize=15)
+    ax[1][2].set_xlim(-50, 1000)
+    ax[1][2].set_ylim(-1, 8)
+    
+    for i in range(len(np.unique(BranchData.branchNum[MorphData.sensory]))):
+        scttrInd = np.where(BranchData.branchNum[MorphData.sensory] ==
+                            np.unique(BranchData.branchNum[MorphData.sensory])[i])[0]
+        ax[2][0].scatter(LengthData.length_average[MorphData.sensory][scttrInd], 
+                         LengthData.length_total[MorphData.sensory][scttrInd])
+        fitX = np.linspace(0, 1000, 1000)
+    ax[2][0].set_xlabel("Average Segment Length", fontsize=15)
+    ax[2][0].set_ylabel("Total Segment Length", fontsize=15)
+    ax[2][0].legend(np.unique(BranchData.branchNum[MorphData.sensory])[:-1], fontsize=15)
+    for i in range(len(np.unique(BranchData.branchNum[MorphData.sensory]))):
+        scttrInd = np.where(BranchData.branchNum[MorphData.sensory] == 
+                            np.unique(BranchData.branchNum[MorphData.sensory])[i])[0]
+        if np.unique(BranchData.branchNum[MorphData.sensory])[i] == 0:
+            fitY = objFuncL(fitX, 1)
+            ax[2][0].plot(fitX, fitY)
+        elif (np.unique(BranchData.branchNum[MorphData.sensory])[i] == 1 or 
+              np.unique(BranchData.branchNum[MorphData.sensory])[i] == 2):
+            popt, pcov = scipy.optimize.curve_fit(objFuncL, 
+                                                    LengthData.length_average[MorphData.sensory][scttrInd], 
+                                                    LengthData.length_total[MorphData.sensory][scttrInd],
+                                                    p0=[1.],
+                                                    maxfev=10000)
+            fitY = objFuncL(fitX, popt[0])
+            ax[2][0].plot(fitX, fitY)
+            poptL.append(popt[0])
+    ax[2][0].set_xlim(-50, 1000)
+    ax[2][0].set_ylim(0, 1000)
+    
+    for i in range(len(np.unique(BranchData.branchNum[MorphData.inter]))):
+        scttrInd = np.where(BranchData.branchNum[MorphData.inter] == 
+                            np.unique(BranchData.branchNum[MorphData.inter])[i])[0]
+        ax[2][1].scatter(LengthData.length_average[MorphData.inter][scttrInd], 
+                         LengthData.length_total[MorphData.inter][scttrInd])
+    ax[2][1].set_xlabel("Average Segment Length", fontsize=15)
+    ax[2][1].legend(np.unique(BranchData.branchNum[MorphData.inter]), fontsize=15)
+    for i in range(len(np.unique(BranchData.branchNum[MorphData.inter]))):
+        scttrInd = np.where(BranchData.branchNum[MorphData.inter] == 
+                            np.unique(BranchData.branchNum[MorphData.inter])[i])[0]
+        if np.unique(BranchData.branchNum[MorphData.inter])[i] == 0:
+            fitY = objFuncL(fitX, 1)
+            ax[2][1].plot(fitX, fitY)
+        elif (np.unique(BranchData.branchNum[MorphData.inter])[i] == 1 or 
+              np.unique(BranchData.branchNum[MorphData.inter])[i] == 2):
+            popt, pcov = scipy.optimize.curve_fit(objFuncL, 
+                                                    LengthData.length_average[MorphData.inter][scttrInd], 
+                                                    LengthData.length_total[MorphData.inter][scttrInd],
+                                                    p0=[1.],
+                                                    maxfev=10000)
+            fitY = objFuncL(fitX, popt[0])
+            ax[2][1].plot(fitX, fitY)
+            poptL.append(popt[0])
+    ax[2][1].set_xlim(-50, 1000)
+    ax[2][1].set_ylim(0, 1000)
+    
+    for i in range(len(np.unique(BranchData.branchNum[MorphData.motor]))):
+        scttrInd = np.where(BranchData.branchNum[MorphData.motor] == 
+                            np.unique(BranchData.branchNum[MorphData.motor])[i])[0]
+        ax[2][2].scatter(LengthData.length_average[MorphData.motor][scttrInd], 
+                         LengthData.length_total[MorphData.motor][scttrInd])
+    ax[2][2].set_xlabel("Average Segment Length", fontsize=15)
+    ax[2][2].legend(np.unique(BranchData.branchNum[MorphData.motor]), fontsize=15)
+    for i in range(len(np.unique(BranchData.branchNum[MorphData.motor]))):
+        scttrInd = np.where(BranchData.branchNum[MorphData.motor] == 
+                            np.unique(BranchData.branchNum[MorphData.motor])[i])[0]
+        if np.unique(BranchData.branchNum[MorphData.motor])[i] == 0:
+            fitY = objFuncL(fitX, 1)
+            ax[2][2].plot(fitX, fitY)
+        elif (np.unique(BranchData.branchNum[MorphData.motor])[i] == 1 or 
+              np.unique(BranchData.branchNum[MorphData.motor])[i] == 2):
+            popt, pcov = scipy.optimize.curve_fit(objFuncL, 
+                                                    LengthData.length_average[MorphData.motor][scttrInd], 
+                                                    LengthData.length_total[MorphData.motor][scttrInd],
+                                                    p0=[1.],
+                                                    maxfev=10000)
+            fitY = objFuncL(fitX, popt[0])
+            ax[2][2].plot(fitX, fitY)
+            poptL.append(popt[0])
+    ax[2][2].set_xlim(-50, 1000)
+    ax[2][2].set_ylim(0, 1000)
+    
+    
+    
+    
+    length_branch_len = np.array([len(arr) for arr in LengthData.length_branch])
+    repeated_length_total = np.repeat(LengthData.length_total, length_branch_len)
+    
+    for i in range(len(np.unique(BranchData.branchNum[MorphData.sensory]))):
+        scttrInd = np.where(BranchData.branchNum[MorphData.sensory] == 
+                            np.unique(BranchData.branchNum[MorphData.sensory])[i])[0]
+        length_branch_len_sensory = [len(arr) for arr in np.array(LengthData.length_branch)[MorphData.sensory][scttrInd]]
+        repeated_length_total_sensory = np.repeat(LengthData.length_total[MorphData.sensory][scttrInd], 
+                                                  length_branch_len[MorphData.sensory][scttrInd])
+        ax[3][0].scatter([item for sublist in np.array(LengthData.length_branch)[MorphData.sensory][scttrInd].tolist() for item in sublist], 
+                         repeated_length_total_sensory)
+    ax[3][0].set_xlabel("Segment Length", fontsize=15)
+    ax[3][0].set_ylabel("Total Segment Length", fontsize=15)
+    ax[3][0].legend(np.unique(BranchData.branchNum[MorphData.sensory])[:-1], fontsize=15)
+    for i in range(len(np.unique(BranchData.branchNum[MorphData.sensory]))):
+        scttrInd = np.where(BranchData.branchNum[MorphData.sensory] == 
+                            np.unique(BranchData.branchNum[MorphData.sensory])[i])[0]
+        length_branch_len_sensory = [len(arr) for arr in np.array(LengthData.length_branch)[MorphData.sensory][scttrInd]]
+        repeated_length_total_sensory = np.repeat(LengthData.length_total[MorphData.sensory][scttrInd], 
+                                                  length_branch_len[MorphData.sensory][scttrInd])
+        if np.unique(BranchData.branchNum[MorphData.sensory])[i] == 0:
+            fitY = objFuncL(fitX, 1)
+            ax[3][0].plot(fitX, fitY)
+        elif (np.unique(BranchData.branchNum[MorphData.sensory])[i] == 1 or 
+            np.unique(BranchData.branchNum[MorphData.sensory])[i] == 2):
+            popt, pcov = scipy.optimize.curve_fit(objFuncL, 
+                                                  [item for sublist in 
+                                                   np.array(LengthData.length_branch)[MorphData.sensory][scttrInd].tolist() for item in sublist], 
+                                                  repeated_length_total_sensory,
+                                                  p0=[1.],
+                                                  maxfev=10000)
+            fitY = objFuncL(fitX, popt[0])
+            ax[3][0].plot(fitX, fitY)
+            poptL.append(popt[0])
+    ax[3][0].set_xlim(-50, 1000)
+    ax[3][0].set_ylim(0, 1000)
+    
+    for i in range(len(np.unique(BranchData.branchNum[MorphData.inter]))):
+        scttrInd = np.where(BranchData.branchNum[MorphData.inter] == 
+                            np.unique(BranchData.branchNum[MorphData.inter])[i])[0]
+        length_branch_len_inter = [len(arr) for arr in np.array(LengthData.length_branch)[MorphData.inter][scttrInd]]
+        repeated_length_total_inter = np.repeat(LengthData.length_total[MorphData.inter][scttrInd], 
+                                                length_branch_len[MorphData.inter][scttrInd])
+        ax[3][1].scatter([item for sublist in np.array(LengthData.length_branch)[MorphData.inter][scttrInd].tolist() for item in sublist], 
+                         repeated_length_total_inter)
+    ax[3][1].set_xlabel("Segment Length", fontsize=15)
+    ax[3][1].legend(np.unique(BranchData.branchNum[MorphData.inter]), fontsize=15)
+    for i in range(len(np.unique(BranchData.branchNum[MorphData.inter]))):
+        scttrInd = np.where(BranchData.branchNum[MorphData.inter] == np.unique(BranchData.branchNum[MorphData.inter])[i])[0]
+        length_branch_len_inter = [len(arr) for arr in np.array(LengthData.length_branch)[MorphData.inter][scttrInd]]
+        repeated_length_total_inter = np.repeat(LengthData.length_total[MorphData.inter][scttrInd], 
+                                                length_branch_len[MorphData.inter][scttrInd])
+        if np.unique(BranchData.branchNum[MorphData.inter])[i] == 0:
+            fitY = objFuncL(fitX, 1)
+            ax[3][1].plot(fitX, fitY)
+        elif (np.unique(BranchData.branchNum[MorphData.inter])[i] == 1 or 
+              np.unique(BranchData.branchNum[MorphData.inter])[i] == 2):
+            popt, pcov = scipy.optimize.curve_fit(objFuncL, 
+                                                  [item for sublist in 
+                                                   np.array(LengthData.length_branch)[MorphData.inter][scttrInd].tolist() for item in sublist], 
+                                                  repeated_length_total_inter,
+                                                  p0=[1.],
+                                                  maxfev=10000)
+            fitY = objFuncL(fitX, popt[0])
+            ax[3][1].plot(fitX, fitY)
+            poptL.append(popt[0])
+    ax[3][1].set_xlim(-50, 1000)
+    ax[3][1].set_ylim(0, 1000)
+    
+    for i in range(len(np.unique(BranchData.branchNum[MorphData.motor]))):
+        scttrInd = np.where(BranchData.branchNum[MorphData.motor] == 
+                            np.unique(BranchData.branchNum[MorphData.motor])[i])[0]
+        length_branch_len_motor = [len(arr) for arr in np.array(LengthData.length_branch)[MorphData.motor][scttrInd]]
+        repeated_length_total_motor = np.repeat(LengthData.length_total[MorphData.motor][scttrInd], 
+                                                length_branch_len[MorphData.motor][scttrInd])
+        ax[3][2].scatter([item for sublist in np.array(LengthData.length_branch)[MorphData.motor][scttrInd].tolist() for item in sublist], 
+                         repeated_length_total_motor)
+    ax[3][2].set_xlabel("Segment Length", fontsize=15)
+    ax[3][2].legend(np.unique(BranchData.branchNum[MorphData.motor]), fontsize=15)
+    for i in range(len(np.unique(BranchData.branchNum[MorphData.motor]))):
+        scttrInd = np.where(BranchData.branchNum[MorphData.motor] == 
+                            np.unique(BranchData.branchNum[MorphData.motor])[i])[0]
+        length_branch_len_motor = [len(arr) for arr in np.array(LengthData.length_branch)[MorphData.motor][scttrInd]]
+        repeated_length_total_motor = np.repeat(LengthData.length_total[MorphData.motor][scttrInd], 
+                                                length_branch_len[MorphData.motor][scttrInd])
+        if np.unique(BranchData.branchNum[MorphData.motor])[i] == 0:
+            fitY = objFuncL(fitX, 1)
+            ax[3][2].plot(fitX, fitY)
+        elif (np.unique(BranchData.branchNum[MorphData.motor])[i] == 1 or 
+              np.unique(BranchData.branchNum[MorphData.motor])[i] == 2):
+            popt, pcov = scipy.optimize.curve_fit(objFuncL, 
+                                                  [item for sublist in 
+                                                   np.array(LengthData.length_branch)[MorphData.motor][scttrInd].tolist() for item in sublist], 
+                                                  repeated_length_total_motor,
+                                                  p0=[1.],
+                                                  maxfev=10000)
+            fitY = objFuncL(fitX, popt[0])
+            ax[3][2].plot(fitX, fitY)
+            poptL.append(popt[0])
+    ax[3][2].set_xlim(-50, 1000)
+    ax[3][2].set_ylim(0, 1000)
+    
+    plt.tight_layout()
+    plt.show()
+    
+    
+    #==============================================================================
+    
+    
+    branchEndPDict = {'branch': BranchData.branchNum, 'endP': MorphData.endP_len}
+    branchEndPDF = pd.DataFrame(data=branchEndPDict)
+    fig = plt.figure(figsize=(8,6))
+    seaborn.swarmplot(x='branch', y='endP', data=branchEndPDF.loc[branchEndPDF['branch'] < 197])
+    plt.title("Distribution of Number of Endpoints\n for Given Branch Number", fontsize=20)
+    plt.xlabel("Branch Number", fontsize=15)
+    plt.ylabel("Number of Endpoints", fontsize=15)
+    #plt.xlim(-1, 10)
+    #plt.ylim(-1, 10)
+    plt.tight_layout()
+    plt.show()
+    
+    
+    #==============================================================================
+    
+    
+    fig = plt.figure(figsize=(8,6))
+    seaborn.kdeplot(np.delete(BranchData.branchNum[MorphData.sensory], 
+                              np.where(BranchData.branchNum[MorphData.sensory] == 197)[0]), 
+                    bw=.6, 
+                    label="Sensory")
+    seaborn.kdeplot(BranchData.branchNum[MorphData.inter], bw=.6, label="Inter")
+    seaborn.kdeplot(BranchData.branchNum[MorphData.motor], bw=.6, label="Motor")
+    plt.xlim(-2, 8)
+    plt.title("Estimated Distribution of Branch Number by Type", fontsize=20)
+    plt.xlabel("Number of Branches", fontsize=15)
+    plt.ylabel("Estimated Probability Density", fontsize=15)
+    plt.legend(['Sensory', 'Inter', 'Motor'], fontsize=15)
+    plt.tight_layout()
+    plt.show()
+    
+    
+    #==============================================================================
+    
+    
+    fig = plt.figure(figsize=(8,6))
+    plt.scatter(MorphData.morph_dist_len, rGy)
+    plt.yscale('log')
+    plt.xscale('log')
+    #plt.xlim(1, 10000)
+    #plt.ylim(0.005, 1000)
+    plt.title("Scaling Behavior of $R_{g}$ to $N$", fontsize=20)
+    plt.xlabel("Number of Points", fontsize=15)
+    plt.ylabel("Radius of Gyration", fontsize=15)
+    plt.tight_layout()
+    plt.show()
+    
+    fig = plt.figure(figsize=(8,6))
+    plt.scatter(MorphData.morph_dist_len_EP, rGyEP)
+    plt.yscale('log')
+    plt.xscale('log')
+    #plt.xlim(1, 10000)
+    #plt.ylim(0.005, 1000)
+    plt.title("Scaling Behavior of $R_{g}$ to $N_{EP}$", fontsize=20)
+    plt.xlabel("Number of Nodes", fontsize=15)
+    plt.ylabel("Radius of Gyration", fontsize=15)
+    plt.tight_layout()
+    plt.show()
+    
+    
+    #==============================================================================
+    
+    #reg_len_scale = np.average(np.divide(regMDistLen, morph_dist_len))
+    poptR, pcovR = scipy.optimize.curve_fit(objFuncGL, 
+                                            np.log10(MorphData.regMDistLen*Parameter.sSize), 
+                                            np.log10(np.sqrt(np.square(rGyReg)*1/Parameter.sSize)), 
+                                            p0=[1., 0.], 
+                                            maxfev=100000)
+    fitYregR = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR[0], poptR[1])
+    
+    fig = plt.figure(figsize=(8,6))
+    plt.scatter(MorphData.regMDistLen*Parameter.sSize, np.sqrt(np.square(rGyReg)*1/Parameter.sSize))
+    plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR, color='tab:red')
+    plt.yscale('log')
+    plt.xscale('log')
+    plt.xlim(10, 10000)
+    plt.ylim(7, 4000)
+    plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
+    plt.xlabel(r"Number of Regularized Points ($a*N$)", fontsize=15)
+    plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
+    plt.tight_layout()
+    plt.show()
+    
+    
+    #==============================================================================
+    
+    s0 = np.array(MorphData.sensory)[np.where(MorphData.physLoc[MorphData.sensory] == 0)[0]]
+    s1 = np.array(MorphData.sensory)[np.where(MorphData.physLoc[MorphData.sensory] == 1)[0]]
+    s1 = np.delete(s1, [7,8])
+    s2 = np.array(MorphData.sensory)[np.where(MorphData.physLoc[MorphData.sensory] == 2)[0]]
+    
+    sidx1 = np.where(MorphData.regMDistLen[MorphData.sensory]*Parameter.sSize < 176)[0]
+    sidx2 = np.where((MorphData.regMDistLen[MorphData.sensory]*Parameter.sSize > 176) &
+                     (MorphData.regMDistLen[MorphData.sensory]*Parameter.sSize < 1e3))[0]
+    
+    poptR_sidx0, pcovR_sidx0 = scipy.optimize.curve_fit(objFuncGL, 
+                                            np.log10(MorphData.regMDistLen[s0]*Parameter.sSize), 
+                                            np.log10(np.sqrt(np.square(rGyReg)[s0]*1/Parameter.sSize)), 
+                                            p0=[1., 0.], 
+                                            maxfev=100000)
+    fitYregR_sidx0 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_sidx0[0], poptR_sidx0[1])
+    
+    
+    poptR_sidx1, pcovR_sidx1 = scipy.optimize.curve_fit(objFuncGL, 
+                                            np.log10(MorphData.regMDistLen[s1]*Parameter.sSize), 
+                                            np.log10(np.sqrt(np.square(rGyReg)[s1]*1/Parameter.sSize)), 
+                                            p0=[1., 0.], 
+                                            maxfev=100000)
+    fitYregR_sidx1 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_sidx1[0], poptR_sidx1[1])
+    
+    poptR_sidx2, pcovR_sidx2 = scipy.optimize.curve_fit(objFuncGL, 
+                                            np.log10(MorphData.regMDistLen[s2]*Parameter.sSize), 
+                                            np.log10(np.sqrt(np.square(rGyReg)[s2]*1/Parameter.sSize)), 
+                                            p0=[1., 0.], 
+                                            maxfev=100000)
+    fitYregR_sidx2 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_sidx2[0], poptR_sidx2[1])
+    
+    
+    fig = plt.figure(figsize=(8,6))
+    #plt.scatter(regMDistLen[MorphData.sensory]*Parameter.sSize, np.sqrt(np.square(rGyReg)[MorphData.sensory]*1/Parameter.sSize))
+    plt.scatter(MorphData.regMDistLen[s0]*Parameter.sSize, np.sqrt(np.square(rGyReg)[s0]*1/Parameter.sSize))
+    plt.scatter(MorphData.regMDistLen[s1]*Parameter.sSize, np.sqrt(np.square(rGyReg)[s1]*1/Parameter.sSize))
+    plt.scatter(MorphData.regMDistLen[s2]*Parameter.sSize, np.sqrt(np.square(rGyReg)[s2]*1/Parameter.sSize))
+    plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_sidx0, color='tab:blue')
+    plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_sidx1, color='tab:orange')
+    plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_sidx2, color='tab:green')
+    plt.legend(['Head', 'Body', 'Tail'], fontsize=15)
+    plt.vlines(56, 0.1, 1e4, linestyles='dashed')
+    plt.vlines(176, 0.1, 1e4, linestyles='dashed')
+    plt.vlines(1000, 0.1, 1e4, linestyles='dashed')
+    plt.yscale('log')
+    plt.xscale('log')
+    plt.xlim(10, 10000)
+    plt.ylim(7, 4000)
+    plt.title(r"$R_{g}$ to Length for Sensory Neurons", fontsize=20)
+    plt.xlabel(r"Length", fontsize=15)
+    plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
+    plt.tight_layout()
+    plt.show()
+    
+    
+    
+    i0 = np.array(MorphData.inter)[np.where(MorphData.physLoc[MorphData.inter] == 0)[0]]
+    i1 = np.array(MorphData.inter)[np.where(MorphData.physLoc[MorphData.inter] == 1)[0]]
+    i2 = np.array(MorphData.inter)[np.where(MorphData.physLoc[MorphData.inter] == 2)[0]]
+    
+    iidx1 = np.where(MorphData.regMDistLen[MorphData.inter]*Parameter.sSize < 176)[0]
+    iidx2 = np.where((MorphData.regMDistLen[MorphData.inter]*Parameter.sSize > 176) &
+                     (MorphData.regMDistLen[MorphData.inter]*Parameter.sSize < 1e3))[0]
+    
+    poptR_iidx0, pcovR_iidx0 = scipy.optimize.curve_fit(objFuncGL, 
+                                            np.log10(MorphData.regMDistLen[i0]*Parameter.sSize), 
+                                            np.log10(np.sqrt(np.square(rGyReg)[i0]*1/Parameter.sSize)), 
+                                            p0=[1., 0.], 
+                                            maxfev=100000)
+    fitYregR_iidx0 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_iidx0[0], poptR_iidx0[1])
+    
+    
+    poptR_iidx1, pcovR_iidx1 = scipy.optimize.curve_fit(objFuncGL, 
+                                            np.log10(MorphData.regMDistLen[i1]*Parameter.sSize), 
+                                            np.log10(np.sqrt(np.square(rGyReg)[i1]*1/Parameter.sSize)), 
+                                            p0=[1., 0.], 
+                                            maxfev=100000)
+    fitYregR_iidx1 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_iidx1[0], poptR_iidx1[1])
+    
+    poptR_iidx2, pcovR_iidx2 = scipy.optimize.curve_fit(objFuncGL, 
+                                            np.log10(MorphData.regMDistLen[i2]*Parameter.sSize), 
+                                            np.log10(np.sqrt(np.square(rGyReg)[i2]*1/Parameter.sSize)), 
+                                            p0=[1., 0.], 
+                                            maxfev=100000)
+    fitYregR_iidx2 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_iidx2[0], poptR_iidx2[1])
+    
+    
+    fig = plt.figure(figsize=(8,6))
+    #plt.scatter(regMDistLen[MorphData.inter]*Parameter.sSize, np.sqrt(np.square(rGyReg)[MorphData.inter]*1/Parameter.sSize))
+    plt.scatter(MorphData.regMDistLen[i0]*Parameter.sSize, 
+                np.sqrt(np.square(rGyReg)[i0]*1/Parameter.sSize))
+    plt.scatter(MorphData.regMDistLen[i1]*Parameter.sSize, 
+                np.sqrt(np.square(rGyReg)[i1]*1/Parameter.sSize))
+    plt.scatter(MorphData.regMDistLen[i2]*Parameter.sSize, 
+                np.sqrt(np.square(rGyReg)[i2]*1/Parameter.sSize))
+    plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_iidx0, color='tab:blue')
+    plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_iidx1, color='tab:orange')
+    plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_iidx2, color='tab:green')
+    plt.legend(['Head', 'Body', 'Tail'], fontsize=15)
+    plt.vlines(56, 0.1, 1e4, linestyles='dashed')
+    plt.vlines(176, 0.1, 1e4, linestyles='dashed')
+    plt.vlines(1000, 0.1, 1e4, linestyles='dashed')
+    plt.yscale('log')
+    plt.xscale('log')
+    plt.xlim(10, 10000)
+    plt.ylim(7, 4000)
+    plt.title(r"$R_{g}$ to Length for Interneurons", fontsize=20)
+    plt.xlabel(r"Length", fontsize=15)
+    plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
+    plt.tight_layout()
+    plt.show()
+    
+    
+    
+    m0 = np.array(MorphData.motor)[np.where(MorphData.physLoc[MorphData.motor] == 0)[0]]
+    m1 = np.array(MorphData.motor)[np.where(MorphData.physLoc[MorphData.motor] == 1)[0]]
+    m2 = np.array(MorphData.motor)[np.where(MorphData.physLoc[MorphData.motor] == 2)[0]]
+    
+    midx1 = np.where(MorphData.regMDistLen[MorphData.motor]*Parameter.sSize < 176)[0]
+    midx2 = np.where((MorphData.regMDistLen[MorphData.motor]*Parameter.sSize > 176) &
+                     (MorphData.regMDistLen[MorphData.motor]*Parameter.sSize < 1e3))[0]
+    
+    poptR_midx0, pcovR_midx0 = scipy.optimize.curve_fit(objFuncGL, 
+                                            np.log10(MorphData.regMDistLen[m0]*Parameter.sSize), 
+                                            np.log10(np.sqrt(np.square(rGyReg)[m0]*1/Parameter.sSize)), 
+                                            p0=[1., 0.], 
+                                            maxfev=100000)
+    fitYregR_midx0 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_midx0[0], poptR_midx0[1])
+    
+    
+    poptR_midx1, pcovR_midx1 = scipy.optimize.curve_fit(objFuncGL, 
+                                            np.log10(MorphData.regMDistLen[m1]*Parameter.sSize), 
+                                            np.log10(np.sqrt(np.square(rGyReg)[m1]*1/Parameter.sSize)), 
+                                            p0=[1., 0.], 
+                                            maxfev=100000)
+    fitYregR_midx1 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_midx1[0], poptR_midx1[1])
+    
+    poptR_midx2, pcovR_midx2 = scipy.optimize.curve_fit(objFuncGL, 
+                                            np.log10(MorphData.regMDistLen[m2]*Parameter.sSize), 
+                                            np.log10(np.sqrt(np.square(rGyReg)[m2]*1/Parameter.sSize)), 
+                                            p0=[1., 0.], 
+                                            maxfev=100000)
+    fitYregR_midx2 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_midx2[0], poptR_midx2[1])
+    
+    
+    fig = plt.figure(figsize=(8,6))
+    #plt.scatter(regMDistLen[MorphData.motor]*Parameter.sSize, np.sqrt(np.square(rGyReg)[MorphData.motor]*1/Parameter.sSize))
+    plt.scatter(MorphData.regMDistLen[m0]*Parameter.sSize, np.sqrt(np.square(rGyReg)[m0]*1/Parameter.sSize))
+    plt.scatter(MorphData.regMDistLen[m1]*Parameter.sSize, np.sqrt(np.square(rGyReg)[m1]*1/Parameter.sSize))
+    plt.scatter(MorphData.regMDistLen[m2]*Parameter.sSize, np.sqrt(np.square(rGyReg)[m2]*1/Parameter.sSize))
+    plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_midx0, color='tab:blue')
+    plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_midx1, color='tab:orange')
+    plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_midx2, color='tab:green')
+    plt.legend(['Head', 'Body', 'Tail'], fontsize=15)
+    plt.vlines(56, 0.1, 1e4, linestyles='dashed')
+    plt.vlines(176, 0.1, 1e4, linestyles='dashed')
+    plt.vlines(1000, 0.1, 1e4, linestyles='dashed')
+    plt.yscale('log')
+    plt.xscale('log')
+    plt.xlim(10, 10000)
+    plt.ylim(7, 4000)
+    plt.title(r"$R_{g}$ to Length for Motor Neurons", fontsize=20)
+    plt.xlabel(r"Length", fontsize=15)
+    plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
+    plt.tight_layout()
+    plt.show()
+    
+    
+    #==============================================================================
+    
+    
+    rGyRegSeg_avg = np.empty(len(Parameter.nSize))
+    for i in range(len(Parameter.nSize)):
+        RStemp = np.where(OutputData.regSegOrdN == Parameter.nSize[i])[0]
+        rGyRegSeg_avg[i] = np.average(OutputData.rGyRegSeg[RStemp])
+    
+    RS1 = np.where(OutputData.regSegOrdN > 7)[0]
+    RS2 = np.where((OutputData.regSegOrdN <= 8) & (OutputData.regSegOrdN >= 4))[0]
+    RS3 = np.where(OutputData.regSegOrdN < 5)[0]
+    
+    poptRS1, pcovRS1 = scipy.optimize.curve_fit(objFuncGL, 
+                                              np.log10(OutputData.regSegOrdN[RS1]*Parameter.sSize), 
+                                              np.log10(np.sqrt(np.square(OutputData.rGyRegSeg[RS1])*1/Parameter.sSize)), 
+                                              p0=[1., 0.], 
+                                              maxfev=100000)
+    fitYregRS1 = objFuncPpow(np.unique(OutputData.regSegOrdN[RS1])*Parameter.sSize, poptRS1[0], poptRS1[1])
+    
+    fitYregRS12 = objFuncPpow(np.unique(OutputData.regSegOrdN[RS2])*Parameter.sSize, poptRS1[0], poptRS1[1])
+    
+    poptRS2, pcovRS2 = scipy.optimize.curve_fit(objFuncGL, 
+                                              np.log10(OutputData.regSegOrdN[RS2]*Parameter.sSize), 
+                                              np.log10(np.sqrt(np.square(OutputData.rGyRegSeg[RS2])*1/Parameter.sSize)), 
+                                              p0=[1., 0.], 
+                                              maxfev=100000)
+    fitYregRS2 = objFuncPpow(np.unique(OutputData.regSegOrdN[RS2])*Parameter.sSize, poptRS2[0], poptRS2[1])
+    
+    poptRS3, pcovRS3 = scipy.optimize.curve_fit(objFuncGL, 
+                                              np.log10(OutputData.regSegOrdN[RS3]*Parameter.sSize), 
+                                              np.log10(np.sqrt(np.square(OutputData.rGyRegSeg[RS3])*1/Parameter.sSize)), 
+                                              p0=[1., 0.], 
+                                              maxfev=100000)
+    fitYregRS3 = objFuncPpow(np.unique(OutputData.regSegOrdN[RS3])*Parameter.sSize, poptRS3[0], poptRS3[1])
+    
+    fitYregRS32 = objFuncPpow(np.unique(OutputData.regSegOrdN[RS2])*Parameter.sSize, poptRS3[0], poptRS3[1])
+    
+    
+    fig, ax1 = plt.subplots(figsize=(12,8))
+    ax1.xaxis.label.set_fontsize(15)
+    ax1.xaxis.set_tick_params(which='major', length=7)
+    ax1.xaxis.set_tick_params(which='minor', length=5)
+    ax1.yaxis.label.set_fontsize(15)
+    ax1.yaxis.set_tick_params(which='major', length=7)
+    ax1.yaxis.set_tick_params(which='minor', length=5)
+    ax1.scatter(MorphData.regMDistLen*Parameter.sSize, 
+                np.sqrt(np.square(rGyReg)*1/Parameter.sSize), color='tab:blue')
+    ax1.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR, color='tab:red', lw=2)
+    ax1.scatter(OutputData.regSegOrdN*Parameter.sSize, 
+                np.sqrt(np.square(OutputData.rGyRegSeg)*1/Parameter.sSize), 
+                color='tab:blue',
+                facecolors='none')
+    ax1.scatter(np.array(Parameter.nSize)*Parameter.sSize, 
+                np.sqrt(np.square(rGyRegSeg_avg)*1/Parameter.sSize), 
+                color='tab:orange')
+    ax1.plot(np.unique(OutputData.regSegOrdN[RS1])*Parameter.sSize, fitYregRS1, color='tab:red', lw=2, linestyle='--')
+    ax1.plot(np.unique(OutputData.regSegOrdN[RS2])*Parameter.sSize, fitYregRS2, color='tab:red', lw=2, linestyle='--')
+    ax1.plot(np.unique(OutputData.regSegOrdN[RS3])*Parameter.sSize, fitYregRS3, color='tab:red', lw=2, linestyle='--')
+    ax1.vlines(0.8, 0.01, 11000, linestyles='dashed')
+    ax1.vlines(0.4, 0.01, 11000, linestyles='dashed')
+    ax1.set_yscale('log')
+    ax1.set_xscale('log')
+    #ax1.xlim(0.01, 10500)
+    ax1.set_ylim(0.03, 10000)
+    
+    ax2 = plt.axes([0, 0, 1, 1])
+    ip1 = InsetPosition(ax1, [0.01, 0.57, 0.4, 0.4])
+    ax2.set_axes_locator(ip1)
+    mark_inset(ax1, ax2, loc1=3, loc2=4, fc="none", ec='0.5')
+    
+    ax2.scatter(OutputData.regSegOrdN*Parameter.sSize, 
+                np.sqrt(np.square(OutputData.rGyRegSeg)*1/Parameter.sSize), 
+                color='tab:blue', 
+                facecolors='none')
+    ax2.scatter(np.array(Parameter.nSize)[1:11]*Parameter.sSize,
+                np.sqrt(np.square(rGyRegSeg_avg)[1:11]*1/Parameter.sSize), 
+                color='tab:orange')
+    ax2.plot(np.unique(OutputData.regSegOrdN[RS1])[:4]*Parameter.sSize, fitYregRS1[:4], color='tab:red', lw=2, linestyle='--')
+    ax2.plot(np.unique(OutputData.regSegOrdN[RS2])*Parameter.sSize, fitYregRS2, color='tab:red', lw=2, linestyle='--')
+    ax2.plot(np.unique(OutputData.regSegOrdN[RS3])*Parameter.sSize, fitYregRS3, color='tab:red', lw=2, linestyle='--')
+    ax2.xaxis.set_visible(False)
+    ax2.yaxis.set_visible(False)
+    ax2.set_yscale('log')
+    ax2.set_xscale('log')
+    ax2.vlines(0.8, 0.01, 5, linestyles='dashed')
+    ax2.vlines(0.4, 0.01, 5, linestyles='dashed')
+    ax2.set_xlim(0.24, 1.4)
+    ax2.set_ylim(0.28, 1.6)
+    
+    ax3 = plt.axes([1, 1, 2, 2])
+    ip2 = InsetPosition(ax1, [0.57, 0.02, 0.4, 0.4])
+    ax3.set_axes_locator(ip2)
+    mark_inset(ax1, ax3, loc1=2, loc2=3, fc="none", ec='0.5')
+    
+    ax3.plot(np.unique(OutputData.regSegOrdN[RS1])[:4]*Parameter.sSize, fitYregRS1[:4], color='tab:red', lw=2, linestyle='-')
+    ax3.plot(np.unique(OutputData.regSegOrdN[RS2])*Parameter.sSize, fitYregRS12, color='tab:red', lw=2, linestyle='--')
+    ax3.plot(np.unique(OutputData.regSegOrdN[RS2])*Parameter.sSize, fitYregRS2, color='tab:green', lw=2, linestyle='-')
+    ax3.plot(np.unique(OutputData.regSegOrdN[RS3])*Parameter.sSize, fitYregRS3, color='tab:blue', lw=2, linestyle='-')
+    ax3.plot(np.unique(OutputData.regSegOrdN[RS2])*Parameter.sSize, fitYregRS32, color='tab:blue', lw=2, linestyle='--')
+    ax3.xaxis.set_visible(False)
+    ax3.yaxis.set_visible(False)
+    ax3.set_yscale('log')
+    ax3.set_xscale('log')
+    ax3.vlines(0.8, 0.01, 1, linestyles='dashed')
+    ax3.vlines(0.4, 0.01, 1, linestyles='dashed')
+    ax3.set_xlim(0.36, 0.89)
+    ax3.set_ylim(0.42, 0.95)
+    
+    ax1.set_xlabel(r"Number of Regularized Points ($\lambda N$)", fontsize=15)
+    ax1.set_ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
+    #plt.tight_layout()
+    if Parameter.SAVE:
+        plt.savefig('./images/regSegRG_morphScale_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
+    plt.show()
+    
+    
+    
+    
+    #==============================================================================
+    
+    
+    
+    fig, ax1 = plt.subplots(figsize=(12,8))
+    ax1.xaxis.label.set_fontsize(15)
+    ax1.xaxis.set_tick_params(which='major', length=7)
+    ax1.xaxis.set_tick_params(which='minor', length=5)
+    ax1.yaxis.label.set_fontsize(15)
+    ax1.yaxis.set_tick_params(which='major', length=7)
+    ax1.yaxis.set_tick_params(which='minor', length=5)
+    #ax1.scatter(regMDistLen[MorphData.sensory]*Parameter.sSize, np.sqrt(np.square(rGyReg)[MorphData.sensory]*1/Parameter.sSize))
+    #ax1.scatter(regMDistLen[MorphData.inter]*Parameter.sSize, np.sqrt(np.square(rGyReg)[MorphData.inter]*1/Parameter.sSize))
+    #ax1.scatter(regMDistLen[MorphData.motor]*Parameter.sSize, np.sqrt(np.square(rGyReg)[MorphData.motor]*1/Parameter.sSize))
+    ax1.scatter(OutputData.regSegOrdNi*Parameter.sSize, 
+                np.sqrt(np.square(OutputData.rGyRegSegi)*1/Parameter.sSize), 
+                color='tab:orange',
+                facecolors='none')
+    ax1.scatter(OutputData.regSegOrdNm*Parameter.sSize, 
+                np.sqrt(np.square(OutputData.rGyRegSegm)*1/Parameter.sSize),
+                color='tab:green', 
+                facecolors='none')
+    ax1.scatter(OutputData.regSegOrdNs*Parameter.sSize,
+                np.sqrt(np.square(OutputData.rGyRegSegs)*1/Parameter.sSize),
+                color='tab:blue', 
+                facecolors='none')
+    ax1.legend(["Sensory Neuron", "Interneuron", "Motor Neuron"], fontsize=15)
+    ax1.vlines(0.08, 0.01, 11000, linestyles='dashed')
+    ax1.vlines(0.04, 0.01, 11000, linestyles='dashed')
+    ax1.set_yscale('log')
+    ax1.set_xscale('log')
+    #ax1.xlim(0.01, 10500)
+    ax1.set_ylim(0.03, 10000)
+    if Parameter.SAVE:
+        plt.savefig('./images/regSegRG_morphScale_sep_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
+    plt.show()
+    
+    
+    #==============================================================================
+    
+    
+    shift_N = 4
+    poptRS_sl = []
+    RS_x = []
+    for i in range(len(Parameter.nSize) - shift_N):
+        RS_s = np.where((OutputData.regSegOrdN <= Parameter.nSize[i+shift_N]) &
+                        (OutputData.regSegOrdN >= Parameter.nSize[i]))[0]
+        
+        RS_x.append(np.average(Parameter.nSize[i:i+shift_N]))
+        
+        poptRS_s, pcovRS_s = scipy.optimize.curve_fit(objFuncGL, 
+                                                      np.log10(OutputData.regSegOrdN[RS_s]*Parameter.sSize), 
+                                                      np.log10(np.sqrt(np.square(OutputData.rGyRegSeg[RS_s])*1/Parameter.sSize)), 
+                                                      p0=[1., 0.], 
+                                                      maxfev=100000)
+        poptRS_sl.append(poptRS_s[0])
+    
+    
+    fig = plt.figure(figsize=(8,6))
+    plt.scatter(RS_x, poptRS_sl)
+    #plt.plot(regMDistLen*Parameter.sSize, fitYregR, color='tab:red')
+    #plt.yscale('log')
+    plt.hlines(poptR[0], 0.1, 1000, linestyles='--', color='tab:red')
+    plt.hlines(poptRS1[0], 0.1, 1000, linestyles='--', color='tab:green')
+    plt.hlines(poptRS3[0], 0.1, 1000, linestyles='--', color='tab:orange')
+    #plt.yscale('log')
+    plt.xscale('log')
+    plt.xlim(1, 200)
+    #plt.ylim(0.005, 1000)
+    #plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
+    plt.xlabel(r"Average Number of Regularized Points ($\lambda N_{avg}$)", fontsize=15)
+    plt.ylabel(r"Slope ($\nu$)", fontsize=15)
+    #plt.tight_layout()
+    if Parameter.SAVE:
+        plt.savefig('./images/regSegRG_slope_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
+    plt.show()
+    
+    
+    #==============================================================================
+    
+    
+    poptRS_sl_sep_sen = []
+    poptRS_sl_sep_int = []
+    poptRS_sl_sep_mot = []
+    RS_x_sep = []
+    for i in range(len(Parameter.nSize) - shift_N):
+        RS_s_sep_sen = np.where((OutputData.regSegOrdNs <= Parameter.nSize[i+shift_N]) & 
+                                (OutputData.regSegOrdNs >= Parameter.nSize[i]))[0]
+        RS_s_sep_int = np.where((OutputData.regSegOrdNi <= Parameter.nSize[i+shift_N]) & 
+                                (OutputData.regSegOrdNi >= Parameter.nSize[i]))[0]
+        RS_s_sep_mot = np.where((OutputData.regSegOrdNm <= Parameter.nSize[i+shift_N]) &
+                                (OutputData.regSegOrdNm >= Parameter.nSize[i]))[0]
+        
+        RS_x_sep.append(np.average(Parameter.nSize[i:i+shift_N]))
+        
+        poptRS_s_sep_sen, pcovRS_s_sep_sep = scipy.optimize.curve_fit(objFuncGL, 
+                                                      np.log10(OutputData.regSegOrdNs[RS_s_sep_sen]*Parameter.sSize), 
+                                                      np.log10(np.sqrt(np.square(OutputData.rGyRegSegs[RS_s_sep_sen])*1/Parameter.sSize)), 
+                                                      p0=[1., 0.], 
+                                                      maxfev=100000)
+        poptRS_s_sep_int, pcovRS_s_sep_int = scipy.optimize.curve_fit(objFuncGL, 
+                                                      np.log10(OutputData.regSegOrdNi[RS_s_sep_int]*Parameter.sSize), 
+                                                      np.log10(np.sqrt(np.square(OutputData.rGyRegSegi[RS_s_sep_int])*1/Parameter.sSize)), 
+                                                      p0=[1., 0.], 
+                                                      maxfev=100000)
+        poptRS_s_sep_mot, pcovRS_s_sep_mot = scipy.optimize.curve_fit(objFuncGL, 
+                                                      np.log10(OutputData.regSegOrdNm[RS_s_sep_mot]*Parameter.sSize), 
+                                                      np.log10(np.sqrt(np.square(OutputData.rGyRegSegm[RS_s_sep_mot])*1/Parameter.sSize)), 
+                                                      p0=[1., 0.], 
+                                                      maxfev=100000)
+        
+        poptRS_sl_sep_sen.append(poptRS_s_sep_sen[0])
+        poptRS_sl_sep_int.append(poptRS_s_sep_int[0])
+        poptRS_sl_sep_mot.append(poptRS_s_sep_mot[0])
+    
+    
+    fig = plt.figure(figsize=(8,6))
+    plt.scatter(RS_x_sep, poptRS_sl_sep_sen)
+    plt.scatter(RS_x_sep, poptRS_sl_sep_int)
+    plt.scatter(RS_x_sep, poptRS_sl_sep_mot)
+    plt.legend(["Sensory Neuron", "Interneuron", "Motor Neuron"], fontsize=15)
+    #plt.plot(regMDistLen*Parameter.sSize, fitYregR, color='tab:red')
+    #plt.yscale('log')
+    #plt.hlines(poptR[0], 0.1, 1000, linestyles='--', color='tab:red')
+    #plt.hlines(poptRS1[0], 0.1, 1000, linestyles='--', color='tab:green')
+    #plt.hlines(poptRS3[0], 0.1, 1000, linestyles='--', color='tab:orange')
+    #plt.yscale('log')
+    plt.xscale('log')
+    plt.xlim(1, 200)
+    #plt.ylim(0.005, 1000)
+    #plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
+    plt.xlabel(r"Average Number of Regularized Points ($\lambda N_{avg}$)", fontsize=15)
+    plt.ylabel(r"Slope ($\nu$)", fontsize=15)
+    #plt.tight_layout()
+    if Parameter.SAVE:
+        plt.savefig('./images/regSegRG_slope_sep_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
+    plt.show()
 
 
 
