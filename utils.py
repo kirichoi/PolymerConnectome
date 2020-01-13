@@ -23,6 +23,40 @@ def sortPhysLoc(morph_dist):
 
     return physLoc
 
+def sortDetailedPhysLoc(morph_dist):
+    dphysLoc = np.empty(len(morph_dist))
+    
+    for i in range(len(morph_dist)):
+        if (np.array(morph_dist[i])[:,1] <= -200).all():
+            dphysLoc[i] = 0
+        elif ((np.array(morph_dist[i])[:,1] <= -100).all() and (np.array(morph_dist[i])[:,1] > -200).all()):
+            dphysLoc[i] = 1
+        elif ((np.array(morph_dist[i])[:,1] >= 100).all() and (np.array(morph_dist[i])[:,1] < 200).all()):
+            dphysLoc[i] = 3
+        elif (np.array(morph_dist[i])[:,1] >= 200).all():
+            dphysLoc[i] = 4
+        else:
+            dphysLoc[i] = 2
+            
+    return dphysLoc
+
+def sortDetailedSomaPhysLoc(morph_dist, somaP):
+    dsphysLoc = np.empty(len(morph_dist))
+    
+    for i in range(len(morph_dist)):
+        if (np.array(morph_dist[i])[somaP[i]][1] <= -250):
+            dsphysLoc[i] = 0
+        elif ((np.array(morph_dist[i])[somaP[i]][1] <= -100) and (np.array(morph_dist[i])[somaP[i]][1] > -250)):
+            dsphysLoc[i] = 1
+        elif ((np.array(morph_dist[i])[somaP[i]][1] >= 100) and (np.array(morph_dist[i])[somaP[i]][1] < 250)):
+            dsphysLoc[i] = 3
+        elif (np.array(morph_dist[i])[somaP[i]][1] >= 250):
+            dsphysLoc[i] = 4
+        else:
+            dsphysLoc[i] = 2
+            
+    return dsphysLoc
+
 def exportOutput(Parameter, OutputData):
     
     outputdir = Parameter.outputdir
