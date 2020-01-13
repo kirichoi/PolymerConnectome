@@ -241,13 +241,13 @@ class MorphData():
         plt.show()
     
     
-    def _layer_pos(self, nodeList):
+    def _spat_pos(self, nodeList):
         pos = {}
         
         for i in range(len(nodeList)):
             pos[nodeList[i]] = np.array([self.morph_dist[i][self.somaP[i]][1],
                                          self.morph_dist[i][self.somaP[i]][0]])
-        
+    
         return pos
         
     
@@ -301,7 +301,12 @@ class MorphData():
                     if cType[cTarind] == 'GapJunction' and gapjunction:
                         G.add_edges_from([(cTarget[cTarind], cOrigin[cTarind])])
     
-        pos = graphviz_layout(G, prog=prog)
+        if prog == 'spatial':
+            pos = self._layer_pos(self.neuron_id)
+        elif prog == 'kamada':
+            pos = nx.kamada_kawai_layout(G)
+        else:
+            pos = graphviz_layout(G, prog=prog)
     
         fig = plt.figure(figsize=(22, 14))
         nx.draw(G, pos, node_color=color, with_labels=True, node_size=1000)
@@ -385,25 +390,89 @@ class MorphData():
         
         for h in range(len(cOrigin)):
             G.add_edges_from([(cOrigin[h], cTarget[h])])
-            if cType[i] == 'GapJunction' and gapjunction:
+            if cType[h] == 'GapJunction' and gapjunction:
                         G.add_edges_from([(cTarget[h], cOrigin[h])])
     
         if prog == 'spatial':
-            pos = self._layer_pos(self.neuron_id)
+            pos = self._spat_pos(self.neuron_id)
         elif prog == 'kamada':
             pos = nx.kamada_kawai_layout(G)
+        elif prog == 'phys':
+            sdphysLoc = utils.sortDetailedSomaPhysLoc(self.morph_dist, self.somaP)
+            sec1 = np.array(self.neuron_id)[np.where(sdphysLoc == 0)]
+            sec2 = np.array(self.neuron_id)[np.where(sdphysLoc == 1)]
+            sec3 = np.array(self.neuron_id)[np.where(sdphysLoc == 2)]
+            sec4 = np.array(self.neuron_id)[np.where(sdphysLoc == 3)]
+            sec5 = np.array(self.neuron_id)[np.where(sdphysLoc == 4)]
+            
+            pos = {}
+            
+            for i in range(len(sec1)):
+                pos[sec1[i]] = np.array([-2, len(sec1)/2. - i])
+            for i in range(len(sec2)):
+                pos[sec2[i]] = np.array([-1, len(sec2)/2. - i])
+            for i in range(len(sec3)):
+                pos[sec3[i]] = np.array([0, len(sec3)/2. - i])
+            for i in range(len(sec4)):
+                pos[sec4[i]] = np.array([1, len(sec4)/2. - i])
+            for i in range(len(sec5)):
+                pos[sec5[i]] = np.array([2, len(sec5)/2. - i])
+        elif prog == 'cat':
+            pos = {}
+            
+            for i in range(len(self.sensory)):
+                pos[self.neuron_id[self.sensory[i]]] = np.array([-20, (len(self.sensory)+len(self.polymodal)+len(self.other)+9) - 2*i])
+            for i in range(len(self.inter)):
+                pos[self.neuron_id[self.inter[i]]] = np.array([np.arange(-15, 15, 30/len(self.inter))[i], len(self.inter)])
+            for i in range(len(self.motor)):
+                pos[self.neuron_id[self.motor[i]]] = np.array([20, len(self.motor) - 2*i])
+            for i in range(len(self.polymodal)):
+                pos[self.neuron_id[self.polymodal[i]]] = np.array([-20, (len(self.sensory)+len(self.polymodal)+len(self.other)+9) - 2*(i+len(self.sensory)+3)])
+            for i in range(len(self.other)):
+                pos[self.neuron_id[self.other[i]]] = np.array([-20, (len(self.sensory)+len(self.polymodal)+len(self.other)+9) - 2*(i+len(self.sensory)+len(self.polymodal)+6)])
+        elif prog == 'physcat':
+            sdphysLoc = utils.sortDetailedSomaPhysLoc(self.morph_dist, self.somaP)
+            sec1 = np.array(self.neuron_id)[np.where(sdphysLoc == 0)]
+            sec2 = np.array(self.neuron_id)[np.where(sdphysLoc == 1)]
+            sec3 = np.array(self.neuron_id)[np.where(sdphysLoc == 2)]
+            sec4 = np.array(self.neuron_id)[np.where(sdphysLoc == 3)]
+            sec5 = np.array(self.neuron_id)[np.where(sdphysLoc == 4)]
+            
+            pos = {}
+            
+            for i in range(len(sec1)):
+                pos[sec1[i]] = np.array([-2, len(sec1)/2. - i])
+            for i in range(len(sec2)):
+                pos[sec2[i]] = np.array([-1, len(sec2)/2. - i])
+            for i in range(len(sec3)):
+                pos[sec3[i]] = np.array([0, len(sec3)/2. - i])
+            for i in range(len(sec4)):
+                pos[sec4[i]] = np.array([1, len(sec4)/2. - i])
+            for i in range(len(sec5)):
+                pos[sec5[i]] = np.array([2, len(sec5)/2. - i])
+                
+            for i in range(len(self.sensory)):
+                pos[self.neuron_id[self.sensory[i]]] = np.array([-2, (len(self.sensory)+len(self.polymodal)+6)/2. - i])
+            for i in range(len(self.inter)):
+                pos[self.neuron_id[self.inter[i]]] = np.array([-1, len(self.inter)/2. - i])
+            for i in range(len(self.motor)):
+                pos[self.neuron_id[self.motor[i]]] = np.array([2, len(self.motor)/2. - i])
+            for i in range(len(self.polymodal)):
+                pos[self.neuron_id[self.polymodal[i]]] = np.array([-2, (len(self.sensory)+len(self.polymodal)+6)/2. - (i+len(self.sensory)+3)])
+            for i in range(len(self.other)):
+                pos[self.neuron_id[self.other[i]]] = np.array([0, len(self.other)/2. - i])
+        
         else:
             pos = graphviz_layout(G, prog=prog)
     
-        fig = plt.figure(figsize=(22, 14))
-        nx.draw(G, pos, node_color=color, with_labels=True, node_size=1000)
-        target_p = mpatches.Patch(color=cmap(0), label='Target Neuron')
+        fig = plt.figure(figsize=(26, 26))
+        nx.draw(G, pos, node_color=color, with_labels=True, node_size=300)
         target_s = mpatches.Patch(color=cmap(1), label='Sensory Neuron')
         target_i = mpatches.Patch(color=cmap(2), label='Interneuron')
         target_m = mpatches.Patch(color=cmap(3), label='Motor Neuron')
         target_y = mpatches.Patch(color=cmap(4), label='Polymodal Neuron')
         target_o = mpatches.Patch(color=cmap(5), label='Other Neuron')
-        plt.legend(handles=[target_p, target_s, target_i, target_m, target_y, target_o], fontsize=15)
+        plt.legend(handles=[target_s, target_i, target_m, target_y, target_o], fontsize=15)
         
         return G
     
