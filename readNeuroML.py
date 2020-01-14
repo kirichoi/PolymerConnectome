@@ -436,14 +436,7 @@ class MorphData():
             for i in range(len(self.other)):
                 pos[self.neuron_id[self.other[i]]] = np.array([-20, (len(self.sensory)+len(self.polymodal)+len(self.other)+9) - 2*(i+len(self.sensory)+len(self.polymodal)+6)])
         elif prog == 'catcirc':
-            
-            def circle_points(r, n):
-                t = np.linspace(0, 2*np.pi, n)
-                x = r * np.cos(t)
-                y = r * np.sin(t)    
-                return x, y
-            
-            x, y = circle_points(10, 302)
+            x, y = utils.circle_points(10, 302)
             cc = 0
             
             pos = {}
@@ -462,7 +455,6 @@ class MorphData():
             for i in range(len(self.other)):
                 pos[self.neuron_id[self.other[i]]] = np.array([x[cc], y[cc]])
                 cc += 1
-            
         elif prog == 'physcat':
             sdphysLoc = utils.sortDetailedSomaPhysLoc(self.morph_dist, self.somaP)
             sec1 = np.array(self.neuron_id)[np.where(sdphysLoc == 0)]
@@ -494,12 +486,207 @@ class MorphData():
                 pos[self.neuron_id[self.polymodal[i]]] = np.array([-2, (len(self.sensory)+len(self.polymodal)+6)/2. - (i+len(self.sensory)+3)])
             for i in range(len(self.other)):
                 pos[self.neuron_id[self.other[i]]] = np.array([0, len(self.other)/2. - i])
-        
         else:
             pos = graphviz_layout(G, prog=prog)
     
         fig = plt.figure(figsize=(30, 30))
         nx.draw(G, pos, node_color=color, with_labels=with_labels, node_size=node_size, edge_color=edge_color)
+        target_s = mpatches.Patch(color=cmap(1), label='Sensory Neuron')
+        target_i = mpatches.Patch(color=cmap(2), label='Interneuron')
+        target_m = mpatches.Patch(color=cmap(3), label='Motor Neuron')
+        target_y = mpatches.Patch(color=cmap(4), label='Polymodal Neuron')
+        target_o = mpatches.Patch(color=cmap(5), label='Other Neuron')
+        plt.legend(handles=[target_s, target_i, target_m, target_y, target_o], fontsize=15)
+        
+        return G
+    
+    
+    def plotCombinedConnectionNetwork(self, node_size=300, with_labels=True):
+        color = []
+        
+        sNodes = node_size
+        iNodes = node_size
+        mNodes = node_size
+        pNodes = node_size
+        oNodes = node_size
+        siEdge = 0
+        smEdge = 0
+        spEdge = 0
+        soEdge = 0
+        isEdge = 0
+        imEdge = 0
+        ipEdge = 0
+        ioEdge = 0
+        msEdge = 0
+        miEdge = 0
+        mpEdge = 0
+        moEdge = 0
+        psEdge = 0
+        piEdge = 0
+        pmEdge = 0
+        poEdge = 0
+        osEdge = 0
+        oiEdge = 0
+        omEdge = 0
+        opEdge = 0
+        
+        cmap = cm.get_cmap('Set1')
+        
+        G = nx.DiGraph()
+        
+        G.add_nodes_from(['Sensory', 'Inter', 'Motor', 'Polymodal', 'Other'])
+        
+        color.append(cmap(1))
+        color.append(cmap(2))
+        color.append(cmap(3))
+        color.append(cmap(4))
+        color.append(cmap(5))
+        
+        for h in range(len(cOrigin)):
+            cOidx = np.where(np.array(MorphData.neuron_id) == cOrigin[h])[0]
+            cTidx = np.where(np.array(MorphData.neuron_id) == cTarget[h])[0]
+                
+            if cOidx in self.sensory:
+                if cTidx in self.sensory:
+                    sNodes += 10
+                    if cType[h] == 'GapJunction':
+                        sNodes += 1
+                elif cTidx in self.inter:
+                    siEdge += 1
+                    if cType[h] == 'GapJunction':
+                        isEdge += 1
+                elif cTidx in self.motor:
+                    smEdge += 1
+                    if cType[h] == 'GapJunction':
+                        msEdge += 1
+                elif cTidx in self.polymodal:
+                    spEdge += 1
+                    if cType[h] == 'GapJunction':
+                       psEdge += 1 
+                elif cTidx in self.other:
+                    soEdge += 1
+                    if cType[h] == 'GapJunction':
+                        osEdge += 1
+            elif cOidx in self.inter:
+                if cTidx in self.sensory:
+                    isEdge += 1
+                    if cType[h] == 'GapJunction':
+                        siEdge += 1
+                elif cTidx in self.inter:
+                    iNodes += 10
+                    if cType[h] == 'GapJunction':
+                        iNodes += 1
+                elif cTidx in self.motor:
+                    imEdge += 1
+                    if cType[h] == 'GapJunction':
+                        miEdge += 1
+                elif cTidx in self.polymodal:
+                    ipEdge += 1
+                    if cType[h] == 'GapJunction':
+                        piEdge += 1
+                elif cTidx in self.other:
+                    ioEdge += 1
+                    if cType[h] == 'GapJunction':
+                        oiEdge += 1
+            elif cOidx in self.motor:
+                if cTidx in self.sensory:
+                    msEdge += 1
+                    if cType[h] == 'GapJunction':
+                        smEdge += 1
+                elif cTidx in self.inter:
+                    miEdge += 1
+                    if cType[h] == 'GapJunction':
+                        imEdge += 1
+                elif cTidx in self.motor:
+                    mNodes += 10
+                    if cType[h] == 'GapJunction':
+                        mNodes += 1
+                elif cTidx in self.polymodal:
+                    mpEdge += 1
+                    if cType[h] == 'GapJunction':
+                        poEdge += 1
+                elif cTidx in self.other:
+                    moEdge += 1
+                    if cType[h] == 'GapJunction':
+                        omEdge += 1
+            elif cOidx in self.polymodal:
+                if cTidx in self.sensory:
+                    psEdge += 1
+                    if cType[h] == 'GapJunction':
+                        spEdge += 1
+                elif cTidx in self.inter:
+                    piEdge += 1
+                    if cType[h] == 'GapJunction':
+                        ipEdge += 1
+                elif cTidx in self.motor:
+                    pmEdge += 1
+                    if cType[h] == 'GapJunction':
+                        mpEdge += 1
+                elif cTidx in self.polymodal:
+                    pNodes += 10
+                    if cType[h] == 'GapJunction':
+                        pNodes += 1
+                elif cTidx in self.other:
+                    poEdge += 1
+                    if cType[h] == 'GapJunction':
+                        opEdge += 1
+            elif cOidx in self.other:
+                if cTidx in self.sensory:
+                    osEdge += 1
+                    if cType[h] == 'GapJunction':
+                        soEdge += 1
+                elif cTidx in self.inter:
+                    oiEdge += 1
+                    if cType[h] == 'GapJunction':
+                        ioEdge += 1
+                elif cTidx in self.motor:
+                    omEdge += 1
+                    if cType[h] == 'GapJunction':
+                        moEdge += 1
+                elif cTidx in self.polymodal:
+                    opEdge += 1
+                    if cType[h] == 'GapJunction':
+                        poEdge += 1
+                elif cTidx in self.other:
+                    oNodes += 1
+                    if cType[h] == 'GapJunction':
+                        oNodes += 10
+                    
+        G.add_edges_from([('Sensory', 'Inter')], weight=siEdge)
+        G.add_edges_from([('Sensory', 'Motor')], weight=smEdge)
+        G.add_edges_from([('Sensory', 'Polymodal')], weight=spEdge)
+        G.add_edges_from([('Sensory', 'Other')], weight=soEdge)
+        G.add_edges_from([('Inter', 'Sensory')], weight=isEdge)
+        G.add_edges_from([('Inter', 'Motor')], weight=imEdge)
+        G.add_edges_from([('Inter', 'Polymodal')], weight=ipEdge)
+        G.add_edges_from([('Inter', 'Other')], weight=ioEdge)
+        G.add_edges_from([('Motor', 'Sensory')], weight=msEdge)
+        G.add_edges_from([('Motor', 'Inter')], weight=miEdge)
+        G.add_edges_from([('Motor', 'Polymodal')], weight=mpEdge)
+        G.add_edges_from([('Motor', 'Other')], weight=moEdge)
+        G.add_edges_from([('Polymodal', 'Sensory')], weight=psEdge)
+        G.add_edges_from([('Polymodal', 'Inter')], weight=piEdge)
+        G.add_edges_from([('Polymodal', 'Motor')], weight=pmEdge)
+        G.add_edges_from([('Polymodal', 'Other')], weight=poEdge)
+        G.add_edges_from([('Other', 'Sensory')], weight=osEdge)
+        G.add_edges_from([('Other', 'Inter')], weight=oiEdge)
+        G.add_edges_from([('Other', 'Motor')], weight=omEdge)
+        G.add_edges_from([('Other', 'Polymodal')], weight=opEdge)
+        
+        x, y = utils.circle_points(10, 5)
+        
+        pos = {}
+        pos['Sensory'] = np.array([x[0], y[0]])
+        pos['Inter'] = np.array([x[1], y[1]])
+        pos['Motor'] = np.array([x[2], y[2]])
+        pos['Polymodal'] = np.array([x[3], y[3]])
+        pos['Other'] = np.array([x[4], y[4]])
+        
+        edges = G.edges()
+        weights = np.array([G[u][v]['weight'] for u,v in edges])/10.
+        
+        fig = plt.figure(figsize=(20, 20))
+        nx.draw(G, pos, node_color=color, width=weights, with_labels=with_labels, node_size=[sNodes, iNodes, mNodes, pNodes, oNodes])
         target_s = mpatches.Patch(color=cmap(1), label='Sensory Neuron')
         target_i = mpatches.Patch(color=cmap(2), label='Interneuron')
         target_m = mpatches.Patch(color=cmap(3), label='Motor Neuron')
