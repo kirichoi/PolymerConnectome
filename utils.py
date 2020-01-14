@@ -264,7 +264,12 @@ def regularSegmentRadiusOfGyration(Parameter, BranchData, indRegMDist, indRegMDi
     
 
 
-
+def circle_points(r, n):
+    t = np.linspace(0, 2*np.pi, n+1)
+    x = r * np.cos(t)
+    y = r * np.sin(t)    
+    
+    return x, y
 
 
 
