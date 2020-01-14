@@ -364,10 +364,11 @@ class MorphData():
         return nodeList
     
     
-    def plotFullConnectionNetwork(self, prog='fdp', gapjunction=False):
+    def plotFullConnectionNetwork(self, prog='fdp', gapjunction=False, node_size=300, with_labels=True):
         from networkx.drawing.nx_pydot import graphviz_layout
         
         color = []
+        edge_color = []
         branch = []
         
         cmap = cm.get_cmap('Set1')
@@ -391,7 +392,11 @@ class MorphData():
         for h in range(len(cOrigin)):
             G.add_edges_from([(cOrigin[h], cTarget[h])])
             if cType[h] == 'GapJunction' and gapjunction:
-                        G.add_edges_from([(cTarget[h], cOrigin[h])])
+                G.add_edges_from([(cTarget[h], cOrigin[h])])
+                edge_color.append('tab:red')
+                edge_color.append('tab:red')
+            else:
+                edge_color.append('k')
     
         if prog == 'spatial':
             pos = self._spat_pos(self.neuron_id)
@@ -423,13 +428,41 @@ class MorphData():
             for i in range(len(self.sensory)):
                 pos[self.neuron_id[self.sensory[i]]] = np.array([-20, (len(self.sensory)+len(self.polymodal)+len(self.other)+9) - 2*i])
             for i in range(len(self.inter)):
-                pos[self.neuron_id[self.inter[i]]] = np.array([np.arange(-15, 15, 30/len(self.inter))[i], len(self.inter)])
+                pos[self.neuron_id[self.inter[i]]] = np.array([0, len(self.inter) - 2*i])
             for i in range(len(self.motor)):
                 pos[self.neuron_id[self.motor[i]]] = np.array([20, len(self.motor) - 2*i])
             for i in range(len(self.polymodal)):
                 pos[self.neuron_id[self.polymodal[i]]] = np.array([-20, (len(self.sensory)+len(self.polymodal)+len(self.other)+9) - 2*(i+len(self.sensory)+3)])
             for i in range(len(self.other)):
                 pos[self.neuron_id[self.other[i]]] = np.array([-20, (len(self.sensory)+len(self.polymodal)+len(self.other)+9) - 2*(i+len(self.sensory)+len(self.polymodal)+6)])
+        elif prog == 'catcirc':
+            
+            def circle_points(r, n):
+                t = np.linspace(0, 2*np.pi, n)
+                x = r * np.cos(t)
+                y = r * np.sin(t)    
+                return x, y
+            
+            x, y = circle_points(10, 302)
+            cc = 0
+            
+            pos = {}
+            for i in range(len(self.sensory)):
+                pos[self.neuron_id[self.sensory[i]]] = np.array([x[cc], y[cc]])
+                cc += 1
+            for i in range(len(self.inter)):
+                pos[self.neuron_id[self.inter[i]]] = np.array([x[cc], y[cc]])
+                cc += 1
+            for i in range(len(self.motor)):
+                pos[self.neuron_id[self.motor[i]]] = np.array([x[cc], y[cc]])
+                cc += 1
+            for i in range(len(self.polymodal)):
+                pos[self.neuron_id[self.polymodal[i]]] = np.array([x[cc], y[cc]])
+                cc += 1
+            for i in range(len(self.other)):
+                pos[self.neuron_id[self.other[i]]] = np.array([x[cc], y[cc]])
+                cc += 1
+            
         elif prog == 'physcat':
             sdphysLoc = utils.sortDetailedSomaPhysLoc(self.morph_dist, self.somaP)
             sec1 = np.array(self.neuron_id)[np.where(sdphysLoc == 0)]
@@ -465,8 +498,8 @@ class MorphData():
         else:
             pos = graphviz_layout(G, prog=prog)
     
-        fig = plt.figure(figsize=(26, 26))
-        nx.draw(G, pos, node_color=color, with_labels=True, node_size=300)
+        fig = plt.figure(figsize=(30, 30))
+        nx.draw(G, pos, node_color=color, with_labels=with_labels, node_size=node_size, edge_color=edge_color)
         target_s = mpatches.Patch(color=cmap(1), label='Sensory Neuron')
         target_i = mpatches.Patch(color=cmap(2), label='Interneuron')
         target_m = mpatches.Patch(color=cmap(3), label='Motor Neuron')
