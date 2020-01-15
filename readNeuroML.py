@@ -501,14 +501,16 @@ class MorphData():
         return G
     
     
-    def plotCombinedConnectionNetwork(self, node_size=300, with_labels=True):
+    def plotCombinedConnectionNetwork(self, with_labels=True):
+        from matplotlib.patches import FancyArrowPatch, Circle
+        
         color = []
         
-        sNodes = node_size
-        iNodes = node_size
-        mNodes = node_size
-        pNodes = node_size
-        oNodes = node_size
+        sNodes = 1
+        iNodes = 1
+        mNodes = 1
+        pNodes = 1
+        oNodes = 1
         siEdge = 0
         smEdge = 0
         spEdge = 0
@@ -531,16 +533,13 @@ class MorphData():
         opEdge = 0
         
         cmap = cm.get_cmap('Set1')
+        labels = ['Sensory', 'Inter', 'Motor', 'Polymodal', 'Other']
         
-        G = nx.DiGraph()
+        fig = plt.figure(figsize=(20, 20))
+        ax = plt.gca()
         
-        G.add_nodes_from(['Sensory', 'Inter', 'Motor', 'Polymodal', 'Other'])
-        
-        color.append(cmap(1))
-        color.append(cmap(2))
-        color.append(cmap(3))
-        color.append(cmap(4))
-        color.append(cmap(5))
+        for i in range(5):
+            color.append(cmap(i+1))
         
         for h in range(len(cOrigin)):
             cOidx = np.where(np.array(MorphData.neuron_id) == cOrigin[h])[0]
@@ -651,50 +650,54 @@ class MorphData():
                     oNodes += 1
                     if cType[h] == 'GapJunction':
                         oNodes += 10
-                    
-        G.add_edges_from([('Sensory', 'Inter')], weight=siEdge)
-        G.add_edges_from([('Sensory', 'Motor')], weight=smEdge)
-        G.add_edges_from([('Sensory', 'Polymodal')], weight=spEdge)
-        G.add_edges_from([('Sensory', 'Other')], weight=soEdge)
-        G.add_edges_from([('Inter', 'Sensory')], weight=isEdge)
-        G.add_edges_from([('Inter', 'Motor')], weight=imEdge)
-        G.add_edges_from([('Inter', 'Polymodal')], weight=ipEdge)
-        G.add_edges_from([('Inter', 'Other')], weight=ioEdge)
-        G.add_edges_from([('Motor', 'Sensory')], weight=msEdge)
-        G.add_edges_from([('Motor', 'Inter')], weight=miEdge)
-        G.add_edges_from([('Motor', 'Polymodal')], weight=mpEdge)
-        G.add_edges_from([('Motor', 'Other')], weight=moEdge)
-        G.add_edges_from([('Polymodal', 'Sensory')], weight=psEdge)
-        G.add_edges_from([('Polymodal', 'Inter')], weight=piEdge)
-        G.add_edges_from([('Polymodal', 'Motor')], weight=pmEdge)
-        G.add_edges_from([('Polymodal', 'Other')], weight=poEdge)
-        G.add_edges_from([('Other', 'Sensory')], weight=osEdge)
-        G.add_edges_from([('Other', 'Inter')], weight=oiEdge)
-        G.add_edges_from([('Other', 'Motor')], weight=omEdge)
-        G.add_edges_from([('Other', 'Polymodal')], weight=opEdge)
-        
-        x, y = utils.circle_points(10, 5)
+
+        x, y = utils.circle_points(100, 5)
         
         pos = {}
-        pos['Sensory'] = np.array([x[0], y[0]])
-        pos['Inter'] = np.array([x[1], y[1]])
-        pos['Motor'] = np.array([x[2], y[2]])
-        pos['Polymodal'] = np.array([x[3], y[3]])
-        pos['Other'] = np.array([x[4], y[4]])
+        for i in range(5):
+            pos[labels[i]] = np.array([x[i], y[i]])
         
-        edges = G.edges()
-        weights = np.array([G[u][v]['weight'] for u,v in edges])/10.
+        rad = 0.2
         
-        fig = plt.figure(figsize=(20, 20))
-        nx.draw(G, pos, node_color=color, width=weights, with_labels=with_labels, node_size=[sNodes, iNodes, mNodes, pNodes, oNodes])
+        nl = [sNodes, iNodes, mNodes, pNodes, oNodes]
+        el = [[sNodes, siEdge, smEdge, spEdge, soEdge], 
+              [isEdge, iNodes, imEdge, ipEdge, ioEdge],
+              [msEdge, miEdge, mNodes, mpEdge, moEdge], 
+              [psEdge, piEdge, pmEdge, pNodes, poEdge],
+              [osEdge, oiEdge, omEdge, opEdge, oNodes]]
+        
+        npl = []
+        for i in range(5):
+            npl.append(Circle((x[i], y[i]), radius=np.log(nl[i]), edgecolor='k', facecolor=color[i], lw=3))
+            
+        for i in range(5):
+            for j in range(5):
+                if i == j:
+                    pass
+                else:
+                    c = FancyArrowPatch((x[i], y[i]), (x[j], y[j]), patchA=npl[i], patchB=npl[j], 
+                                        shrinkA=0, shrinkB=20, color=color[i], connectionstyle='arc3,rad=%s'%rad, 
+                                        mutation_scale=el[i][j]/2, lw=np.log(el[i][j]))
+                    ax.add_patch(c)
+        
+        for i in range(5):
+            ax.add_patch(npl[i])
+            if with_labels:
+                plt.text(x[i], y[i], labels[i], 
+                         fontsize=15, horizontalalignment='center', 
+                         verticalalignment='center', color='k')
+        
+        ax.autoscale()
+        plt.axis('off')
+        plt.tight_layout()
         target_s = mpatches.Patch(color=cmap(1), label='Sensory Neuron')
         target_i = mpatches.Patch(color=cmap(2), label='Interneuron')
         target_m = mpatches.Patch(color=cmap(3), label='Motor Neuron')
         target_y = mpatches.Patch(color=cmap(4), label='Polymodal Neuron')
         target_o = mpatches.Patch(color=cmap(5), label='Other Neuron')
         plt.legend(handles=[target_s, target_i, target_m, target_y, target_o], fontsize=15)
+        plt.show()
         
-        return G
     
     
     def _trackConnection(self, name, hier=1):
