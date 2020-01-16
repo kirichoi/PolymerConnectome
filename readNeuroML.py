@@ -392,8 +392,6 @@ class MorphData():
         for h in range(len(cOrigin)):
             G.add_edges_from([(cOrigin[h], cTarget[h])])
             if cType[h] == 'GapJunction' and gapjunction:
-                G.add_edges_from([(cTarget[h], cOrigin[h])])
-                edge_color.append('tab:red')
                 edge_color.append('tab:red')
             else:
                 edge_color.append('k')
@@ -698,6 +696,7 @@ class MorphData():
         plt.legend(handles=[target_s, target_i, target_m, target_y, target_o], fontsize=15)
         plt.show()
         
+        return el
     
     
     def _trackConnection(self, name, hier=1):
