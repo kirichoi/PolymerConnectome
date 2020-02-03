@@ -26,11 +26,11 @@ class Parameter:
 
     PATH = r'./CElegansNeuroML-SNAPSHOT_030213/CElegans/generatedNeuroML2'
     
-    RUN = True
+    RUN = False
     SAVE = False
     PLOT = False
     numSample = 1
-    RN = '7'
+    RN = '5'
     
     sSize = 0.1
     nSize = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 50, 75, 100, 250]
@@ -182,7 +182,7 @@ class MorphData():
             ax.scatter3D(tararr[somaIdx,0], tararr[somaIdx,1], tararr[somaIdx,2], color=cmap(idx))
             
             
-    def plotProjection(self, idx, project='z', scale=False):
+    def plotProjection(self, idx, project='z', scale=False, customBound=None, lw=1, label=True):
         if project != 'x' and project != 'y' and project != 'z':
             raise(Exception("Unrecognized plane to project"))
         fig = plt.figure(figsize=(24, 16))
@@ -194,8 +194,13 @@ class MorphData():
                 plt.xlim(-100, 100)
                 plt.ylim(-100, 100)
             else:
-                plt.xlim(-300, 450)
+                plt.xlim(-400, 475)
                 plt.ylim(-200, 200)
+        
+        if customBound != None:
+            plt.xlim(customBound[0][0], customBound[0][1])
+            plt.ylim(customBound[1][0], customBound[1][1])
+        
         cmap = cm.get_cmap('viridis', len(self.morph_id))
         if type(idx) == list or type(idx) == np.ndarray:
             for i in idx:
@@ -207,11 +212,11 @@ class MorphData():
                     else:
                         morph_line = np.vstack((self.morph_dist[i][self.morph_id[i].index(self.morph_parent[i][p])], self.morph_dist[i][p]))
                         if project == 'z':
-                            plt.plot(morph_line[:,0], morph_line[:,1], color=cmap(i))
+                            plt.plot(morph_line[:,0], morph_line[:,1], color=cmap(i), lw=lw)
                         elif project == 'y':
-                            plt.plot(morph_line[:,0], morph_line[:,2], color=cmap(i))
+                            plt.plot(morph_line[:,0], morph_line[:,2], color=cmap(i), lw=lw)
                         elif project == 'x':
-                            plt.plot(morph_line[:,1], morph_line[:,2], color=cmap(i))
+                            plt.plot(morph_line[:,1], morph_line[:,2], color=cmap(i), lw=lw)
                 if project == 'z':
                     plt.scatter(tararr[somaIdx,0], tararr[somaIdx,1], color=cmap(i))
                 elif project == 'y':
@@ -227,17 +232,19 @@ class MorphData():
                 else:
                     morph_line = np.vstack((self.morph_dist[idx][self.morph_id[idx].index(self.morph_parent[idx][p])], self.morph_dist[idx][p]))
                     if project == 'z':
-                        plt.plot(morph_line[:,0], morph_line[:,1], color=cmap(idx))
+                        plt.plot(morph_line[:,0], morph_line[:,1], color=cmap(idx), lw=lw)
                     elif project == 'y':
-                        plt.plot(morph_line[:,0], morph_line[:,2], color=cmap(idx))
+                        plt.plot(morph_line[:,0], morph_line[:,2], color=cmap(idx), lw=lw)
                     elif project == 'x':
-                        plt.plot(morph_line[:,1], morph_line[:,2], color=cmap(idx))
+                        plt.plot(morph_line[:,1], morph_line[:,2], color=cmap(idx), lw=lw)
             if project == 'z':
                 plt.scatter(tararr[somaIdx,0], tararr[somaIdx,1], color=cmap(idx))
             elif project == 'y':
                 plt.scatter(tararr[somaIdx,0], tararr[somaIdx,2], color=cmap(idx))
             elif project == 'x':
                 plt.scatter(tararr[somaIdx,1], tararr[somaIdx,2], color=cmap(idx))
+        if label:
+            plt.title(np.array(self.neuron_id)[idx], fontsize=15)
         plt.show()
     
     
@@ -1089,10 +1096,31 @@ if Parameter.PLOT:
     hist1 = ax[0].hist(LengthData.length_total, 
               bins=int((np.max(LengthData.length_total) - np.min(LengthData.length_total))/10),
               density=True)
-    ax[0].set_title("Distribution of Segment Length", fontsize=20)
+    ax[0].set_title("Distribution of Total Length", fontsize=20)
     ax[0].set_ylabel("Normalized Density", fontsize=15)
     ax[0].set_xlabel("Total Length", fontsize=15)
     ax[0].set_xlim(0, 1000)
+    
+    hist2 = ax[1].hist(LengthData.length_total[MorphData.sensory], 
+                     bins=int((np.max(LengthData.length_total[MorphData.sensory]) - 
+                               np.min(LengthData.length_total[MorphData.sensory]))/10), 
+                     density=True, 
+                     alpha=0.5)
+    hist3 = ax[1].hist(LengthData.length_total[MorphData.inter], 
+                     bins=int((np.max(LengthData.length_total[MorphData.inter]) - 
+                               np.min(LengthData.length_total[MorphData.inter]))/10),
+                     density=True, 
+                     alpha=0.5)
+    hist4 = ax[1].hist(LengthData.length_total[MorphData.motor],
+                     bins=int((np.max(LengthData.length_total[MorphData.motor]) - 
+                               np.min(LengthData.length_total[MorphData.motor]))/10), 
+                     density=True,
+                     alpha=0.5)
+    ax[1].set_title("Distribution of Total Length by Type", fontsize=20)
+    ax[1].set_ylabel("Normalized Density", fontsize=15)
+    ax[1].set_xlabel("Segment Length", fontsize=15)
+    ax[1].legend(['Sensory', 'Inter', 'Motor'], fontsize=15)
+    ax[1].set_xlim(0, 1000)
     plt.tight_layout()
     plt.show()
     
@@ -1974,12 +2002,12 @@ if Parameter.PLOT:
                 color='tab:blue', 
                 facecolors='none')
     ax1.legend(["Sensory Neuron", "Interneuron", "Motor Neuron"], fontsize=15)
-    ax1.vlines(0.08, 0.01, 11000, linestyles='dashed')
-    ax1.vlines(0.04, 0.01, 11000, linestyles='dashed')
+    ax1.vlines(0.8, 0.01, 11000, linestyles='dashed')
+    ax1.vlines(0.4, 0.01, 11000, linestyles='dashed')
     ax1.set_yscale('log')
     ax1.set_xscale('log')
     #ax1.xlim(0.01, 10500)
-    ax1.set_ylim(0.03, 10000)
+    ax1.set_ylim(0.03, 100)
     if Parameter.SAVE:
         plt.savefig('./images/regSegRG_morphScale_sep_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
     plt.show()
