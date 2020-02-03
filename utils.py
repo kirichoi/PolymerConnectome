@@ -71,7 +71,7 @@ def exportOutput(Parameter, OutputData):
     outputtxt.writelines('sSize: ' + str(Parameter.sSize) + '\n')
     outputtxt.writelines('nSize: ' + str(Parameter.nSize) + '\n')
     outputtxt.writelines('dSize: ' + str(Parameter.dSize) + '\n')
-    outputtxt.writelines('SEED: ' + str(Parameter.SEED) + ' s\n')
+    outputtxt.writelines('SEED: ' + str(Parameter.SEED) + '\n')
     outputtxt.close()
     
     np.savetxt(outputdir + '/rGyRegSegs_' + str(RN) + '.csv', 
@@ -96,7 +96,7 @@ def exportOutput(Parameter, OutputData):
 
 def importData(Parameter):
     
-    inputdir = Parameter.inputdir
+    inputdir = Parameter.outputdir
     RN = Parameter.RN
     
     rGyRegSegs = np.genfromtxt(inputdir + '/rGyRegSegs_' + str(RN) + '.csv', 
