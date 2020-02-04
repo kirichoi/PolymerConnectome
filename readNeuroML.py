@@ -28,7 +28,7 @@ class Parameter:
     
     RUN = False
     SAVE = False
-    PLOT = False
+    PLOT = True 
     numSample = 1
     RN = '5'
     
@@ -94,6 +94,8 @@ class MorphData():
             if showPoint:
                 ax.scatter3D(listOfPoints[f][0], listOfPoints[f][1], listOfPoints[f][2], color=cmap(f), marker='x')
     #        ax.scatter3D(tararr[somaIdx,0], tararr[somaIdx,1], tararr[somaIdx,2], color=cmap(f))
+        plt.show()
+    
     
     def plotAllNeuron(self, showPoint=False):
         fig = plt.figure(figsize=(24, 16))
@@ -114,6 +116,8 @@ class MorphData():
                     if showPoint:
                         ax.scatter3D(self.morph_dist[f][p][0], self.morph_dist[f][p][1], self.morph_dist[f][p][2], color=cmap(f), marker='x')
             ax.scatter3D(tararr[somaIdx,0], tararr[somaIdx,1], tararr[somaIdx,2], color=cmap(f))
+        plt.show()
+
 
     def plotNeuronFromListPoints(self, multListOfPoints, scale=False, showPoint=False):
         """
@@ -140,8 +144,10 @@ class MorphData():
                 if showPoint:
                     ax.scatter3D(listOfPoints[f][0], listOfPoints[f][1], listOfPoints[f][2], color=cmap(i), marker='x')
         #        ax.scatter3D(tararr[somaIdx,0], tararr[somaIdx,1], tararr[somaIdx,2], color=cmap(f))
+        plt.show()
         
-    def plotNeuron(self, idx, scale=False, cmass=False, showPoint=False):
+        
+    def plotNeuron(self, idx, scale=False, cmass=False, showPoint=False, lw=1, label=True):
         fig = plt.figure(figsize=(24, 16))
         ax = plt.axes(projection='3d')
         if scale:
@@ -163,7 +169,7 @@ class MorphData():
                         pass
                     else:
                         morph_line = np.vstack((self.morph_dist[i][self.morph_id[i].index(self.morph_parent[i][p])], self.morph_dist[i][p]))
-                        ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(i))
+                        ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(i), lw=lw)
                         if showPoint:
                             ax.scatter3D(self.morph_dist[i][p][0], self.morph_dist[i][p][1], self.morph_dist[i][p][2], color=cmap(i), marker='x')
                 ax.scatter3D(tararr[somaIdx,0], tararr[somaIdx,1], tararr[somaIdx,2], color=cmap(i))
@@ -176,11 +182,14 @@ class MorphData():
                     pass
                 else:
                     morph_line = np.vstack((self.morph_dist[idx][self.morph_id[idx].index(self.morph_parent[idx][p])], self.morph_dist[idx][p]))
-                    ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(idx))
+                    ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(idx), lw=lw)
                     if showPoint:
                         ax.scatter3D(self.morph_dist[idx][p][0], self.morph_dist[idx][p][1], self.morph_dist[idx][p][2], color=cmap(idx), marker='x')
             ax.scatter3D(tararr[somaIdx,0], tararr[somaIdx,1], tararr[somaIdx,2], color=cmap(idx))
-            
+        if label:
+            plt.title(np.array(self.neuron_id)[idx], fontsize=15)
+        plt.show()
+        
             
     def plotProjection(self, idx, project='z', scale=False, customBound=None, lw=1, label=True):
         if project != 'x' and project != 'y' and project != 'z':
@@ -1118,7 +1127,7 @@ if Parameter.PLOT:
                      alpha=0.5)
     ax[1].set_title("Distribution of Total Length by Type", fontsize=20)
     ax[1].set_ylabel("Normalized Density", fontsize=15)
-    ax[1].set_xlabel("Segment Length", fontsize=15)
+    ax[1].set_xlabel("Total Length", fontsize=15)
     ax[1].legend(['Sensory', 'Inter', 'Motor'], fontsize=15)
     ax[1].set_xlim(0, 1000)
     plt.tight_layout()
@@ -1378,20 +1387,20 @@ if Parameter.PLOT:
     fig, ax = plt.subplots(4, 3, figsize=(18,24))
     ax[0][0].scatter(LengthData.length_total[MorphData.sensory], BranchData.branchNum[MorphData.sensory])
     ax[0][0].set_title("Sensory Neuron", fontsize=20)
-    ax[0][0].set_xlabel("Total Segment Length", fontsize=15)
+    ax[0][0].set_xlabel("Total Length", fontsize=15)
     ax[0][0].set_ylabel("Number of Branches", fontsize=15)
     ax[0][0].set_xlim(-50, 1000)
     ax[0][0].set_ylim(-1, 8)
     
     ax[0][1].scatter(LengthData.length_total[MorphData.inter], BranchData.branchNum[MorphData.inter])
     ax[0][1].set_title("Interneuron", fontsize=20)
-    ax[0][1].set_xlabel("Total Segment Length", fontsize=15)
+    ax[0][1].set_xlabel("Total Length", fontsize=15)
     ax[0][1].set_xlim(-50, 1000)
     ax[0][1].set_ylim(-1, 8)
     
     ax[0][2].scatter(LengthData.length_total[MorphData.motor], BranchData.branchNum[MorphData.motor])
     ax[0][2].set_title("Motor Neuron", fontsize=20)
-    ax[0][2].set_xlabel("Total Segment Length", fontsize=15)
+    ax[0][2].set_xlabel("Total Length", fontsize=15)
     ax[0][2].set_xlim(-50, 1000)
     ax[0][2].set_ylim(-1, 8)
     
@@ -1418,7 +1427,7 @@ if Parameter.PLOT:
                          LengthData.length_total[MorphData.sensory][scttrInd])
         fitX = np.linspace(0, 1000, 1000)
     ax[2][0].set_xlabel("Average Segment Length", fontsize=15)
-    ax[2][0].set_ylabel("Total Segment Length", fontsize=15)
+    ax[2][0].set_ylabel("Total Length", fontsize=15)
     ax[2][0].legend(np.unique(BranchData.branchNum[MorphData.sensory])[:-1], fontsize=15)
     for i in range(len(np.unique(BranchData.branchNum[MorphData.sensory]))):
         scttrInd = np.where(BranchData.branchNum[MorphData.sensory] == 
@@ -1506,7 +1515,7 @@ if Parameter.PLOT:
         ax[3][0].scatter([item for sublist in np.array(LengthData.length_branch)[MorphData.sensory][scttrInd].tolist() for item in sublist], 
                          repeated_length_total_sensory)
     ax[3][0].set_xlabel("Segment Length", fontsize=15)
-    ax[3][0].set_ylabel("Total Segment Length", fontsize=15)
+    ax[3][0].set_ylabel("Total Length", fontsize=15)
     ax[3][0].legend(np.unique(BranchData.branchNum[MorphData.sensory])[:-1], fontsize=15)
     for i in range(len(np.unique(BranchData.branchNum[MorphData.sensory]))):
         scttrInd = np.where(BranchData.branchNum[MorphData.sensory] == 
@@ -1607,8 +1616,8 @@ if Parameter.PLOT:
     branchEndPDF = pd.DataFrame(data=branchEndPDict)
     fig = plt.figure(figsize=(8,6))
     seaborn.swarmplot(x='branch', y='endP', data=branchEndPDF.loc[branchEndPDF['branch'] < 197])
-    plt.title("Distribution of Number of Endpoints\n for Given Branch Number", fontsize=20)
-    plt.xlabel("Branch Number", fontsize=15)
+    plt.title("Distribution of Number of Endpoints\n for Given Number of Branches", fontsize=20)
+    plt.xlabel("Number of Branches", fontsize=15)
     plt.ylabel("Number of Endpoints", fontsize=15)
     #plt.xlim(-1, 10)
     #plt.ylim(-1, 10)
@@ -1627,7 +1636,7 @@ if Parameter.PLOT:
     seaborn.kdeplot(BranchData.branchNum[MorphData.inter], bw=.6, label="Inter")
     seaborn.kdeplot(BranchData.branchNum[MorphData.motor], bw=.6, label="Motor")
     plt.xlim(-2, 8)
-    plt.title("Estimated Distribution of Branch Number by Type", fontsize=20)
+    plt.title("Estimated Distribution of Number of Branches by Type", fontsize=20)
     plt.xlabel("Number of Branches", fontsize=15)
     plt.ylabel("Estimated Probability Density", fontsize=15)
     plt.legend(['Sensory', 'Inter', 'Motor'], fontsize=15)
@@ -1680,8 +1689,8 @@ if Parameter.PLOT:
     plt.xscale('log')
     plt.xlim(10, 10000)
     plt.ylim(7, 4000)
-    plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
-    plt.xlabel(r"Number of Regularized Points ($a*N$)", fontsize=15)
+    plt.title(r"Scaling Behavior of $R_{g}$ to Length", fontsize=20)
+    plt.xlabel(r"Length ($\lambda N$)", fontsize=15)
     plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
     plt.tight_layout()
     plt.show()
@@ -1738,7 +1747,7 @@ if Parameter.PLOT:
     plt.xlim(10, 10000)
     plt.ylim(7, 4000)
     plt.title(r"$R_{g}$ to Length for Sensory Neurons", fontsize=20)
-    plt.xlabel(r"Length", fontsize=15)
+    plt.xlabel(r"Length ($\lambda N$)", fontsize=15)
     plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
     plt.tight_layout()
     plt.show()
@@ -1796,7 +1805,7 @@ if Parameter.PLOT:
     plt.xlim(10, 10000)
     plt.ylim(7, 4000)
     plt.title(r"$R_{g}$ to Length for Interneurons", fontsize=20)
-    plt.xlabel(r"Length", fontsize=15)
+    plt.xlabel(r"Length ($\lambda N$)", fontsize=15)
     plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
     plt.tight_layout()
     plt.show()
@@ -1851,7 +1860,7 @@ if Parameter.PLOT:
     plt.xlim(10, 10000)
     plt.ylim(7, 4000)
     plt.title(r"$R_{g}$ to Length for Motor Neurons", fontsize=20)
-    plt.xlabel(r"Length", fontsize=15)
+    plt.xlabel(r"Length ($\lambda N$)", fontsize=15)
     plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
     plt.tight_layout()
     plt.show()
@@ -1965,7 +1974,7 @@ if Parameter.PLOT:
     ax3.set_xlim(0.36, 0.89)
     ax3.set_ylim(0.42, 0.95)
     
-    ax1.set_xlabel(r"Number of Regularized Points ($\lambda N$)", fontsize=15)
+    ax1.set_xlabel(r"Length ($\lambda N$)", fontsize=15)
     ax1.set_ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
     #plt.tight_layout()
     if Parameter.SAVE:
@@ -2008,6 +2017,8 @@ if Parameter.PLOT:
     ax1.set_xscale('log')
     #ax1.xlim(0.01, 10500)
     ax1.set_ylim(0.03, 100)
+    ax1.set_xlabel(r"Length ($\lambda N$)", fontsize=15)
+    ax1.set_ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
     if Parameter.SAVE:
         plt.savefig('./images/regSegRG_morphScale_sep_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
     plt.show()
@@ -2045,7 +2056,7 @@ if Parameter.PLOT:
     plt.xlim(1, 200)
     #plt.ylim(0.005, 1000)
     #plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
-    plt.xlabel(r"Average Number of Regularized Points ($\lambda N_{avg}$)", fontsize=15)
+    plt.xlabel(r"Average Length ($\lambda N_{avg}$)", fontsize=15)
     plt.ylabel(r"Slope ($\nu$)", fontsize=15)
     #plt.tight_layout()
     if Parameter.SAVE:
@@ -2106,7 +2117,7 @@ if Parameter.PLOT:
     plt.xlim(1, 200)
     #plt.ylim(0.005, 1000)
     #plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
-    plt.xlabel(r"Average Number of Regularized Points ($\lambda N_{avg}$)", fontsize=15)
+    plt.xlabel(r"Average Length ($\lambda N_{avg}$)", fontsize=15)
     plt.ylabel(r"Slope ($\nu$)", fontsize=15)
     #plt.tight_layout()
     if Parameter.SAVE:
