@@ -216,7 +216,7 @@ def regularSegmentRadiusOfGyration(Parameter, BranchData, indRegMDist, indRegMDi
     cMLRegSeg = np.empty((len(nSize)*numSample, 3))
     rGyRegSeg = np.empty(len(nSize)*numSample)
     regSegOrdN = np.empty(len(nSize)*numSample)
-    randTrk = np.empty((len(nSize)*numSample, 3))
+    randTrk = np.empty((len(nSize)*numSample, 3), dtype=int)
     idxTrk = 0
     
     if p == None:
