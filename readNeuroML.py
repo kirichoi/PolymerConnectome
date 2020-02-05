@@ -1202,17 +1202,29 @@ if Parameter.PLOT:
     
     #==============================================================================
     
-    popt1, pcov1 = scipy.optimize.curve_fit(objFuncP, hist1centers, hist1[0], p0=[0.1, -0.1], maxfev=10000)
+    popt1, pcov1 = scipy.optimize.curve_fit(objFuncGL, np.log10(hist1centers[np.nonzero(hist1[0])]), 
+                                            np.log10(hist1[0][np.nonzero(hist1[0])]), p0=[0.1, -0.1], maxfev=10000)
+    
+#    popt1, pcov1 = scipy.optimize.curve_fit(objFuncP, hist1centers, hist1[0], p0=[0.1, -0.1], maxfev=10000)
+    
+    
     fitX = np.linspace(1, 10000, 1000)
-    fitY1 = objFuncP(fitX, popt1[0], popt1[1])
+    fitY1 = objFuncPpow(fitX, popt1[0], popt1[1])
     
-    popt2, pcov2 = scipy.optimize.curve_fit(objFuncP, hist2centers, hist2[0], p0=[0.1, -0.1], maxfev=10000)
-    popt3, pcov3 = scipy.optimize.curve_fit(objFuncP, hist3centers, hist3[0], p0=[0.1, -0.1], maxfev=10000)
-    popt4, pcov4 = scipy.optimize.curve_fit(objFuncP, hist4centers, hist4[0], p0=[0.1, -0.1], maxfev=10000)
+    popt2, pcov2 = scipy.optimize.curve_fit(objFuncGL, np.log10(hist2centers[np.nonzero(hist2[0])]), 
+                                            np.log10(hist2[0][np.nonzero(hist2[0])]), p0=[0.1, -0.1], maxfev=10000)
+    popt3, pcov3 = scipy.optimize.curve_fit(objFuncGL, np.log10(hist3centers[np.nonzero(hist3[0])]), 
+                                            np.log10(hist3[0][np.nonzero(hist3[0])]), p0=[0.1, -0.1], maxfev=10000)
+    popt4, pcov4 = scipy.optimize.curve_fit(objFuncGL, np.log10(hist4centers[np.nonzero(hist4[0])]), 
+                                            np.log10(hist4[0][np.nonzero(hist4[0])]), p0=[0.1, -0.1], maxfev=10000)
     
-    fitY2 = objFuncP(fitX, popt2[0], popt2[1])
-    fitY3 = objFuncP(fitX, popt3[0], popt3[1])
-    fitY4 = objFuncP(fitX, popt4[0], popt4[1])
+#    popt2, pcov2 = scipy.optimize.curve_fit(objFuncP, hist2centers, hist2[0], p0=[0.1, -0.1], maxfev=10000)
+#    popt3, pcov3 = scipy.optimize.curve_fit(objFuncP, hist3centers, hist3[0], p0=[0.1, -0.1], maxfev=10000)
+#    popt4, pcov4 = scipy.optimize.curve_fit(objFuncP, hist4centers, hist4[0], p0=[0.1, -0.1], maxfev=10000)
+    
+    fitY2 = objFuncPpow(fitX, popt2[0], popt2[1])
+    fitY3 = objFuncPpow(fitX, popt3[0], popt3[1])
+    fitY4 = objFuncPpow(fitX, popt4[0], popt4[1])
     
     # Segment Length in Log-Log
     
