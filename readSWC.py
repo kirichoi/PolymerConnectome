@@ -736,207 +736,24 @@ if Parameter.PLOT:
     plt.tight_layout()
     plt.show()
     
-    fig = plt.figure(figsize=(8,6))
-    plt.scatter(MorphData.morph_dist_len_EP, rGyEP)
-    plt.yscale('log')
-    plt.xscale('log')
-    #plt.xlim(1, 10000)
-    #plt.ylim(0.005, 1000)
-    plt.title("Scaling Behavior of $R_{g}$ to $N_{EP}$", fontsize=20)
-    plt.xlabel("Number of Nodes", fontsize=15)
-    plt.ylabel("Radius of Gyration", fontsize=15)
-    plt.tight_layout()
-    plt.show()
-    
-    
     #==============================================================================
     
     #reg_len_scale = np.average(np.divide(regMDistLen, morph_dist_len))
     poptR, pcovR = scipy.optimize.curve_fit(objFuncGL, 
-                                            np.log10(MorphData.regMDistLen*Parameter.sSize), 
-                                            np.log10(np.sqrt(np.square(rGyReg)*1/Parameter.sSize)), 
+                                            np.log10(MorphData.morph_dist_len), 
+                                            np.log10(np.sqrt(np.square(rGy))), 
                                             p0=[1., 0.], 
                                             maxfev=100000)
-    fitYregR = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR[0], poptR[1])
+    fitYregR = objFuncPpow(MorphData.morph_dist_len, poptR[0], poptR[1])
     
     fig = plt.figure(figsize=(8,6))
-    plt.scatter(MorphData.regMDistLen*Parameter.sSize, np.sqrt(np.square(rGyReg)*1/Parameter.sSize))
-    plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR, color='tab:red')
+    plt.scatter(MorphData.morph_dist_len, np.sqrt(np.square(rGy)))
+    plt.plot(MorphData.morph_dist_len, fitYregR, color='tab:red')
     plt.yscale('log')
     plt.xscale('log')
-    plt.xlim(10, 10000)
-    plt.ylim(7, 4000)
+#    plt.xlim(10, 10000)
+#    plt.ylim(7, 4000)
     plt.title(r"Scaling Behavior of $R_{g}$ to Length", fontsize=20)
-    plt.xlabel(r"Length ($\lambda N$)", fontsize=15)
-    plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
-    plt.tight_layout()
-    plt.show()
-    
-    
-    #==============================================================================
-    
-    s0 = np.array(MorphData.sensory)[np.where(MorphData.physLoc[MorphData.sensory] == 0)[0]]
-    s1 = np.array(MorphData.sensory)[np.where(MorphData.physLoc[MorphData.sensory] == 1)[0]]
-    s1 = np.delete(s1, [7,8])
-    s2 = np.array(MorphData.sensory)[np.where(MorphData.physLoc[MorphData.sensory] == 2)[0]]
-    
-    sidx1 = np.where(MorphData.regMDistLen[MorphData.sensory]*Parameter.sSize < 176)[0]
-    sidx2 = np.where((MorphData.regMDistLen[MorphData.sensory]*Parameter.sSize > 176) &
-                     (MorphData.regMDistLen[MorphData.sensory]*Parameter.sSize < 1e3))[0]
-    
-    poptR_sidx0, pcovR_sidx0 = scipy.optimize.curve_fit(objFuncGL, 
-                                            np.log10(MorphData.regMDistLen[s0]*Parameter.sSize), 
-                                            np.log10(np.sqrt(np.square(rGyReg)[s0]*1/Parameter.sSize)), 
-                                            p0=[1., 0.], 
-                                            maxfev=100000)
-    fitYregR_sidx0 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_sidx0[0], poptR_sidx0[1])
-    
-    
-    poptR_sidx1, pcovR_sidx1 = scipy.optimize.curve_fit(objFuncGL, 
-                                            np.log10(MorphData.regMDistLen[s1]*Parameter.sSize), 
-                                            np.log10(np.sqrt(np.square(rGyReg)[s1]*1/Parameter.sSize)), 
-                                            p0=[1., 0.], 
-                                            maxfev=100000)
-    fitYregR_sidx1 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_sidx1[0], poptR_sidx1[1])
-    
-    poptR_sidx2, pcovR_sidx2 = scipy.optimize.curve_fit(objFuncGL, 
-                                            np.log10(MorphData.regMDistLen[s2]*Parameter.sSize), 
-                                            np.log10(np.sqrt(np.square(rGyReg)[s2]*1/Parameter.sSize)), 
-                                            p0=[1., 0.], 
-                                            maxfev=100000)
-    fitYregR_sidx2 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_sidx2[0], poptR_sidx2[1])
-    
-    
-    fig = plt.figure(figsize=(8,6))
-    #plt.scatter(regMDistLen[MorphData.sensory]*Parameter.sSize, np.sqrt(np.square(rGyReg)[MorphData.sensory]*1/Parameter.sSize))
-    plt.scatter(MorphData.regMDistLen[s0]*Parameter.sSize, np.sqrt(np.square(rGyReg)[s0]*1/Parameter.sSize))
-    plt.scatter(MorphData.regMDistLen[s1]*Parameter.sSize, np.sqrt(np.square(rGyReg)[s1]*1/Parameter.sSize))
-    plt.scatter(MorphData.regMDistLen[s2]*Parameter.sSize, np.sqrt(np.square(rGyReg)[s2]*1/Parameter.sSize))
-    plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_sidx0, color='tab:blue')
-    plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_sidx1, color='tab:orange')
-    plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_sidx2, color='tab:green')
-    plt.legend(['Head', 'Body', 'Tail'], fontsize=15)
-    plt.vlines(56, 0.1, 1e4, linestyles='dashed')
-    plt.vlines(176, 0.1, 1e4, linestyles='dashed')
-    plt.vlines(1000, 0.1, 1e4, linestyles='dashed')
-    plt.yscale('log')
-    plt.xscale('log')
-    plt.xlim(10, 10000)
-    plt.ylim(7, 4000)
-    plt.title(r"$R_{g}$ to Length for Sensory Neurons", fontsize=20)
-    plt.xlabel(r"Length ($\lambda N$)", fontsize=15)
-    plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
-    plt.tight_layout()
-    plt.show()
-    
-    
-    
-    i0 = np.array(MorphData.inter)[np.where(MorphData.physLoc[MorphData.inter] == 0)[0]]
-    i1 = np.array(MorphData.inter)[np.where(MorphData.physLoc[MorphData.inter] == 1)[0]]
-    i2 = np.array(MorphData.inter)[np.where(MorphData.physLoc[MorphData.inter] == 2)[0]]
-    
-    iidx1 = np.where(MorphData.regMDistLen[MorphData.inter]*Parameter.sSize < 176)[0]
-    iidx2 = np.where((MorphData.regMDistLen[MorphData.inter]*Parameter.sSize > 176) &
-                     (MorphData.regMDistLen[MorphData.inter]*Parameter.sSize < 1e3))[0]
-    
-    poptR_iidx0, pcovR_iidx0 = scipy.optimize.curve_fit(objFuncGL, 
-                                            np.log10(MorphData.regMDistLen[i0]*Parameter.sSize), 
-                                            np.log10(np.sqrt(np.square(rGyReg)[i0]*1/Parameter.sSize)), 
-                                            p0=[1., 0.], 
-                                            maxfev=100000)
-    fitYregR_iidx0 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_iidx0[0], poptR_iidx0[1])
-    
-    
-    poptR_iidx1, pcovR_iidx1 = scipy.optimize.curve_fit(objFuncGL, 
-                                            np.log10(MorphData.regMDistLen[i1]*Parameter.sSize), 
-                                            np.log10(np.sqrt(np.square(rGyReg)[i1]*1/Parameter.sSize)), 
-                                            p0=[1., 0.], 
-                                            maxfev=100000)
-    fitYregR_iidx1 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_iidx1[0], poptR_iidx1[1])
-    
-    poptR_iidx2, pcovR_iidx2 = scipy.optimize.curve_fit(objFuncGL, 
-                                            np.log10(MorphData.regMDistLen[i2]*Parameter.sSize), 
-                                            np.log10(np.sqrt(np.square(rGyReg)[i2]*1/Parameter.sSize)), 
-                                            p0=[1., 0.], 
-                                            maxfev=100000)
-    fitYregR_iidx2 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_iidx2[0], poptR_iidx2[1])
-    
-    
-    fig = plt.figure(figsize=(8,6))
-    #plt.scatter(regMDistLen[MorphData.inter]*Parameter.sSize, np.sqrt(np.square(rGyReg)[MorphData.inter]*1/Parameter.sSize))
-    plt.scatter(MorphData.regMDistLen[i0]*Parameter.sSize, 
-                np.sqrt(np.square(rGyReg)[i0]*1/Parameter.sSize))
-    plt.scatter(MorphData.regMDistLen[i1]*Parameter.sSize, 
-                np.sqrt(np.square(rGyReg)[i1]*1/Parameter.sSize))
-    plt.scatter(MorphData.regMDistLen[i2]*Parameter.sSize, 
-                np.sqrt(np.square(rGyReg)[i2]*1/Parameter.sSize))
-    plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_iidx0, color='tab:blue')
-    plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_iidx1, color='tab:orange')
-    plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_iidx2, color='tab:green')
-    plt.legend(['Head', 'Body', 'Tail'], fontsize=15)
-    plt.vlines(56, 0.1, 1e4, linestyles='dashed')
-    plt.vlines(176, 0.1, 1e4, linestyles='dashed')
-    plt.vlines(1000, 0.1, 1e4, linestyles='dashed')
-    plt.yscale('log')
-    plt.xscale('log')
-    plt.xlim(10, 10000)
-    plt.ylim(7, 4000)
-    plt.title(r"$R_{g}$ to Length for Interneurons", fontsize=20)
-    plt.xlabel(r"Length ($\lambda N$)", fontsize=15)
-    plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
-    plt.tight_layout()
-    plt.show()
-    
-    
-    
-    m0 = np.array(MorphData.motor)[np.where(MorphData.physLoc[MorphData.motor] == 0)[0]]
-    m1 = np.array(MorphData.motor)[np.where(MorphData.physLoc[MorphData.motor] == 1)[0]]
-    m2 = np.array(MorphData.motor)[np.where(MorphData.physLoc[MorphData.motor] == 2)[0]]
-    
-    midx1 = np.where(MorphData.regMDistLen[MorphData.motor]*Parameter.sSize < 176)[0]
-    midx2 = np.where((MorphData.regMDistLen[MorphData.motor]*Parameter.sSize > 176) &
-                     (MorphData.regMDistLen[MorphData.motor]*Parameter.sSize < 1e3))[0]
-    
-    poptR_midx0, pcovR_midx0 = scipy.optimize.curve_fit(objFuncGL, 
-                                            np.log10(MorphData.regMDistLen[m0]*Parameter.sSize), 
-                                            np.log10(np.sqrt(np.square(rGyReg)[m0]*1/Parameter.sSize)), 
-                                            p0=[1., 0.], 
-                                            maxfev=100000)
-    fitYregR_midx0 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_midx0[0], poptR_midx0[1])
-    
-    
-    poptR_midx1, pcovR_midx1 = scipy.optimize.curve_fit(objFuncGL, 
-                                            np.log10(MorphData.regMDistLen[m1]*Parameter.sSize), 
-                                            np.log10(np.sqrt(np.square(rGyReg)[m1]*1/Parameter.sSize)), 
-                                            p0=[1., 0.], 
-                                            maxfev=100000)
-    fitYregR_midx1 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_midx1[0], poptR_midx1[1])
-    
-    poptR_midx2, pcovR_midx2 = scipy.optimize.curve_fit(objFuncGL, 
-                                            np.log10(MorphData.regMDistLen[m2]*Parameter.sSize), 
-                                            np.log10(np.sqrt(np.square(rGyReg)[m2]*1/Parameter.sSize)), 
-                                            p0=[1., 0.], 
-                                            maxfev=100000)
-    fitYregR_midx2 = objFuncPpow(MorphData.regMDistLen*Parameter.sSize, poptR_midx2[0], poptR_midx2[1])
-    
-    
-    fig = plt.figure(figsize=(8,6))
-    #plt.scatter(regMDistLen[MorphData.motor]*Parameter.sSize, np.sqrt(np.square(rGyReg)[MorphData.motor]*1/Parameter.sSize))
-    plt.scatter(MorphData.regMDistLen[m0]*Parameter.sSize, np.sqrt(np.square(rGyReg)[m0]*1/Parameter.sSize))
-    plt.scatter(MorphData.regMDistLen[m1]*Parameter.sSize, np.sqrt(np.square(rGyReg)[m1]*1/Parameter.sSize))
-    plt.scatter(MorphData.regMDistLen[m2]*Parameter.sSize, np.sqrt(np.square(rGyReg)[m2]*1/Parameter.sSize))
-    plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_midx0, color='tab:blue')
-    plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_midx1, color='tab:orange')
-    plt.plot(MorphData.regMDistLen*Parameter.sSize, fitYregR_midx2, color='tab:green')
-    plt.legend(['Head', 'Body', 'Tail'], fontsize=15)
-    plt.vlines(56, 0.1, 1e4, linestyles='dashed')
-    plt.vlines(176, 0.1, 1e4, linestyles='dashed')
-    plt.vlines(1000, 0.1, 1e4, linestyles='dashed')
-    plt.yscale('log')
-    plt.xscale('log')
-    plt.xlim(10, 10000)
-    plt.ylim(7, 4000)
-    plt.title(r"$R_{g}$ to Length for Motor Neurons", fontsize=20)
     plt.xlabel(r"Length ($\lambda N$)", fontsize=15)
     plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
     plt.tight_layout()
