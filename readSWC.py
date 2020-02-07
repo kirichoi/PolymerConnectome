@@ -29,11 +29,11 @@ class Parameter:
     RUN = True
     SAVE = False
     PLOT = True
-    numSample = 10
+    numSample = 1
     RN = '1'
     
     sSize = 1000
-    nSize = [100, 1000, 10000, 100000]
+    nSize = [1, 10, 100, 1000]
     dSize = 100
     
     SEED = 1234
@@ -51,14 +51,14 @@ class MorphData():
     def __init__(self):
         self.morph_id = []
         self.morph_parent = []
-        self.morph_prox = []
+#        self.morph_prox = []
         self.morph_dist = []
         self.neuron_id = []
-        self.neuron_type = []
+#        self.neuron_type = []
         self.endP = []
         self.somaP = []
-        self.indRegMDist = None
-        self.indRegMDistLen = None
+#        self.indRegMDist = None
+#        self.indRegMDistLen = None
     
     def plotNeuronFromPoints(self, listOfPoints, showPoint=False):
         """
@@ -290,6 +290,9 @@ MorphData = MorphData()
 
 t0 = time.time()
 
+indMorph_dist_p_us = []
+indMorph_dist_id = []
+
 for f in range(len(fp)):
     print(f)
     morph_neu_id = []
@@ -313,8 +316,10 @@ for f in range(len(fp)):
     branchInd = np.array(ctrKey)[np.where(np.array(ctrVal) > 1)[0]]
     
     neu_branchTrk = []
+    neu_indBranchTrk = []
     branch_dist_temp1 = []
     length_branch_temp = []
+    indMorph_dist_temp1 = []
     
     list_end = np.setdiff1d(MorphData.morph_id[f], MorphData.morph_parent[f])
     
@@ -346,19 +351,25 @@ for f in range(len(fp)):
     BranchData.branchTrk.append(neu_branchTrk)
     BranchData.branch_dist.append(branch_dist_temp1)
     LengthData.length_branch.append(length_branch_temp)
-    
 
-#    for ep in range(len(list_end)):
-#        neu_indBranchTrk_temp = []
-#        neu_indBranchTrk_temp.append(list_end[ep])
-#        parentTrck = list_end[ep]
-#        while parentTrck != int(scall.values[0][0]):
-#            parentTrck = MorphData.morph_parent[f][MorphData.morph_id[f].index(parentTrck)]
-#            neu_indBranchTrk_temp.append(parentTrck)
-#        if len(neu_indBranchTrk_temp) > 1:
-#            neu_indBranchTrk_temp.reverse()
-#            neu_indBranchTrk.append(neu_indBranchTrk_temp)
-#    BranchData.indBranchTrk.append(neu_indBranchTrk)
+    for ep in range(len(list_end)):
+        neu_indBranchTrk_temp = []
+        indMorph_dist_temp2 = []
+        neu_indBranchTrk_temp.append(list_end[ep])
+        parentTrck = list_end[ep]
+        while parentTrck != int(scall.values[0][0]):
+            parentTrck = MorphData.morph_parent[f][MorphData.morph_id[f].index(parentTrck)]
+            neu_indBranchTrk_temp.append(parentTrck)
+            indMorph_dist_temp2.append(np.array(MorphData.morph_dist[f])[np.where(MorphData.morph_id[f] 
+                                    == parentTrck)[0]].flatten().tolist())
+    
+        if len(neu_indBranchTrk_temp) > 1:
+            neu_indBranchTrk_temp.reverse()
+            neu_indBranchTrk.append(neu_indBranchTrk_temp)
+            indMorph_dist_p_us.append(1/len(neu_indBranchTrk))
+            indMorph_dist_temp1.append(indMorph_dist_temp2)
+    BranchData.indBranchTrk.append(neu_indBranchTrk)
+    BranchData.indMorph_dist.append(indMorph_dist_temp1)
 
 
 #for b in range(len(BranchData.branchTrk)):
@@ -393,41 +404,30 @@ for lb in range(len(LengthData.length_branch)):
     LengthData.length_average[lb] = np.average(LengthData.length_branch[lb])
 
 MorphData.morph_dist_len = np.array([len(arr) for arr in MorphData.morph_dist])
-MorphData.morph_dist_len_EP = np.empty((len(MorphData.morph_dist_len)))
+#MorphData.morph_dist_len_EP = np.empty((len(MorphData.morph_dist_len)))
 MorphData.endP_len = [len(arr) for arr in MorphData.endP]
 
-#indMorph_dist_p_us = []
-#indMorph_dist_id = []
-#indMorph_dist_id_s = []
-#indMorph_dist_id_i = []
-#indMorph_dist_id_m = []
 
-#for i in range(len(BranchData.indBranchTrk)):
-#    indMorph_dist_temp1 = []
-#    for j in range(len(BranchData.indBranchTrk[i])):
-#        indMorph_dist_temp2 = []
-#        indMorph_dist_p_us.append(1/len(BranchData.indBranchTrk[i]))
-#        for k in range(len(BranchData.indBranchTrk[i][j])):
-#            indMorph_dist_temp2.append(np.array(MorphData.morph_dist[i])[np.where(MorphData.morph_id[i] 
-#                                    == np.array(BranchData.indBranchTrk[i][j][k]))[0]].flatten().tolist())
-#    
-#        indMorph_dist_id.append(i)
-#        if i in MorphData.sensory:
-#            indMorph_dist_id_s.append(len(indMorph_dist_id)-1)
-#        elif i in MorphData.inter:
-#            indMorph_dist_id_i.append(len(indMorph_dist_id)-1)
-#        elif i in MorphData.motor:
-#            indMorph_dist_id_m.append(len(indMorph_dist_id)-1)
-#            
-#        indMorph_dist_temp1.append(indMorph_dist_temp2)
-#    BranchData.indMorph_dist.append(indMorph_dist_temp1)
+for i in range(len(BranchData.indBranchTrk)):
+    indMorph_dist_temp1 = []
+    for j in range(len(BranchData.indBranchTrk[i])):
+        indMorph_dist_temp2 = []
+        for k in range(len(BranchData.indBranchTrk[i][j])):
+            indMorph_dist_temp2.append(np.array(MorphData.morph_dist[i])[np.where(MorphData.morph_id[i] 
+                                    == np.array(BranchData.indBranchTrk[i][j][k]))[0]].flatten().tolist())
+    
+        indMorph_dist_id.append(i)
+        indMorph_dist_temp1.append(indMorph_dist_temp2)
+    BranchData.indMorph_dist.append(indMorph_dist_temp1)
 
-#BranchData.indMorph_dist_p_us = np.array(indMorph_dist_p_us)
-#BranchData.indMorph_dist_flat = [item for sublist in BranchData.indMorph_dist for item in sublist]
+BranchData.indMorph_dist_p_us = np.array(indMorph_dist_p_us)
+BranchData.indMorph_dist_flat = [item for sublist in BranchData.indMorph_dist for item in sublist]
+BranchData.indRegMDistLen = np.array([len(arr) for arr in BranchData.indMorph_dist])
 
-#t1 = time.time()
 
-#print('checkpoint 1: ' + str(t1-t0))
+t1 = time.time()
+
+print('checkpoint 1: ' + str(t1-t0))
 
 np.random.seed(Parameter.SEED)
 
@@ -452,19 +452,20 @@ print('checkpoint 3: ' + str(t3-t2))
 
 #print('checkpoint 4: ' + str(t4-t3))
 
-#if Parameter.RUN:
-#    (OutputData.rGyRegSeg, 
-#     OutputData.cMLRegSeg, 
-#     OutputData.regSegOrdN, 
-#     OutputData.randTrks) = utils.regularSegmentRadiusOfGyration(Parameter,
-#                        BranchData,
-#                        np.array(MorphData.indRegMDist), 
-#                        MorphData.indRegMDistLen, 
-#                        numSample=Parameter.numSample,
-#                        stochastic=True)
-#    if Parameter.SAVE:
-#        utils.exportOutput(Parameter, OutputData)
-#        
+if Parameter.RUN:
+    (OutputData.rGyRegSeg, 
+     OutputData.cMLRegSeg, 
+     OutputData.regSegOrdN, 
+     OutputData.randTrk) = utils.regularSegmentRadiusOfGyration(Parameter,
+                                                                 BranchData,
+                                                                 np.array(BranchData.indMorph_dist), 
+                                                                 BranchData.indRegMDistLen, 
+                                                                 numSample=Parameter.numSample,
+                                                                 stochastic=True,
+                                                                 p=indMorph_dist_id)
+    if Parameter.SAVE:
+        utils.exportOutput(Parameter, OutputData)
+        
 #else:
 #    (OutputData.rGyRegSegs, OutputData.regSegOrdNs, OutputData.randTrks, 
 #     OutputData.rGyRegSegi, OutputData.regSegOrdNi, OutputData.randTrki, 
