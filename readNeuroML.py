@@ -28,7 +28,7 @@ class Parameter:
     
     RUN = False
     SAVE = False
-    PLOT = True 
+    PLOT = True
     numSample = 1
     RN = '5'
     
@@ -855,15 +855,19 @@ for f in range(len(fp)):
     bPoint = np.append(branchInd, list_end)
     
     for bp in range(len(bPoint)):
-        neu_branchTrk_temp = []
-        neu_branchTrk_temp.append(bPoint[bp])
-        parentTrck = bPoint[bp]
-        while (parentTrck not in branchInd or bPoint[bp] in branchInd) and (parentTrck != -1):
+        if bPoint[bp] != MorphData.somaP[f]:
+            neu_branchTrk_temp = []
+            neu_branchTrk_temp.append(bPoint[bp])
+            parentTrck = bPoint[bp]
             parentTrck = MorphData.morph_parent[f][MorphData.morph_id[f].index(parentTrck)]
             if parentTrck != -1:
                 neu_branchTrk_temp.append(parentTrck)
-        if len(neu_branchTrk_temp) > 1:
-            neu_branchTrk.append(neu_branchTrk_temp)
+            while (parentTrck not in branchInd) and (parentTrck != -1):
+                parentTrck = MorphData.morph_parent[f][MorphData.morph_id[f].index(parentTrck)]
+                if parentTrck != -1:
+                    neu_branchTrk_temp.append(parentTrck)
+            if len(neu_branchTrk_temp) > 1:
+                neu_branchTrk.append(neu_branchTrk_temp)
     BranchData.branchTrk.append(neu_branchTrk)
     
     for ep in range(len(list_end)):
