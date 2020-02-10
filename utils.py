@@ -112,21 +112,21 @@ def exportMorph(Parameter, time, MorphData, BranchData, LengthData):
     outputtxt.writelines('Time: ' + str(time) + ' s\n')
     outputtxt.close()
     
-    with open(outputdir + '/neuron_id_' + str(RN) + '.txt', "w") as f:
-        f.write(repr(MorphData.neuron_id))
-    with open(outputdir + '/morph_id_' + str(RN) + '.txt', "w") as f:
-        f.write(repr(MorphData.morph_id))
-    with open(outputdir + '/morph_parent_' + str(RN) + '.txt', "w") as f:
-        f.write(repr(MorphData.morph_parent))
-    with open(outputdir + '/morph_dist_' + str(RN) + '.txt', "w") as f:
-        f.write(repr(MorphData.morph_dist))
-    with open(outputdir + '/endP_len_' + str(RN) + '.txt', "w") as f:
-        f.write(repr(MorphData.endP_len))    
+#    with open(outputdir + '/neuron_id_' + str(RN) + '.txt', "w") as f:
+#        f.write(repr(MorphData.neuron_id))
+#    with open(outputdir + '/morph_id_' + str(RN) + '.txt', "w") as f:
+#        f.write(repr(MorphData.morph_id))
+#    with open(outputdir + '/morph_parent_' + str(RN) + '.txt', "w") as f:
+#        f.write(repr(MorphData.morph_parent))
+#    with open(outputdir + '/morph_dist_' + str(RN) + '.txt', "w") as f:
+#        f.write(repr(MorphData.morph_dist))
+#    with open(outputdir + '/endP_len_' + str(RN) + '.txt', "w") as f:
+#        f.write(repr(MorphData.endP_len))    
     
-    with open(outputdir + '/branchNum_' + str(RN) + '.txt', "w") as f:
-        f.write(repr(BranchData.branchNum.tolist()))
-    with open(outputdir + '/branchP_' + str(RN) + '.txt', "w") as f:
-        f.write(repr(BranchData.branchP))
+#    with open(outputdir + '/branchNum_' + str(RN) + '.txt', "w") as f:
+#        f.write(repr(BranchData.branchNum.tolist()))
+#    with open(outputdir + '/branchP_' + str(RN) + '.txt', "w") as f:
+#        f.write(repr(BranchData.branchP))
     with open(outputdir + '/branchTrk_' + str(RN) + '.txt', "w") as f:
         f.write(repr(BranchData.branchTrk))
     with open(outputdir + '/branch_dist_' + str(RN) + '.txt', "w") as f:
@@ -175,21 +175,21 @@ def importMorph(Parameter):
     inputdir = Parameter.outputdir
     RN = Parameter.RN
     
-    with open(inputdir + '/neuron_id_' + str(RN) + '.txt', "r") as f:
-        neuron_id = eval(f.read())
-    with open(inputdir + '/morph_id_' + str(RN) + '.txt', "r") as f:
-        morph_id = eval(f.read())
-    with open(inputdir + '/morph_parent_' + str(RN) + '.txt', "r") as f:
-        morph_parent = eval(f.read())
-    with open(inputdir + '/morph_dist_' + str(RN) + '.txt', "r") as f:
-        morph_dist = eval(f.read())
-    with open(inputdir + '/endP_len_' + str(RN) + '.txt', "r") as f:
-        endP_len = eval(f.read())
-    
-    with open(inputdir + '/branchNum_' + str(RN) + '.txt', "r") as f:
-        branchNum = np.array(eval(f.read()))
-    with open(inputdir + '/branchP_' + str(RN) + '.txt', "r") as f:
-        branchP = eval(f.read())
+#    with open(inputdir + '/neuron_id_' + str(RN) + '.txt', "r") as f:
+#        neuron_id = eval(f.read())
+#    with open(inputdir + '/morph_id_' + str(RN) + '.txt', "r") as f:
+#        morph_id = eval(f.read())
+#    with open(inputdir + '/morph_parent_' + str(RN) + '.txt', "r") as f:
+#        morph_parent = eval(f.read())
+#    with open(inputdir + '/morph_dist_' + str(RN) + '.txt', "r") as f:
+#        morph_dist = eval(f.read())
+#    with open(inputdir + '/endP_len_' + str(RN) + '.txt', "r") as f:
+#        endP_len = eval(f.read())
+#    
+#    with open(inputdir + '/branchNum_' + str(RN) + '.txt', "r") as f:
+#        branchNum = np.array(eval(f.read()))
+#    with open(inputdir + '/branchP_' + str(RN) + '.txt', "r") as f:
+#        branchP = eval(f.read())
     with open(inputdir + '/branchTrk_' + str(RN) + '.txt', "r") as f:
         branchTrk = eval(f.read())
     with open(inputdir + '/branch_dist_' + str(RN) + '.txt', "r") as f:
@@ -204,8 +204,7 @@ def importMorph(Parameter):
     with open(inputdir + '/length_branch_' + str(RN) + '.txt', "r") as f:
         length_branch = eval(f.read())
     
-    return (neuron_id, morph_id, morph_parent, morph_dist, endP_len, branchNum, branchP,
-            branchTrk, branch_dist, indBranchTrk, indMorph_dist, indMorph_dist_p_us, length_branch)
+    return (branchTrk, branch_dist, indBranchTrk, indMorph_dist, indMorph_dist_p_us, length_branch)
 
     
     
