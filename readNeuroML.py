@@ -28,9 +28,9 @@ class Parameter:
     
     RUN = False
     SAVE = False
-    PLOT = True
-    numSample = 1
-    RN = '5'
+    PLOT = False
+    numSample = 100
+    RN = '7'
     
     sSize = 0.1
     nSize = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 50, 75, 100, 250]
@@ -793,6 +793,12 @@ MorphData = MorphData()
 
 t0 = time.time()
 
+indMorph_dist_p_us = []
+indMorph_dist_id = []
+indMorph_dist_id_s = []
+indMorph_dist_id_i = []
+indMorph_dist_id_m = []
+
 for f in range(len(fp)):
     morph_neu_id = []
     morph_neu_parent = []
@@ -846,64 +852,81 @@ for f in range(len(fp)):
     branchInd = np.array(ctrKey)[np.where(np.array(ctrVal) > 1)[0]]
     
     neu_branchTrk = []
+    startid = []
+    endid = []
     neu_indBranchTrk = []
+    branch_dist_temp1 = []
+    length_branch_temp = []
+    indMorph_dist_temp1 = []
     
     list_end = np.setdiff1d(MorphData.morph_id[f], MorphData.morph_parent[f])
     
-    BranchData.branchP.append(branchInd)
+    BranchData.branchP.append(branchInd.tolist())
     MorphData.endP.append(list_end)
     bPoint = np.append(branchInd, list_end)
     
     for bp in range(len(bPoint)):
         if bPoint[bp] != MorphData.somaP[f]:
             neu_branchTrk_temp = []
+            branch_dist_temp2 = []
+            dist = 0
+            
             neu_branchTrk_temp.append(bPoint[bp])
+            branch_dist_temp2.append(MorphData.morph_dist[f][MorphData.morph_id[f].index(bPoint[bp])])
             parentTrck = bPoint[bp]
             parentTrck = MorphData.morph_parent[f][MorphData.morph_id[f].index(parentTrck)]
             if parentTrck != -1:
                 neu_branchTrk_temp.append(parentTrck)
+                rhs = branch_dist_temp2[-1][:3]
+                lhs = MorphData.morph_dist[f][MorphData.morph_id[f].index(parentTrck)][:3]
+                branch_dist_temp2.append(lhs)
+                dist +=  np.linalg.norm(np.subtract(rhs, lhs))
             while (parentTrck not in branchInd) and (parentTrck != -1):
                 parentTrck = MorphData.morph_parent[f][MorphData.morph_id[f].index(parentTrck)]
                 if parentTrck != -1:
                     neu_branchTrk_temp.append(parentTrck)
+                    rhs = branch_dist_temp2[-1][:3]
+                    lhs = MorphData.morph_dist[f][MorphData.morph_id[f].index(parentTrck)][:3]
+                    branch_dist_temp2.append(lhs)
+                    dist +=  np.linalg.norm(np.subtract(rhs, lhs))
+                    
             if len(neu_branchTrk_temp) > 1:
                 neu_branchTrk.append(neu_branchTrk_temp)
+                startid.append(neu_branchTrk_temp[0])
+                endid.append(neu_branchTrk_temp[-1])
+                branch_dist_temp1.append(branch_dist_temp2)
+                length_branch_temp.append(dist)
     BranchData.branchTrk.append(neu_branchTrk)
-    
-    for ep in range(len(list_end)):
-        neu_indBranchTrk_temp = []
-        neu_indBranchTrk_temp.append(list_end[ep])
-        parentTrck = list_end[ep]
-        while parentTrck != 0:
-            parentTrck = MorphData.morph_parent[f][MorphData.morph_id[f].index(parentTrck)]
-            neu_indBranchTrk_temp.append(parentTrck)
-        if len(neu_indBranchTrk_temp) > 1:
-            neu_indBranchTrk_temp.reverse()
-            neu_indBranchTrk.append(neu_indBranchTrk_temp)
-    BranchData.indBranchTrk.append(neu_indBranchTrk)
-
-
-for b in range(len(BranchData.branchTrk)):
-    branch_dist_temp1 = []
-    length_branch_temp = []
-    for sb in range(len(BranchData.branchTrk[b])):
-        dist = 0
-        branch_dist_temp2 = []
-        for sbp in range(len(BranchData.branchTrk[b][sb])):
-            branch_dist_temp2.append(np.array(MorphData.morph_dist[b])[np.where(MorphData.morph_id[b] 
-                                  == np.array(BranchData.branchTrk[b][sb][sbp]))[0]].flatten().tolist())
-            bid = MorphData.morph_id[b].index(BranchData.branchTrk[b][sb][sbp])
-            if MorphData.morph_parent[b][bid] != -1:
-                pid = MorphData.morph_id[b].index(MorphData.morph_parent[b][bid])
-                rhs = MorphData.morph_dist[b][pid][:3]
-                lhs = MorphData.morph_dist[b][bid][:3]
-                
-                dist += np.linalg.norm(np.subtract(rhs, lhs))
-        branch_dist_temp2.reverse()
-        branch_dist_temp1.append(branch_dist_temp2)
-        length_branch_temp.append(dist)
     BranchData.branch_dist.append(branch_dist_temp1)
     LengthData.length_branch.append(length_branch_temp)
+
+    for ep in range(len(list_end)):
+        neu_indBranchTrk_temp = []
+        indMorph_dist_temp2 = []
+        startidind = startid.index(list_end[ep])
+        neu_indBranchTrk_temp.append(BranchData.branchTrk[f][startidind])
+        indMorph_dist_temp2.append(BranchData.branch_dist[f][startidind])
+        endidval = endid[startidind]
+        while endidval != MorphData.somaP[f]:
+            startidind = startid.index(endidval)
+            neu_indBranchTrk_temp.append(BranchData.branchTrk[f][startidind][1:])
+            indMorph_dist_temp2.append(BranchData.branch_dist[f][startidind][1:])
+            endidval = endid[startidind]
+    
+        if len(neu_indBranchTrk_temp) > 1:
+            neu_indBranchTrk_temp
+            neu_indBranchTrk.append([item for sublist in neu_indBranchTrk_temp for item in sublist])
+            indMorph_dist_p_us.append(1/len(neu_indBranchTrk))
+            indMorph_dist_temp1.append([item for sublist in indMorph_dist_temp2 for item in sublist])
+            indMorph_dist_id.append(f)
+            if f in MorphData.sensory:
+                indMorph_dist_id_s.append(len(indMorph_dist_id)-1)
+            elif f in MorphData.inter:
+                indMorph_dist_id_i.append(len(indMorph_dist_id)-1)
+            elif f in MorphData.motor:
+                indMorph_dist_id_m.append(len(indMorph_dist_id)-1)
+    BranchData.indBranchTrk.append(neu_indBranchTrk)
+    BranchData.indMorph_dist.append(indMorph_dist_temp1)
 
 #branch_dist_flat = [item for sublist in branch_dist for item in sublist]
 
@@ -939,32 +962,6 @@ LengthData.length_branch_other_flat = [item for sublist in LengthData.length_bra
 MorphData.morph_dist_len = np.array([len(arr) for arr in MorphData.morph_dist])
 MorphData.morph_dist_len_EP = np.empty((len(MorphData.morph_dist_len)))
 MorphData.endP_len = [len(arr) for arr in MorphData.endP]
-
-indMorph_dist_p_us = []
-indMorph_dist_id = []
-indMorph_dist_id_s = []
-indMorph_dist_id_i = []
-indMorph_dist_id_m = []
-
-for i in range(len(BranchData.indBranchTrk)):
-    indMorph_dist_temp1 = []
-    for j in range(len(BranchData.indBranchTrk[i])):
-        indMorph_dist_temp2 = []
-        indMorph_dist_p_us.append(1/len(BranchData.indBranchTrk[i]))
-        for k in range(len(BranchData.indBranchTrk[i][j])):
-            indMorph_dist_temp2.append(np.array(MorphData.morph_dist[i])[np.where(MorphData.morph_id[i] 
-                                    == np.array(BranchData.indBranchTrk[i][j][k]))[0]].flatten().tolist())
-    
-        indMorph_dist_id.append(i)
-        if i in MorphData.sensory:
-            indMorph_dist_id_s.append(len(indMorph_dist_id)-1)
-        elif i in MorphData.inter:
-            indMorph_dist_id_i.append(len(indMorph_dist_id)-1)
-        elif i in MorphData.motor:
-            indMorph_dist_id_m.append(len(indMorph_dist_id)-1)
-            
-        indMorph_dist_temp1.append(indMorph_dist_temp2)
-    BranchData.indMorph_dist.append(indMorph_dist_temp1)
 
 BranchData.indMorph_dist_p_us = np.array(indMorph_dist_p_us)
 BranchData.indMorph_dist_flat = [item for sublist in BranchData.indMorph_dist for item in sublist]
@@ -1107,7 +1104,7 @@ if Parameter.PLOT:
 
     fig, ax = plt.subplots(1, 2, figsize=(20,6))
     hist1 = ax[0].hist(LengthData.length_total, 
-              bins=int((np.max(LengthData.length_total) - np.min(LengthData.length_total))/10),
+              bins=int((np.max(LengthData.length_total) - np.min(LengthData.length_total))/5),
               density=True)
     ax[0].set_title("Distribution of Total Length", fontsize=20)
     ax[0].set_ylabel("Normalized Density", fontsize=15)
@@ -1116,17 +1113,17 @@ if Parameter.PLOT:
     
     hist2 = ax[1].hist(LengthData.length_total[MorphData.sensory], 
                      bins=int((np.max(LengthData.length_total[MorphData.sensory]) - 
-                               np.min(LengthData.length_total[MorphData.sensory]))/10), 
+                               np.min(LengthData.length_total[MorphData.sensory]))/5), 
                      density=True, 
                      alpha=0.5)
     hist3 = ax[1].hist(LengthData.length_total[MorphData.inter], 
                      bins=int((np.max(LengthData.length_total[MorphData.inter]) - 
-                               np.min(LengthData.length_total[MorphData.inter]))/10),
+                               np.min(LengthData.length_total[MorphData.inter]))/5),
                      density=True, 
                      alpha=0.5)
     hist4 = ax[1].hist(LengthData.length_total[MorphData.motor],
                      bins=int((np.max(LengthData.length_total[MorphData.motor]) - 
-                               np.min(LengthData.length_total[MorphData.motor]))/10), 
+                               np.min(LengthData.length_total[MorphData.motor]))/5), 
                      density=True,
                      alpha=0.5)
     ax[1].set_title("Distribution of Total Length by Type", fontsize=20)
@@ -1143,7 +1140,7 @@ if Parameter.PLOT:
     
     fig, ax = plt.subplots(1, 2, figsize=(20,6))
     hist1 = ax[0].hist(LengthData.length_branch_flat, 
-              bins=int((np.max(LengthData.length_branch_flat) - np.min(LengthData.length_branch_flat))/10),
+              bins=int((np.max(LengthData.length_branch_flat) - np.min(LengthData.length_branch_flat))/5),
               density=True)
     ax[0].set_title("Distribution of Segment Length", fontsize=20)
     ax[0].set_ylabel("Normalized Density", fontsize=15)
@@ -1151,17 +1148,17 @@ if Parameter.PLOT:
     
     hist2 = ax[1].hist(LengthData.length_branch_sensory_flat, 
                      bins=int((np.max(LengthData.length_branch_sensory_flat) - 
-                               np.min(LengthData.length_branch_sensory_flat))/10), 
+                               np.min(LengthData.length_branch_sensory_flat))/5), 
                      density=True, 
                      alpha=0.5)
     hist3 = ax[1].hist(LengthData.length_branch_inter_flat, 
                      bins=int((np.max(LengthData.length_branch_inter_flat) - 
-                               np.min(LengthData.length_branch_inter_flat))/10),
+                               np.min(LengthData.length_branch_inter_flat))/5),
                      density=True, 
                      alpha=0.5)
     hist4 = ax[1].hist(LengthData.length_branch_motor_flat,
                      bins=int((np.max(LengthData.length_branch_motor_flat) - 
-                               np.min(LengthData.length_branch_motor_flat))/10), 
+                               np.min(LengthData.length_branch_motor_flat))/5), 
                      density=True,
                      alpha=0.5)
     ax[1].set_title("Distribution of Segment Length by Type", fontsize=20)
@@ -1209,9 +1206,6 @@ if Parameter.PLOT:
     popt1, pcov1 = scipy.optimize.curve_fit(objFuncGL, np.log10(hist1centers[np.nonzero(hist1[0])]), 
                                             np.log10(hist1[0][np.nonzero(hist1[0])]), p0=[0.1, -0.1], maxfev=10000)
     
-#    popt1, pcov1 = scipy.optimize.curve_fit(objFuncP, hist1centers, hist1[0], p0=[0.1, -0.1], maxfev=10000)
-    
-    
     fitX = np.linspace(1, 10000, 1000)
     fitY1 = objFuncPpow(fitX, popt1[0], popt1[1])
     
@@ -1221,10 +1215,6 @@ if Parameter.PLOT:
                                             np.log10(hist3[0][np.nonzero(hist3[0])]), p0=[0.1, -0.1], maxfev=10000)
     popt4, pcov4 = scipy.optimize.curve_fit(objFuncGL, np.log10(hist4centers[np.nonzero(hist4[0])]), 
                                             np.log10(hist4[0][np.nonzero(hist4[0])]), p0=[0.1, -0.1], maxfev=10000)
-    
-#    popt2, pcov2 = scipy.optimize.curve_fit(objFuncP, hist2centers, hist2[0], p0=[0.1, -0.1], maxfev=10000)
-#    popt3, pcov3 = scipy.optimize.curve_fit(objFuncP, hist3centers, hist3[0], p0=[0.1, -0.1], maxfev=10000)
-#    popt4, pcov4 = scipy.optimize.curve_fit(objFuncP, hist4centers, hist4[0], p0=[0.1, -0.1], maxfev=10000)
     
     fitY2 = objFuncPpow(fitX, popt2[0], popt2[1])
     fitY3 = objFuncPpow(fitX, popt3[0], popt3[1])
@@ -1301,7 +1291,7 @@ if Parameter.PLOT:
     
     fig, ax = plt.subplots(1, 2, figsize=(20,6))
     hist9 = ax[0].hist(LengthData.length_average,
-              bins=int((np.max(LengthData.length_average) - np.min(LengthData.length_average))/10),
+              bins=int((np.max(LengthData.length_average) - np.min(LengthData.length_average))/5),
               density=True)
     ax[0].set_title("Distribution of Average Segment Length", fontsize=20)
     ax[0].set_ylabel("Normalized Density", fontsize=15)
@@ -1309,17 +1299,17 @@ if Parameter.PLOT:
     
     hist5 = ax[1].hist(LengthData.length_average[MorphData.sensory], 
                      bins=int((np.max(LengthData.length_average[MorphData.sensory]) - 
-                               np.min(LengthData.length_average[MorphData.sensory]))/10),
+                               np.min(LengthData.length_average[MorphData.sensory]))/5),
                      density=True,
                      alpha=0.5)
     hist6 = ax[1].hist(LengthData.length_average[MorphData.inter], 
                      bins=int((np.max(LengthData.length_average[MorphData.inter]) -
-                               np.min(LengthData.length_average[MorphData.inter]))/10),
+                               np.min(LengthData.length_average[MorphData.inter]))/5),
                      density=True,
                      alpha=0.5)
     hist7 = ax[1].hist(LengthData.length_average[MorphData.motor],
                      bins=int((np.max(LengthData.length_average[MorphData.motor]) -
-                               np.min(LengthData.length_average[MorphData.motor]))/10),
+                               np.min(LengthData.length_average[MorphData.motor]))/5),
                      density=True, 
                      alpha=0.5)
     ax[1].legend(['Sensory', 'Inter', 'Motor'], fontsize=15)
@@ -1994,7 +1984,7 @@ if Parameter.PLOT:
     ax1.set_ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
     #plt.tight_layout()
     if Parameter.SAVE:
-        plt.savefig('./images/regSegRG_morphScale_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
+        plt.savefig(Parameter.outputdir + '/regSegRG_morphScale_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
     plt.show()
     
     
@@ -2036,7 +2026,7 @@ if Parameter.PLOT:
     ax1.set_xlabel(r"Length ($\lambda N$)", fontsize=15)
     ax1.set_ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
     if Parameter.SAVE:
-        plt.savefig('./images/regSegRG_morphScale_sep_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
+        plt.savefig(Parameter.outputdir + '/regSegRG_morphScale_sep_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
     plt.show()
     
     
@@ -2076,7 +2066,7 @@ if Parameter.PLOT:
     plt.ylabel(r"Slope ($\nu$)", fontsize=15)
     #plt.tight_layout()
     if Parameter.SAVE:
-        plt.savefig('./images/regSegRG_slope_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
+        plt.savefig(Parameter.outputdir + '/regSegRG_slope_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
     plt.show()
     
     
@@ -2137,54 +2127,7 @@ if Parameter.PLOT:
     plt.ylabel(r"Slope ($\nu$)", fontsize=15)
     #plt.tight_layout()
     if Parameter.SAVE:
-        plt.savefig('./images/regSegRG_slope_sep_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
+        plt.savefig(Parameter.outputdir + '/regSegRG_slope_sep_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
     plt.show()
-
-
-
-
-
-
-
-#==============================================================================
-
-#sRnTrkIRge = np.array(randTrk)[np.array(sChoice)[np.where((np.array(sChoice) > 180000) & (np.array(sChoice) < 210000))[0]]]
-
-
-
-
-#fig = plt.figure()
-#ax = plt.gca()
-#ax.scatter(cTargetCVal, BranchData.branchNum[cTargetNeuronCorr])
-##ax.scatter(cTargetCVal, LengthData.length_total[cTargetNeuronCorr])
-#ax.set_yscale('log')
-#ax.set_xscale('log')
-#plt.show()
-#
-#fig = plt.figure()
-#ax = plt.gca()
-#ax.scatter(np.array(cTargetCVal)[cTargetS], BranchData.branchNum[cTargetNeuronCorrS])
-##ax.scatter(np.array(cTargetCVal)[cTargetNeuronCorrS], LengthData.length_total[MorphData.sensory])
-#ax.set_yscale('log')
-#ax.set_xscale('log')
-#plt.show()
-#
-#fig = plt.figure()
-#ax = plt.gca()
-#ax.scatter(np.array(cTargetCVal)[cTargetI], BranchData.branchNum[cTargetNeuronCorrI])
-##ax.scatter(np.array(cTargetCVal)[cTargetNeuronCorrS], LengthData.length_total[MorphData.sensory])
-#ax.set_yscale('log')
-#ax.set_xscale('log')
-#plt.show()
-#
-#fig = plt.figure()
-#ax = plt.gca()
-#ax.scatter(np.array(cTargetCVal)[cTargetM], BranchData.branchNum[cTargetNeuronCorrM])
-##ax.scatter(np.array(cTargetCVal)[cTargetNeuronCorrS], LengthData.length_total[MorphData.sensory])
-#ax.set_yscale('log')
-#ax.set_xscale('log')
-#plt.show()
-
-
 
 
