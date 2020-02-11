@@ -44,7 +44,7 @@ fp = [f for f in os.listdir(Parameter.PATH) if os.path.isfile(os.path.join(Param
 fp = [os.path.join(Parameter.PATH, f) for f in fp]
 
 #fp.pop(17)
-fp = [fp[51]]
+fp = fp[:5]
 
 class MorphData():
     
@@ -374,39 +374,24 @@ for f in range(len(fp)):
             endidval = endid[startidind]
             while endidval != scall:
                 startidind = startid.index(endidval)
-                neu_indBranchTrk_temp.append(BranchData.branchTrk[f][startidind])
-                indMorph_dist_temp2.append(BranchData.branch_dist[f][startidind])
+                neu_indBranchTrk_temp.append(BranchData.branchTrk[f][startidind][1:])
+                indMorph_dist_temp2.append(BranchData.branch_dist[f][startidind][1:])
                 endidval = endid[startidind]
         
             if len(neu_indBranchTrk_temp) > 1:
-                neu_indBranchTrk_temp.reverse()
+                neu_indBranchTrk_temp
                 neu_indBranchTrk.append([item for sublist in neu_indBranchTrk_temp for item in sublist])
                 indMorph_dist_p_us.append(1/len(neu_indBranchTrk))
                 indMorph_dist_temp1.append([item for sublist in indMorph_dist_temp2 for item in sublist])
                 indMorph_dist_id.append(f)
-#        for ep in range(len(list_end)):
-#            neu_indBranchTrk_temp = []
-#            indMorph_dist_temp2 = []
-#            neu_indBranchTrk_temp.append(list_end[ep])
-#            parentTrck = list_end[ep]
-#            while parentTrck != scall:
-#                parentTrck = MorphData.morph_parent[f][MorphData.morph_id[f].index(parentTrck)]
-#                neu_indBranchTrk_temp.append(parentTrck)
-#                indMorph_dist_temp2.append(np.array(MorphData.morph_dist[f])[np.where(MorphData.morph_id[f] 
-#                                                    == np.array(parentTrck))[0]].flatten().tolist())
-#        
-#            if len(neu_indBranchTrk_temp) > 1:
-#                neu_indBranchTrk_temp.reverse()
-#                neu_indBranchTrk.append(neu_indBranchTrk_temp)
-#                indMorph_dist_p_us.append(1/len(neu_indBranchTrk))
-#                indMorph_dist_temp1.append(indMorph_dist_temp2)
-#                indMorph_dist_id.append(f)
         BranchData.indBranchTrk.append(neu_indBranchTrk)
         BranchData.indMorph_dist.append(indMorph_dist_temp1)
 
 t1 = time.time()
 
 print('checkpoint 1: ' + str(t1-t0))
+
+#%%
 
 if Parameter.RUN:
     BranchData.indMorph_dist_p_us = np.array(indMorph_dist_p_us)
