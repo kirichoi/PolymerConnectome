@@ -28,12 +28,12 @@ class Parameter:
     
     RUN = True
     SAVE = False
-    PLOT = True
-    numSample = 100
+    PLOT = False
+    numSample = 1000
     RN = '1'
     
     sSize = 100
-    nSize = [10, 100, 250, 500, 750, 1000]
+    nSize = [10, 50, 75, 100, 125, 150, 175, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000]
     dSize = 100
     
     SEED = 1234
@@ -43,8 +43,8 @@ class Parameter:
 fp = [f for f in os.listdir(Parameter.PATH) if os.path.isfile(os.path.join(Parameter.PATH, f))]
 fp = [os.path.join(Parameter.PATH, f) for f in fp]
 
-#fp.pop(17)
-fp = fp[:5]
+fp.pop(17)
+#fp = fp[:5]
 
 class MorphData():
     
@@ -463,7 +463,7 @@ if Parameter.PLOT:
 
     fig, ax = plt.subplots(1, 2, figsize=(20,6))
     hist0 = ax[0].hist(LengthData.length_total, 
-              bins=int((np.max(LengthData.length_total) - np.min(LengthData.length_total))/10),
+              bins=int((np.max(LengthData.length_total) - np.min(LengthData.length_total))/100),
               density=True)
     ax[0].set_title("Distribution of Total Length", fontsize=20)
     ax[0].set_ylabel("Normalized Density", fontsize=15)
@@ -557,7 +557,7 @@ if Parameter.PLOT:
     
     fig, ax = plt.subplots(1, 2, figsize=(20,6))
     hist9 = ax[0].hist(LengthData.length_average,
-              bins=int((np.max(LengthData.length_average) - np.min(LengthData.length_average))/10),
+              bins=int((np.max(LengthData.length_average) - np.min(LengthData.length_average))),
               density=True)
     ax[0].set_title("Distribution of Average Segment Length", fontsize=20)
     ax[0].set_ylabel("Normalized Density", fontsize=15)
@@ -602,10 +602,10 @@ if Parameter.PLOT:
                             np.unique(BranchData.branchNum)[i])[0]
         ax[2].scatter(LengthData.length_average[scttrInd], 
                          LengthData.length_total[scttrInd])
-        fitX = np.linspace(0, 1000, 1000)
+        fitX = np.linspace(0, 10, 10)
     ax[2].set_xlabel("Average Segment Length", fontsize=15)
     ax[2].set_ylabel("Total Length", fontsize=15)
-    ax[2].legend(np.unique(BranchData.branchNum)[:-1], fontsize=15)
+#    ax[2].legend(np.unique(BranchData.branchNum)[:-1], fontsize=15)
     for i in range(len(np.unique(BranchData.branchNum))):
         scttrInd = np.where(BranchData.branchNum == 
                             np.unique(BranchData.branchNum)[i])[0]
@@ -638,7 +638,7 @@ if Parameter.PLOT:
                          repeated_length_total_sensory)
     ax[3].set_xlabel("Segment Length", fontsize=15)
     ax[3].set_ylabel("Total Length", fontsize=15)
-    ax[3].legend(np.unique(BranchData.branchNum)[:-1], fontsize=15)
+#    ax[3].legend(np.unique(BranchData.branchNum)[:-1], fontsize=15)
     for i in range(len(np.unique(BranchData.branchNum))):
         scttrInd = np.where(BranchData.branchNum == 
                             np.unique(BranchData.branchNum)[i])[0]
@@ -692,7 +692,6 @@ if Parameter.PLOT:
     plt.title("Estimated Distribution of Number of Branches by Type", fontsize=20)
     plt.xlabel("Number of Branches", fontsize=15)
     plt.ylabel("Estimated Probability Density", fontsize=15)
-    plt.legend(['Sensory', 'Inter', 'Motor'], fontsize=15)
     plt.tight_layout()
     plt.show()
     
@@ -701,7 +700,7 @@ if Parameter.PLOT:
     
     
     fig = plt.figure(figsize=(8,6))
-    plt.scatter(MorphData.morph_dist_len, rGy)
+    plt.scatter(LengthData.length_total, rGy)
     plt.yscale('log')
     plt.xscale('log')
     #plt.xlim(1, 10000)
@@ -716,15 +715,15 @@ if Parameter.PLOT:
     
     #reg_len_scale = np.average(np.divide(regMDistLen, morph_dist_len))
     poptR, pcovR = scipy.optimize.curve_fit(objFuncGL, 
-                                            np.log10(MorphData.morph_dist_len), 
+                                            np.log10(LengthData.length_total), 
                                             np.log10(np.sqrt(np.square(rGy))), 
                                             p0=[1., 0.], 
                                             maxfev=100000)
-    fitYregR = objFuncPpow(MorphData.morph_dist_len, poptR[0], poptR[1])
+    fitYregR = objFuncPpow(LengthData.length_total, poptR[0], poptR[1])
     
     fig = plt.figure(figsize=(8,6))
-    plt.scatter(MorphData.morph_dist_len, np.sqrt(np.square(rGy)))
-    plt.plot(MorphData.morph_dist_len, fitYregR, color='tab:red')
+    plt.scatter(LengthData.length_total, np.sqrt(np.square(rGy)))
+    plt.plot(LengthData.length_total, fitYregR, color='tab:red')
     plt.yscale('log')
     plt.xscale('log')
 #    plt.xlim(10, 10000)
@@ -737,23 +736,40 @@ if Parameter.PLOT:
     
     
     #==============================================================================
+    OutputData.regSegOrdLen = np.empty(len(Parameter.nSize)*Parameter.numSample)
+    for r in range(len(OutputData.randTrk)):
+        val = np.array(BranchData.indMorph_dist_flat[OutputData.randTrk[r][0]])[OutputData.randTrk[r][1]:OutputData.randTrk[r][2]]
+        x = val[:,0]
+        y = val[:,1]
+        z = val[:,2]
+        
+        xd = [j-i for i, j in zip(x[:-1], x[1:])]
+        yd = [j-i for i, j in zip(y[:-1], y[1:])]
+        zd = [j-i for i, j in zip(z[:-1], z[1:])]
+        dist = np.sum(np.sqrt(np.square(xd) + np.square(yd) + np.square(zd)))
+        OutputData.regSegOrdLen[r] = dist
     
     
-    rGyRegSeg_avg = np.empty(len(Parameter.nSize))
-    for i in range(len(Parameter.nSize)):
-        RStemp = np.where(OutputData.regSegOrdN == Parameter.nSize[i])[0]
-        rGyRegSeg_avg[i] = np.average(OutputData.rGyRegSeg[RStemp])
+    nSize_l = [0.1, 1, 10, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 
+               300, 325, 350, 375, 400, 425, 450, 475, 500, 525, 550]
+    nSize_lf = [(i + j)/2 for i, j in zip(nSize_l[:-1], nSize_l[1:])]
+    
+    rGyRegSeg_avg = np.empty(len(nSize_l)-1)
+    for i in range(len(nSize_l)-1):
+        RS_s = np.where((OutputData.regSegOrdLen <= nSize_l[i+1]) &
+                        (OutputData.regSegOrdLen >= nSize_l[i]))[0]
+        rGyRegSeg_avg[i] = np.average(OutputData.rGyRegSeg[RS_s])
     
 #    RS1 = np.where(OutputData.regSegOrdN > 7)[0]
 #    RS2 = np.where((OutputData.regSegOrdN <= 8) & (OutputData.regSegOrdN >= 4))[0]
 #    RS3 = np.where(OutputData.regSegOrdN < 5)[0]
     
     poptRS1, pcovRS1 = scipy.optimize.curve_fit(objFuncGL, 
-                                              np.log10(OutputData.regSegOrdN), 
+                                              np.log10(OutputData.regSegOrdLen), 
                                               np.log10(np.sqrt(np.square(OutputData.rGyRegSeg))), 
                                               p0=[1., 0.], 
                                               maxfev=100000)
-    fitYregRS1 = objFuncPpow(np.unique(OutputData.regSegOrdN), poptRS1[0], poptRS1[1])
+    fitYregRS1 = objFuncPpow(np.unique(OutputData.regSegOrdLen), poptRS1[0], poptRS1[1])
     
 #    fitYregRS12 = objFuncPpow(np.unique(OutputData.regSegOrdN[RS2]), poptRS1[0], poptRS1[1])
     
@@ -781,25 +797,25 @@ if Parameter.PLOT:
     ax1.yaxis.label.set_fontsize(15)
     ax1.yaxis.set_tick_params(which='major', length=7)
     ax1.yaxis.set_tick_params(which='minor', length=5)
-    ax1.scatter(MorphData.morph_dist_len, 
+    ax1.scatter(LengthData.length_total, 
                 np.sqrt(np.square(rGy)), color='tab:blue')
-    ax1.plot(MorphData.morph_dist_len, fitYregR, color='tab:red', lw=2)
-    ax1.scatter(OutputData.regSegOrdN, 
+    ax1.plot(LengthData.length_total, fitYregR, color='tab:red', lw=2)
+    ax1.scatter(OutputData.regSegOrdLen, 
                 np.sqrt(np.square(OutputData.rGyRegSeg)), 
                 color='tab:blue',
                 facecolors='none')
-    ax1.scatter(np.array(Parameter.nSize), 
+    ax1.scatter(nSize_lf, 
                 np.sqrt(np.square(rGyRegSeg_avg)), 
                 color='tab:orange')
-    ax1.plot(np.unique(OutputData.regSegOrdN), fitYregRS1, color='tab:red', lw=2, linestyle='--')
+    ax1.plot(np.unique(OutputData.regSegOrdLen), fitYregRS1, color='tab:red', lw=2, linestyle='--')
 #    ax1.plot(np.unique(OutputData.regSegOrdN[RS2])*Parameter.sSize, fitYregRS2, color='tab:red', lw=2, linestyle='--')
 #    ax1.plot(np.unique(OutputData.regSegOrdN[RS3])*Parameter.sSize, fitYregRS3, color='tab:red', lw=2, linestyle='--')
 #    ax1.vlines(0.8, 0.01, 11000, linestyles='dashed')
 #    ax1.vlines(0.4, 0.01, 11000, linestyles='dashed')
     ax1.set_yscale('log')
     ax1.set_xscale('log')
-    ax1.set_xlim(0.1, 10000)
-    ax1.set_ylim(0.1, 100)
+    ax1.set_xlim(0.1, 50000)
+    ax1.set_ylim(0.05, 1000)
     
 #    ax2 = plt.axes([0, 0, 1, 1])
 #    ip1 = InsetPosition(ax1, [0.01, 0.57, 0.4, 0.4])
@@ -848,14 +864,54 @@ if Parameter.PLOT:
     ax1.set_ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
     #plt.tight_layout()
     if Parameter.SAVE:
-        plt.savefig(Parameter.outputdir + '/images/regSegRG_morphScale_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
+        plt.savefig(Parameter.outputdir + '/regSegRG_morphScale_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
     plt.show()
     
     
     #==============================================================================
     
     
-    shift_N = 2
+    shift_N = 6
+    poptRS_sl = []
+    RS_x = []
+    for i in range(len(nSize_l) - shift_N):
+        RS_s = np.where((OutputData.regSegOrdLen <= nSize_l[i+shift_N]) &
+                        (OutputData.regSegOrdLen >= nSize_l[i]))[0]
+        
+        RS_x.append(np.average(nSize_l[i:i+shift_N]))
+        
+        poptRS_s, pcovRS_s = scipy.optimize.curve_fit(objFuncGL, 
+                                                      np.log10(OutputData.regSegOrdLen[RS_s]), 
+                                                      np.log10(np.sqrt(np.square(OutputData.rGyRegSeg[RS_s]))), 
+                                                      p0=[1., 0.], 
+                                                      maxfev=100000)
+        poptRS_sl.append(poptRS_s[0])
+    
+    
+    fig = plt.figure(figsize=(8,6))
+    plt.scatter(RS_x, poptRS_sl)
+    #plt.plot(regMDistLen*Parameter.sSize, fitYregR, color='tab:red')
+    #plt.yscale('log')
+#    plt.hlines(poptR[0], 0.1, 1000, linestyles='--', color='tab:red')
+#    plt.hlines(poptRS1[0], 0.1, 1000, linestyles='--', color='tab:green')
+#    plt.hlines(poptRS3[0], 0.1, 1000, linestyles='--', color='tab:orange')
+    #plt.yscale('log')
+    plt.xscale('log')
+#    plt.xlim(25, 2500)
+    #plt.ylim(0.005, 1000)
+    #plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
+    plt.xlabel(r"Average Length ($\lambda N_{avg}$)", fontsize=15)
+    plt.ylabel(r"Slope ($\nu$)", fontsize=15)
+    #plt.tight_layout()
+    if Parameter.SAVE:
+        plt.savefig(Parameter.outputdir + '/regSegRG_slope_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
+    plt.show()
+    
+    
+    
+    #==============================================================================
+    
+    shift_N = 6
     poptRS_sl = []
     RS_x = []
     for i in range(len(Parameter.nSize) - shift_N):
@@ -881,14 +937,14 @@ if Parameter.PLOT:
 #    plt.hlines(poptRS3[0], 0.1, 1000, linestyles='--', color='tab:orange')
     #plt.yscale('log')
     plt.xscale('log')
-#    plt.xlim(1, 200)
+    plt.xlim(25, 2500)
     #plt.ylim(0.005, 1000)
     #plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
     plt.xlabel(r"Average Length ($\lambda N_{avg}$)", fontsize=15)
     plt.ylabel(r"Slope ($\nu$)", fontsize=15)
     #plt.tight_layout()
     if Parameter.SAVE:
-        plt.savefig(Parameter.outputdir + '/images/regSegRG_slope_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
+        plt.savefig(Parameter.outputdir + '/regSegRG_slope_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
     plt.show()
     
     
