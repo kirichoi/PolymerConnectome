@@ -329,16 +329,23 @@ for f in range(len(fp)):
     MorphData.endP.append(list_end)
     bPoint = np.append(branchInd, list_end)
     
-    if Parameter.RUN:
-        for bp in range(len(bPoint)):
-            if bPoint[bp] != scall:
-                neu_branchTrk_temp = []
-                branch_dist_temp2 = []
-                dist = 0
-                
-                neu_branchTrk_temp.append(bPoint[bp])
-                branch_dist_temp2.append(MorphData.morph_dist[f][MorphData.morph_id[f].index(bPoint[bp])])
-                parentTrck = bPoint[bp]
+    for bp in range(len(bPoint)):
+        if bPoint[bp] != scall:
+            neu_branchTrk_temp = []
+            branch_dist_temp2 = []
+            dist = 0
+            
+            neu_branchTrk_temp.append(bPoint[bp])
+            branch_dist_temp2.append(MorphData.morph_dist[f][MorphData.morph_id[f].index(bPoint[bp])])
+            parentTrck = bPoint[bp]
+            parentTrck = MorphData.morph_parent[f][MorphData.morph_id[f].index(parentTrck)]
+            if parentTrck != -1:
+                neu_branchTrk_temp.append(parentTrck)
+                rhs = branch_dist_temp2[-1]
+                lhs = MorphData.morph_dist[f][MorphData.morph_id[f].index(parentTrck)]
+                branch_dist_temp2.append(lhs)
+                dist +=  np.linalg.norm(np.subtract(rhs, lhs))
+            while (parentTrck not in branchInd) and (parentTrck != -1):
                 parentTrck = MorphData.morph_parent[f][MorphData.morph_id[f].index(parentTrck)]
                 if parentTrck != -1:
                     neu_branchTrk_temp.append(parentTrck)
@@ -346,46 +353,38 @@ for f in range(len(fp)):
                     lhs = MorphData.morph_dist[f][MorphData.morph_id[f].index(parentTrck)]
                     branch_dist_temp2.append(lhs)
                     dist +=  np.linalg.norm(np.subtract(rhs, lhs))
-                while (parentTrck not in branchInd) and (parentTrck != -1):
-                    parentTrck = MorphData.morph_parent[f][MorphData.morph_id[f].index(parentTrck)]
-                    if parentTrck != -1:
-                        neu_branchTrk_temp.append(parentTrck)
-                        rhs = branch_dist_temp2[-1]
-                        lhs = MorphData.morph_dist[f][MorphData.morph_id[f].index(parentTrck)]
-                        branch_dist_temp2.append(lhs)
-                        dist +=  np.linalg.norm(np.subtract(rhs, lhs))
-                        
-                if len(neu_branchTrk_temp) > 1:
-                    neu_branchTrk.append(neu_branchTrk_temp)
-                    startid.append(neu_branchTrk_temp[0])
-                    endid.append(neu_branchTrk_temp[-1])
-                    branch_dist_temp1.append(branch_dist_temp2)
-                    length_branch_temp.append(dist)
-        BranchData.branchTrk.append(neu_branchTrk)
-        BranchData.branch_dist.append(branch_dist_temp1)
-        LengthData.length_branch.append(length_branch_temp)
-    
-        for ep in range(len(list_end)):
-            neu_indBranchTrk_temp = []
-            indMorph_dist_temp2 = []
-            startidind = startid.index(list_end[ep])
-            neu_indBranchTrk_temp.append(BranchData.branchTrk[f][startidind])
-            indMorph_dist_temp2.append(BranchData.branch_dist[f][startidind])
+                    
+            if len(neu_branchTrk_temp) > 1:
+                neu_branchTrk.append(neu_branchTrk_temp)
+                startid.append(neu_branchTrk_temp[0])
+                endid.append(neu_branchTrk_temp[-1])
+                branch_dist_temp1.append(branch_dist_temp2)
+                length_branch_temp.append(dist)
+    BranchData.branchTrk.append(neu_branchTrk)
+    BranchData.branch_dist.append(branch_dist_temp1)
+    LengthData.length_branch.append(length_branch_temp)
+
+    for ep in range(len(list_end)):
+        neu_indBranchTrk_temp = []
+        indMorph_dist_temp2 = []
+        startidind = startid.index(list_end[ep])
+        neu_indBranchTrk_temp.append(BranchData.branchTrk[f][startidind])
+        indMorph_dist_temp2.append(BranchData.branch_dist[f][startidind])
+        endidval = endid[startidind]
+        while endidval != scall:
+            startidind = startid.index(endidval)
+            neu_indBranchTrk_temp.append(BranchData.branchTrk[f][startidind][1:])
+            indMorph_dist_temp2.append(BranchData.branch_dist[f][startidind][1:])
             endidval = endid[startidind]
-            while endidval != scall:
-                startidind = startid.index(endidval)
-                neu_indBranchTrk_temp.append(BranchData.branchTrk[f][startidind][1:])
-                indMorph_dist_temp2.append(BranchData.branch_dist[f][startidind][1:])
-                endidval = endid[startidind]
-        
-            if len(neu_indBranchTrk_temp) > 1:
-                neu_indBranchTrk_temp
-                neu_indBranchTrk.append([item for sublist in neu_indBranchTrk_temp for item in sublist])
-                indMorph_dist_p_us.append(1/len(neu_indBranchTrk))
-                indMorph_dist_temp1.append([item for sublist in indMorph_dist_temp2 for item in sublist])
-                indMorph_dist_id.append(f)
-        BranchData.indBranchTrk.append(neu_indBranchTrk)
-        BranchData.indMorph_dist.append(indMorph_dist_temp1)
+    
+        if len(neu_indBranchTrk_temp) > 1:
+            neu_indBranchTrk_temp
+            neu_indBranchTrk.append([item for sublist in neu_indBranchTrk_temp for item in sublist])
+            indMorph_dist_p_us.append(1/len(neu_indBranchTrk))
+            indMorph_dist_temp1.append([item for sublist in indMorph_dist_temp2 for item in sublist])
+            indMorph_dist_id.append(f)
+    BranchData.indBranchTrk.append(neu_indBranchTrk)
+    BranchData.indMorph_dist.append(indMorph_dist_temp1)
 
 t1 = time.time()
 
