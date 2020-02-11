@@ -216,12 +216,12 @@ def segmentMorph(Parameter, BranchData):
         for k in range(len(BranchData.branch_dist[i])):
             regMDist_temp2 = []
             for j in range(len(BranchData.branch_dist[i][k])-1):
-                dist = np.linalg.norm(np.array(BranchData.branch_dist[i][k])[j+1][:3]-
-                                      np.array(BranchData.branch_dist[i][k])[j][:3])
+                dist = np.linalg.norm(np.subtract(np.array(BranchData.branch_dist[i][k])[j+1][:3],
+                                                  np.array(BranchData.branch_dist[i][k])[j][:3]))
                 l1 = np.linspace(0,1,max(1, int(dist/Parameter.sSize)))
                 nArr = np.array(BranchData.branch_dist[i][k])[j][:3]+(
-                        np.array(BranchData.branch_dist[i][k])[j+1][:3]-
-                        np.array(BranchData.branch_dist[i][k])[j][:3])*l1[:,None]
+                        np.subtract(np.array(BranchData.branch_dist[i][k])[j+1][:3],
+                        np.array(BranchData.branch_dist[i][k])[j][:3]))*l1[:,None]
                 regMDist_temp2.append(nArr.tolist())
             regMDist_temp1.append([item for sublist in regMDist_temp2 for item in sublist])
         regMDist_temp_flatten = [item for sublist in regMDist_temp1 for item in sublist]
@@ -239,12 +239,12 @@ def indSegmentMorph(Parameter, BranchData):
     for i in range(len(BranchData.indMorph_dist_flat)):
         indRegMDist_temp = []
         for j in range(len(BranchData.indMorph_dist_flat[i])-1):
-            dist = np.linalg.norm(np.array(BranchData.indMorph_dist_flat[i])[j+1][:3]-
-                                  np.array(BranchData.indMorph_dist_flat[i])[j][:3])
+            dist = np.linalg.norm(np.subtract(np.array(BranchData.indMorph_dist_flat[i])[j+1][:3],
+                                              np.array(BranchData.indMorph_dist_flat[i])[j][:3]))
             l1 = np.linspace(0,1,max(1, int(dist/Parameter.sSize)))
             nArr = np.array(BranchData.indMorph_dist_flat[i])[j][:3]+(
-                    np.array(BranchData.indMorph_dist_flat[i])[j+1][:3]-
-                    np.array(BranchData.indMorph_dist_flat[i])[j][:3])*l1[:,None]
+                    np.subtract(np.array(BranchData.indMorph_dist_flat[i])[j+1][:3],
+                    np.array(BranchData.indMorph_dist_flat[i])[j][:3]))*l1[:,None]
             indRegMDist_temp.append(nArr.tolist())
         indRegMDist_temp_flatten = [item for sublist in indRegMDist_temp for item in sublist]
         _, Uidx = np.unique(np.array(indRegMDist_temp_flatten), return_index=True, axis=0)
