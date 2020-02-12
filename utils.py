@@ -296,13 +296,13 @@ def regularRadiusOfGyration(regMDist, regMDistLen):
     
     return (rGyReg, cMLReg)
 
-def regularSegmentRadiusOfGyration(Parameter, BranchData, indRegMDist, indRegMDistLen, numSample=10000, stochastic=True, p=None):
+def regularSegmentRadiusOfGyration(Parameter, BranchData, indRegMDist, indRegMDistLen, numScaleSample=10000, stochastic=True, p=None):
 
     nSize = np.array(Parameter.nSize)+1
-    cMLRegSeg = np.empty((len(nSize)*numSample, 3))
-    rGyRegSeg = np.empty(len(nSize)*numSample)
-    regSegOrdN = np.empty(len(nSize)*numSample)
-    randTrk = np.empty((len(nSize)*numSample, 3), dtype=int)
+    cMLRegSeg = np.empty((len(nSize)*numScaleSample, 3))
+    rGyRegSeg = np.empty(len(nSize)*numScaleSample)
+    regSegOrdN = np.empty(len(nSize)*numScaleSample)
+    randTrk = np.empty((len(nSize)*numScaleSample, 3), dtype=int)
     idxTrk = 0
     
     if p == None:
@@ -313,7 +313,7 @@ def regularSegmentRadiusOfGyration(Parameter, BranchData, indRegMDist, indRegMDi
     
     if stochastic:
         for i in range(len(nSize)):
-            for j in range(numSample):
+            for j in range(numScaleSample):
                 randIdx1 = np.random.choice(np.arange(0, len(indRegMDist)), 
                                             1, 
                                             p=indMorph_dist_p)[0]
@@ -324,13 +324,13 @@ def regularSegmentRadiusOfGyration(Parameter, BranchData, indRegMDist, indRegMDi
                 idxTrk += 1
                 randIdx2 = np.random.choice(np.arange(0, len(indRegMDist[randIdx1])-nSize[i]), 1)[0]
                 
-                randTrk[i*numSample+j] = (randIdx1, randIdx2, randIdx2+nSize[i])
+                randTrk[i*numScaleSample+j] = (randIdx1, randIdx2, randIdx2+nSize[i])
                 
-                regSegOrdN[i*numSample+j] = nSize[i]-1
-                cMLRegSeg[i*numSample+j] = np.sum(np.array(indRegMDist[randIdx1])[randIdx2:randIdx2+nSize[i]], axis=0)/nSize[i]
+                regSegOrdN[i*numScaleSample+j] = nSize[i]-1
+                cMLRegSeg[i*numScaleSample+j] = np.sum(np.array(indRegMDist[randIdx1])[randIdx2:randIdx2+nSize[i]], axis=0)/nSize[i]
                 rList_reg_seg = scipy.spatial.distance.cdist(np.array(indRegMDist[randIdx1])[randIdx2:randIdx2+nSize[i]], 
-                                                             np.array([cMLRegSeg[i*numSample+j]])).flatten()
-                rGyRegSeg[i*numSample+j] = np.sqrt(np.sum(np.square(rList_reg_seg))/nSize[i])
+                                                             np.array([cMLRegSeg[i*numScaleSample+j]])).flatten()
+                rGyRegSeg[i*numScaleSample+j] = np.sqrt(np.sum(np.square(rList_reg_seg))/nSize[i])
     else:
         for i in range(len(nSize)):
             randIdx = np.sort(np.random.choice(np.arange(0, len(indRegMDistLen)), 
@@ -340,11 +340,11 @@ def regularSegmentRadiusOfGyration(Parameter, BranchData, indRegMDist, indRegMDi
             for j in randIdx:
                 dInt = np.arange(0, indRegMDistLen[j]-nSize[i], Parameter.dSize)
                 for k in range(len(dInt)-1):
-                    regSegOrdN[i*numSample + j] = nSize[i]-1
-                    cMLRegSeg[i*numSample+j] = np.sum(np.array(indRegMDist[i])[dInt[k]:dInt[k]+nSize[i]], axis=0)/nSize[i]
+                    regSegOrdN[i*numScaleSample + j] = nSize[i]-1
+                    cMLRegSeg[i*numScaleSample+j] = np.sum(np.array(indRegMDist[i])[dInt[k]:dInt[k]+nSize[i]], axis=0)/nSize[i]
                     rList_reg_seg = scipy.spatial.distance.cdist(np.array(indRegMDist[i])[dInt[k]:dInt[k]+nSize[i]], 
-                                                                 np.array([cMLRegSeg[i*numSample+j]])).flatten()
-                    rGyRegSeg[i*numSample+j] = np.sqrt(np.sum(np.square(rList_reg_seg))/nSize[i])
+                                                                 np.array([cMLRegSeg[i*numScaleSample+j]])).flatten()
+                    rGyRegSeg[i*numScaleSample+j] = np.sqrt(np.sum(np.square(rList_reg_seg))/nSize[i])
     
     return (rGyRegSeg, cMLRegSeg, regSegOrdN, randTrk)
     

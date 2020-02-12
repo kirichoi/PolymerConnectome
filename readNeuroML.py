@@ -29,7 +29,7 @@ class Parameter:
     RUN = False
     SAVE = False
     PLOT = False
-    numSample = 100
+    numScaleSample = 100
     RN = '7'
     
     sSize = 0.1
@@ -1055,7 +1055,7 @@ if Parameter.RUN:
                         BranchData,
                         np.array(MorphData.indRegMDist)[indMorph_dist_id_s], 
                         MorphData.indRegMDistLen[indMorph_dist_id_s], 
-                        numSample=Parameter.numSample,
+                        numScaleSample=Parameter.numScaleSample,
                         stochastic=True,
                         p=indMorph_dist_id_s)
     (OutputData.rGyRegSegi, 
@@ -1065,7 +1065,7 @@ if Parameter.RUN:
                         BranchData,
                         np.array(MorphData.indRegMDist)[indMorph_dist_id_i], 
                         MorphData.indRegMDistLen[indMorph_dist_id_i], 
-                        numSample=Parameter.numSample,
+                        numScaleSample=Parameter.numScaleSample,
                         stochastic=True,
                         p=indMorph_dist_id_i)
     (OutputData.rGyRegSegm, 
@@ -1075,7 +1075,7 @@ if Parameter.RUN:
                         BranchData,
                         np.array(MorphData.indRegMDist)[indMorph_dist_id_m], 
                         MorphData.indRegMDistLen[indMorph_dist_id_m], 
-                        numSample=Parameter.numSample,
+                        numScaleSample=Parameter.numScaleSample,
                         stochastic=True,
                         p=indMorph_dist_id_m)
     
