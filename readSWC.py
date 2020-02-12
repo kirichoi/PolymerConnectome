@@ -28,8 +28,9 @@ class Parameter:
     
     RUN = True
     SAVE = False
-    PLOT = False
-    numSample = 1000
+    PLOT = True
+    numScaleSample = 1000
+    numBranchSample = 1
     RN = '1'
     
     sSize = 100
@@ -38,7 +39,7 @@ class Parameter:
     
     SEED = 1234
     
-    outputdir = 'D:/Data/output_TEMCA/RN_' + str(RN)
+    outputdir = './output_TEMCA/RN_' + str(RN)
 
 fp = [f for f in os.listdir(Parameter.PATH) if os.path.isfile(os.path.join(Parameter.PATH, f))]
 fp = [os.path.join(Parameter.PATH, f) for f in fp]
@@ -285,6 +286,7 @@ class OutputData:
     randTrkm = None
     
 
+np.random.seed(Parameter.SEED)
 
 MorphData = MorphData()
 
@@ -418,9 +420,6 @@ t2 = time.time()
 
 print('checkpoint 2: ' + str(t2-t1))
 
-
-np.random.seed(Parameter.SEED)
-
 #(MorphData.regMDist, MorphData.regMDistLen) = utils.segmentMorph(Parameter, BranchData)
 #(MorphData.indRegMDist, MorphData.indRegMDistLen) = utils.indSegmentMorph(Parameter, BranchData)
 
@@ -447,7 +446,7 @@ if Parameter.RUN:
                                                                  BranchData,
                                                                  np.array(BranchData.indMorph_dist_flat), 
                                                                  BranchData.indRegMDistLen, 
-                                                                 numSample=Parameter.numSample,
+                                                                 numScaleSample=Parameter.numScaleSample,
                                                                  stochastic=True,
                                                                  p=indMorph_dist_id)
     if Parameter.SAVE:
@@ -736,7 +735,7 @@ if Parameter.PLOT:
     
     
     #==============================================================================
-    OutputData.regSegOrdLen = np.empty(len(Parameter.nSize)*Parameter.numSample)
+    OutputData.regSegOrdLen = np.empty(len(Parameter.nSize)*Parameter.numScaleSample)
     for r in range(len(OutputData.randTrk)):
         val = np.array(BranchData.indMorph_dist_flat[OutputData.randTrk[r][0]])[OutputData.randTrk[r][1]:OutputData.randTrk[r][2]]
         x = val[:,0]
@@ -910,83 +909,147 @@ if Parameter.PLOT:
     
     
     #==============================================================================
+#    
+#    poptRS_sl = []
+#    RS_x = []
+#    for i in range(len(Parameter.nSize) - shift_N):
+#        RS_s = np.where((OutputData.regSegOrdN <= Parameter.nSize[i+shift_N]) &
+#                        (OutputData.regSegOrdN >= Parameter.nSize[i]))[0]
+#        
+#        RS_x.append(np.average(Parameter.nSize[i:i+shift_N]))
+#        
+#        poptRS_s, pcovRS_s = scipy.optimize.curve_fit(objFuncGL, 
+#                                                      np.log10(OutputData.regSegOrdN[RS_s]), 
+#                                                      np.log10(np.sqrt(np.square(OutputData.rGyRegSeg[RS_s]))), 
+#                                                      p0=[1., 0.], 
+#                                                      maxfev=100000)
+#        poptRS_sl.append(poptRS_s[0])
+#    
+#    
+#    fig = plt.figure(figsize=(8,6))
+#    plt.scatter(RS_x, poptRS_sl)
+#    #plt.plot(regMDistLen*Parameter.sSize, fitYregR, color='tab:red')
+#    #plt.yscale('log')
+##    plt.hlines(poptR[0], 0.1, 1000, linestyles='--', color='tab:red')
+##    plt.hlines(poptRS1[0], 0.1, 1000, linestyles='--', color='tab:green')
+##    plt.hlines(poptRS3[0], 0.1, 1000, linestyles='--', color='tab:orange')
+#    #plt.yscale('log')
+#    plt.xscale('log')
+#    plt.xlim(25, 2500)
+#    #plt.ylim(0.005, 1000)
+#    #plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
+#    plt.xlabel(r"Average Length ($\lambda N_{avg}$)", fontsize=15)
+#    plt.ylabel(r"Slope ($\nu$)", fontsize=15)
+#    #plt.tight_layout()
+#    if Parameter.SAVE:
+#        plt.savefig(Parameter.outputdir + '/regSegRG_slope_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
+#    plt.show()
+#    
     
-    shift_N = 6
-    poptRS_sl = []
-    RS_x = []
-    for i in range(len(Parameter.nSize) - shift_N):
-        RS_s = np.where((OutputData.regSegOrdN <= Parameter.nSize[i+shift_N]) &
-                        (OutputData.regSegOrdN >= Parameter.nSize[i]))[0]
+bstrk = []
+bstrkval = []
+ibind = []
+bstrk_len = []
+mdistl_nz = np.nonzero(BranchData.branchNum)[0]
+bcML = np.empty((len(mdistl_nz)*Parameter.numBranchSample, 3))
+brGy = np.empty(len(mdistl_nz)*Parameter.numBranchSample)
+cnt = 0
+
+for m in mdistl_nz:
+    bsrand = np.random.choice(BranchData.branchP[m], size=Parameter.numBranchSample, replace=False)
+    bstrk_temp = []
+    ibind_temp = []
+    bstrk_len_temp = []
+    for b in range(Parameter.numBranchSample):
+        bstrkval_temp = []
+        ibind_temp = []
+        for k in range(len(BranchData.indBranchTrk[m])):
+            bsw = np.where(np.array(BranchData.indBranchTrk[m][k]) == bsrand[b])[0]
+            if len(bsw) > 0:
+                bstrkval_temp.append(BranchData.indBranchTrk[m][k][:bsw[0]])
+                ibind_temp.append(k)
+    
+        bstrkval_u = np.unique([item for sublist in bstrkval_temp for item in sublist])
+        bstrk_temp.append(np.where(np.isin(MorphData.morph_id[m], bstrkval_u))[0])
+        ibind_temp.append(ibind_temp)
+    
+    for r in range(len(bstrk_temp)):
+        val = np.array(MorphData.morph_dist[m])[bstrk_temp[r]]
+        x = val[:,0]
+        y = val[:,1]
+        z = val[:,2]
         
-        RS_x.append(np.average(Parameter.nSize[i:i+shift_N]))
-        
-        poptRS_s, pcovRS_s = scipy.optimize.curve_fit(objFuncGL, 
-                                                      np.log10(OutputData.regSegOrdN[RS_s]), 
-                                                      np.log10(np.sqrt(np.square(OutputData.rGyRegSeg[RS_s]))), 
-                                                      p0=[1., 0.], 
-                                                      maxfev=100000)
-        poptRS_sl.append(poptRS_s[0])
+        xd = [j-i for i, j in zip(x[:-1], x[1:])]
+        yd = [j-i for i, j in zip(y[:-1], y[1:])]
+        zd = [j-i for i, j in zip(z[:-1], z[1:])]
+        dist = np.sum(np.sqrt(np.square(xd) + np.square(yd) + np.square(zd)))
+        bstrk_len_temp.append(dist)
     
+    for i in range(Parameter.numBranchSample):
+        bcML[cnt] = (np.sum(np.array(MorphData.morph_dist[m])[bstrk_temp[i]], 
+                                                axis=0)/len(np.array(MorphData.morph_dist[m])[bstrk_temp[i]]))
+        rList = scipy.spatial.distance.cdist(np.array(MorphData.morph_dist[m])[bstrk_temp[i]], 
+                                             np.array([bcML[i]])).flatten()
+        brGy[cnt] = np.sqrt(np.sum(np.square(rList))/len(rList))
+        cnt += 1
     
-    fig = plt.figure(figsize=(8,6))
-    plt.scatter(RS_x, poptRS_sl)
-    #plt.plot(regMDistLen*Parameter.sSize, fitYregR, color='tab:red')
-    #plt.yscale('log')
-#    plt.hlines(poptR[0], 0.1, 1000, linestyles='--', color='tab:red')
-#    plt.hlines(poptRS1[0], 0.1, 1000, linestyles='--', color='tab:green')
-#    plt.hlines(poptRS3[0], 0.1, 1000, linestyles='--', color='tab:orange')
-    #plt.yscale('log')
-    plt.xscale('log')
-    plt.xlim(25, 2500)
-    #plt.ylim(0.005, 1000)
-    #plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
-    plt.xlabel(r"Average Length ($\lambda N_{avg}$)", fontsize=15)
-    plt.ylabel(r"Slope ($\nu$)", fontsize=15)
-    #plt.tight_layout()
-    if Parameter.SAVE:
-        plt.savefig(Parameter.outputdir + '/regSegRG_slope_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
-    plt.show()
+    bstrk.append(bstrk_temp)
+    ibind.append(ibind_temp)
+    bstrk_len.append(bstrk_len_temp)
+
+
+#%%
     
+bstrk_len_flat = [item for sublist in bstrk_len for item in sublist]
     
-
-
-#==============================================================================
-
-#sRnTrkIRge = np.array(randTrk)[np.array(sChoice)[np.where((np.array(sChoice) > 180000) & (np.array(sChoice) < 210000))[0]]]
-
-
-
-
-#fig = plt.figure()
-#ax = plt.gca()
-#ax.scatter(cTargetCVal, BranchData.branchNum[cTargetNeuronCorr])
-##ax.scatter(cTargetCVal, LengthData.length_total[cTargetNeuronCorr])
-#ax.set_yscale('log')
-#ax.set_xscale('log')
-#plt.show()
+#nSize_l = [0.1, 1, 10, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 
+#           300, 325, 350, 375, 400, 425, 450, 475, 500, 525, 550]
+#nSize_lf = [(i + j)/2 for i, j in zip(nSize_l[:-1], nSize_l[1:])]
 #
-#fig = plt.figure()
-#ax = plt.gca()
-#ax.scatter(np.array(cTargetCVal)[cTargetS], BranchData.branchNum[cTargetNeuronCorrS])
-##ax.scatter(np.array(cTargetCVal)[cTargetNeuronCorrS], LengthData.length_total[MorphData.sensory])
-#ax.set_yscale('log')
-#ax.set_xscale('log')
-#plt.show()
-#
-#fig = plt.figure()
-#ax = plt.gca()
-#ax.scatter(np.array(cTargetCVal)[cTargetI], BranchData.branchNum[cTargetNeuronCorrI])
-##ax.scatter(np.array(cTargetCVal)[cTargetNeuronCorrS], LengthData.length_total[MorphData.sensory])
-#ax.set_yscale('log')
-#ax.set_xscale('log')
-#plt.show()
-#
-#fig = plt.figure()
-#ax = plt.gca()
-#ax.scatter(np.array(cTargetCVal)[cTargetM], BranchData.branchNum[cTargetNeuronCorrM])
-##ax.scatter(np.array(cTargetCVal)[cTargetNeuronCorrS], LengthData.length_total[MorphData.sensory])
-#ax.set_yscale('log')
-#ax.set_xscale('log')
-#plt.show()
+#rGyRegSeg_avg = np.empty(len(nSize_l)-1)
+#for i in range(len(nSize_l)-1):
+#    RS_s = np.where((OutputData.regSegOrdLen <= nSize_l[i+1]) &
+#                    (OutputData.regSegOrdLen >= nSize_l[i]))[0]
+#    rGyRegSeg_avg[i] = np.average(OutputData.rGyRegSeg[RS_s])
 
+poptRS2, pcovRS2 = scipy.optimize.curve_fit(objFuncGL, 
+                                          np.log10(bstrk_len_flat), 
+                                          np.log10(np.sqrt(np.square(brGy))), 
+                                          p0=[1., 0.], 
+                                          maxfev=100000)
+perrRS2 = np.sqrt(np.diag(pcovRS2))
+fitYregRS2 = objFuncPpow(np.unique(bstrk_len_flat), poptRS2[0], poptRS2[1])
+
+fig, ax1 = plt.subplots(figsize=(12,8))
+ax1.xaxis.label.set_fontsize(15)
+ax1.xaxis.set_tick_params(which='major', length=7)
+ax1.xaxis.set_tick_params(which='minor', length=5)
+ax1.yaxis.label.set_fontsize(15)
+ax1.yaxis.set_tick_params(which='major', length=7)
+ax1.yaxis.set_tick_params(which='minor', length=5)
+ax1.scatter(LengthData.length_total, 
+            np.sqrt(np.square(rGy)), color='tab:blue')
+ax1.plot(LengthData.length_total, fitYregR, color='tab:red', lw=2)
+ax1.scatter(bstrk_len_flat, 
+            np.sqrt(np.square(brGy)), 
+            color='tab:blue',
+            facecolors='none')
+#ax1.scatter(nSize_lf, 
+#            np.sqrt(np.square(rGyRegSeg_avg)), 
+#            color='tab:orange')
+ax1.plot(np.unique(bstrk_len_flat), fitYregRS2, color='tab:red', lw=2, linestyle='--')
+#    ax1.plot(np.unique(OutputData.regSegOrdN[RS2])*Parameter.sSize, fitYregRS2, color='tab:red', lw=2, linestyle='--')
+#    ax1.plot(np.unique(OutputData.regSegOrdN[RS3])*Parameter.sSize, fitYregRS3, color='tab:red', lw=2, linestyle='--')
+#    ax1.vlines(0.8, 0.01, 11000, linestyles='dashed')
+#    ax1.vlines(0.4, 0.01, 11000, linestyles='dashed')
+ax1.set_yscale('log')
+ax1.set_xscale('log')
+ax1.set_xlim(0.1, 50000)
+ax1.set_ylim(0.05, 1000)
+
+
+ax1.set_xlabel(r"Length ($\lambda N$)", fontsize=15)
+ax1.set_ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
+#plt.tight_layout()
+plt.show()
 
