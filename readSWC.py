@@ -30,7 +30,7 @@ class Parameter:
     SAVE = False
     PLOT = True
     numScaleSample = 1000
-    numBranchSample = 1
+    numBranchSample = 10
     RN = '1'
     
     sSize = 100
@@ -52,14 +52,11 @@ class MorphData():
     def __init__(self):
         self.morph_id = []
         self.morph_parent = []
-#        self.morph_prox = []
         self.morph_dist = []
         self.neuron_id = []
-#        self.neuron_type = []
         self.endP = []
         self.somaP = []
-#        self.indRegMDist = None
-#        self.indRegMDistLen = None
+        self.indMorph_dist = []
     
     def plotNeuronFromPoints(self, listOfPoints, showPoint=False):
         """
@@ -124,7 +121,7 @@ class MorphData():
             ax.set_zlim(-300, 300)
         cmap = cm.get_cmap('viridis', len(multListOfPoints))
         for i in range(len(multListOfPoints)):
-            listOfPoints = self.indRegMDist[multListOfPoints[i][0]][multListOfPoints[i][1]:multListOfPoints[i][2]]
+            listOfPoints = self.indMorph_dist[multListOfPoints[i][0]][multListOfPoints[i][1]:multListOfPoints[i][2]]
             for f in range(len(listOfPoints)-1):
         #        tararr = np.array(morph_dist[f])
         #        somaIdx = np.where(np.array(morph_parent[f]) < 0)[0]
@@ -262,28 +259,21 @@ class LengthData:
     length_total = np.empty(len(fp))
     length_branch = []
     length_direct = []
+    indMDistLen = []
+    indMDistN = []
     
 class BranchData:
     branchTrk = []
     branch_dist = []
-    indMorph_dist = []
     indBranchTrk = []
     branchP = []
     branchNum = np.empty(len(fp))
 
 class OutputData:
-    rGyRegSegs = None
-    cMLRegSegs = None
-    regSegOrdNs = None
-    randTrks = None
-    rGyRegSegi = None
-    cMLRegSegi = None
-    regSegOrdNi = None
-    randTrki = None
-    rGyRegSegm = None
-    cMLRegSegm = None
-    regSegOrdNm = None
-    randTrkm = None
+    rGySeg = None
+    cMLSeg = None
+    segOrdN = None
+    randTrk = None
     
 
 np.random.seed(Parameter.SEED)
@@ -324,6 +314,7 @@ for f in range(len(fp)):
     branch_dist_temp1 = []
     length_branch_temp = []
     indMorph_dist_temp1 = []
+    indMDistLen_temp = []
     
     list_end = np.setdiff1d(MorphData.morph_id[f], MorphData.morph_parent[f])
     
@@ -346,7 +337,7 @@ for f in range(len(fp)):
                 rhs = branch_dist_temp2[-1]
                 lhs = MorphData.morph_dist[f][MorphData.morph_id[f].index(parentTrck)]
                 branch_dist_temp2.append(lhs)
-                dist +=  np.linalg.norm(np.subtract(rhs, lhs))
+                dist += np.linalg.norm(np.subtract(rhs, lhs))
             while (parentTrck not in branchInd) and (parentTrck != -1):
                 parentTrck = MorphData.morph_parent[f][MorphData.morph_id[f].index(parentTrck)]
                 if parentTrck != -1:
@@ -354,7 +345,7 @@ for f in range(len(fp)):
                     rhs = branch_dist_temp2[-1]
                     lhs = MorphData.morph_dist[f][MorphData.morph_id[f].index(parentTrck)]
                     branch_dist_temp2.append(lhs)
-                    dist +=  np.linalg.norm(np.subtract(rhs, lhs))
+                    dist += np.linalg.norm(np.subtract(rhs, lhs))
                     
             if len(neu_branchTrk_temp) > 1:
                 neu_branchTrk.append(neu_branchTrk_temp)
@@ -369,6 +360,7 @@ for f in range(len(fp)):
     for ep in range(len(list_end)):
         neu_indBranchTrk_temp = []
         indMorph_dist_temp2 = []
+        
         startidind = startid.index(list_end[ep])
         neu_indBranchTrk_temp.append(BranchData.branchTrk[f][startidind])
         indMorph_dist_temp2.append(BranchData.branch_dist[f][startidind])
@@ -378,19 +370,30 @@ for f in range(len(fp)):
             neu_indBranchTrk_temp.append(BranchData.branchTrk[f][startidind][1:])
             indMorph_dist_temp2.append(BranchData.branch_dist[f][startidind][1:])
             endidval = endid[startidind]
-    
+            
         if len(neu_indBranchTrk_temp) > 1:
-            neu_indBranchTrk_temp
             neu_indBranchTrk.append([item for sublist in neu_indBranchTrk_temp for item in sublist])
             indMorph_dist_p_us.append(1/len(neu_indBranchTrk))
-            indMorph_dist_temp1.append([item for sublist in indMorph_dist_temp2 for item in sublist])
+            val = [item for sublist in indMorph_dist_temp2 for item in sublist]
+            indMorph_dist_temp1.append(val)
             indMorph_dist_id.append(f)
+            
+            x = np.array(val)[:,0]
+            y = np.array(val)[:,1]
+            z = np.array(val)[:,2]
+            xd = [j-i for i, j in zip(x[:-1], x[1:])]
+            yd = [j-i for i, j in zip(y[:-1], y[1:])]
+            zd = [j-i for i, j in zip(z[:-1], z[1:])]
+            indMDistLen_temp.append(np.sum(np.sqrt(np.square(xd) + np.square(yd) + np.square(zd))))
+        
     BranchData.indBranchTrk.append(neu_indBranchTrk)
-    BranchData.indMorph_dist.append(indMorph_dist_temp1)
+    MorphData.indMorph_dist.append(indMorph_dist_temp1)
+    LengthData.indMDistLen.append(indMDistLen_temp)
 
 t1 = time.time()
 
 print('checkpoint 1: ' + str(t1-t0))
+
 
 #%%
 
@@ -399,11 +402,11 @@ if Parameter.RUN:
     MorphData.endP_len = [len(arr) for arr in MorphData.endP]
 else:
     (BranchData.branchTrk, BranchData.branch_dist, BranchData.indBranchTrk, 
-     BranchData.indMorph_dist, BranchData.indMorph_dist_p_us, LengthData.length_branch) = utils.importMorph(Parameter)
+     MorphData.indMorph_dist, MorphData.indMorph_dist_p_us, LengthData.length_branch) = utils.importMorph(Parameter)
 
 
-BranchData.indMorph_dist_flat = [item for sublist in BranchData.indMorph_dist for item in sublist]
-BranchData.indRegMDistLen = np.array([len(arr) for arr in BranchData.indMorph_dist_flat])
+MorphData.indMorph_dist_flat = [item for sublist in MorphData.indMorph_dist for item in sublist]
+LengthData.indMDistN = np.array([len(arr) for arr in MorphData.indMorph_dist_flat])
 
 LengthData.length_branch_flat = [item for sublist in LengthData.length_branch for item in sublist]
 LengthData.length_average = np.empty(len(fp))
@@ -421,7 +424,7 @@ t2 = time.time()
 print('checkpoint 2: ' + str(t2-t1))
 
 #(MorphData.regMDist, MorphData.regMDistLen) = utils.segmentMorph(Parameter, BranchData)
-#(MorphData.indRegMDist, MorphData.indRegMDistLen) = utils.indSegmentMorph(Parameter, BranchData)
+#(MorphData.indRegMDist, MorphData.indMDistN) = utils.indSegmentMorph(Parameter, BranchData)
 
 
 (rGy, cML) = utils.radiusOfGyration(MorphData)
@@ -439,13 +442,13 @@ t4 = time.time()
 print('checkpoint 4: ' + str(t4-t3))
 
 if Parameter.RUN:
-    (OutputData.rGyRegSeg, 
-     OutputData.cMLRegSeg, 
-     OutputData.regSegOrdN, 
+    (OutputData.rGySeg, 
+     OutputData.cMLSeg, 
+     OutputData.segOrdN, 
      OutputData.randTrk) = utils.regularSegmentRadiusOfGyration(Parameter,
                                                                  BranchData,
-                                                                 np.array(BranchData.indMorph_dist_flat), 
-                                                                 BranchData.indRegMDistLen, 
+                                                                 np.array(MorphData.indMorph_dist_flat), 
+                                                                 LengthData.indMDistN, 
                                                                  numScaleSample=Parameter.numScaleSample,
                                                                  stochastic=True,
                                                                  p=indMorph_dist_id)
@@ -455,6 +458,32 @@ if Parameter.RUN:
 t5 = time.time()
 
 print('checkpoint 5: ' + str(t5-t4))
+
+
+def objFuncP(xdata, a, b):
+    y = a*np.power(xdata, b)
+    
+    return y
+    
+def objFuncPL(xdata, a):
+    y = np.power(xdata, a)
+    
+    return y
+
+def objFuncPpow(xdata, a, b):
+    y = np.power(10, b)*np.power(xdata, a)
+    
+    return y
+
+def objFuncL(xdata, a):
+    y = a*xdata
+    
+    return y
+
+def objFuncGL(xdata, a, b):
+    y = a*xdata + b
+    
+    return y
 
 
 
@@ -482,33 +511,6 @@ if Parameter.PLOT:
     
     hist0centers = 0.5*(hist0[1][1:] + hist0[1][:-1])
     hist1centers = 0.5*(hist1[1][1:] + hist1[1][:-1])
-    
-    
-    def objFuncP(xdata, a, b):
-        y = a*np.power(xdata, b)
-        
-        return y
-        
-    def objFuncPL(xdata, a):
-        y = np.power(xdata, a)
-        
-        return y
-    
-    def objFuncPpow(xdata, a, b):
-        y = np.power(10, b)*np.power(xdata, a)
-        
-        return y
-    
-    def objFuncL(xdata, a):
-        y = a*xdata
-        
-        return y
-    
-    def objFuncGL(xdata, a, b):
-        y = a*xdata + b
-        
-        return y
-    
     
     
     #==============================================================================
@@ -718,11 +720,12 @@ if Parameter.PLOT:
                                             np.log10(np.sqrt(np.square(rGy))), 
                                             p0=[1., 0.], 
                                             maxfev=100000)
-    fitYregR = objFuncPpow(LengthData.length_total, poptR[0], poptR[1])
+    perrR = np.sqrt(np.diag(pcovR))
+    fitYR = objFuncPpow(LengthData.length_total, poptR[0], poptR[1])
     
     fig = plt.figure(figsize=(8,6))
     plt.scatter(LengthData.length_total, np.sqrt(np.square(rGy)))
-    plt.plot(LengthData.length_total, fitYregR, color='tab:red')
+    plt.plot(LengthData.length_total, fitYR, color='tab:red')
     plt.yscale('log')
     plt.xscale('log')
 #    plt.xlim(10, 10000)
@@ -735,9 +738,9 @@ if Parameter.PLOT:
     
     
     #==============================================================================
-    OutputData.regSegOrdLen = np.empty(len(Parameter.nSize)*Parameter.numScaleSample)
+    OutputData.segOrdLen = np.empty(len(Parameter.nSize)*Parameter.numScaleSample)
     for r in range(len(OutputData.randTrk)):
-        val = np.array(BranchData.indMorph_dist_flat[OutputData.randTrk[r][0]])[OutputData.randTrk[r][1]:OutputData.randTrk[r][2]]
+        val = np.array(MorphData.indMorph_dist_flat[OutputData.randTrk[r][0]])[OutputData.randTrk[r][1]:OutputData.randTrk[r][2]]
         x = val[:,0]
         y = val[:,1]
         z = val[:,2]
@@ -746,8 +749,7 @@ if Parameter.PLOT:
         yd = [j-i for i, j in zip(y[:-1], y[1:])]
         zd = [j-i for i, j in zip(z[:-1], z[1:])]
         dist = np.sum(np.sqrt(np.square(xd) + np.square(yd) + np.square(zd)))
-        OutputData.regSegOrdLen[r] = dist
-    
+        OutputData.segOrdLen[r] = dist
     
     nSize_l = [0.1, 1, 10, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 
                300, 325, 350, 375, 400, 425, 450, 475, 500, 525, 550]
@@ -755,39 +757,16 @@ if Parameter.PLOT:
     
     rGyRegSeg_avg = np.empty(len(nSize_l)-1)
     for i in range(len(nSize_l)-1):
-        RS_s = np.where((OutputData.regSegOrdLen <= nSize_l[i+1]) &
-                        (OutputData.regSegOrdLen >= nSize_l[i]))[0]
-        rGyRegSeg_avg[i] = np.average(OutputData.rGyRegSeg[RS_s])
-    
-#    RS1 = np.where(OutputData.regSegOrdN > 7)[0]
-#    RS2 = np.where((OutputData.regSegOrdN <= 8) & (OutputData.regSegOrdN >= 4))[0]
-#    RS3 = np.where(OutputData.regSegOrdN < 5)[0]
+        RS_s = np.where((OutputData.segOrdLen <= nSize_l[i+1]) &
+                        (OutputData.segOrdLen >= nSize_l[i]))[0]
+        rGyRegSeg_avg[i] = np.average(OutputData.rGySeg[RS_s])
     
     poptRS1, pcovRS1 = scipy.optimize.curve_fit(objFuncGL, 
-                                              np.log10(OutputData.regSegOrdLen), 
-                                              np.log10(np.sqrt(np.square(OutputData.rGyRegSeg))), 
+                                              np.log10(OutputData.segOrdLen), 
+                                              np.log10(np.sqrt(np.square(OutputData.rGySeg))), 
                                               p0=[1., 0.], 
                                               maxfev=100000)
-    fitYregRS1 = objFuncPpow(np.unique(OutputData.regSegOrdLen), poptRS1[0], poptRS1[1])
-    
-#    fitYregRS12 = objFuncPpow(np.unique(OutputData.regSegOrdN[RS2]), poptRS1[0], poptRS1[1])
-    
-#    poptRS2, pcovRS2 = scipy.optimize.curve_fit(objFuncGL, 
-#                                              np.log10(OutputData.regSegOrdN[RS2]), 
-#                                              np.log10(np.sqrt(np.square(OutputData.rGyRegSeg[RS2]))), 
-#                                              p0=[1., 0.], 
-#                                              maxfev=100000)
-#    fitYregRS2 = objFuncPpow(np.unique(OutputData.regSegOrdN[RS2]), poptRS2[0], poptRS2[1])
-#    
-#    poptRS3, pcovRS3 = scipy.optimize.curve_fit(objFuncGL, 
-#                                              np.log10(OutputData.regSegOrdN[RS3]), 
-#                                              np.log10(np.sqrt(np.square(OutputData.rGyRegSeg[RS3]))), 
-#                                              p0=[1., 0.], 
-#                                              maxfev=100000)
-#    fitYregRS3 = objFuncPpow(np.unique(OutputData.regSegOrdN[RS3]), poptRS3[0], poptRS3[1])
-#    
-#    fitYregRS32 = objFuncPpow(np.unique(OutputData.regSegOrdN[RS2]), poptRS3[0], poptRS3[1])
-#    
+    fitYRS1 = objFuncPpow(np.unique(OutputData.segOrdLen), poptRS1[0], poptRS1[1])
     
     fig, ax1 = plt.subplots(figsize=(12,8))
     ax1.xaxis.label.set_fontsize(15)
@@ -798,72 +777,28 @@ if Parameter.PLOT:
     ax1.yaxis.set_tick_params(which='minor', length=5)
     ax1.scatter(LengthData.length_total, 
                 np.sqrt(np.square(rGy)), color='tab:blue')
-    ax1.plot(LengthData.length_total, fitYregR, color='tab:red', lw=2)
-    ax1.scatter(OutputData.regSegOrdLen, 
-                np.sqrt(np.square(OutputData.rGyRegSeg)), 
+    ax1.plot(LengthData.length_total, fitYR, color='tab:red', lw=2)
+    ax1.scatter(OutputData.segOrdLen, 
+                np.sqrt(np.square(OutputData.rGySeg)), 
                 color='tab:blue',
                 facecolors='none')
     ax1.scatter(nSize_lf, 
                 np.sqrt(np.square(rGyRegSeg_avg)), 
                 color='tab:orange')
-    ax1.plot(np.unique(OutputData.regSegOrdLen), fitYregRS1, color='tab:red', lw=2, linestyle='--')
-#    ax1.plot(np.unique(OutputData.regSegOrdN[RS2])*Parameter.sSize, fitYregRS2, color='tab:red', lw=2, linestyle='--')
-#    ax1.plot(np.unique(OutputData.regSegOrdN[RS3])*Parameter.sSize, fitYregRS3, color='tab:red', lw=2, linestyle='--')
+    ax1.plot(np.unique(OutputData.segOrdLen), fitYRS1, color='tab:red', lw=2, linestyle='--')
+#    ax1.plot(np.unique(OutputData.segOrdN[RS2])*Parameter.sSize, fitYRS2, color='tab:red', lw=2, linestyle='--')
+#    ax1.plot(np.unique(OutputData.segOrdN[RS3])*Parameter.sSize, fitYRS3, color='tab:red', lw=2, linestyle='--')
 #    ax1.vlines(0.8, 0.01, 11000, linestyles='dashed')
 #    ax1.vlines(0.4, 0.01, 11000, linestyles='dashed')
     ax1.set_yscale('log')
     ax1.set_xscale('log')
     ax1.set_xlim(0.1, 50000)
     ax1.set_ylim(0.05, 1000)
-    
-#    ax2 = plt.axes([0, 0, 1, 1])
-#    ip1 = InsetPosition(ax1, [0.01, 0.57, 0.4, 0.4])
-#    ax2.set_axes_locator(ip1)
-#    mark_inset(ax1, ax2, loc1=3, loc2=4, fc="none", ec='0.5')
-#    
-#    ax2.scatter(OutputData.regSegOrdN*Parameter.sSize, 
-#                np.sqrt(np.square(OutputData.rGyRegSeg)*1/Parameter.sSize), 
-#                color='tab:blue', 
-#                facecolors='none')
-#    ax2.scatter(np.array(Parameter.nSize)[1:11]*Parameter.sSize,
-#                np.sqrt(np.square(rGyRegSeg_avg)[1:11]*1/Parameter.sSize), 
-#                color='tab:orange')
-#    ax2.plot(np.unique(OutputData.regSegOrdN[RS1])[:4]*Parameter.sSize, fitYregRS1[:4], color='tab:red', lw=2, linestyle='--')
-#    ax2.plot(np.unique(OutputData.regSegOrdN[RS2])*Parameter.sSize, fitYregRS2, color='tab:red', lw=2, linestyle='--')
-#    ax2.plot(np.unique(OutputData.regSegOrdN[RS3])*Parameter.sSize, fitYregRS3, color='tab:red', lw=2, linestyle='--')
-#    ax2.xaxis.set_visible(False)
-#    ax2.yaxis.set_visible(False)
-#    ax2.set_yscale('log')
-#    ax2.set_xscale('log')
-#    ax2.vlines(0.8, 0.01, 5, linestyles='dashed')
-#    ax2.vlines(0.4, 0.01, 5, linestyles='dashed')
-#    ax2.set_xlim(0.24, 1.4)
-#    ax2.set_ylim(0.28, 1.6)
-#    
-#    ax3 = plt.axes([1, 1, 2, 2])
-#    ip2 = InsetPosition(ax1, [0.57, 0.02, 0.4, 0.4])
-#    ax3.set_axes_locator(ip2)
-#    mark_inset(ax1, ax3, loc1=2, loc2=3, fc="none", ec='0.5')
-#    
-#    ax3.plot(np.unique(OutputData.regSegOrdN[RS1])[:4]*Parameter.sSize, fitYregRS1[:4], color='tab:red', lw=2, linestyle='-')
-#    ax3.plot(np.unique(OutputData.regSegOrdN[RS2])*Parameter.sSize, fitYregRS12, color='tab:red', lw=2, linestyle='--')
-#    ax3.plot(np.unique(OutputData.regSegOrdN[RS2])*Parameter.sSize, fitYregRS2, color='tab:green', lw=2, linestyle='-')
-#    ax3.plot(np.unique(OutputData.regSegOrdN[RS3])*Parameter.sSize, fitYregRS3, color='tab:blue', lw=2, linestyle='-')
-#    ax3.plot(np.unique(OutputData.regSegOrdN[RS2])*Parameter.sSize, fitYregRS32, color='tab:blue', lw=2, linestyle='--')
-#    ax3.xaxis.set_visible(False)
-#    ax3.yaxis.set_visible(False)
-#    ax3.set_yscale('log')
-#    ax3.set_xscale('log')
-#    ax3.vlines(0.8, 0.01, 1, linestyles='dashed')
-#    ax3.vlines(0.4, 0.01, 1, linestyles='dashed')
-#    ax3.set_xlim(0.36, 0.89)
-#    ax3.set_ylim(0.42, 0.95)
-    
     ax1.set_xlabel(r"Length ($\lambda N$)", fontsize=15)
     ax1.set_ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
     #plt.tight_layout()
     if Parameter.SAVE:
-        plt.savefig(Parameter.outputdir + '/regSegRG_morphScale_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
+        plt.savefig(Parameter.outputdir + '/segRG_morphScale_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
     plt.show()
     
     
@@ -874,22 +809,23 @@ if Parameter.PLOT:
     poptRS_sl = []
     RS_x = []
     for i in range(len(nSize_l) - shift_N):
-        RS_s = np.where((OutputData.regSegOrdLen <= nSize_l[i+shift_N]) &
-                        (OutputData.regSegOrdLen >= nSize_l[i]))[0]
+        RS_s = np.where((OutputData.segOrdLen <= nSize_l[i+shift_N]) &
+                        (OutputData.segOrdLen >= nSize_l[i]))[0]
         
-        RS_x.append(np.average(nSize_l[i:i+shift_N]))
-        
-        poptRS_s, pcovRS_s = scipy.optimize.curve_fit(objFuncGL, 
-                                                      np.log10(OutputData.regSegOrdLen[RS_s]), 
-                                                      np.log10(np.sqrt(np.square(OutputData.rGyRegSeg[RS_s]))), 
-                                                      p0=[1., 0.], 
-                                                      maxfev=100000)
-        poptRS_sl.append(poptRS_s[0])
+        if len(RS_s) > 0:
+            RS_x.append(np.average(nSize_l[i:i+shift_N]))
+            
+            poptRS_s, pcovRS_s = scipy.optimize.curve_fit(objFuncGL, 
+                                                          np.log10(OutputData.segOrdLen[RS_s]), 
+                                                          np.log10(np.sqrt(np.square(OutputData.rGySeg[RS_s]))), 
+                                                          p0=[1., 0.], 
+                                                          maxfev=100000)
+            poptRS_sl.append(poptRS_s[0])
     
     
     fig = plt.figure(figsize=(8,6))
     plt.scatter(RS_x, poptRS_sl)
-    #plt.plot(regMDistLen*Parameter.sSize, fitYregR, color='tab:red')
+    #plt.plot(regMDistLen*Parameter.sSize, fitYR, color='tab:red')
     #plt.yscale('log')
 #    plt.hlines(poptR[0], 0.1, 1000, linestyles='--', color='tab:red')
 #    plt.hlines(poptRS1[0], 0.1, 1000, linestyles='--', color='tab:green')
@@ -903,7 +839,7 @@ if Parameter.PLOT:
     plt.ylabel(r"Slope ($\nu$)", fontsize=15)
     #plt.tight_layout()
     if Parameter.SAVE:
-        plt.savefig(Parameter.outputdir + '/regSegRG_slope_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
+        plt.savefig(Parameter.outputdir + '/segRG_slope_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
     plt.show()
     
     
@@ -913,14 +849,14 @@ if Parameter.PLOT:
 #    poptRS_sl = []
 #    RS_x = []
 #    for i in range(len(Parameter.nSize) - shift_N):
-#        RS_s = np.where((OutputData.regSegOrdN <= Parameter.nSize[i+shift_N]) &
-#                        (OutputData.regSegOrdN >= Parameter.nSize[i]))[0]
+#        RS_s = np.where((OutputData.segOrdN <= Parameter.nSize[i+shift_N]) &
+#                        (OutputData.segOrdN >= Parameter.nSize[i]))[0]
 #        
 #        RS_x.append(np.average(Parameter.nSize[i:i+shift_N]))
 #        
 #        poptRS_s, pcovRS_s = scipy.optimize.curve_fit(objFuncGL, 
-#                                                      np.log10(OutputData.regSegOrdN[RS_s]), 
-#                                                      np.log10(np.sqrt(np.square(OutputData.rGyRegSeg[RS_s]))), 
+#                                                      np.log10(OutputData.segOrdN[RS_s]), 
+#                                                      np.log10(np.sqrt(np.square(OutputData.rGySeg[RS_s]))), 
 #                                                      p0=[1., 0.], 
 #                                                      maxfev=100000)
 #        poptRS_sl.append(poptRS_s[0])
@@ -928,7 +864,7 @@ if Parameter.PLOT:
 #    
 #    fig = plt.figure(figsize=(8,6))
 #    plt.scatter(RS_x, poptRS_sl)
-#    #plt.plot(regMDistLen*Parameter.sSize, fitYregR, color='tab:red')
+#    #plt.plot(regMDistLen*Parameter.sSize, fitYR, color='tab:red')
 #    #plt.yscale('log')
 ##    plt.hlines(poptR[0], 0.1, 1000, linestyles='--', color='tab:red')
 ##    plt.hlines(poptRS1[0], 0.1, 1000, linestyles='--', color='tab:green')
@@ -944,13 +880,19 @@ if Parameter.PLOT:
 #    if Parameter.SAVE:
 #        plt.savefig(Parameter.outputdir + '/regSegRG_slope_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
 #    plt.show()
-#    
+#  
+    
+    
+#%%
+t6 = time.time()
+
+print('checkpoint 6: ' + str(t6-t5))
     
 bstrk = []
 bstrkval = []
 ibind = []
 bstrk_len = []
-mdistl_nz = np.nonzero(BranchData.branchNum)[0]
+mdistl_nz = np.where(BranchData.branchNum > 10)[0]
 bcML = np.empty((len(mdistl_nz)*Parameter.numBranchSample, 3))
 brGy = np.empty(len(mdistl_nz)*Parameter.numBranchSample)
 cnt = 0
@@ -989,7 +931,7 @@ for m in mdistl_nz:
         bcML[cnt] = (np.sum(np.array(MorphData.morph_dist[m])[bstrk_temp[i]], 
                                                 axis=0)/len(np.array(MorphData.morph_dist[m])[bstrk_temp[i]]))
         rList = scipy.spatial.distance.cdist(np.array(MorphData.morph_dist[m])[bstrk_temp[i]], 
-                                             np.array([bcML[i]])).flatten()
+                                             np.array([bcML[cnt]])).flatten()
         brGy[cnt] = np.sqrt(np.sum(np.square(rList))/len(rList))
         cnt += 1
     
@@ -1008,9 +950,9 @@ bstrk_len_flat = [item for sublist in bstrk_len for item in sublist]
 #
 #rGyRegSeg_avg = np.empty(len(nSize_l)-1)
 #for i in range(len(nSize_l)-1):
-#    RS_s = np.where((OutputData.regSegOrdLen <= nSize_l[i+1]) &
-#                    (OutputData.regSegOrdLen >= nSize_l[i]))[0]
-#    rGyRegSeg_avg[i] = np.average(OutputData.rGyRegSeg[RS_s])
+#    RS_s = np.where((OutputData.segOrdLen <= nSize_l[i+1]) &
+#                    (OutputData.segOrdLen >= nSize_l[i]))[0]
+#    rGyRegSeg_avg[i] = np.average(OutputData.rGySeg[RS_s])
 
 poptRS2, pcovRS2 = scipy.optimize.curve_fit(objFuncGL, 
                                           np.log10(bstrk_len_flat), 
@@ -1018,7 +960,7 @@ poptRS2, pcovRS2 = scipy.optimize.curve_fit(objFuncGL,
                                           p0=[1., 0.], 
                                           maxfev=100000)
 perrRS2 = np.sqrt(np.diag(pcovRS2))
-fitYregRS2 = objFuncPpow(np.unique(bstrk_len_flat), poptRS2[0], poptRS2[1])
+fitYRS2 = objFuncPpow(np.unique(bstrk_len_flat), poptRS2[0], poptRS2[1])
 
 fig, ax1 = plt.subplots(figsize=(12,8))
 ax1.xaxis.label.set_fontsize(15)
@@ -1029,7 +971,7 @@ ax1.yaxis.set_tick_params(which='major', length=7)
 ax1.yaxis.set_tick_params(which='minor', length=5)
 ax1.scatter(LengthData.length_total, 
             np.sqrt(np.square(rGy)), color='tab:blue')
-ax1.plot(LengthData.length_total, fitYregR, color='tab:red', lw=2)
+ax1.plot(LengthData.length_total, fitYR, color='tab:red', lw=2)
 ax1.scatter(bstrk_len_flat, 
             np.sqrt(np.square(brGy)), 
             color='tab:blue',
@@ -1037,11 +979,9 @@ ax1.scatter(bstrk_len_flat,
 #ax1.scatter(nSize_lf, 
 #            np.sqrt(np.square(rGyRegSeg_avg)), 
 #            color='tab:orange')
-ax1.plot(np.unique(bstrk_len_flat), fitYregRS2, color='tab:red', lw=2, linestyle='--')
-#    ax1.plot(np.unique(OutputData.regSegOrdN[RS2])*Parameter.sSize, fitYregRS2, color='tab:red', lw=2, linestyle='--')
-#    ax1.plot(np.unique(OutputData.regSegOrdN[RS3])*Parameter.sSize, fitYregRS3, color='tab:red', lw=2, linestyle='--')
-#    ax1.vlines(0.8, 0.01, 11000, linestyles='dashed')
-#    ax1.vlines(0.4, 0.01, 11000, linestyles='dashed')
+ax1.plot(np.unique(bstrk_len_flat), fitYRS2, color='tab:red', lw=2, linestyle='--')
+ax1.legend([str(round(poptR[0], 3)) + '$\pm$' + str(round(perrR[0], 3)),
+            str(round(poptRS2[0], 3)) + '$\pm$' + str(round(perrRS2[0], 3))], fontsize=15)
 ax1.set_yscale('log')
 ax1.set_xscale('log')
 ax1.set_xlim(0.1, 50000)
@@ -1053,3 +993,8 @@ ax1.set_ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
 #plt.tight_layout()
 plt.show()
 
+
+
+t7 = time.time()
+
+print('checkpoint 7: ' + str(t7-t6))
