@@ -17,8 +17,6 @@ import pandas as pd
 import scipy.optimize
 from collections import Counter
 import multiprocessing as mp
-import networkx as nx
-import copy
 import time
 import utils
 
@@ -28,7 +26,7 @@ class Parameter:
     
     RUN = True
     SAVE = False
-    PLOT = True
+    PLOT = False
     numScaleSample = 1000
     numBranchSample = 10
     RN = '1'
@@ -86,9 +84,9 @@ class MorphData():
     def plotAllNeuron(self, showPoint=False):
         fig = plt.figure(figsize=(24, 16))
         ax = plt.axes(projection='3d')
-        ax.set_xlim(-300, 300)
-        ax.set_ylim(-150, 150)
-        ax.set_zlim(-300, 300)
+        ax.set_xlim(400, 600)
+        ax.set_ylim(150, 400)
+        ax.set_zlim(50, 200)
         cmap = cm.get_cmap('viridis', len(self.morph_id))
         for f in range(len(self.morph_id)):
             tararr = np.array(self.morph_dist[f])
@@ -116,9 +114,9 @@ class MorphData():
         fig = plt.figure(figsize=(24, 16))
         ax = plt.axes(projection='3d')
         if scale:
-            ax.set_xlim(-300, 300)
-            ax.set_ylim(-150, 150)
-            ax.set_zlim(-300, 300)
+            ax.set_xlim(400, 600)
+            ax.set_ylim(150, 400)
+            ax.set_zlim(50, 200)
         cmap = cm.get_cmap('viridis', len(multListOfPoints))
         for i in range(len(multListOfPoints)):
             listOfPoints = self.indMorph_dist[multListOfPoints[i][0]][multListOfPoints[i][1]:multListOfPoints[i][2]]
@@ -137,9 +135,9 @@ class MorphData():
         fig = plt.figure(figsize=(24, 16))
         ax = plt.axes(projection='3d')
         if scale:
-            ax.set_xlim(-300, 300)
-            ax.set_ylim(-150, 150)
-            ax.set_zlim(-300, 300)
+            ax.set_xlim(400, 600)
+            ax.set_ylim(150, 400)
+            ax.set_zlim(50, 200)
         cmap = cm.get_cmap('viridis', len(self.morph_id))
         
         if cmass:
@@ -253,7 +251,7 @@ class MorphData():
         return pos
         
 
-
+#%%
     
 class LengthData:
     length_total = np.empty(len(fp))
@@ -754,13 +752,14 @@ if Parameter.PLOT:
     
     nSize_l = [0.1, 1, 10, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 
                300, 325, 350, 375, 400, 425, 450, 475, 500, 525, 550]
-    nSize_lf = [(i + j)/2 for i, j in zip(nSize_l[:-1], nSize_l[1:])]
     
-    rGyRegSeg_avg = np.empty(len(nSize_l)-1)
+    nSize_lfcm = []
+    rGySeg_avg = np.empty(len(nSize_l)-1)
     for i in range(len(nSize_l)-1):
         RS_s = np.where((OutputData.segOrdLen <= nSize_l[i+1]) &
                         (OutputData.segOrdLen >= nSize_l[i]))[0]
-        rGyRegSeg_avg[i] = np.average(OutputData.rGySeg[RS_s])
+        nSize_lfcm.append(np.average(OutputData.segOrdLen[RS_s]))
+        rGySeg_avg[i] = np.average(OutputData.rGySeg[RS_s])
     
     poptRS1, pcovRS1 = scipy.optimize.curve_fit(objFuncGL, 
                                               np.log10(OutputData.segOrdLen), 
@@ -784,8 +783,8 @@ if Parameter.PLOT:
                 np.sqrt(np.square(OutputData.rGySeg)), 
                 color='tab:blue',
                 facecolors='none')
-    ax1.scatter(nSize_lf, 
-                np.sqrt(np.square(rGyRegSeg_avg)), 
+    ax1.scatter(nSize_lfcm, 
+                np.sqrt(np.square(rGySeg_avg)), 
                 color='tab:orange')
     ax1.plot(np.unique(OutputData.segOrdLen), fitYRS1, color='tab:red', lw=2, linestyle='--')
 #    ax1.plot(np.unique(OutputData.segOrdN[RS2])*Parameter.sSize, fitYRS2, color='tab:red', lw=2, linestyle='--')
@@ -817,7 +816,8 @@ if Parameter.PLOT:
                         (OutputData.segOrdLen >= nSize_l[i]))[0]
         
         if len(RS_s) > 0:
-            RS_x.append(np.average(nSize_l[i:i+shift_N]))
+#            RS_x.append(np.average(nSize_l[i:i+shift_N]))
+            RS_x.append(np.average(OutputData.segOrdLen[RS_s]))
             
             poptRS_s, pcovRS_s = scipy.optimize.curve_fit(objFuncGL, 
                                                           np.log10(OutputData.segOrdLen[RS_s]), 
@@ -896,8 +896,8 @@ bstrk = []
 bstrkval = []
 ibind = []
 bstrk_len = []
-#mdistl_nz = np.where(BranchData.branchNum > 10)[0]
-mdistl_nz = [0, 1, 2]
+mdistl_nz = np.where(BranchData.branchNum > 10)[0]
+#mdistl_nz = [0, 1, 2]
 bcML = np.empty((len(mdistl_nz)*Parameter.numBranchSample, 3))
 brGy = np.empty(len(mdistl_nz)*Parameter.numBranchSample)
 cnt = 0
@@ -905,30 +905,25 @@ cnt = 0
 for m in mdistl_nz:
     bsrand = np.random.choice(BranchData.branchP[m], size=Parameter.numBranchSample, replace=False)
     bstrk_temp = []
-    ibind_temp = []
     bstrk_len_temp = []
+    
     for b in range(Parameter.numBranchSample):
         bstrkval_temp = []
         ibind_temp2 = []
         dist = 0
+        
         for k in range(len(BranchData.indBranchTrk[m])):
             bsw = np.where(np.array(BranchData.indBranchTrk[m][k]) == bsrand[b])[0]
             if len(bsw) > 0:
-                bstrkval_temp.append(BranchData.indBranchTrk[m][k][:bsw[0]])
-                val = np.array(MorphData.indMorph_dist[m][k][:bsw[0]])
-                x = val[:,0]
-                y = val[:,1]
-                z = val[:,2]
-                
-                xd = [j-i for i, j in zip(x[:-1], x[1:])]
-                yd = [j-i for i, j in zip(y[:-1], y[1:])]
-                zd = [j-i for i, j in zip(z[:-1], z[1:])]
-                dist += np.sum(np.sqrt(np.square(xd) + np.square(yd) + np.square(zd)))
-                ibind_temp2.append(k)
+                bstrkval_temp.append(BranchData.indBranchTrk[m][k][:bsw[0]+1])
     
         bstrkval_u = np.unique([item for sublist in bstrkval_temp for item in sublist])
         bstrk_temp.append(np.where(np.isin(MorphData.morph_id[m], bstrkval_u))[0])
-        ibind_temp.append(ibind_temp2)
+        
+        for lb in range(len(BranchData.branchTrk[m])):
+            if all(elem in bstrkval_u for elem in BranchData.branchTrk[m][lb]):
+                dist += LengthData.length_branch[m][lb]
+        
         bstrk_len_temp.append(dist)
     
     for i in range(Parameter.numBranchSample):
@@ -940,7 +935,6 @@ for m in mdistl_nz:
         cnt += 1
     
     bstrk.append(bstrk_temp)
-    ibind.append(ibind_temp)
     bstrk_len.append(bstrk_len_temp)
 
 
@@ -971,7 +965,7 @@ ax1.scatter(bstrk_len_flat,
             color='tab:blue',
             facecolors='none')
 #ax1.scatter(nSize_lf, 
-#            np.sqrt(np.square(rGyRegSeg_avg)), 
+#            np.sqrt(np.square(rGySeg_avg)), 
 #            color='tab:orange')
 ax1.plot(np.unique(bstrk_len_flat), fitYRS2, color='tab:red', lw=2, linestyle='--')
 ax1.legend([str(round(poptR[0], 3)) + '$\pm$' + str(round(perrR[0], 3)),
@@ -988,7 +982,69 @@ ax1.set_ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
 plt.show()
 
 
+#==============================================================================
+
+bstrk_len_flat = np.array(bstrk_len_flat)
+
+nSize_brl = [0.1, 1, 10, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 
+               300, 350, 400, 450, 500, 750, 1000]
+
+shift_N = 6
+poptRS_brl = []
+RS_xbr = []
+for i in range(len(nSize_brl) - shift_N):
+    RS_s = np.where((bstrk_len_flat <= nSize_brl[i+shift_N]) &
+                    (bstrk_len_flat >= nSize_brl[i]))[0]
+    
+    if len(RS_s) > 0:
+        RS_xbr.append(np.average(bstrk_len_flat[RS_s]))
+        
+        poptRS_br, pcovRS_br = scipy.optimize.curve_fit(objFuncGL, 
+                                                      np.log10(bstrk_len_flat[RS_s]), 
+                                                      np.log10(np.sqrt(np.square(brGy[RS_s]))), 
+                                                      p0=[1., 0.], 
+                                                      maxfev=100000)
+        poptRS_brl.append(poptRS_br[0])
+
+
+fig = plt.figure(figsize=(8,6))
+plt.scatter(RS_xbr, poptRS_brl)
+#plt.plot(regMDistLen*Parameter.sSize, fitYR, color='tab:red')
+#plt.yscale('log')
+#    plt.hlines(poptR[0], 0.1, 1000, linestyles='--', color='tab:red')
+#    plt.hlines(poptRS1[0], 0.1, 1000, linestyles='--', color='tab:green')
+#    plt.hlines(poptRS3[0], 0.1, 1000, linestyles='--', color='tab:orange')
+#plt.yscale('log')
+plt.xscale('log')
+#    plt.xlim(25, 2500)
+#plt.ylim(0.005, 1000)
+#plt.title(r"Scaling Behavior of Regularized $R_{g}$ to Regularized $N$", fontsize=20)
+plt.xlabel(r"Average Length ($\lambda N_{avg}$)", fontsize=15)
+plt.ylabel(r"Slope ($\nu$)", fontsize=15)
+#plt.tight_layout()
+if Parameter.SAVE:
+    plt.savefig(Parameter.outputdir + '/segRG_slope_' + str(Parameter.RN) + '.png', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+
+
+
 
 t7 = time.time()
 
 print('checkpoint 7: ' + str(t7-t6))
+
+
+
+
+
+
+
+
+
+
+
+
+print('Run Time: ' + str(t7-t0))
+
