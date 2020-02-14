@@ -56,7 +56,7 @@ class MorphData():
         self.somaP = []
         self.indMorph_dist = []
     
-    def plotNeuronFromPoints(self, listOfPoints, showPoint=False):
+    def plotNeuronFromPoints(self, listOfPoints, scale=False, showPoint=False):
         """
         plot 3-D neuron morphology plot using a list of coordinates.
         
@@ -66,9 +66,10 @@ class MorphData():
         
         fig = plt.figure(figsize=(24, 16))
         ax = plt.axes(projection='3d')
-    #    ax.set_xlim(-300, 300)
-    #    ax.set_ylim(-150, 150)
-    #    ax.set_zlim(-300, 300)
+        if scale:
+            ax.set_xlim(400, 600)
+            ax.set_ylim(150, 400)
+            ax.set_zlim(50, 200)
         cmap = cm.get_cmap('viridis', len(listOfPoints))
         for f in range(len(listOfPoints)-1):
     #        tararr = np.array(morph_dist[f])
@@ -181,14 +182,14 @@ class MorphData():
         fig = plt.figure(figsize=(24, 16))
         if scale:
             if project == 'z':
-                plt.xlim(-50, 50)
-                plt.ylim(-300, 450)
+                plt.xlim(400, 600)
+                plt.ylim(150, 400)
             elif project == 'y':
-                plt.xlim(-100, 100)
-                plt.ylim(-100, 100)
+                plt.xlim(400, 600)
+                plt.ylim(50, 200)
             else:
-                plt.xlim(-400, 475)
-                plt.ylim(-200, 200)
+                plt.xlim(150, 400)
+                plt.ylim(50, 200)
         
         if customBound != None:
             plt.xlim(customBound[0][0], customBound[0][1])
