@@ -26,7 +26,7 @@ class Parameter:
     
     RUN = True
     SAVE = False
-    PLOT = False
+    PLOT = True
     numScaleSample = 1000
     numBranchSample = 10
     RN = '1'
@@ -182,14 +182,14 @@ class MorphData():
         fig = plt.figure(figsize=(24, 16))
         if scale:
             if project == 'z':
-                plt.xlim(400, 600)
+                plt.xlim(350, 600)
                 plt.ylim(150, 400)
             elif project == 'y':
-                plt.xlim(400, 600)
-                plt.ylim(50, 200)
+                plt.xlim(350, 600)
+                plt.ylim(0, 200)
             else:
                 plt.xlim(150, 400)
-                plt.ylim(50, 200)
+                plt.ylim(0, 200)
         
         if customBound != None:
             plt.xlim(customBound[0][0], customBound[0][1])
@@ -965,9 +965,6 @@ ax1.scatter(bstrk_len_flat,
             np.sqrt(np.square(brGy)), 
             color='tab:blue',
             facecolors='none')
-#ax1.scatter(nSize_lf, 
-#            np.sqrt(np.square(rGySeg_avg)), 
-#            color='tab:orange')
 ax1.plot(np.unique(bstrk_len_flat), fitYRS2, color='tab:red', lw=2, linestyle='--')
 ax1.legend([str(round(poptR[0], 3)) + '$\pm$' + str(round(perrR[0], 3)),
             str(round(poptRS2[0], 3)) + '$\pm$' + str(round(perrRS2[0], 3))], fontsize=15)
@@ -1029,14 +1026,17 @@ plt.show()
 
 
 
-
-
-
 t7 = time.time()
 
 print('checkpoint 7: ' + str(t7-t6))
 
 
+
+#%%
+
+calyxbox = [515, 225, 175]
+LHbox = [435, 240, 155]
+ALbox = [540, 325, 30]
 
 
 
