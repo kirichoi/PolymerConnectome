@@ -1032,7 +1032,7 @@ print('checkpoint 7: ' + str(t7-t6))
 
 
 
-#%% 
+#%% Dimension Calculation
 
 calyxbox = [515, 225, 175]
 LHbox = [430, 230, 150]
@@ -1040,132 +1040,152 @@ ALbox = [535, 315, 35]
 
 radiussize = [1, 2.5, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
 
-spheredist_calyx = []
-spheredist_calyx_sum = []
-spheredist_LH = []
-spheredist_LH_sum = []
-spheredist_AL = []
-spheredist_AL_sum = []
+#spheredist_calyx = []
+spheredist_calyx_sum = np.empty((len(MorphData.neuron_id), len(radiussize)))
+#spheredist_LH = []
+spheredist_LH_sum = np.empty((len(MorphData.neuron_id), len(radiussize)))
+#spheredist_AL = []
+spheredist_AL_sum = np.empty((len(MorphData.neuron_id), len(radiussize)))
 
-m = 6
-
-for b in range(len(radiussize)):
-    spheredist_calyx_temp = []
-    spheredist_LH_temp = []
-    spheredist_AL_temp = []
-#    calyxcube = [[calyxbox[0]-radiussize[b], calyxbox[0]+radiussize[b]],
-#                 [calyxbox[1]-radiussize[b], calyxbox[1]+radiussize[b]],
-#                 [calyxbox[2]-radiussize[b], calyxbox[2]+radiussize[b]]]
-    
-    for ib in range(len(BranchData.branch_dist[m])):
-        dist_calyx = 0
-        dist_LH = 0
-        dist_AL = 0
+for m in range(len(MorphData.neuron_id)):
+    for b in range(len(radiussize)):
+        spheredist_calyx_temp = []
+        spheredist_LH_temp = []
+        spheredist_AL_temp = []
+    #    calyxcube = [[calyxbox[0]-radiussize[b], calyxbox[0]+radiussize[b]],
+    #                 [calyxbox[1]-radiussize[b], calyxbox[1]+radiussize[b]],
+    #                 [calyxbox[2]-radiussize[b], calyxbox[2]+radiussize[b]]]
         
-        inbound_calyx = np.where(np.sqrt(np.square(np.array(BranchData.branch_dist[m][ib])[:,0] - calyxbox[0]) +
-                                    np.square(np.array(BranchData.branch_dist[m][ib])[:,1] - calyxbox[1]) +
-                                    np.square(np.array(BranchData.branch_dist[m][ib])[:,2] - calyxbox[2])) <= radiussize[b])[0]
-        inbound_LH = np.where(np.sqrt(np.square(np.array(BranchData.branch_dist[m][ib])[:,0] - LHbox[0]) +
-                                    np.square(np.array(BranchData.branch_dist[m][ib])[:,1] - LHbox[1]) +
-                                    np.square(np.array(BranchData.branch_dist[m][ib])[:,2] - LHbox[2])) <= radiussize[b])[0]
-        inbound_AL = np.where(np.sqrt(np.square(np.array(BranchData.branch_dist[m][ib])[:,0] - ALbox[0]) +
-                                    np.square(np.array(BranchData.branch_dist[m][ib])[:,1] - ALbox[1]) +
-                                    np.square(np.array(BranchData.branch_dist[m][ib])[:,2] - ALbox[2])) <= radiussize[b])[0]
-        
-#        inbound = np.where((calyxcube[0][0] <= np.array(BranchData.branch_dist[m][ib])[:,0]) &
-#                           (np.array(BranchData.branch_dist[m][ib])[:,0] <= calyxcube[0][1]) &
-#                           (calyxcube[1][0] <= np.array(BranchData.branch_dist[m][ib])[:,1]) &
-#                           (np.array(BranchData.branch_dist[m][ib])[:,1] <= calyxcube[1][1]) &
-#                           (calyxcube[2][0] <= np.array(BranchData.branch_dist[m][ib])[:,2]) &
-#                           (np.array(BranchData.branch_dist[m][ib])[:,2] <= calyxcube[2][1]))[0]
-        if len(inbound_calyx) > 1:
-            val = np.array(BranchData.branch_dist[m][ib])[inbound_calyx]
-            x = val[:,0]
-            y = val[:,1]
-            z = val[:,2]
+        for ib in range(len(BranchData.branch_dist[m])):
+            dist_calyx = 0
+            dist_LH = 0
+            dist_AL = 0
             
-            xd = [j-i for i, j in zip(x[:-1], x[1:])]
-            yd = [j-i for i, j in zip(y[:-1], y[1:])]
-            zd = [j-i for i, j in zip(z[:-1], z[1:])]
-            dist_calyx = np.sum(np.sqrt(np.square(xd) + np.square(yd) + np.square(zd)))
-            spheredist_calyx_temp.append(dist_calyx)
-        else:
-            spheredist_calyx_temp.append(0)
+            inbound_calyx = np.where(np.sqrt(np.square(np.array(BranchData.branch_dist[m][ib])[:,0] - calyxbox[0]) +
+                                        np.square(np.array(BranchData.branch_dist[m][ib])[:,1] - calyxbox[1]) +
+                                        np.square(np.array(BranchData.branch_dist[m][ib])[:,2] - calyxbox[2])) <= radiussize[b])[0]
+            inbound_LH = np.where(np.sqrt(np.square(np.array(BranchData.branch_dist[m][ib])[:,0] - LHbox[0]) +
+                                        np.square(np.array(BranchData.branch_dist[m][ib])[:,1] - LHbox[1]) +
+                                        np.square(np.array(BranchData.branch_dist[m][ib])[:,2] - LHbox[2])) <= radiussize[b])[0]
+            inbound_AL = np.where(np.sqrt(np.square(np.array(BranchData.branch_dist[m][ib])[:,0] - ALbox[0]) +
+                                        np.square(np.array(BranchData.branch_dist[m][ib])[:,1] - ALbox[1]) +
+                                        np.square(np.array(BranchData.branch_dist[m][ib])[:,2] - ALbox[2])) <= radiussize[b])[0]
             
-        if len(inbound_LH) > 1:
-            val = np.array(BranchData.branch_dist[m][ib])[inbound_LH]
-            x = val[:,0]
-            y = val[:,1]
-            z = val[:,2]
+    #        inbound = np.where((calyxcube[0][0] <= np.array(BranchData.branch_dist[m][ib])[:,0]) &
+    #                           (np.array(BranchData.branch_dist[m][ib])[:,0] <= calyxcube[0][1]) &
+    #                           (calyxcube[1][0] <= np.array(BranchData.branch_dist[m][ib])[:,1]) &
+    #                           (np.array(BranchData.branch_dist[m][ib])[:,1] <= calyxcube[1][1]) &
+    #                           (calyxcube[2][0] <= np.array(BranchData.branch_dist[m][ib])[:,2]) &
+    #                           (np.array(BranchData.branch_dist[m][ib])[:,2] <= calyxcube[2][1]))[0]
+            if len(inbound_calyx) > 1:
+                val = np.array(BranchData.branch_dist[m][ib])[inbound_calyx]
+                x = val[:,0]
+                y = val[:,1]
+                z = val[:,2]
+                
+                xd = [j-i for i, j in zip(x[:-1], x[1:])]
+                yd = [j-i for i, j in zip(y[:-1], y[1:])]
+                zd = [j-i for i, j in zip(z[:-1], z[1:])]
+                dist_calyx = np.sum(np.sqrt(np.square(xd) + np.square(yd) + np.square(zd)))
+                spheredist_calyx_temp.append(dist_calyx)
+            else:
+                spheredist_calyx_temp.append(0)
+                
+            if len(inbound_LH) > 1:
+                val = np.array(BranchData.branch_dist[m][ib])[inbound_LH]
+                x = val[:,0]
+                y = val[:,1]
+                z = val[:,2]
+                
+                xd = [j-i for i, j in zip(x[:-1], x[1:])]
+                yd = [j-i for i, j in zip(y[:-1], y[1:])]
+                zd = [j-i for i, j in zip(z[:-1], z[1:])]
+                dist_LH = np.sum(np.sqrt(np.square(xd) + np.square(yd) + np.square(zd)))
+                spheredist_LH_temp.append(dist_LH)
+            else:
+                spheredist_LH_temp.append(0)
+                
+            if len(inbound_AL) > 1:
+                val = np.array(BranchData.branch_dist[m][ib])[inbound_AL]
+                x = val[:,0]
+                y = val[:,1]
+                z = val[:,2]
+                
+                xd = [j-i for i, j in zip(x[:-1], x[1:])]
+                yd = [j-i for i, j in zip(y[:-1], y[1:])]
+                zd = [j-i for i, j in zip(z[:-1], z[1:])]
+                dist_AL = np.sum(np.sqrt(np.square(xd) + np.square(yd) + np.square(zd)))
+                spheredist_AL_temp.append(dist_AL)
+            else:
+                spheredist_AL_temp.append(0)
             
-            xd = [j-i for i, j in zip(x[:-1], x[1:])]
-            yd = [j-i for i, j in zip(y[:-1], y[1:])]
-            zd = [j-i for i, j in zip(z[:-1], z[1:])]
-            dist_LH = np.sum(np.sqrt(np.square(xd) + np.square(yd) + np.square(zd)))
-            spheredist_LH_temp.append(dist_LH)
-        else:
-            spheredist_LH_temp.append(0)
-            
-        if len(inbound_AL) > 1:
-            val = np.array(BranchData.branch_dist[m][ib])[inbound_AL]
-            x = val[:,0]
-            y = val[:,1]
-            z = val[:,2]
-            
-            xd = [j-i for i, j in zip(x[:-1], x[1:])]
-            yd = [j-i for i, j in zip(y[:-1], y[1:])]
-            zd = [j-i for i, j in zip(z[:-1], z[1:])]
-            dist_AL = np.sum(np.sqrt(np.square(xd) + np.square(yd) + np.square(zd)))
-            spheredist_AL_temp.append(dist_AL)
-        else:
-            spheredist_AL_temp.append(0)
-        
-    spheredist_calyx.append(spheredist_calyx_temp)
-    spheredist_calyx_sum.append(np.sum(spheredist_calyx_temp))
-    spheredist_LH.append(spheredist_LH_temp)
-    spheredist_LH_sum.append(np.sum(spheredist_LH_temp))
-    spheredist_AL.append(spheredist_AL_temp)
-    spheredist_AL_sum.append(np.sum(spheredist_AL_temp))
+#        spheredist_calyx.append(spheredist_calyx_temp)
+        spheredist_calyx_sum[m][b] = np.sum(spheredist_calyx_temp)
+#        spheredist_LH.append(spheredist_LH_temp)
+        spheredist_LH_sum[m][b] = np.sum(spheredist_LH_temp)
+#        spheredist_AL.append(spheredist_AL_temp)
+        spheredist_AL_sum[m][b] = np.sum(spheredist_AL_temp)
 
 #%% 
    
+radiussize_inv = np.divide(1, 4/3*np.pi*np.power(radiussize, 3))
+
+spheredist_calyx_sum_avg = np.average(spheredist_calyx_sum, axis=0)
+spheredist_LH_sum_avg = np.average(spheredist_LH_sum, axis=0)
+spheredist_AL_sum_avg = np.average(spheredist_AL_sum, axis=0)
+
+    
 poptD_calyx, pcovD_calyx = scipy.optimize.curve_fit(objFuncGL, 
-                                                    np.log10(np.array(radiussize)[np.nonzero(spheredist_calyx_sum)[0]]), 
-                                                    np.log10(np.array(spheredist_calyx_sum)[np.nonzero(spheredist_calyx_sum)[0]]), 
+                                                    np.log10(np.array(radiussize_inv)[:8]), 
+                                                    np.log10(np.array(spheredist_calyx_sum_avg)[:8]), 
                                                     p0=[0.1, -0.1], 
                                                     maxfev=10000)
+perrD_calyx = np.sqrt(np.diag(pcovD_calyx))
 
 poptD_LH, pcovD_LH = scipy.optimize.curve_fit(objFuncGL, 
-                                              np.log10(np.array(radiussize)[np.nonzero(spheredist_LH_sum)[0]]), 
-                                              np.log10(np.array(spheredist_LH_sum)[np.nonzero(spheredist_LH_sum)[0]]), 
+                                              np.log10(np.array(radiussize_inv)[:8]), 
+                                              np.log10(np.array(spheredist_LH_sum_avg)[:8]), 
                                               p0=[0.1, -0.1], 
                                               maxfev=10000)
+perrD_LH = np.sqrt(np.diag(pcovD_LH))
 
 poptD_AL, pcovD_AL = scipy.optimize.curve_fit(objFuncGL, 
-                                              np.log10(np.array(radiussize)[np.nonzero(spheredist_AL_sum)[0]]), 
-                                              np.log10(np.array(spheredist_AL_sum)[np.nonzero(spheredist_AL_sum)[0]]), 
+                                              np.log10(np.array(radiussize_inv)[1:8]), 
+                                              np.log10(np.array(spheredist_AL_sum_avg)[1:8]), 
                                               p0=[0.1, -0.1], 
                                               maxfev=10000)
+perrD_AL = np.sqrt(np.diag(pcovD_AL))
 
+fitYD_calyx = objFuncPpow(radiussize_inv, poptD_calyx[0], poptD_calyx[1])
+fitYD_LH = objFuncPpow(radiussize_inv, poptD_LH[0], poptD_LH[1])
+fitYD_AL = objFuncPpow(radiussize_inv, poptD_AL[0], poptD_AL[1])
 
-fig = plt.figure(figsize=(8,6))
-plt.scatter(np.array(radiussize)[np.nonzero(spheredist_calyx_sum)[0]], 
-            np.array(spheredist_calyx_sum)[np.nonzero(spheredist_calyx_sum)[0]])
-plt.scatter(np.array(radiussize)[np.nonzero(spheredist_LH_sum)[0]], 
-            np.array(spheredist_LH_sum)[np.nonzero(spheredist_LH_sum)[0]])
-plt.scatter(np.array(radiussize)[np.nonzero(spheredist_AL_sum)[0]], 
-            np.array(spheredist_AL_sum)[np.nonzero(spheredist_AL_sum)[0]])
+fig = plt.figure(figsize=(12,8))
+plt.scatter(np.array(radiussize_inv)[np.nonzero(spheredist_calyx_sum_avg)[0]], 
+            np.array(spheredist_calyx_sum_avg)[np.nonzero(spheredist_calyx_sum_avg)[0]])
+plt.scatter(np.array(radiussize_inv)[np.nonzero(spheredist_LH_sum_avg)[0]], 
+            np.array(spheredist_LH_sum_avg)[np.nonzero(spheredist_LH_sum_avg)[0]])
+plt.scatter(np.array(radiussize_inv)[np.nonzero(spheredist_AL_sum_avg)[0]], 
+            np.array(spheredist_AL_sum_avg)[np.nonzero(spheredist_AL_sum_avg)[0]])
+
+plt.plot(radiussize_inv, fitYD_calyx, lw=2, linestyle='--')
+plt.plot(radiussize_inv, fitYD_LH, lw=2, linestyle='--')
+plt.plot(radiussize_inv, fitYD_AL, lw=2, linestyle='--')
 plt.yscale('log')
 plt.xscale('log')
-plt.legend(['Calyx', 'LH', 'AL'])
-plt.xlim(1, 75)
-plt.ylim(3, 1500)
+plt.legend(['Calyx: ' + str(round(poptD_calyx[0], 3)) + '$\pm$' + str(round(perrD_calyx[0], 3)),
+            'LH: ' + str(round(poptD_LH[0], 3)) + '$\pm$' + str(round(perrD_LH[0], 3)),
+            'AL: ' + str(round(poptD_AL[0], 3)) + '$\pm$' + str(round(perrD_AL[0], 3))], fontsize=15)
+#plt.xlim(1, 75)
+#plt.ylim(3, 1500)
 #plt.tight_layout()
 plt.show()
 
 
 #%%
 
+#m = 6
+#
 #fig = plt.figure(figsize=(24, 16))
 #ax = plt.axes(projection='3d')
 #ax.set_xlim(400, 600)
@@ -1182,13 +1202,18 @@ plt.show()
 #        morph_line = np.vstack((MorphData.morph_dist[m][MorphData.morph_id[m].index(MorphData.morph_parent[m][p])], MorphData.morph_dist[m][p]))
 #        ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], lw=1, color=cmap(m))
 ##       ax.scatter3D(MorphData.morph_dist[m][p][0], MorphData.morph_dist[m][p][1], MorphData.morph_dist[m][p][2], marker='x', color=cmap(m))
-#ax.scatter3D(calyxbox[0], calyxbox[1], calyxbox[2])
-#ax.scatter3D(LHbox[0], LHbox[1], LHbox[2])
-#ax.scatter3D(ALbox[0], ALbox[1], ALbox[2])
+#ax.scatter3D(calyxbox[0], calyxbox[1], calyxbox[2], s=200)
+#ax.scatter3D(LHbox[0], LHbox[1], LHbox[2], s=200)
+#ax.scatter3D(ALbox[0], ALbox[1], ALbox[2], s=200)
+#ax.legend(['Calyx', 'LH', 'AL'], fontsize=15)
+#leg = ax.get_legend()
+#leg.legendHandles[0].set_color('tab:blue')
+#leg.legendHandles[1].set_color('tab:orange')
+#leg.legendHandles[2].set_color('tab:green')
 ##ax.scatter3D(tararr[somaIdx,0], tararr[somaIdx,1], tararr[somaIdx,2], color=cmap(m))
 #plt.show()
-#
-#
+
+
 
 
 print('Run Time: ' + str(t7-t0))
