@@ -55,6 +55,15 @@ class MorphData():
         self.endP = []
         self.somaP = []
         self.indMorph_dist = []
+        self.calyxcoor = np.array([[512., 220., 172.]])
+        self.calyxdist = []
+        self.calyxrad = 25
+        self.LHcoor = np.array([[429., 224., 153.]])
+        self.LHdist = []
+        self.LHrad = 35
+        self.ALcoor = np.array([[537., 313.,  43.]])
+        self.ALdist = []
+        self.ALrad = 50
     
     def plotNeuronFromPoints(self, listOfPoints, scale=False, showPoint=False):
         """
@@ -352,6 +361,16 @@ for f in range(len(fp)):
                 endid.append(neu_branchTrk_temp[-1])
                 branch_dist_temp1.append(branch_dist_temp2)
                 length_branch_temp.append(dist)
+                if (scipy.spatial.distance.cdist(np.array(branch_dist_temp2), 
+                                                 MorphData.calyxcoor).flatten() < MorphData.calyxrad).all():
+                    MorphData.calyxdist.append(branch_dist_temp2)
+                elif (scipy.spatial.distance.cdist(np.array(branch_dist_temp2), 
+                                                 MorphData.LHcoor).flatten() < MorphData.LHrad).all():
+                    MorphData.LHdist.append(branch_dist_temp2)
+                elif (scipy.spatial.distance.cdist(np.array(branch_dist_temp2), 
+                                                 MorphData.ALcoor).flatten() < MorphData.ALrad).all():
+                    MorphData.ALdist.append(branch_dist_temp2)
+                
     BranchData.branchTrk.append(neu_branchTrk)
     BranchData.branch_dist.append(branch_dist_temp1)
     LengthData.length_branch.append(length_branch_temp)
@@ -1032,19 +1051,24 @@ print('checkpoint 7: ' + str(t7-t6))
 
 
 
-#%% Dimension Calculation
+#%% Cluster Center of Mass Calculation
 
-calyxbox = [515, 225, 175]
-LHbox = [430, 230, 150]
-ALbox = [535, 315, 35]
+calyxdist_flat = [item for sublist in MorphData.calyxdist for item in sublist]
+LHdist_flat = [item for sublist in MorphData.LHdist for item in sublist]
+ALdist_flat = [item for sublist in MorphData.ALdist for item in sublist]
 
-radiussize = [1, 2.5, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+calyxCM = (np.sum(np.array(calyxdist_flat), axis=0)/len(np.array(calyxdist_flat)))
+LHCM = (np.sum(np.array(LHdist_flat), axis=0)/len(np.array(LHdist_flat)))
+ALCM = (np.sum(np.array(ALdist_flat), axis=0)/len(np.array(ALdist_flat)))
 
-#spheredist_calyx = []
+fullCM = np.average(OutputData.cMLSeg, axis=0)
+
+#%% Cluster Speard Calculation
+        
+radiussize = [2.5, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+
 spheredist_calyx_sum = np.empty((len(MorphData.neuron_id), len(radiussize)))
-#spheredist_LH = []
 spheredist_LH_sum = np.empty((len(MorphData.neuron_id), len(radiussize)))
-#spheredist_AL = []
 spheredist_AL_sum = np.empty((len(MorphData.neuron_id), len(radiussize)))
 
 for m in range(len(MorphData.neuron_id)):
@@ -1052,31 +1076,18 @@ for m in range(len(MorphData.neuron_id)):
         spheredist_calyx_temp = []
         spheredist_LH_temp = []
         spheredist_AL_temp = []
-    #    calyxcube = [[calyxbox[0]-radiussize[b], calyxbox[0]+radiussize[b]],
-    #                 [calyxbox[1]-radiussize[b], calyxbox[1]+radiussize[b]],
-    #                 [calyxbox[2]-radiussize[b], calyxbox[2]+radiussize[b]]]
         
         for ib in range(len(BranchData.branch_dist[m])):
-            dist_calyx = 0
-            dist_LH = 0
-            dist_AL = 0
+            inbound_calyx = np.where(np.sqrt(np.square(np.array(BranchData.branch_dist[m][ib])[:,0] - MorphData.calyxcoor[0][0]) +
+                                        np.square(np.array(BranchData.branch_dist[m][ib])[:,1] - MorphData.calyxcoor[0][1]) +
+                                        np.square(np.array(BranchData.branch_dist[m][ib])[:,2] - MorphData.calyxcoor[0][2])) <= radiussize[b])[0]
+            inbound_LH = np.where(np.sqrt(np.square(np.array(BranchData.branch_dist[m][ib])[:,0] - MorphData.LHcoor[0][0]) +
+                                        np.square(np.array(BranchData.branch_dist[m][ib])[:,1] - MorphData.LHcoor[0][1]) +
+                                        np.square(np.array(BranchData.branch_dist[m][ib])[:,2] - MorphData.LHcoor[0][2])) <= radiussize[b])[0]
+            inbound_AL = np.where(np.sqrt(np.square(np.array(BranchData.branch_dist[m][ib])[:,0] - MorphData.ALcoor[0][0]) +
+                                        np.square(np.array(BranchData.branch_dist[m][ib])[:,1] - MorphData.ALcoor[0][1]) +
+                                        np.square(np.array(BranchData.branch_dist[m][ib])[:,2] - MorphData.ALcoor[0][2])) <= radiussize[b])[0]
             
-            inbound_calyx = np.where(np.sqrt(np.square(np.array(BranchData.branch_dist[m][ib])[:,0] - calyxbox[0]) +
-                                        np.square(np.array(BranchData.branch_dist[m][ib])[:,1] - calyxbox[1]) +
-                                        np.square(np.array(BranchData.branch_dist[m][ib])[:,2] - calyxbox[2])) <= radiussize[b])[0]
-            inbound_LH = np.where(np.sqrt(np.square(np.array(BranchData.branch_dist[m][ib])[:,0] - LHbox[0]) +
-                                        np.square(np.array(BranchData.branch_dist[m][ib])[:,1] - LHbox[1]) +
-                                        np.square(np.array(BranchData.branch_dist[m][ib])[:,2] - LHbox[2])) <= radiussize[b])[0]
-            inbound_AL = np.where(np.sqrt(np.square(np.array(BranchData.branch_dist[m][ib])[:,0] - ALbox[0]) +
-                                        np.square(np.array(BranchData.branch_dist[m][ib])[:,1] - ALbox[1]) +
-                                        np.square(np.array(BranchData.branch_dist[m][ib])[:,2] - ALbox[2])) <= radiussize[b])[0]
-            
-    #        inbound = np.where((calyxcube[0][0] <= np.array(BranchData.branch_dist[m][ib])[:,0]) &
-    #                           (np.array(BranchData.branch_dist[m][ib])[:,0] <= calyxcube[0][1]) &
-    #                           (calyxcube[1][0] <= np.array(BranchData.branch_dist[m][ib])[:,1]) &
-    #                           (np.array(BranchData.branch_dist[m][ib])[:,1] <= calyxcube[1][1]) &
-    #                           (calyxcube[2][0] <= np.array(BranchData.branch_dist[m][ib])[:,2]) &
-    #                           (np.array(BranchData.branch_dist[m][ib])[:,2] <= calyxcube[2][1]))[0]
             if len(inbound_calyx) > 1:
                 val = np.array(BranchData.branch_dist[m][ib])[inbound_calyx]
                 x = val[:,0]
@@ -1119,40 +1130,48 @@ for m in range(len(MorphData.neuron_id)):
             else:
                 spheredist_AL_temp.append(0)
             
-#        spheredist_calyx.append(spheredist_calyx_temp)
         spheredist_calyx_sum[m][b] = np.sum(spheredist_calyx_temp)
-#        spheredist_LH.append(spheredist_LH_temp)
         spheredist_LH_sum[m][b] = np.sum(spheredist_LH_temp)
-#        spheredist_AL.append(spheredist_AL_temp)
         spheredist_AL_sum[m][b] = np.sum(spheredist_AL_temp)
 
 #%% 
    
 radiussize_inv = np.divide(1, 4/3*np.pi*np.power(radiussize, 3))
 
-spheredist_calyx_sum_avg = np.average(spheredist_calyx_sum, axis=0)
-spheredist_LH_sum_avg = np.average(spheredist_LH_sum, axis=0)
-spheredist_AL_sum_avg = np.average(spheredist_AL_sum, axis=0)
+spheredist_calyx_sum[spheredist_calyx_sum == 0] = np.nan
+spheredist_LH_sum[spheredist_LH_sum == 0] = np.nan
+spheredist_AL_sum[spheredist_AL_sum == 0] = np.nan
 
-    
+spheredist_calyx_sum_avg = np.nanmean(spheredist_calyx_sum, axis=0)
+spheredist_LH_sum_avg = np.nanmean(spheredist_LH_sum, axis=0)
+spheredist_AL_sum_avg = np.nanmean(spheredist_AL_sum, axis=0)
+
+spheredist_calyx_sum_avg = spheredist_calyx_sum_avg[np.count_nonzero(~np.isnan(spheredist_calyx_sum), axis=0) >= 10]
+spheredist_LH_sum_avg = spheredist_LH_sum_avg[np.count_nonzero(~np.isnan(spheredist_LH_sum), axis=0) >= 10]
+spheredist_AL_sum_avg = spheredist_AL_sum_avg[np.count_nonzero(~np.isnan(spheredist_AL_sum), axis=0) >= 10]
+
+poptD_calyx_all = []
+poptD_LH_all = []
+poptD_AL_all = []
+
 poptD_calyx, pcovD_calyx = scipy.optimize.curve_fit(objFuncGL, 
-                                                    np.log10(np.array(radiussize_inv)[:8]), 
-                                                    np.log10(np.array(spheredist_calyx_sum_avg)[:8]), 
-                                                    p0=[0.1, -0.1], 
+                                                    np.log10(radiussize_inv[:8]), 
+                                                    np.log10(spheredist_calyx_sum_avg[:8]), 
+                                                    p0=[-0.1, 0.1], 
                                                     maxfev=10000)
 perrD_calyx = np.sqrt(np.diag(pcovD_calyx))
 
 poptD_LH, pcovD_LH = scipy.optimize.curve_fit(objFuncGL, 
-                                              np.log10(np.array(radiussize_inv)[:8]), 
-                                              np.log10(np.array(spheredist_LH_sum_avg)[:8]), 
-                                              p0=[0.1, -0.1], 
+                                              np.log10(radiussize_inv[:8]), 
+                                              np.log10(spheredist_LH_sum_avg[:8]), 
+                                              p0=[-0.1, 0.1], 
                                               maxfev=10000)
 perrD_LH = np.sqrt(np.diag(pcovD_LH))
 
 poptD_AL, pcovD_AL = scipy.optimize.curve_fit(objFuncGL, 
-                                              np.log10(np.array(radiussize_inv)[1:8]), 
-                                              np.log10(np.array(spheredist_AL_sum_avg)[1:8]), 
-                                              p0=[0.1, -0.1], 
+                                              np.log10(radiussize_inv[2:10]), 
+                                              np.log10(spheredist_AL_sum_avg[:8]), 
+                                              p0=[-0.1, 0.1], 
                                               maxfev=10000)
 perrD_AL = np.sqrt(np.diag(pcovD_AL))
 
@@ -1161,12 +1180,13 @@ fitYD_LH = objFuncPpow(radiussize_inv, poptD_LH[0], poptD_LH[1])
 fitYD_AL = objFuncPpow(radiussize_inv, poptD_AL[0], poptD_AL[1])
 
 fig = plt.figure(figsize=(12,8))
-plt.scatter(np.array(radiussize_inv)[np.nonzero(spheredist_calyx_sum_avg)[0]], 
-            np.array(spheredist_calyx_sum_avg)[np.nonzero(spheredist_calyx_sum_avg)[0]])
-plt.scatter(np.array(radiussize_inv)[np.nonzero(spheredist_LH_sum_avg)[0]], 
-            np.array(spheredist_LH_sum_avg)[np.nonzero(spheredist_LH_sum_avg)[0]])
-plt.scatter(np.array(radiussize_inv)[np.nonzero(spheredist_AL_sum_avg)[0]], 
-            np.array(spheredist_AL_sum_avg)[np.nonzero(spheredist_AL_sum_avg)[0]])
+
+plt.scatter(radiussize_inv, 
+                    spheredist_calyx_sum_avg, c='tab:blue')
+plt.scatter(radiussize_inv, 
+                    spheredist_LH_sum_avg, c='tab:orange')
+plt.scatter(radiussize_inv[2:], 
+                    spheredist_AL_sum_avg, c='tab:green')
 
 plt.plot(radiussize_inv, fitYD_calyx, lw=2, linestyle='--')
 plt.plot(radiussize_inv, fitYD_LH, lw=2, linestyle='--')
@@ -1179,10 +1199,81 @@ plt.legend(['Calyx: ' + str(round(poptD_calyx[0], 3)) + '$\pm$' + str(round(perr
 #plt.xlim(1, 75)
 #plt.ylim(3, 1500)
 #plt.tight_layout()
+plt.xlabel("Density", fontsize=15)
+plt.ylabel("Length", fontsize=15)
 plt.show()
 
 
 #%%
+ 
+radiussize_all = [25, 50, 75, 100, 125, 150, 200, 250]
+
+spheredist_all_sum = np.empty((len(MorphData.neuron_id), len(radiussize_all)))
+
+for m in range(len(MorphData.neuron_id)):
+    for b in range(len(radiussize_all)):
+        spheredist_all_temp = []
+        
+        for ib in range(len(BranchData.branch_dist[m])):
+            inbound_all = np.where(np.sqrt(np.square(np.array(BranchData.branch_dist[m][ib])[:,0] - fullCM[0]) +
+                                        np.square(np.array(BranchData.branch_dist[m][ib])[:,1] - fullCM[1]) +
+                                        np.square(np.array(BranchData.branch_dist[m][ib])[:,2] - fullCM[2])) <= radiussize_all[b])[0]
+            
+            if len(inbound_all) > 1:
+                val = np.array(BranchData.branch_dist[m][ib])[inbound_all]
+                x = val[:,0]
+                y = val[:,1]
+                z = val[:,2]
+                
+                xd = [j-i for i, j in zip(x[:-1], x[1:])]
+                yd = [j-i for i, j in zip(y[:-1], y[1:])]
+                zd = [j-i for i, j in zip(z[:-1], z[1:])]
+                dist_all = np.sum(np.sqrt(np.square(xd) + np.square(yd) + np.square(zd)))
+                spheredist_all_temp.append(dist_all)
+            else:
+                spheredist_all_temp.append(0)
+
+        spheredist_all_sum[m][b] = np.sum(spheredist_all_temp)
+
+
+
+#%%
+   
+radiussize_all_inv = (1e6)*np.divide(1, 4/3*np.pi*np.power(radiussize_all, 3))
+
+spheredist_all_sum[spheredist_all_sum == 0] = np.nan
+
+spheredist_all_sum_avg = np.nanmean(spheredist_all_sum, axis=0)
+
+spheredist_all_sum_avg = spheredist_all_sum_avg[np.count_nonzero(~np.isnan(spheredist_all_sum), axis=0) >= 10]
+
+poptD_all, pcovD_all = scipy.optimize.curve_fit(objFuncGL, 
+                                                    np.log10(radiussize_all_inv[:5]), 
+                                                    np.log10(spheredist_all_sum_avg[:5]),
+                                                    p0=[-0.1, 0.1], 
+                                                    maxfev=10000)
+perrD_all = np.sqrt(np.diag(pcovD_all))
+
+fitYD_all = objFuncPpow(radiussize_all_inv, poptD_all[0], poptD_all[1])
+
+fig = plt.figure(figsize=(12,8))
+
+plt.scatter(radiussize_all_inv, 
+                    spheredist_all_sum_avg, c='tab:blue')
+
+plt.plot(radiussize_all_inv, fitYD_all, lw=2, linestyle='--')
+plt.yscale('log')
+plt.xscale('log')
+plt.legend(['All: ' + str(round(poptD_all[0], 3)) + '$\pm$' + str(round(perrD_all[0], 3))], fontsize=15)
+#plt.ylim(3, 1500)
+#plt.tight_layout()
+plt.xlabel("Density", fontsize=15)
+plt.ylabel("Length", fontsize=15)
+plt.show()
+
+
+#%%
+
 
 #m = 6
 #
@@ -1201,16 +1292,14 @@ plt.show()
 #    else:
 #        morph_line = np.vstack((MorphData.morph_dist[m][MorphData.morph_id[m].index(MorphData.morph_parent[m][p])], MorphData.morph_dist[m][p]))
 #        ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], lw=1, color=cmap(m))
-##       ax.scatter3D(MorphData.morph_dist[m][p][0], MorphData.morph_dist[m][p][1], MorphData.morph_dist[m][p][2], marker='x', color=cmap(m))
-#ax.scatter3D(calyxbox[0], calyxbox[1], calyxbox[2], s=200)
-#ax.scatter3D(LHbox[0], LHbox[1], LHbox[2], s=200)
-#ax.scatter3D(ALbox[0], ALbox[1], ALbox[2], s=200)
+#ax.scatter3D(MorphData.calyxcoor[0][0], MorphData.calyxcoor[0][1], MorphData.calyxcoor[0][2], s=200)
+#ax.scatter3D(MorphData.LHcoor[0][0], MorphData.LHcoor[0][1], MorphData.LHcoor[0][2], s=200)
+#ax.scatter3D(MorphData.ALcoor[0][0], MorphData.ALcoor[0][1], MorphData.ALcoor[0][2], s=200)
 #ax.legend(['Calyx', 'LH', 'AL'], fontsize=15)
 #leg = ax.get_legend()
 #leg.legendHandles[0].set_color('tab:blue')
 #leg.legendHandles[1].set_color('tab:orange')
 #leg.legendHandles[2].set_color('tab:green')
-##ax.scatter3D(tararr[somaIdx,0], tararr[somaIdx,1], tararr[somaIdx,2], color=cmap(m))
 #plt.show()
 
 
