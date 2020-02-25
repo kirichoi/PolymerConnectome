@@ -1305,5 +1305,65 @@ plt.show()
 
 
 
+#%%
+
+radiussize = np.multiply(2, [0.1, 0.5, 1, 5, 10, 15, 20])
+
+dist_len_dim = np.empty((len(radiussize), len(MorphData.neuron_id)))
+
+for r in range(len(radiussize)):
+    for b in range(len(BranchData.branch_dist)):
+        dist_len_dim_temp = []
+        for bd in range(len(BranchData.branch_dist[b])):
+            bdi = 0
+            taridx = 0
+            
+            while bdi != len(BranchData.branch_dist[b][bd]):
+                rhs = BranchData.branch_dist[b][bd][taridx]
+                lhs = BranchData.branch_dist[b][bd][bdi]
+                dist = np.linalg.norm(np.subtract(rhs, lhs))
+                if dist >= radiussize[r]:
+                    taridx = bdi
+                    dist_len_dim_temp.append(dist)
+                bdi += 1
+        dist_len_dim[r][b] = np.sum(dist_len_dim_temp)
+
+dist_len_dim[dist_len_dim == 0] = np.nan
+
+#%%
+
+dist_len_dim_avg = np.nanmean(dist_len_dim, axis=1)
+
+poptDim_all, pcovDim_all = scipy.optimize.curve_fit(objFuncGL, 
+                                                    np.log10(radiussize[1:]), 
+                                                    np.log10(dist_len_dim_avg[1:]),
+                                                    p0=[-0.1, 0.1], 
+                                                    maxfev=10000)
+perrDim_all = np.sqrt(np.diag(pcovDim_all))
+
+fitYDim_all = objFuncPpow(radiussize, poptDim_all[0], poptDim_all[1])
+
+fig = plt.figure(figsize=(12,8))
+#for i in range(len(MorphData.neuron_id)):
+#    plt.scatter(radiussize, dist_len_dim[:,i])
+plt.scatter(radiussize, dist_len_dim_avg)
+plt.plot(radiussize, fitYDim_all, lw=2, linestyle='--')
+plt.yscale('log')
+plt.xscale('log')
+plt.legend(['All: ' + str(round(poptDim_all[0], 3)) + '$\pm$' + str(round(perrDim_all[0], 3))], fontsize=15)
+#plt.ylim(3, 1500)
+#plt.tight_layout()
+plt.xlabel("Diameter", fontsize=15)
+plt.ylabel("Length", fontsize=15)
+plt.show()
+
+
+#%%
+
+
+
+
+
+
 print('Run Time: ' + str(t7-t0))
 
