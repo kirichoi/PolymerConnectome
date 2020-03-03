@@ -1063,7 +1063,7 @@ ALCM = (np.sum(np.array(ALdist_flat), axis=0)/len(np.array(ALdist_flat)))
 
 fullCM = np.average(OutputData.cMLSeg, axis=0)
 
-#%% Cluster Speard Calculation
+#%% Cluster Spread Calculation
         
 radiussize = [2.5, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
 
@@ -1305,7 +1305,7 @@ plt.show()
 
 
 
-#%%
+#%% Dimension calculation
 
 radiussize = np.multiply(2, [0.1, 0.5, 1, 5, 10, 15, 20])
 
@@ -1361,9 +1361,129 @@ plt.show()
 #%%
 
 
+radiussize = np.multiply(2, [0.1, 0.5, 1, 3, 5, 7, 10])
+
+dist_len_calyx_dim = np.empty((len(radiussize), len(MorphData.calyxdist)))
+dist_len_LH_dim = np.empty((len(radiussize), len(MorphData.LHdist)))
+dist_len_AL_dim = np.empty((len(radiussize), len(MorphData.ALdist)))
+
+for r in range(len(radiussize)):
+    for c in range(len(MorphData.calyxdist)):
+        dist_len_calyx_dim_temp = []
+        cdi = 0
+        taridx = 0
+        
+        while cdi != len(MorphData.calyxdist[c]):
+            rhs = MorphData.calyxdist[c][taridx]
+            lhs = MorphData.calyxdist[c][cdi]
+            dist = np.linalg.norm(np.subtract(rhs, lhs))
+            if dist >= radiussize[r]:
+                taridx = cdi
+                dist_len_calyx_dim_temp.append(dist)
+            cdi += 1
+        dist_len_calyx_dim[r][c] = np.sum(dist_len_calyx_dim_temp)
+    for l in range(len(MorphData.LHdist)):
+        dist_len_LH_dim_temp = []
+        ldi = 0
+        taridx = 0
+        
+        while ldi != len(MorphData.LHdist[l]):
+            rhs = MorphData.LHdist[l][taridx]
+            lhs = MorphData.LHdist[l][ldi]
+            dist = np.linalg.norm(np.subtract(rhs, lhs))
+            if dist >= radiussize[r]:
+                taridx = ldi
+                dist_len_LH_dim_temp.append(dist)
+            ldi += 1
+        dist_len_LH_dim[r][l] = np.sum(dist_len_LH_dim_temp)
+    for a in range(len(MorphData.ALdist)):
+        dist_len_AL_dim_temp = []
+        adi = 0
+        taridx = 0
+        
+        while adi != len(MorphData.ALdist[a]):
+            rhs = MorphData.ALdist[a][taridx]
+            lhs = MorphData.ALdist[a][adi]
+            dist = np.linalg.norm(np.subtract(rhs, lhs))
+            if dist >= radiussize[r]:
+                taridx = adi
+                dist_len_AL_dim_temp.append(dist)
+            adi += 1
+        dist_len_AL_dim[r][a] = np.sum(dist_len_AL_dim_temp)
+
+dist_len_calyx_dim[dist_len_calyx_dim == 0] = np.nan
+dist_len_LH_dim[dist_len_LH_dim == 0] = np.nan
+dist_len_AL_dim[dist_len_AL_dim == 0] = np.nan
+
+#%%
+
+dist_len_calyx_dim = dist_len_calyx_dim[:,~np.any(np.isnan(dist_len_calyx_dim), axis=0)]
+dist_len_LH_dim = dist_len_LH_dim[:,~np.any(np.isnan(dist_len_LH_dim), axis=0)]
+dist_len_AL_dim = dist_len_AL_dim[:,~np.any(np.isnan(dist_len_AL_dim), axis=0)]
+
+dist_len_calyx_dim_avg = np.nanmean(dist_len_calyx_dim, axis=1)
+dist_len_LH_dim_avg = np.nanmean(dist_len_LH_dim, axis=1)
+dist_len_AL_dim_avg = np.nanmean(dist_len_AL_dim, axis=1)
+
+poptDim_calyx, pcovDim_calyx = scipy.optimize.curve_fit(objFuncGL, 
+                                                        np.log10(radiussize[1:]), 
+                                                        np.log10(dist_len_calyx_dim_avg[1:]),
+                                                        p0=[-0.1, 0.1], 
+                                                        maxfev=10000)
+perrDim_calyx = np.sqrt(np.diag(pcovDim_calyx))
+
+poptDim_LH, pcovDim_LH = scipy.optimize.curve_fit(objFuncGL, 
+                                                        np.log10(radiussize[1:]), 
+                                                        np.log10(dist_len_LH_dim_avg[1:]),
+                                                        p0=[-0.1, 0.1], 
+                                                        maxfev=10000)
+perrDim_LH = np.sqrt(np.diag(pcovDim_LH))
+
+poptDim_AL, pcovDim_AL = scipy.optimize.curve_fit(objFuncGL, 
+                                                        np.log10(radiussize[1:]), 
+                                                        np.log10(dist_len_AL_dim_avg[1:]),
+                                                        p0=[-0.1, 0.1], 
+                                                        maxfev=10000)
+perrDim_AL = np.sqrt(np.diag(pcovDim_AL))
+
+fitYDim_calyx = objFuncPpow(radiussize, poptDim_calyx[0], poptDim_calyx[1])
+fitYDim_LH = objFuncPpow(radiussize, poptDim_LH[0], poptDim_LH[1])
+fitYDim_AL = objFuncPpow(radiussize, poptDim_AL[0], poptDim_AL[1])
+
+fig = plt.figure(figsize=(12,8))
+#for i in range(len(MorphData.neuron_id)):
+#    plt.scatter(radiussize, dist_len_dim[:,i])
+plt.scatter(radiussize, dist_len_calyx_dim_avg)
+plt.scatter(radiussize, dist_len_LH_dim_avg)
+plt.scatter(radiussize, dist_len_AL_dim_avg)
+plt.plot(radiussize, fitYDim_calyx, lw=2, linestyle='--')
+plt.plot(radiussize, fitYDim_LH, lw=2, linestyle='--')
+plt.plot(radiussize, fitYDim_AL, lw=2, linestyle='--')
+plt.yscale('log')
+plt.xscale('log')
+plt.legend(['Calyx: ' + str(round(poptDim_calyx[0], 3)) + '$\pm$' + str(round(perrDim_calyx[0], 3)),
+            'LH: ' + str(round(poptDim_LH[0], 3)) + '$\pm$' + str(round(perrDim_LH[0], 3)),
+            'AL: ' + str(round(poptDim_AL[0], 3)) + '$\pm$' + str(round(perrDim_AL[0], 3))], fontsize=15)
+#plt.ylim(3, 1500)
+#plt.tight_layout()
+plt.xlabel("Diameter", fontsize=15)
+plt.ylabel("Length", fontsize=15)
+plt.show()
+
+
+#%% Dimension using binary box counting
+
+t8 = time.time()
+
+print('checkpoint 8: ' + str(t8-t7))
 
 
 
 
-print('Run Time: ' + str(t7-t0))
+
+
+
+
+
+print('Run Time: ' + str(t8-t0))
 
