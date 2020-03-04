@@ -361,18 +361,12 @@ for f in range(len(fp)):
                 endid.append(neu_branchTrk_temp[-1])
                 branch_dist_temp1.append(branch_dist_temp2)
                 length_branch_temp.append(dist)
-#                if (scipy.spatial.distance.cdist(np.array(branch_dist_temp2), 
-#                                                 MorphData.calyxcoor).flatten() < MorphData.calyxrad).all():
                 if ((np.array(branch_dist_temp2)[:,0] > 475).all() and (np.array(branch_dist_temp2)[:,0] < 550).all() and
                     (np.array(branch_dist_temp2)[:,1] < 260).all() and (np.array(branch_dist_temp2)[:,2] > 150).all()):
                     MorphData.calyxdist.append(branch_dist_temp2)
-#                elif (scipy.spatial.distance.cdist(np.array(branch_dist_temp2), 
-#                                                 MorphData.LHcoor).flatten() < MorphData.LHrad).all():
                 elif ((np.array(branch_dist_temp2)[:,0] < 475).all() and (np.array(branch_dist_temp2)[:,1] < 260).all() and
                     (np.array(branch_dist_temp2)[:,1] > 180).all() and (np.array(branch_dist_temp2)[:,2] > 125).all()):
                     MorphData.LHdist.append(branch_dist_temp2)
-#                elif (scipy.spatial.distance.cdist(np.array(branch_dist_temp2), 
-#                                                 MorphData.ALcoor).flatten() < MorphData.ALrad).all():
                 elif ((np.array(branch_dist_temp2)[:,0] > 475).all() and (np.array(branch_dist_temp2)[:,0] < 625).all() and 
                       (np.array(branch_dist_temp2)[:,1] > 280).all() and (np.array(branch_dist_temp2)[:,2] < 100).all()):
                     MorphData.ALdist.append(branch_dist_temp2)
@@ -1485,26 +1479,130 @@ plt.xscale('log')
 plt.legend(['Calyx: ' + str(round(poptDim_calyx[0], 3)) + '$\pm$' + str(round(perrDim_calyx[0], 3)),
             'LH: ' + str(round(poptDim_LH[0], 3)) + '$\pm$' + str(round(perrDim_LH[0], 3)),
             'AL: ' + str(round(poptDim_AL[0], 3)) + '$\pm$' + str(round(perrDim_AL[0], 3))], fontsize=15)
-plt.xlim(0.1, 50)
+plt.xlim(0.1, 20)
 #plt.tight_layout()
 plt.xlabel("Diameter", fontsize=15)
 plt.ylabel("Length", fontsize=15)
 plt.show()
 
-
-#%% Dimension using binary box counting
-
 t8 = time.time()
 
 print('checkpoint 8: ' + str(t8-t7))
 
+#%% Dimension using binary box counting
+
+
+binsize = [0.25, 0.5, 1, 2.5, 5, 10, 25, 50]
+
+morph_dist_flat = np.array([item for sublist in MorphData.morph_dist for item in sublist])
+
+xmax_all = np.max(morph_dist_flat[:,0])
+xmin_all = np.min(morph_dist_flat[:,0])
+ymax_all = np.max(morph_dist_flat[:,1])
+ymin_all = np.min(morph_dist_flat[:,1])
+zmax_all = np.max(morph_dist_flat[:,2])
+zmin_all = np.min(morph_dist_flat[:,2])
+
+hlist = []
+hlist_count = []
+hlist_numbox = []
+
+for b in range(len(binsize)):
+    h, e = np.histogramdd(morph_dist_flat, 
+                          bins=[np.arange(xmin_all, xmax_all, binsize[b]), 
+                                np.arange(ymin_all, ymax_all, binsize[b]),
+                                np.arange(zmin_all, zmax_all, binsize[b])])
+    hlist.append(h)
+    hlist_count.append(np.count_nonzero(h))
+    hlist_numbox.append((len(np.arange(xmin_all, xmax_all, binsize[b]))*
+                        len(np.arange(ymin_all, ymax_all, binsize[b]))*
+                        len(np.arange(zmin_all, zmax_all, binsize[b]))))
+
+
+#%%
+    
+poptBcount_all, pcovBcount_all = scipy.optimize.curve_fit(objFuncGL, 
+                                                        np.log10(hlist_numbox[2:]), 
+                                                        np.log10(hlist_count[2:]),
+                                                        p0=[0.1, 0.1], 
+                                                        maxfev=10000)
+perrBcount_all = np.sqrt(np.diag(pcovBcount_all))
+
+fitYBcount_all = objFuncPpow(hlist_numbox, poptBcount_all[0], poptBcount_all[1])
+    
+fig = plt.figure(figsize=(12,8))
+plt.scatter(hlist_numbox, hlist_count)
+plt.plot(hlist_numbox, fitYBcount_all, lw=2, linestyle='--')
+plt.yscale('log')
+plt.xscale('log')
+#plt.xlim(0.1, 20)
+#plt.tight_layout()
+plt.xlabel("Box Size", fontsize=15)
+plt.ylabel("Count", fontsize=15)
+plt.show()
 
 
 
 
 
+#%%
+
+binsize = [0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25]
+
+calyx_dist_flat = np.array([item for sublist in MorphData.calyxdist for item in sublist])
+
+xmax_calyx = np.max(calyx_dist_flat[:,0])
+xmin_calyx = np.min(calyx_dist_flat[:,0])
+ymax_calyx = np.max(calyx_dist_flat[:,1])
+ymin_calyx = np.min(calyx_dist_flat[:,1])
+zmax_calyx = np.max(calyx_dist_flat[:,2])
+zmin_calyx = np.min(calyx_dist_flat[:,2])
+
+hlist_calyx = []
+hlist_calyx_count = []
+hlist_calyx_numbox = []
+
+for b in range(len(binsize)):
+    hc, e = np.histogramdd(calyx_dist_flat, 
+                          bins=[np.arange(xmin_calyx, xmax_calyx, binsize[b]), 
+                                np.arange(ymin_calyx, ymax_calyx, binsize[b]),
+                                np.arange(zmin_calyx, zmax_calyx, binsize[b])])
+    hlist_calyx.append(hc)
+    hlist_calyx_count.append(np.count_nonzero(hc))
+    hlist_calyx_numbox.append((len(np.arange(xmin_calyx, xmax_calyx, binsize[b]))*
+                        len(np.arange(ymin_calyx, ymax_calyx, binsize[b]))*
+                        len(np.arange(zmin_calyx, zmax_calyx, binsize[b]))))
 
 
 
-print('Run Time: ' + str(t8-t0))
+
+#%%
+    
+    
+poptBcount_calyx, pcovBcount_calyx = scipy.optimize.curve_fit(objFuncGL, 
+                                                        np.log10(hlist_calyx_numbox[4:]), 
+                                                        np.log10(hlist_calyx_count[4:]),
+                                                        p0=[0.1, 0.1], 
+                                                        maxfev=10000)
+perrBcount_calyx = np.sqrt(np.diag(pcovBcount_calyx))
+
+fitYBcount_calyx = objFuncPpow(hlist_calyx_numbox, poptBcount_calyx[0], poptBcount_calyx[1])
+    
+fig = plt.figure(figsize=(12,8))
+plt.scatter(hlist_calyx_numbox, hlist_calyx_count)
+plt.plot(hlist_calyx_numbox, fitYBcount_calyx, lw=2, linestyle='--')
+plt.yscale('log')
+plt.xscale('log')
+#plt.xlim(0.1, 20)
+#plt.tight_layout()
+plt.xlabel("Box Size", fontsize=15)
+plt.ylabel("Count", fontsize=15)
+plt.show()
+
+
+
+
+t9 = time.time()
+
+print('Run Time: ' + str(t9-t0))
 
