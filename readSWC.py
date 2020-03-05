@@ -1520,21 +1520,22 @@ for b in range(len(binsize)):
 
 
 #%%
-    
+
 poptBcount_all, pcovBcount_all = scipy.optimize.curve_fit(objFuncGL, 
-                                                        np.log10(hlist_numbox[2:]), 
+                                                        np.log10(binsize[2:]), 
                                                         np.log10(hlist_count[2:]),
                                                         p0=[0.1, 0.1], 
                                                         maxfev=10000)
 perrBcount_all = np.sqrt(np.diag(pcovBcount_all))
 
-fitYBcount_all = objFuncPpow(hlist_numbox, poptBcount_all[0], poptBcount_all[1])
+fitYBcount_all = objFuncPpow(binsize, poptBcount_all[0], poptBcount_all[1])
     
 fig = plt.figure(figsize=(12,8))
-plt.scatter(hlist_numbox, hlist_count)
-plt.plot(hlist_numbox, fitYBcount_all, lw=2, linestyle='--')
+plt.scatter(binsize, hlist_count)
+plt.plot(binsize, fitYBcount_all, lw=2, linestyle='--')
 plt.yscale('log')
 plt.xscale('log')
+plt.legend(['All: ' + str(round(poptBcount_all[0], 3)) + '$\pm$' + str(round(perrBcount_all[0], 3))], fontsize=15)
 #plt.xlim(0.1, 20)
 #plt.tight_layout()
 plt.xlabel("Box Size", fontsize=15)
@@ -1550,6 +1551,8 @@ plt.show()
 binsize = [0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25]
 
 calyx_dist_flat = np.array([item for sublist in MorphData.calyxdist for item in sublist])
+LH_dist_flat = np.array([item for sublist in MorphData.LHdist for item in sublist])
+AL_dist_flat = np.array([item for sublist in MorphData.ALdist for item in sublist])
 
 xmax_calyx = np.max(calyx_dist_flat[:,0])
 xmin_calyx = np.min(calyx_dist_flat[:,0])
@@ -1558,9 +1561,29 @@ ymin_calyx = np.min(calyx_dist_flat[:,1])
 zmax_calyx = np.max(calyx_dist_flat[:,2])
 zmin_calyx = np.min(calyx_dist_flat[:,2])
 
+xmax_LH = np.max(LH_dist_flat[:,0])
+xmin_LH = np.min(LH_dist_flat[:,0])
+ymax_LH = np.max(LH_dist_flat[:,1])
+ymin_LH = np.min(LH_dist_flat[:,1])
+zmax_LH = np.max(LH_dist_flat[:,2])
+zmin_LH = np.min(LH_dist_flat[:,2])
+
+xmax_AL = np.max(AL_dist_flat[:,0])
+xmin_AL = np.min(AL_dist_flat[:,0])
+ymax_AL = np.max(AL_dist_flat[:,1])
+ymin_AL = np.min(AL_dist_flat[:,1])
+zmax_AL = np.max(AL_dist_flat[:,2])
+zmin_AL = np.min(AL_dist_flat[:,2])
+
 hlist_calyx = []
 hlist_calyx_count = []
 hlist_calyx_numbox = []
+hlist_LH = []
+hlist_LH_count = []
+hlist_LH_numbox = []
+hlist_AL = []
+hlist_AL_count = []
+hlist_AL_numbox = []
 
 for b in range(len(binsize)):
     hc, e = np.histogramdd(calyx_dist_flat, 
@@ -1570,8 +1593,28 @@ for b in range(len(binsize)):
     hlist_calyx.append(hc)
     hlist_calyx_count.append(np.count_nonzero(hc))
     hlist_calyx_numbox.append((len(np.arange(xmin_calyx, xmax_calyx, binsize[b]))*
-                        len(np.arange(ymin_calyx, ymax_calyx, binsize[b]))*
-                        len(np.arange(zmin_calyx, zmax_calyx, binsize[b]))))
+                               len(np.arange(ymin_calyx, ymax_calyx, binsize[b]))*
+                               len(np.arange(zmin_calyx, zmax_calyx, binsize[b]))))
+    
+    hh, e = np.histogramdd(LH_dist_flat, 
+                          bins=[np.arange(xmin_LH, xmax_LH, binsize[b]), 
+                                np.arange(ymin_LH, ymax_LH, binsize[b]),
+                                np.arange(zmin_LH, zmax_LH, binsize[b])])
+    hlist_LH.append(hh)
+    hlist_LH_count.append(np.count_nonzero(hh))
+    hlist_LH_numbox.append((len(np.arange(xmin_LH, xmax_LH, binsize[b]))*
+                            len(np.arange(ymin_LH, ymax_LH, binsize[b]))*
+                            len(np.arange(zmin_LH, zmax_LH, binsize[b]))))
+    
+    ha, e = np.histogramdd(AL_dist_flat, 
+                          bins=[np.arange(xmin_AL, xmax_AL, binsize[b]), 
+                                np.arange(ymin_AL, ymax_AL, binsize[b]),
+                                np.arange(zmin_AL, zmax_AL, binsize[b])])
+    hlist_AL.append(ha)
+    hlist_AL_count.append(np.count_nonzero(ha))
+    hlist_AL_numbox.append((len(np.arange(xmin_AL, xmax_AL, binsize[b]))*
+                            len(np.arange(ymin_AL, ymax_AL, binsize[b]))*
+                            len(np.arange(zmin_AL, zmax_AL, binsize[b]))))
 
 
 
@@ -1580,19 +1623,42 @@ for b in range(len(binsize)):
     
     
 poptBcount_calyx, pcovBcount_calyx = scipy.optimize.curve_fit(objFuncGL, 
-                                                        np.log10(hlist_calyx_numbox[4:]), 
+                                                        np.log10(binsize[4:]), 
                                                         np.log10(hlist_calyx_count[4:]),
                                                         p0=[0.1, 0.1], 
                                                         maxfev=10000)
 perrBcount_calyx = np.sqrt(np.diag(pcovBcount_calyx))
 
-fitYBcount_calyx = objFuncPpow(hlist_calyx_numbox, poptBcount_calyx[0], poptBcount_calyx[1])
+poptBcount_LH, pcovBcount_LH = scipy.optimize.curve_fit(objFuncGL, 
+                                                        np.log10(binsize[4:]), 
+                                                        np.log10(hlist_LH_count[4:]),
+                                                        p0=[0.1, 0.1], 
+                                                        maxfev=10000)
+perrBcount_LH = np.sqrt(np.diag(pcovBcount_LH))
+
+poptBcount_AL, pcovBcount_AL = scipy.optimize.curve_fit(objFuncGL, 
+                                                        np.log10(binsize[4:]), 
+                                                        np.log10(hlist_AL_count[4:]),
+                                                        p0=[0.1, 0.1], 
+                                                        maxfev=10000)
+perrBcount_AL = np.sqrt(np.diag(pcovBcount_AL))
+
+fitYBcount_calyx = objFuncPpow(binsize, poptBcount_calyx[0], poptBcount_calyx[1])
+fitYBcount_LH = objFuncPpow(binsize, poptBcount_LH[0], poptBcount_LH[1])
+fitYBcount_AL = objFuncPpow(binsize, poptBcount_AL[0], poptBcount_AL[1])
     
 fig = plt.figure(figsize=(12,8))
-plt.scatter(hlist_calyx_numbox, hlist_calyx_count)
-plt.plot(hlist_calyx_numbox, fitYBcount_calyx, lw=2, linestyle='--')
+plt.scatter(binsize, hlist_calyx_count)
+plt.scatter(binsize, hlist_LH_count)
+plt.scatter(binsize, hlist_AL_count)
+plt.plot(binsize, fitYBcount_calyx, lw=2, linestyle='--')
+plt.plot(binsize, fitYBcount_LH, lw=2, linestyle='--')
+plt.plot(binsize, fitYBcount_AL, lw=2, linestyle='--')
 plt.yscale('log')
 plt.xscale('log')
+plt.legend(['Calyx: ' + str(round(poptBcount_calyx[0], 3)) + '$\pm$' + str(round(perrBcount_calyx[0], 3)),
+            'LH: ' + str(round(poptBcount_LH[0], 3)) + '$\pm$' + str(round(perrBcount_LH[0], 3)),
+            'AL: ' + str(round(poptBcount_AL[0], 3)) + '$\pm$' + str(round(perrBcount_AL[0], 3))], fontsize=15)
 #plt.xlim(0.1, 20)
 #plt.tight_layout()
 plt.xlabel("Box Size", fontsize=15)
