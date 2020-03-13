@@ -2183,3 +2183,57 @@ plt.ylabel("Length", fontsize=15)
 plt.show()
 
 
+
+#%%
+
+binsize = [0.5, 1, 2.5, 5, 10, 20, 30, 40, 50]
+
+morph_dist_flat = np.array([item for sublist in MorphData.morph_dist for item in sublist])[:,:3]
+
+xmax_all = np.max(morph_dist_flat[:,0])
+xmin_all = np.min(morph_dist_flat[:,0])
+ymax_all = np.max(morph_dist_flat[:,1])
+ymin_all = np.min(morph_dist_flat[:,1])
+zmax_all = np.max(morph_dist_flat[:,2])
+zmin_all = np.min(morph_dist_flat[:,2])
+
+hlist = []
+hlist_count = []
+hlist_numbox = []
+
+for b in range(len(binsize)):
+    h, e = np.histogramdd(morph_dist_flat, 
+                          bins=[np.arange(xmin_all, xmax_all, binsize[b]), 
+                                np.arange(ymin_all, ymax_all, binsize[b]),
+                                np.arange(zmin_all, zmax_all, binsize[b])])
+    hlist.append(h)
+    hlist_count.append(np.count_nonzero(h))
+    hlist_numbox.append((len(np.arange(xmin_all, xmax_all, binsize[b]))*
+                        len(np.arange(ymin_all, ymax_all, binsize[b]))*
+                        len(np.arange(zmin_all, zmax_all, binsize[b]))))
+
+
+#%%
+
+poptBcount_all, pcovBcount_all = scipy.optimize.curve_fit(objFuncGL, 
+                                                        np.log10(binsize[4:]), 
+                                                        np.log10(hlist_count[4:]),
+                                                        p0=[0.1, 0.1], 
+                                                        maxfev=10000)
+perrBcount_all = np.sqrt(np.diag(pcovBcount_all))
+
+fitYBcount_all = objFuncPpow(binsize, poptBcount_all[0], poptBcount_all[1])
+    
+fig = plt.figure(figsize=(12,8))
+plt.scatter(binsize, hlist_count)
+plt.plot(binsize, fitYBcount_all, lw=2, linestyle='--')
+plt.yscale('log')
+plt.xscale('log')
+plt.legend(['All: ' + str(round(poptBcount_all[0], 3)) + '$\pm$' + str(round(perrBcount_all[0], 3))], fontsize=15)
+#plt.xlim(0.1, 20)
+#plt.tight_layout()
+plt.xlabel("Box Size", fontsize=15)
+plt.ylabel("Count", fontsize=15)
+plt.show()
+
+
