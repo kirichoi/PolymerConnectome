@@ -2132,7 +2132,13 @@ if Parameter.PLOT:
 
 #%%
 
-radiussize = np.multiply(2, [0.5, 0.75, 1, 2, 3, 4, 5, 10, 15, 20])
+headidx = np.where(MorphData.physLoc == 0)[0]
+bodyidx = np.where(MorphData.physLoc == 1)[0]
+bodyidx = np.delete(bodyidx, [67,68])
+tailidx = np.where(MorphData.physLoc == 0)[0]
+
+
+radiussize = np.multiply(2, np.arange(0.5, 20.1, 0.5))
 
 dist_len_dim = np.empty((len(radiussize), len(MorphData.neuron_id)))
 
@@ -2160,8 +2166,8 @@ for r in range(len(radiussize)):
 dist_len_dim_avg = np.nanmean(dist_len_dim, axis=1)
 
 poptDim_all, pcovDim_all = scipy.optimize.curve_fit(objFuncGL, 
-                                                    np.log10(radiussize[3:]), 
-                                                    np.log10(dist_len_dim_avg[3:]),
+                                                    np.log10(radiussize[21:]), 
+                                                    np.log10(dist_len_dim_avg[21:]),
                                                     p0=[-0.1, 0.1], 
                                                     maxfev=10000)
 perrDim_all = np.sqrt(np.diag(pcovDim_all))
@@ -2186,7 +2192,7 @@ plt.show()
 
 #%%
 
-binsize = [0.5, 1, 2.5, 5, 10, 20, 30, 40, 50]
+binsize = np.arange(0.5, 50.1, 0.5)
 
 morph_dist_flat = np.array([item for sublist in MorphData.morph_dist for item in sublist])[:,:3]
 
@@ -2216,8 +2222,8 @@ for b in range(len(binsize)):
 #%%
 
 poptBcount_all, pcovBcount_all = scipy.optimize.curve_fit(objFuncGL, 
-                                                        np.log10(binsize[4:]), 
-                                                        np.log10(hlist_count[4:]),
+                                                        np.log10(binsize[21:]), 
+                                                        np.log10(hlist_count[21:]),
                                                         p0=[0.1, 0.1], 
                                                         maxfev=10000)
 perrBcount_all = np.sqrt(np.diag(pcovBcount_all))
@@ -2235,5 +2241,12 @@ plt.legend(['All: ' + str(round(poptBcount_all[0], 3)) + '$\pm$' + str(round(per
 plt.xlabel("Box Size", fontsize=15)
 plt.ylabel("Count", fontsize=15)
 plt.show()
+
+
+#%%
+
+
+
+
 
 
