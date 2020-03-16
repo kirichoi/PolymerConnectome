@@ -1065,7 +1065,7 @@ fullCM = np.average(OutputData.cMLSeg, axis=0)
 
 #%% Cluster Spread Calculation
         
-radiussize = [2.5, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+radiussize = np.logspace(0, 2, 100)[20:85]
 
 spheredist_calyx_sum = np.empty((len(MorphData.neuron_id), len(radiussize)))
 spheredist_LH_sum = np.empty((len(MorphData.neuron_id), len(radiussize)))
@@ -1155,29 +1155,29 @@ poptD_LH_all = []
 poptD_AL_all = []
 
 poptD_calyx, pcovD_calyx = scipy.optimize.curve_fit(objFuncGL, 
-                                                    np.log10(radiussize_inv[:6]), 
-                                                    np.log10(spheredist_calyx_sum_avg[:6]), 
+                                                    np.log10(radiussize_inv[:49]), 
+                                                    np.log10(spheredist_calyx_sum_avg[:49]), 
                                                     p0=[-0.1, 0.1], 
                                                     maxfev=10000)
 perrD_calyx = np.sqrt(np.diag(pcovD_calyx))
 
 poptD_LH, pcovD_LH = scipy.optimize.curve_fit(objFuncGL, 
-                                              np.log10(radiussize_inv[:7]), 
-                                              np.log10(spheredist_LH_sum_avg[:7]), 
+                                              np.log10(radiussize_inv[:49]), 
+                                              np.log10(spheredist_LH_sum_avg[:49]), 
                                               p0=[-0.1, 0.1], 
                                               maxfev=10000)
 perrD_LH = np.sqrt(np.diag(pcovD_LH))
 
 poptD_AL1, pcovD_AL1 = scipy.optimize.curve_fit(objFuncGL, 
-                                              np.log10(radiussize_inv[2:8]), 
-                                              np.log10(spheredist_AL_sum_avg[2:8]), 
+                                              np.log10(radiussize_inv[24:]), 
+                                              np.log10(spheredist_AL_sum_avg[24:]), 
                                               p0=[-0.1, 0.1], 
                                               maxfev=10000)
 perrD_AL1 = np.sqrt(np.diag(pcovD_AL1))
 
 poptD_AL2, pcovD_AL2 = scipy.optimize.curve_fit(objFuncGL, 
-                                              np.log10(radiussize_inv[:3]), 
-                                              np.log10(spheredist_AL_sum_avg[:3]), 
+                                              np.log10(radiussize_inv[:24]), 
+                                              np.log10(spheredist_AL_sum_avg[:24]), 
                                               p0=[-0.1, 0.1], 
                                               maxfev=10000)
 perrD_AL2 = np.sqrt(np.diag(pcovD_AL2))
@@ -1191,11 +1191,13 @@ fitYD_AL2 = objFuncPpow(radiussize_inv, poptD_AL2[0], poptD_AL2[1])
 fig = plt.figure(figsize=(12,8))
 
 plt.scatter(radiussize_inv, 
-                    spheredist_calyx_sum_avg, c='tab:blue')
+                    spheredist_calyx_sum_avg, color='tab:blue', facecolors='none')
 plt.scatter(radiussize_inv, 
-                    spheredist_LH_sum_avg, c='tab:orange')
-plt.scatter(radiussize_inv[:], 
-                    spheredist_AL_sum_avg[:], c='tab:green')
+                    spheredist_LH_sum_avg, color='tab:orange', facecolors='none')
+plt.scatter(radiussize_inv[24:], 
+                    spheredist_AL_sum_avg[24:], color='tab:green', facecolors='none')
+plt.scatter(radiussize_inv[:24], 
+                    spheredist_AL_sum_avg[:24], color='tab:red', facecolors='none')
 
 plt.plot(radiussize_inv, fitYD_calyx, lw=2, linestyle='--')
 plt.plot(radiussize_inv, fitYD_LH, lw=2, linestyle='--')
@@ -1217,7 +1219,7 @@ plt.show()
 
 #%%
  
-radiussize_all = [25, 50, 75, 100, 125, 150, 200, 250]
+radiussize_all = np.logspace(1, 3, 100)[20:69]
 
 spheredist_all_sum = np.empty((len(MorphData.neuron_id), len(radiussize_all)))
 
@@ -1259,8 +1261,8 @@ spheredist_all_sum_avg = np.nanmean(spheredist_all_sum, axis=0)
 spheredist_all_sum_avg = spheredist_all_sum_avg[np.count_nonzero(~np.isnan(spheredist_all_sum), axis=0) >= 10]
 
 poptD_all, pcovD_all = scipy.optimize.curve_fit(objFuncGL, 
-                                                    np.log10(radiussize_all_inv[:5]), 
-                                                    np.log10(spheredist_all_sum_avg[:5]),
+                                                    np.log10(radiussize_all_inv[:30]), 
+                                                    np.log10(spheredist_all_sum_avg[:30]),
                                                     p0=[-0.1, 0.1], 
                                                     maxfev=10000)
 perrD_all = np.sqrt(np.diag(pcovD_all))
@@ -1318,7 +1320,7 @@ plt.show()
 
 #%% Dimension calculation
 
-radiussize = np.multiply(2, [0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1, 2, 3, 4, 5, 10, 15, 20])
+radiussize = np.multiply(2, np.logspace(-1, 2, 100)[0:99:3])
 
 dist_len_dim = np.empty((len(radiussize), len(MorphData.neuron_id)))
 
@@ -1346,8 +1348,8 @@ for r in range(len(radiussize)):
 dist_len_dim_avg = np.nanmean(dist_len_dim, axis=1)
 
 poptDim_all, pcovDim_all = scipy.optimize.curve_fit(objFuncGL, 
-                                                    np.log10(radiussize[8:]), 
-                                                    np.log10(dist_len_dim_avg[8:]),
+                                                    np.log10(radiussize[16:]), 
+                                                    np.log10(dist_len_dim_avg[16:]),
                                                     p0=[-0.1, 0.1], 
                                                     maxfev=10000)
 perrDim_all = np.sqrt(np.diag(pcovDim_all))
@@ -1372,7 +1374,7 @@ plt.show()
 #%%
 
 
-radiussize = np.multiply(2, [0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1, 2, 3, 4, 5])
+radiussize = np.multiply(2, np.arange(0.1, 5.1, 0.1))
 
 dist_len_calyx_dim = np.empty((len(radiussize), len(MorphData.calyxdist)))
 dist_len_LH_dim = np.empty((len(radiussize), len(MorphData.LHdist)))
@@ -1492,7 +1494,7 @@ print('checkpoint 8: ' + str(t8-t7))
 #%% Dimension using binary box counting
 
 
-binsize = [0.25, 0.5, 1, 2.5, 5, 10, 25, 50]
+binsize = np.arange(0.25, 50.1, 0.25)
 
 morph_dist_flat = np.array([item for sublist in MorphData.morph_dist for item in sublist])
 
@@ -1548,7 +1550,7 @@ plt.show()
 
 #%%
 
-binsize = [0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25]
+binsize = np.arange(0.1, 25.1, 0.1)
 
 calyx_dist_flat = np.array([item for sublist in MorphData.calyxdist for item in sublist])
 LH_dist_flat = np.array([item for sublist in MorphData.LHdist for item in sublist])
