@@ -1559,7 +1559,7 @@ plt.show()
 
 #%%
 
-binsize = np.logspace(-1, 2, 100)[13:99:3]
+binsize = np.logspace(-1, 3, 100)[13:80:3]
 
 calyx_dist_flat = np.array([item for sublist in MorphData.calyxdist for item in sublist])
 LH_dist_flat = np.array([item for sublist in MorphData.LHdist for item in sublist])
@@ -1664,22 +1664,22 @@ for b in range(len(binsize)):
     
     
 poptBcount_calyx, pcovBcount_calyx = scipy.optimize.curve_fit(objFuncGL, 
-                                                        np.log10(binsize[4:]), 
-                                                        np.log10(hlist_calyx_count[4:]),
+                                                        np.log10(binsize[6:16]), 
+                                                        np.log10(hlist_calyx_count[6:16]),
                                                         p0=[0.1, 0.1], 
                                                         maxfev=10000)
 perrBcount_calyx = np.sqrt(np.diag(pcovBcount_calyx))
 
 poptBcount_LH, pcovBcount_LH = scipy.optimize.curve_fit(objFuncGL, 
-                                                        np.log10(binsize[4:]), 
-                                                        np.log10(hlist_LH_count[4:]),
+                                                        np.log10(binsize[6:16]), 
+                                                        np.log10(hlist_LH_count[6:16]),
                                                         p0=[0.1, 0.1], 
                                                         maxfev=10000)
 perrBcount_LH = np.sqrt(np.diag(pcovBcount_LH))
 
 poptBcount_AL, pcovBcount_AL = scipy.optimize.curve_fit(objFuncGL, 
-                                                        np.log10(binsize[4:]), 
-                                                        np.log10(hlist_AL_count[4:]),
+                                                        np.log10(binsize[9:18]), 
+                                                        np.log10(hlist_AL_count[9:18]),
                                                         p0=[0.1, 0.1], 
                                                         maxfev=10000)
 perrBcount_AL = np.sqrt(np.diag(pcovBcount_AL))
