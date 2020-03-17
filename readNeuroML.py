@@ -2130,7 +2130,7 @@ if Parameter.PLOT:
     plt.show()
 
 
-#%%
+#%% Binary Box-counting
 
 headidx = np.where(MorphData.physLoc == 0)[0]
 bodyidx = np.where(MorphData.physLoc == 1)[0]
@@ -2138,7 +2138,7 @@ bodyidx = np.delete(bodyidx, [67,68])
 tailidx = np.where(MorphData.physLoc == 0)[0]
 
 
-radiussize = np.multiply(2, np.arange(0.5, 20.1, 0.5))
+radiussize = np.multiply(2, np.logspace(-1, 3, 100)[23:99:3])
 
 dist_len_dim = np.empty((len(radiussize), len(MorphData.neuron_id)))
 
@@ -2166,8 +2166,8 @@ for r in range(len(radiussize)):
 dist_len_dim_avg = np.nanmean(dist_len_dim, axis=1)
 
 poptDim_all, pcovDim_all = scipy.optimize.curve_fit(objFuncGL, 
-                                                    np.log10(radiussize[21:]), 
-                                                    np.log10(dist_len_dim_avg[21:]),
+                                                    np.log10(radiussize[12:-7]), 
+                                                    np.log10(dist_len_dim_avg[12:-7]),
                                                     p0=[-0.1, 0.1], 
                                                     maxfev=10000)
 perrDim_all = np.sqrt(np.diag(pcovDim_all))
@@ -2177,8 +2177,8 @@ fitYDim_all = objFuncPpow(radiussize, poptDim_all[0], poptDim_all[1])
 fig = plt.figure(figsize=(12,8))
 #for i in range(len(MorphData.neuron_id)):
 #    plt.scatter(radiussize, dist_len_dim[:,i])
-plt.scatter(radiussize, dist_len_dim_avg)
-plt.plot(radiussize, fitYDim_all, lw=2, linestyle='--')
+plt.scatter(radiussize[:-7], dist_len_dim_avg[:-7])
+plt.plot(radiussize[:-7], fitYDim_all[:-7], lw=2, linestyle='--')
 plt.yscale('log')
 plt.xscale('log')
 plt.legend(['All: ' + str(round(poptDim_all[0], 3)) + '$\pm$' + str(round(perrDim_all[0], 3))], fontsize=15)
@@ -2192,7 +2192,7 @@ plt.show()
 
 #%%
 
-binsize = np.arange(0.5, 50.1, 0.5)
+binsize = np.logspace(-1, 3, 100)[18:99:3]
 
 morph_dist_flat = np.array([item for sublist in MorphData.morph_dist for item in sublist])[:,:3]
 
@@ -2208,22 +2208,32 @@ hlist_count = []
 hlist_numbox = []
 
 for b in range(len(binsize)):
+    xbin = np.arange(xmin_all, xmax_all, binsize[b])
+    ybin = np.arange(ymin_all, ymax_all, binsize[b])
+    zbin = np.arange(zmin_all, zmax_all, binsize[b])
+    if len(xbin) == 1:
+        xbin = [-1000, 1000]
+    if len(ybin) == 1:
+        ybin = [-1000, 1000]
+    if len(zbin) == 1:
+        zbin = [-1000, 1000]
+        
     h, e = np.histogramdd(morph_dist_flat, 
-                          bins=[np.arange(xmin_all, xmax_all, binsize[b]), 
-                                np.arange(ymin_all, ymax_all, binsize[b]),
-                                np.arange(zmin_all, zmax_all, binsize[b])])
+                          bins=[xbin, 
+                                ybin,
+                                zbin])
     hlist.append(h)
     hlist_count.append(np.count_nonzero(h))
-    hlist_numbox.append((len(np.arange(xmin_all, xmax_all, binsize[b]))*
-                        len(np.arange(ymin_all, ymax_all, binsize[b]))*
-                        len(np.arange(zmin_all, zmax_all, binsize[b]))))
+    hlist_numbox.append((len(xbin)-1)*
+                        (len(ybin)-1)*
+                        (len(zbin)-1))
 
 
 #%%
 
 poptBcount_all, pcovBcount_all = scipy.optimize.curve_fit(objFuncGL, 
-                                                        np.log10(binsize[21:]), 
-                                                        np.log10(hlist_count[21:]),
+                                                        np.log10(binsize[12:-8]), 
+                                                        np.log10(hlist_count[12:-8]),
                                                         p0=[0.1, 0.1], 
                                                         maxfev=10000)
 perrBcount_all = np.sqrt(np.diag(pcovBcount_all))
