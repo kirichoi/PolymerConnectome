@@ -1853,9 +1853,80 @@ plt.xlabel("Box Size", fontsize=15)
 plt.ylabel("Count", fontsize=15)
 plt.show()
 
-
-
 t9 = time.time()
 
-print('Run Time: ' + str(t9-t0))
+print('checkpoint 9: ' + str(t9-t8))
+
+#%% Single Neuron Dimnesion Calculation using Binary Box-counting
+
+binsize = np.logspace(-2, 3, 100)[25:99]
+
+hlist_single = []
+hlist_single_count = np.empty((10, len(binsize)))
+hlist_single_numbox = np.empty((10, len(binsize)))
+
+for i in range(10):
+    morph_dist_single = np.array(MorphData.morph_dist[i])
+    
+    xmax_single = np.max(morph_dist_single[:,0])
+    xmin_single = np.min(morph_dist_single[:,0])
+    ymax_single = np.max(morph_dist_single[:,1])
+    ymin_single = np.min(morph_dist_single[:,1])
+    zmax_single = np.max(morph_dist_single[:,2])
+    zmin_single = np.min(morph_dist_single[:,2])
+    
+    for b in range(len(binsize)):
+        xbin = np.arange(xmin_single, xmax_single, binsize[b])
+        ybin = np.arange(ymin_single, ymax_single, binsize[b])
+        zbin = np.arange(zmin_single, zmax_single, binsize[b])
+        if len(xbin) == 1:
+            xbin = [-1000, 1000]
+        if len(ybin) == 1:
+            ybin = [-1000, 1000]
+        if len(zbin) == 1:
+            zbin = [-1000, 1000]
+            
+        h, e = np.histogramdd(morph_dist_single, 
+                              bins=[xbin, 
+                                    ybin,
+                                    zbin])
+        hlist_single_count[i][b] = np.count_nonzero(h)
+        hlist_single_numbox[i][b] = ((len(xbin)-1)*
+                                     (len(ybin)-1)*
+                                     (len(zbin)-1))
+   
+
+
+#%%
+
+poptBcount_single, pcovBcount_single = scipy.optimize.curve_fit(objFuncGL, 
+                                                        np.log10(hlist_single_numbox[0][45:]), 
+                                                        np.log10(hlist_single_count[0][45:]),
+                                                        p0=[0.1, 0.1], 
+                                                        maxfev=10000)
+perrBcount_single = np.sqrt(np.diag(pcovBcount_single))
+
+fitYBcount_single = objFuncPpow(hlist_single_numbox[0], poptBcount_single[0], poptBcount_single[1])
+
+cmap = cm.get_cmap('viridis', 10)
+
+fig = plt.figure(figsize=(12,8))
+#for i in range(10):
+plt.scatter(hlist_single_numbox[0], hlist_single_count[0])
+plt.plot(hlist_single_numbox[0], fitYBcount_single, lw=2, linestyle='--')
+plt.yscale('log')
+plt.xscale('log')
+plt.legend(['All: ' + str(round(poptBcount_single[0], 3)) + '$\pm$' + str(round(perrBcount_single[0], 3))], fontsize=15)
+#plt.xlim(0.1, 1000)
+#plt.ylim(0.1, 100000)
+#plt.tight_layout()
+plt.xlabel("Box Count", fontsize=15)
+plt.ylabel("Count", fontsize=15)
+plt.show()
+
+
+
+t10 = time.time()
+
+print('Run Time: ' + str(t10-t0))
 
