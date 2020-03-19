@@ -1509,9 +1509,9 @@ hlist_count = []
 hlist_numbox = []
 
 for b in range(len(binsize)):
-    xbin = np.arange(xmin_all, xmax_all, binsize[b])
-    ybin = np.arange(ymin_all, ymax_all, binsize[b])
-    zbin = np.arange(zmin_all, zmax_all, binsize[b])
+    xbin = np.arange(xmin_all, xmax_all+binsize[b], binsize[b])
+    ybin = np.arange(ymin_all, ymax_all+binsize[b], binsize[b])
+    zbin = np.arange(zmin_all, zmax_all+binsize[b], binsize[b])
     if len(xbin) == 1:
         xbin = [-1000, 1000]
     if len(ybin) == 1:
@@ -1559,7 +1559,7 @@ plt.show()
 
 #%%
 
-binsize = np.logspace(-1, 3, 100)[13:80:3]
+binsize = np.logspace(-1, 3, 100)[13:90:3]
 
 calyx_dist_flat = np.array([item for sublist in MorphData.calyxdist for item in sublist])
 LH_dist_flat = np.array([item for sublist in MorphData.LHdist for item in sublist])
@@ -1597,9 +1597,9 @@ hlist_AL_count = []
 hlist_AL_numbox = []
 
 for b in range(len(binsize)):
-    xbin_calyx = np.arange(xmin_calyx, xmax_calyx, binsize[b])
-    ybin_calyx = np.arange(ymin_calyx, ymax_calyx, binsize[b])
-    zbin_calyx = np.arange(zmin_calyx, zmax_calyx, binsize[b])
+    xbin_calyx = np.arange(xmin_calyx, xmax_calyx+binsize[b], binsize[b])
+    ybin_calyx = np.arange(ymin_calyx, ymax_calyx+binsize[b], binsize[b])
+    zbin_calyx = np.arange(zmin_calyx, zmax_calyx+binsize[b], binsize[b])
     if len(xbin_calyx) == 1:
         xbin_calyx = [-1000, 1000]
     if len(ybin_calyx) == 1:
@@ -1617,9 +1617,9 @@ for b in range(len(binsize)):
                               (len(ybin_calyx)-1)*
                               (len(zbin_calyx)-1))
     
-    xbin_LH = np.arange(xmin_LH, xmax_LH, binsize[b])
-    ybin_LH = np.arange(ymin_LH, ymax_LH, binsize[b])
-    zbin_LH = np.arange(zmin_LH, zmax_LH, binsize[b])
+    xbin_LH = np.arange(xmin_LH, xmax_LH+binsize[b], binsize[b])
+    ybin_LH = np.arange(ymin_LH, ymax_LH+binsize[b], binsize[b])
+    zbin_LH = np.arange(zmin_LH, zmax_LH+binsize[b], binsize[b])
     if len(xbin_LH) == 1:
         xbin_LH = [-1000, 1000]
     if len(ybin_LH) == 1:
@@ -1637,9 +1637,9 @@ for b in range(len(binsize)):
                            (len(ybin_LH)-1)*
                            (len(zbin_LH)-1))
     
-    xbin_AL = np.arange(xmin_AL, xmax_AL, binsize[b])
-    ybin_AL = np.arange(ymin_AL, ymax_AL, binsize[b])
-    zbin_AL = np.arange(zmin_AL, zmax_AL, binsize[b])
+    xbin_AL = np.arange(xmin_AL, xmax_AL+binsize[b], binsize[b])
+    ybin_AL = np.arange(ymin_AL, ymax_AL+binsize[b], binsize[b])
+    zbin_AL = np.arange(zmin_AL, zmax_AL+binsize[b], binsize[b])
     if len(xbin_AL) == 1:
         xbin_AL = [-1000, 1000]
     if len(ybin_AL) == 1:
@@ -1664,22 +1664,22 @@ for b in range(len(binsize)):
     
     
 poptBcount_calyx, pcovBcount_calyx = scipy.optimize.curve_fit(objFuncGL, 
-                                                        np.log10(binsize[6:16]), 
-                                                        np.log10(hlist_calyx_count[6:16]),
+                                                        np.log10(binsize[7:20]), 
+                                                        np.log10(hlist_calyx_count[7:20]),
                                                         p0=[0.1, 0.1], 
                                                         maxfev=10000)
 perrBcount_calyx = np.sqrt(np.diag(pcovBcount_calyx))
 
 poptBcount_LH, pcovBcount_LH = scipy.optimize.curve_fit(objFuncGL, 
-                                                        np.log10(binsize[6:16]), 
-                                                        np.log10(hlist_LH_count[6:16]),
+                                                        np.log10(binsize[7:20]), 
+                                                        np.log10(hlist_LH_count[7:20]),
                                                         p0=[0.1, 0.1], 
                                                         maxfev=10000)
 perrBcount_LH = np.sqrt(np.diag(pcovBcount_LH))
 
 poptBcount_AL, pcovBcount_AL = scipy.optimize.curve_fit(objFuncGL, 
-                                                        np.log10(binsize[9:18]), 
-                                                        np.log10(hlist_AL_count[9:18]),
+                                                        np.log10(binsize[7:20]), 
+                                                        np.log10(hlist_AL_count[7:20]),
                                                         p0=[0.1, 0.1], 
                                                         maxfev=10000)
 perrBcount_AL = np.sqrt(np.diag(pcovBcount_AL))
@@ -1710,7 +1710,7 @@ plt.show()
 
 #%% Binary Box-counting for Sub-physiological Region Length Scale
 
-binsize = np.logspace(-1, 2, 100)[13:99:3]
+binsize = np.logspace(-1, 3, 100)[13:85:3]
 
 xmax_calyx_b = calyxCM[0] + 30
 xmin_calyx_b = calyxCM[0] - 30
@@ -1744,9 +1744,9 @@ hlist_AL_b_count = []
 hlist_AL_b_numbox = []
 
 for b in range(len(binsize)):
-    xbin_calyx_b = np.arange(xmin_calyx_b, xmax_calyx_b, binsize[b])
-    ybin_calyx_b = np.arange(ymin_calyx_b, ymax_calyx_b, binsize[b])
-    zbin_calyx_b = np.arange(zmin_calyx_b, zmax_calyx_b, binsize[b])
+    xbin_calyx_b = np.arange(xmin_calyx_b, xmax_calyx_b+binsize[b], binsize[b])
+    ybin_calyx_b = np.arange(ymin_calyx_b, ymax_calyx_b+binsize[b], binsize[b])
+    zbin_calyx_b = np.arange(zmin_calyx_b, zmax_calyx_b+binsize[b], binsize[b])
     if len(xbin_calyx_b) == 1:
         xbin_calyx_b = [-1000, 1000]
     if len(ybin_calyx_b) == 1:
@@ -1764,9 +1764,9 @@ for b in range(len(binsize)):
                               (len(ybin_calyx_b)-1)*
                               (len(zbin_calyx_b)-1))
     
-    xbin_LH_b = np.arange(xmin_LH_b, xmax_LH_b, binsize[b])
-    ybin_LH_b = np.arange(ymin_LH_b, ymax_LH_b, binsize[b])
-    zbin_LH_b = np.arange(zmin_LH_b, zmax_LH_b, binsize[b])
+    xbin_LH_b = np.arange(xmin_LH_b, xmax_LH_b+binsize[b], binsize[b])
+    ybin_LH_b = np.arange(ymin_LH_b, ymax_LH_b+binsize[b], binsize[b])
+    zbin_LH_b = np.arange(zmin_LH_b, zmax_LH_b+binsize[b], binsize[b])
     if len(xbin_LH_b) == 1:
         xbin_LH_b = [-1000, 1000]
     if len(ybin_LH_b) == 1:
@@ -1784,9 +1784,9 @@ for b in range(len(binsize)):
                            (len(ybin_LH_b)-1)*
                            (len(zbin_LH_b)-1))
     
-    xbin_AL_b = np.arange(xmin_AL_b, xmax_AL_b, binsize[b])
-    ybin_AL_b = np.arange(ymin_AL_b, ymax_AL_b, binsize[b])
-    zbin_AL_b = np.arange(zmin_AL_b, zmax_AL_b, binsize[b])
+    xbin_AL_b = np.arange(xmin_AL_b, xmax_AL_b+binsize[b], binsize[b])
+    ybin_AL_b = np.arange(ymin_AL_b, ymax_AL_b+binsize[b], binsize[b])
+    zbin_AL_b = np.arange(zmin_AL_b, zmax_AL_b+binsize[b], binsize[b])
     if len(xbin_AL_b) == 1:
         xbin_AL_b = [-1000, 1000]
     if len(ybin_AL_b) == 1:
@@ -1811,22 +1811,22 @@ for b in range(len(binsize)):
     
     
 poptBcount_calyx_b, pcovBcount_calyx_b = scipy.optimize.curve_fit(objFuncGL, 
-                                                        np.log10(binsize[11:20]), 
-                                                        np.log10(hlist_calyx_b_count[11:20]),
+                                                        np.log10(binsize[6:20]), 
+                                                        np.log10(hlist_calyx_b_count[6:20]),
                                                         p0=[0.1, 0.1], 
                                                         maxfev=10000)
 perrBcount_calyx_b = np.sqrt(np.diag(pcovBcount_calyx_b))
 
 poptBcount_LH_b, pcovBcount_LH_b = scipy.optimize.curve_fit(objFuncGL, 
-                                                        np.log10(binsize[11:20]), 
-                                                        np.log10(hlist_LH_b_count[11:20]),
+                                                        np.log10(binsize[6:20]), 
+                                                        np.log10(hlist_LH_b_count[6:20]),
                                                         p0=[0.1, 0.1], 
                                                         maxfev=10000)
 perrBcount_LH_b = np.sqrt(np.diag(pcovBcount_LH_b))
 
 poptBcount_AL_b, pcovBcount_AL_b = scipy.optimize.curve_fit(objFuncGL, 
-                                                        np.log10(binsize[11:20]), 
-                                                        np.log10(hlist_AL_b_count[11:20]),
+                                                        np.log10(binsize[6:20]), 
+                                                        np.log10(hlist_AL_b_count[6:20]),
                                                         p0=[0.1, 0.1], 
                                                         maxfev=10000)
 perrBcount_AL_b = np.sqrt(np.diag(pcovBcount_AL_b))
@@ -1859,7 +1859,7 @@ print('checkpoint 9: ' + str(t9-t8))
 
 #%% Single Neuron Dimnesion Calculation using Binary Box-counting
 
-binsize = np.logspace(-2, 3, 100)[25:99]
+binsize = np.logspace(-2, 3, 100)[25:95:3]
 
 hlist_single = []
 hlist_single_count = np.empty((10, len(binsize)))
@@ -1876,9 +1876,9 @@ for i in range(10):
     zmin_single = np.min(morph_dist_single[:,2])
     
     for b in range(len(binsize)):
-        xbin = np.arange(xmin_single, xmax_single, binsize[b])
-        ybin = np.arange(ymin_single, ymax_single, binsize[b])
-        zbin = np.arange(zmin_single, zmax_single, binsize[b])
+        xbin = np.arange(xmin_single, xmax_single+binsize[b], binsize[b])
+        ybin = np.arange(ymin_single, ymax_single+binsize[b], binsize[b])
+        zbin = np.arange(zmin_single, zmax_single+binsize[b], binsize[b])
         if len(xbin) == 1:
             xbin = [-1000, 1000]
         if len(ybin) == 1:
@@ -1900,20 +1900,20 @@ for i in range(10):
 #%%
 
 poptBcount_single, pcovBcount_single = scipy.optimize.curve_fit(objFuncGL, 
-                                                        np.log10(hlist_single_numbox[0][45:]), 
-                                                        np.log10(hlist_single_count[0][45:]),
+                                                        np.log10(binsize[7:-7]), 
+                                                        np.log10(hlist_single_count[0][7:-7]),
                                                         p0=[0.1, 0.1], 
                                                         maxfev=10000)
 perrBcount_single = np.sqrt(np.diag(pcovBcount_single))
 
-fitYBcount_single = objFuncPpow(hlist_single_numbox[0], poptBcount_single[0], poptBcount_single[1])
+fitYBcount_single = objFuncPpow(binsize, poptBcount_single[0], poptBcount_single[1])
 
 cmap = cm.get_cmap('viridis', 10)
 
 fig = plt.figure(figsize=(12,8))
 #for i in range(10):
-plt.scatter(hlist_single_numbox[0], hlist_single_count[0])
-plt.plot(hlist_single_numbox[0], fitYBcount_single, lw=2, linestyle='--')
+plt.scatter(binsize, hlist_single_count[0])
+plt.plot(binsize, fitYBcount_single, lw=2, linestyle='--')
 plt.yscale('log')
 plt.xscale('log')
 plt.legend(['All: ' + str(round(poptBcount_single[0], 3)) + '$\pm$' + str(round(perrBcount_single[0], 3))], fontsize=15)
