@@ -1862,12 +1862,12 @@ print('checkpoint 9: ' + str(t9-t8))
 binsize = np.logspace(-2, 3, 100)[25:95:3]
 
 hlist_single = []
-hlist_single_count = np.empty((10, len(binsize)))
-hlist_single_numbox = np.empty((10, len(binsize)))
+hlist_single_count = np.empty((len(MorphData.morph_dist), len(binsize)))
+hlist_single_numbox = np.empty((len(MorphData.morph_dist), len(binsize)))
 
-for i in range(10):
+for i in range(len(MorphData.morph_dist)):
     morph_dist_single = np.array(MorphData.morph_dist[i])
-    
+    z
     xmax_single = np.max(morph_dist_single[:,0])
     xmin_single = np.min(morph_dist_single[:,0])
     ymax_single = np.max(morph_dist_single[:,1])
@@ -1899,24 +1899,30 @@ for i in range(10):
 
 #%%
 
-poptBcount_single, pcovBcount_single = scipy.optimize.curve_fit(objFuncGL, 
-                                                        np.log10(binsize[7:-7]), 
-                                                        np.log10(hlist_single_count[0][7:-7]),
-                                                        p0=[0.1, 0.1], 
-                                                        maxfev=10000)
-perrBcount_single = np.sqrt(np.diag(pcovBcount_single))
+cmap = cm.get_cmap('viridis', len(MorphData.morph_dist))
 
-fitYBcount_single = objFuncPpow(binsize, poptBcount_single[0], poptBcount_single[1])
-
-cmap = cm.get_cmap('viridis', 10)
+poptBcount_single_list = []
+pcovBcount_single_list = []
 
 fig = plt.figure(figsize=(12,8))
-#for i in range(10):
-plt.scatter(binsize, hlist_single_count[0])
-plt.plot(binsize, fitYBcount_single, lw=2, linestyle='--')
+for i in range(len(MorphData.morph_dist)):
+    poptBcount_single, pcovBcount_single = scipy.optimize.curve_fit(objFuncGL, 
+                                                        np.log10(binsize[7:-7]), 
+                                                        np.log10(hlist_single_count[i][7:-7]),
+                                                        p0=[0.1, 0.1], 
+                                                        maxfev=10000)
+    perrBcount_single = np.sqrt(np.diag(pcovBcount_single))
+    
+    poptBcount_single_list.append(poptBcount_single)
+    pcovBcount_single_list.append(perrBcount_single)
+    
+    fitYBcount_single = objFuncPpow(binsize, poptBcount_single[0], poptBcount_single[1])
+    plt.scatter(binsize, hlist_single_count[i], color=cmap(i))
+    plt.plot(binsize, fitYBcount_single, lw=2, linestyle='--', color=cmap(i))
+    
+#plt.legend([str(i) + ': ' + str(round(poptBcount_single[0], 3)) + '$\pm$' + str(round(perrBcount_single[0], 3))], fontsize=15)    
 plt.yscale('log')
 plt.xscale('log')
-plt.legend(['All: ' + str(round(poptBcount_single[0], 3)) + '$\pm$' + str(round(perrBcount_single[0], 3))], fontsize=15)
 #plt.xlim(0.1, 1000)
 #plt.ylim(0.1, 100000)
 #plt.tight_layout()
@@ -1924,6 +1930,12 @@ plt.xlabel("Box Count", fontsize=15)
 plt.ylabel("Count", fontsize=15)
 plt.show()
 
+
+
+fig = plt.figure(figsize=(12,8))
+poptBcount_single_all = np.array(poptBcount_single_list)[:,0]
+plt.hist(poptBcount_single_all[poptBcount_single_all != 0], bins=30)
+plt.show()
 
 
 t10 = time.time()
