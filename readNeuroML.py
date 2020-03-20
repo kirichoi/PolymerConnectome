@@ -2208,9 +2208,9 @@ hlist_count = []
 hlist_numbox = []
 
 for b in range(len(binsize)):
-    xbin = np.arange(xmin_all, xmax_all, binsize[b])
-    ybin = np.arange(ymin_all, ymax_all, binsize[b])
-    zbin = np.arange(zmin_all, zmax_all, binsize[b])
+    xbin = np.arange(xmin_all, xmax_all+binsize[b], binsize[b])
+    ybin = np.arange(ymin_all, ymax_all+binsize[b], binsize[b])
+    zbin = np.arange(zmin_all, zmax_all+binsize[b], binsize[b])
     if len(xbin) == 1:
         xbin = [-1000, 1000]
     if len(ybin) == 1:
