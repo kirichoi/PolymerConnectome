@@ -2132,12 +2132,6 @@ if Parameter.PLOT:
 
 #%% Binary Box-counting
 
-headidx = np.where(MorphData.physLoc == 0)[0]
-bodyidx = np.where(MorphData.physLoc == 1)[0]
-bodyidx = np.delete(bodyidx, [67,68])
-tailidx = np.where(MorphData.physLoc == 0)[0]
-
-
 radiussize = np.multiply(2, np.logspace(-1, 3, 100)[23:99:3])
 
 dist_len_dim = np.empty((len(radiussize), len(MorphData.neuron_id)))
@@ -2255,8 +2249,158 @@ plt.show()
 
 #%%
 
+headidx = np.where(MorphData.physLoc == 0)[0]
+bodyidx = np.where(MorphData.physLoc == 1)[0]
+bodyidx = np.delete(bodyidx, [67,68])
+tailidx = np.where(MorphData.physLoc == 2)[0]
+
+binsize = np.logspace(-1, 3, 100)[18:99:3]
+
+head_dist_flat = np.array([item for sublist in np.array(MorphData.morph_dist)[headidx] for item in sublist])[:,:3]
+body_dist_flat = np.array([item for sublist in np.array(MorphData.morph_dist)[bodyidx] for item in sublist])[:,:3]
+tail_dist_flat = np.array([item for sublist in np.array(MorphData.morph_dist)[tailidx] for item in sublist])[:,:3]
+
+xmax_head = np.max(head_dist_flat[:,0])
+xmin_head = np.min(head_dist_flat[:,0])
+ymax_head = np.max(head_dist_flat[:,1])
+ymin_head = np.min(head_dist_flat[:,1])
+zmax_head = np.max(head_dist_flat[:,2])
+zmin_head = np.min(head_dist_flat[:,2])
+
+xmax_body = np.max(body_dist_flat[:,0])
+xmin_body = np.min(body_dist_flat[:,0])
+ymax_body = np.max(body_dist_flat[:,1])
+ymin_body = np.min(body_dist_flat[:,1])
+zmax_body = np.max(body_dist_flat[:,2])
+zmin_body = np.min(body_dist_flat[:,2])
+
+xmax_tail = np.max(tail_dist_flat[:,0])
+xmin_tail = np.min(tail_dist_flat[:,0])
+ymax_tail = np.max(tail_dist_flat[:,1])
+ymin_tail = np.min(tail_dist_flat[:,1])
+zmax_tail = np.max(tail_dist_flat[:,2])
+zmin_tail = np.min(tail_dist_flat[:,2])
+
+hlist_head = []
+hlist_head_count = []
+hlist_head_numbox = []
+hlist_body = []
+hlist_body_count = []
+hlist_body_numbox = []
+hlist_tail = []
+hlist_tail_count = []
+hlist_tail_numbox = []
+
+for b in range(len(binsize)):
+    xbin_head = np.arange(xmin_head, xmax_head+binsize[b], binsize[b])
+    ybin_head = np.arange(ymin_head, ymax_head+binsize[b], binsize[b])
+    zbin_head = np.arange(zmin_head, zmax_head+binsize[b], binsize[b])
+    if len(xbin_head) == 1:
+        xbin_head = [-1000, 1000]
+    if len(ybin_head) == 1:
+        ybin_head = [-1000, 1000]
+    if len(zbin_head) == 1:
+        zbin_head = [-1000, 1000]
+        
+    h, e = np.histogramdd(head_dist_flat, 
+                          bins=[xbin_head, 
+                                ybin_head,
+                                zbin_head])
+    hlist_head.append(h)
+    hlist_head_count.append(np.count_nonzero(h))
+    hlist_head_numbox.append((len(xbin_head)-1)*
+                        (len(ybin_head)-1)*
+                        (len(zbin_head)-1))
+    
+    xbin_body = np.arange(xmin_body, xmax_body+binsize[b], binsize[b])
+    ybin_body = np.arange(ymin_body, ymax_body+binsize[b], binsize[b])
+    zbin_body = np.arange(zmin_body, zmax_body+binsize[b], binsize[b])
+    if len(xbin_body) == 1:
+        xbin_body = [-1000, 1000]
+    if len(ybin_body) == 1:
+        ybin_body = [-1000, 1000]
+    if len(zbin_body) == 1:
+        zbin_body = [-1000, 1000]
+        
+    h, e = np.histogramdd(body_dist_flat, 
+                          bins=[xbin_body, 
+                                ybin_body,
+                                zbin_body])
+    hlist_body.append(h)
+    hlist_body_count.append(np.count_nonzero(h))
+    hlist_body_numbox.append((len(xbin_body)-1)*
+                        (len(ybin_body)-1)*
+                        (len(zbin_body)-1))
+
+    xbin_tail = np.arange(xmin_tail, xmax_tail+binsize[b], binsize[b])
+    ybin_tail = np.arange(ymin_tail, ymax_tail+binsize[b], binsize[b])
+    zbin_tail = np.arange(zmin_tail, zmax_tail+binsize[b], binsize[b])
+    if len(xbin_tail) == 1:
+        xbin_tail = [-1000, 1000]
+    if len(ybin_tail) == 1:
+        ybin_tail = [-1000, 1000]
+    if len(zbin_tail) == 1:
+        zbin_tail = [-1000, 1000]
+        
+    h, e = np.histogramdd(tail_dist_flat, 
+                          bins=[xbin_tail, 
+                                ybin_tail,
+                                zbin_tail])
+    hlist_tail.append(h)
+    hlist_tail_count.append(np.count_nonzero(h))
+    hlist_tail_numbox.append((len(xbin_tail)-1)*
+                        (len(ybin_tail)-1)*
+                        (len(zbin_tail)-1))
+
+#%%
+
+poptBcount_head, pcovBcount_head = scipy.optimize.curve_fit(objFuncGL, 
+                                                        np.log10(binsize[12:-8]), 
+                                                        np.log10(hlist_head_count[12:-8]),
+                                                        p0=[0.1, 0.1], 
+                                                        maxfev=10000)
+perrBcount_head = np.sqrt(np.diag(pcovBcount_head))
+
+fitYBcount_head = objFuncPpow(binsize, poptBcount_head[0], poptBcount_head[1])
+
+poptBcount_body, pcovBcount_body = scipy.optimize.curve_fit(objFuncGL, 
+                                                        np.log10(binsize[12:-8]), 
+                                                        np.log10(hlist_body_count[12:-8]),
+                                                        p0=[0.1, 0.1], 
+                                                        maxfev=10000)
+perrBcount_body = np.sqrt(np.diag(pcovBcount_body))
+
+fitYBcount_body = objFuncPpow(binsize, poptBcount_body[0], poptBcount_body[1])
+
+poptBcount_tail, pcovBcount_tail = scipy.optimize.curve_fit(objFuncGL, 
+                                                        np.log10(binsize[12:-8]), 
+                                                        np.log10(hlist_tail_count[12:-8]),
+                                                        p0=[0.1, 0.1], 
+                                                        maxfev=10000)
+perrBcount_tail = np.sqrt(np.diag(pcovBcount_tail))
+
+fitYBcount_tail = objFuncPpow(binsize, poptBcount_tail[0], poptBcount_tail[1])
+
+fig = plt.figure(figsize=(12,8))
+plt.scatter(binsize, hlist_head_count)
+plt.scatter(binsize, hlist_body_count)
+plt.scatter(binsize, hlist_tail_count)
+plt.plot(binsize, fitYBcount_head, lw=2, linestyle='--')
+plt.plot(binsize, fitYBcount_body, lw=2, linestyle='--')
+plt.plot(binsize, fitYBcount_tail, lw=2, linestyle='--')
+plt.yscale('log')
+plt.xscale('log')
+plt.legend(['Head: ' + str(round(poptBcount_head[0], 3)) + '$\pm$' + str(round(perrBcount_head[0], 3)),
+            'Body: ' + str(round(poptBcount_body[0], 3)) + '$\pm$' + str(round(perrBcount_body[0], 3)),
+            'Tail: ' + str(round(poptBcount_tail[0], 3)) + '$\pm$' + str(round(perrBcount_tail[0], 3))], fontsize=15)
+#plt.xlim(0.1, 20)
+#plt.tight_layout()
+plt.xlabel("Box Size", fontsize=15)
+plt.ylabel("Count", fontsize=15)
+plt.show()
 
 
+#%%
 
 
 
