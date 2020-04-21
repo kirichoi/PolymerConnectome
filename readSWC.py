@@ -15,6 +15,7 @@ import matplotlib.patches as mpatches
 import seaborn
 import pandas as pd
 import scipy.optimize
+from sklearn import neighbors
 from collections import Counter
 import multiprocessing as mp
 import time
@@ -688,13 +689,14 @@ if Parameter.PLOT:
     #==============================================================================
     
     
-    branchEndPDict = {'branch': BranchData.branchNum, 'endP': MorphData.endP_len}
-    branchEndPDF = pd.DataFrame(data=branchEndPDict)
+    # branchEndPDict = {'branch': BranchData.branchNum, 'endP': MorphData.endP_len}
+    # branchEndPDF = pd.DataFrame(data=branchEndPDict)
     fig = plt.figure(figsize=(8,6))
-    seaborn.swarmplot(x='branch', y='endP', data=branchEndPDF)
-    plt.title("Distribution of Number of Endpoints\n for Given Number of Branches", fontsize=20)
+    # seaborn.swarmplot(x='branch', y='endP', data=branchEndPDF)
+    plt.scatter(BranchData.branchNum, MorphData.endP_len)
+    plt.title("Distribution of Number of Tips\n for Given Number of Branches", fontsize=20)
     plt.xlabel("Number of Branches", fontsize=15)
-    plt.ylabel("Number of Endpoints", fontsize=15)
+    plt.ylabel("Number of Tips", fontsize=15)
     #plt.xlim(-1, 10)
     #plt.ylim(-1, 10)
     plt.tight_layout()
@@ -1252,7 +1254,7 @@ for m in range(len(MorphData.neuron_id)):
 
 #%%
    
-radiussize_all_inv = (1e6)*np.divide(1, 4/3*np.pi*np.power(radiussize_all, 3))
+radiussize_all_inv = np.divide(1, 4/3*np.pi*np.power(radiussize_all, 3))
 
 spheredist_all_sum[spheredist_all_sum == 0] = np.nan
 
@@ -1712,26 +1714,16 @@ plt.show()
 
 binsize = np.logspace(-1, 3, 100)[13:85:3]
 
-xmax_calyx_b = calyxCM[0] + 30
-xmin_calyx_b = calyxCM[0] - 30
-ymax_calyx_b = calyxCM[1] + 30
-ymin_calyx_b = calyxCM[1] - 30
-zmax_calyx_b = calyxCM[2] + 30
-zmin_calyx_b = calyxCM[2] - 30
+sp_l = 15
 
-xmax_LH_b = LHCM[0] + 30
-xmin_LH_b = LHCM[0] - 30
-ymax_LH_b = LHCM[1] + 30
-ymin_LH_b = LHCM[1] - 30
-zmax_LH_b = LHCM[2] + 30
-zmin_LH_b = LHCM[2] - 30
+max_calyx_b = calyxCM + sp_l
+min_calyx_b = calyxCM - sp_l
 
-xmax_AL_b = ALCM[0] + 30
-xmin_AL_b = ALCM[0] - 30
-ymax_AL_b = ALCM[1] + 30
-ymin_AL_b = ALCM[1] - 30
-zmax_AL_b = ALCM[2] + 30
-zmin_AL_b = ALCM[2] - 30
+max_LH_b = LHCM + sp_l
+min_LH_b = LHCM - sp_l
+
+max_AL_b = ALCM + sp_l
+min_AL_b = ALCM - sp_l
 
 hlist_calyx_b = []
 hlist_calyx_b_count = []
@@ -1743,10 +1735,11 @@ hlist_AL_b = []
 hlist_AL_b_count = []
 hlist_AL_b_numbox = []
 
+
 for b in range(len(binsize)):
-    xbin_calyx_b = np.arange(xmin_calyx_b, xmax_calyx_b+binsize[b], binsize[b])
-    ybin_calyx_b = np.arange(ymin_calyx_b, ymax_calyx_b+binsize[b], binsize[b])
-    zbin_calyx_b = np.arange(zmin_calyx_b, zmax_calyx_b+binsize[b], binsize[b])
+    xbin_calyx_b = np.arange(min_calyx_b[0], max_calyx_b[0]+binsize[b], binsize[b])
+    ybin_calyx_b = np.arange(min_calyx_b[1], max_calyx_b[1]+binsize[b], binsize[b])
+    zbin_calyx_b = np.arange(min_calyx_b[2], max_calyx_b[2]+binsize[b], binsize[b])
     if len(xbin_calyx_b) == 1:
         xbin_calyx_b = [-1000, 1000]
     if len(ybin_calyx_b) == 1:
@@ -1764,9 +1757,9 @@ for b in range(len(binsize)):
                               (len(ybin_calyx_b)-1)*
                               (len(zbin_calyx_b)-1))
     
-    xbin_LH_b = np.arange(xmin_LH_b, xmax_LH_b+binsize[b], binsize[b])
-    ybin_LH_b = np.arange(ymin_LH_b, ymax_LH_b+binsize[b], binsize[b])
-    zbin_LH_b = np.arange(zmin_LH_b, zmax_LH_b+binsize[b], binsize[b])
+    xbin_LH_b = np.arange(min_LH_b[0], max_LH_b[0]+binsize[b], binsize[b])
+    ybin_LH_b = np.arange(min_LH_b[1], max_LH_b[1]+binsize[b], binsize[b])
+    zbin_LH_b = np.arange(min_LH_b[2], max_LH_b[2]+binsize[b], binsize[b])
     if len(xbin_LH_b) == 1:
         xbin_LH_b = [-1000, 1000]
     if len(ybin_LH_b) == 1:
@@ -1784,9 +1777,9 @@ for b in range(len(binsize)):
                            (len(ybin_LH_b)-1)*
                            (len(zbin_LH_b)-1))
     
-    xbin_AL_b = np.arange(xmin_AL_b, xmax_AL_b+binsize[b], binsize[b])
-    ybin_AL_b = np.arange(ymin_AL_b, ymax_AL_b+binsize[b], binsize[b])
-    zbin_AL_b = np.arange(zmin_AL_b, zmax_AL_b+binsize[b], binsize[b])
+    xbin_AL_b = np.arange(min_AL_b[0], max_AL_b[0]+binsize[b], binsize[b])
+    ybin_AL_b = np.arange(min_AL_b[1], max_AL_b[1]+binsize[b], binsize[b])
+    zbin_AL_b = np.arange(min_AL_b[2], max_AL_b[2]+binsize[b], binsize[b])
     if len(xbin_AL_b) == 1:
         xbin_AL_b = [-1000, 1000]
     if len(ybin_AL_b) == 1:
@@ -1906,9 +1899,13 @@ pcovBcount_single_list = []
 
 fig = plt.figure(figsize=(12,8))
 for i in range(len(MorphData.morph_dist)):
+    farg = np.argwhere(hlist_single_count[i] > 1)[-1][0]
+    iarg = farg - 5
+    if iarg < 0:
+        iarg = 0
     poptBcount_single, pcovBcount_single = scipy.optimize.curve_fit(objFuncGL, 
-                                                        np.log10(binsize[7:-7]), 
-                                                        np.log10(hlist_single_count[i][7:-7]),
+                                                        np.log10(binsize[iarg:farg]), 
+                                                        np.log10(hlist_single_count[i][iarg:farg]),
                                                         p0=[0.1, 0.1], 
                                                         maxfev=10000)
     perrBcount_single = np.sqrt(np.diag(pcovBcount_single))
@@ -1930,11 +1927,19 @@ plt.xlabel("Box Count", fontsize=15)
 plt.ylabel("Count", fontsize=15)
 plt.show()
 
+poptBcount_single_all = np.sort(np.array(poptBcount_single_list)[:,0])[:-2]
+xval = np.linspace(min(poptBcount_single_all)-0.1, max(poptBcount_single_all)+0.1, 300)
 
+kde = neighbors.KernelDensity(kernel='gaussian', bandwidth=0.05).fit(poptBcount_single_all.reshape((len(poptBcount_single_all),1)))
+
+log_dens = kde.score_samples(xval.reshape((len(xval),1)))
 
 fig = plt.figure(figsize=(12,8))
-poptBcount_single_all = np.array(poptBcount_single_list)[:,0]
-plt.hist(poptBcount_single_all[poptBcount_single_all != 0], bins=30)
+plt.hist(poptBcount_single_all, bins=int(len(hlist_single_count)/5), density=True)
+plt.plot(xval, np.exp(log_dens), lw=3)
+plt.vlines(xval[np.argmax(np.exp(log_dens))], 0, 5, linestyle='--', label=str(round(xval[np.argmax(np.exp(log_dens))], 3)), color='tab:red')
+plt.ylim(0, 4.5)
+plt.legend(fontsize=15)
 plt.show()
 
 
