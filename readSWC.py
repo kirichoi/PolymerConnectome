@@ -1712,9 +1712,9 @@ plt.show()
 
 #%% Binary Box-counting for Sub-physiological Region Length Scale
 
-binsize = np.logspace(-1, 3, 100)[13:85:3]
+binsize = np.logspace(-1, 3, 100)[13:75:3]
 
-sp_l = [5, 10, 15, 30, 45, 60]
+sp_l = np.arange(5, 60, 2.5)
 
 hlist_calyx_b = []
 hlist_calyx_b_count = []
@@ -1726,94 +1726,108 @@ hlist_AL_b = []
 hlist_AL_b_count = []
 hlist_AL_b_numbox = []
 
-for l in range(len(sp_l)):
-    max_calyx_b = calyxCM + sp_l[l]
-    min_calyx_b = calyxCM - sp_l[l]
-    
-    max_LH_b = LHCM + sp_l[l]
-    min_LH_b = LHCM - sp_l[l]
-    
-    max_AL_b = ALCM + sp_l[l]
-    min_AL_b = ALCM - sp_l[l]
-    
-    hlist_calyx_b_t = []
-    hlist_calyx_b_count_t = []
-    hlist_calyx_b_numbox_t = []
-    hlist_LH_b_t = []
-    hlist_LH_b_count_t = []
-    hlist_LH_b_numbox_t = []
-    hlist_AL_b_t = []
-    hlist_AL_b_count_t = []
-    hlist_AL_b_numbox_t = []
-    for b in range(len(binsize)):
-        xbin_calyx_b = np.arange(min_calyx_b[0], max_calyx_b[0]+binsize[b], binsize[b])
-        ybin_calyx_b = np.arange(min_calyx_b[1], max_calyx_b[1]+binsize[b], binsize[b])
-        zbin_calyx_b = np.arange(min_calyx_b[2], max_calyx_b[2]+binsize[b], binsize[b])
-        if len(xbin_calyx_b) == 1:
-            xbin_calyx_b = [-1000, 1000]
-        if len(ybin_calyx_b) == 1:
-            ybin_calyx_b = [-1000, 1000]
-        if len(zbin_calyx_b) == 1:
-            zbin_calyx_b = [-1000, 1000]
+for r in range(5):
+    for l in range(len(sp_l)):
         
-        hc, e = np.histogramdd(calyx_dist_flat, 
-                              bins=[xbin_calyx_b, 
-                                    ybin_calyx_b,
-                                    zbin_calyx_b])
-        hlist_calyx_b_t.append(hc)
-        hlist_calyx_b_count_t.append(np.count_nonzero(hc))
-        hlist_calyx_b_numbox_t.append((len(xbin_calyx_b)-1)*
-                                  (len(ybin_calyx_b)-1)*
-                                  (len(zbin_calyx_b)-1))
+        calyx_rand = np.array([np.random.uniform(-(xmax_calyx - xmin_calyx)/20, (xmax_calyx - xmin_calyx)/20), 
+                               np.random.uniform(-(ymax_calyx - ymin_calyx)/20, (ymax_calyx - ymin_calyx)/20),
+                               np.random.uniform(-(zmax_calyx - zmin_calyx)/20, (zmax_calyx - zmin_calyx)/20)])/10
+        max_calyx_b = calyxCM + sp_l[l] + calyx_rand
+        min_calyx_b = calyxCM - sp_l[l] + calyx_rand
         
-        xbin_LH_b = np.arange(min_LH_b[0], max_LH_b[0]+binsize[b], binsize[b])
-        ybin_LH_b = np.arange(min_LH_b[1], max_LH_b[1]+binsize[b], binsize[b])
-        zbin_LH_b = np.arange(min_LH_b[2], max_LH_b[2]+binsize[b], binsize[b])
-        if len(xbin_LH_b) == 1:
-            xbin_LH_b = [-1000, 1000]
-        if len(ybin_LH_b) == 1:
-            ybin_LH_b = [-1000, 1000]
-        if len(zbin_LH_b) == 1:
-            zbin_LH_b = [-1000, 1000]
+        LH_rand = np.array([np.random.uniform(-(xmax_LH - xmin_LH)/20, (xmax_LH - xmin_LH)/20), 
+                            np.random.uniform(-(ymax_LH - ymin_LH)/20, (ymax_LH - ymin_LH)/20),
+                            np.random.uniform(-(zmax_LH - zmin_LH)/20, (zmax_LH - zmin_LH)/20)])/10
         
-        hh, e = np.histogramdd(LH_dist_flat, 
-                              bins=[xbin_LH_b, 
-                                    ybin_LH_b,
-                                    zbin_LH_b])
-        hlist_LH_b_t.append(hh)
-        hlist_LH_b_count_t.append(np.count_nonzero(hh))
-        hlist_LH_b_numbox_t.append((len(xbin_LH_b)-1)*
-                               (len(ybin_LH_b)-1)*
-                               (len(zbin_LH_b)-1))
+        max_LH_b = LHCM + sp_l[l] + LH_rand
+        min_LH_b = LHCM - sp_l[l] + LH_rand
         
-        xbin_AL_b = np.arange(min_AL_b[0], max_AL_b[0]+binsize[b], binsize[b])
-        ybin_AL_b = np.arange(min_AL_b[1], max_AL_b[1]+binsize[b], binsize[b])
-        zbin_AL_b = np.arange(min_AL_b[2], max_AL_b[2]+binsize[b], binsize[b])
-        if len(xbin_AL_b) == 1:
-            xbin_AL_b = [-1000, 1000]
-        if len(ybin_AL_b) == 1:
-            ybin_AL_b = [-1000, 1000]
-        if len(zbin_AL_b) == 1:
-            zbin_AL_b = [-1000, 1000]
+        AL_rand = np.array([np.random.uniform(-(xmax_AL - xmin_AL)/20, (xmax_AL - xmin_AL)/20), 
+                            np.random.uniform(-(ymax_AL - ymin_AL)/20, (ymax_AL - ymin_AL)/20),
+                            np.random.uniform(-(zmax_AL - zmin_AL)/20, (zmax_AL - zmin_AL)/20)])/10
+        
+        max_AL_b = ALCM + sp_l[l] + AL_rand
+        min_AL_b = ALCM - sp_l[l] + AL_rand
+        
+        hlist_calyx_b_t = []
+        hlist_calyx_b_count_t = []
+        hlist_calyx_b_numbox_t = []
+        hlist_LH_b_t = []
+        hlist_LH_b_count_t = []
+        hlist_LH_b_numbox_t = []
+        hlist_AL_b_t = []
+        hlist_AL_b_count_t = []
+        hlist_AL_b_numbox_t = []
+        
+        for b in range(len(binsize)):
+            xbin_calyx_b = np.arange(min_calyx_b[0], max_calyx_b[0]+binsize[b], binsize[b])
+            ybin_calyx_b = np.arange(min_calyx_b[1], max_calyx_b[1]+binsize[b], binsize[b])
+            zbin_calyx_b = np.arange(min_calyx_b[2], max_calyx_b[2]+binsize[b], binsize[b])
+            if len(xbin_calyx_b) == 1:
+                xbin_calyx_b = [-1000, 1000]
+            if len(ybin_calyx_b) == 1:
+                ybin_calyx_b = [-1000, 1000]
+            if len(zbin_calyx_b) == 1:
+                zbin_calyx_b = [-1000, 1000]
             
-        ha, e = np.histogramdd(AL_dist_flat, 
-                              bins=[xbin_AL_b, 
-                                    ybin_AL_b,
-                                    zbin_AL_b])
-        hlist_AL_b_t.append(ha)
-        hlist_AL_b_count_t.append(np.count_nonzero(ha))
-        hlist_AL_b_numbox_t.append((len(xbin_AL_b)-1)*
-                               (len(ybin_AL_b)-1)*
-                               (len(zbin_AL_b)-1))
-    hlist_calyx_b.append(hlist_calyx_b_t)
-    hlist_calyx_b_count.append(hlist_calyx_b_count_t)
-    hlist_calyx_b_numbox.append(hlist_calyx_b_numbox_t)
-    hlist_LH_b.append(hlist_LH_b_t)
-    hlist_LH_b_count.append(hlist_LH_b_count_t)
-    hlist_LH_b_numbox.append(hlist_LH_b_numbox_t)
-    hlist_AL_b.append(hlist_AL_b_t)
-    hlist_AL_b_count.append(hlist_AL_b_count_t)
-    hlist_AL_b_numbox.append(hlist_AL_b_numbox_t)
+            hc, e = np.histogramdd(calyx_dist_flat, 
+                                  bins=[xbin_calyx_b, 
+                                        ybin_calyx_b,
+                                        zbin_calyx_b])
+            # hlist_calyx_b_t.append(hc)
+            hlist_calyx_b_count_t.append(np.count_nonzero(hc))
+            # hlist_calyx_b_numbox_t.append((len(xbin_calyx_b)-1)*
+            #                           (len(ybin_calyx_b)-1)*
+            #                           (len(zbin_calyx_b)-1))
+            
+            xbin_LH_b = np.arange(min_LH_b[0], max_LH_b[0]+binsize[b], binsize[b])
+            ybin_LH_b = np.arange(min_LH_b[1], max_LH_b[1]+binsize[b], binsize[b])
+            zbin_LH_b = np.arange(min_LH_b[2], max_LH_b[2]+binsize[b], binsize[b])
+            if len(xbin_LH_b) == 1:
+                xbin_LH_b = [-1000, 1000]
+            if len(ybin_LH_b) == 1:
+                ybin_LH_b = [-1000, 1000]
+            if len(zbin_LH_b) == 1:
+                zbin_LH_b = [-1000, 1000]
+            
+            hh, e = np.histogramdd(LH_dist_flat, 
+                                  bins=[xbin_LH_b, 
+                                        ybin_LH_b,
+                                        zbin_LH_b])
+            # hlist_LH_b_t.append(hh)
+            hlist_LH_b_count_t.append(np.count_nonzero(hh))
+            # hlist_LH_b_numbox_t.append((len(xbin_LH_b)-1)*
+            #                        (len(ybin_LH_b)-1)*
+            #                        (len(zbin_LH_b)-1))
+            
+            xbin_AL_b = np.arange(min_AL_b[0], max_AL_b[0]+binsize[b], binsize[b])
+            ybin_AL_b = np.arange(min_AL_b[1], max_AL_b[1]+binsize[b], binsize[b])
+            zbin_AL_b = np.arange(min_AL_b[2], max_AL_b[2]+binsize[b], binsize[b])
+            if len(xbin_AL_b) == 1:
+                xbin_AL_b = [-1000, 1000]
+            if len(ybin_AL_b) == 1:
+                ybin_AL_b = [-1000, 1000]
+            if len(zbin_AL_b) == 1:
+                zbin_AL_b = [-1000, 1000]
+                
+            ha, e = np.histogramdd(AL_dist_flat, 
+                                  bins=[xbin_AL_b, 
+                                        ybin_AL_b,
+                                        zbin_AL_b])
+            # hlist_AL_b_t.append(ha)
+            hlist_AL_b_count_t.append(np.count_nonzero(ha))
+            # hlist_AL_b_numbox_t.append((len(xbin_AL_b)-1)*
+            #                        (len(ybin_AL_b)-1)*
+            #                        (len(zbin_AL_b)-1))
+        # hlist_calyx_b.append(hlist_calyx_b_t)
+        hlist_calyx_b_count.append(hlist_calyx_b_count_t)
+        # hlist_calyx_b_numbox.append(hlist_calyx_b_numbox_t)
+        # hlist_LH_b.append(hlist_LH_b_t)
+        hlist_LH_b_count.append(hlist_LH_b_count_t)
+        # hlist_LH_b_numbox.append(hlist_LH_b_numbox_t)
+        # hlist_AL_b.append(hlist_AL_b_t)
+        hlist_AL_b_count.append(hlist_AL_b_count_t)
+        # hlist_AL_b_numbox.append(hlist_AL_b_numbox_t)
 
 
 
@@ -1829,7 +1843,7 @@ fitYBcount_calyx_b = []
 fitYBcount_LH_b = []
 fitYBcount_AL_b = []
 
-for l in range(len(sp_l)):
+for l in range(len(sp_l)*5):
     farg = np.argwhere(np.array(hlist_calyx_b_count[l]) > 1)[-1][0]
     iarg = farg - 10
     if iarg < 6:
@@ -1887,14 +1901,37 @@ plt.xscale('log')
 # plt.legend(['Calyx: ' + str(round(poptBcount_calyx_b[0], 3)) + '$\pm$' + str(round(perrBcount_calyx_b[0], 3)),
 #             'LH: ' + str(round(poptBcount_LH_b[0], 3)) + '$\pm$' + str(round(perrBcount_LH_b[0], 3)),
 #             'AL: ' + str(round(poptBcount_AL_b[0], 3)) + '$\pm$' + str(round(perrBcount_AL_b[0], 3))], fontsize=15)
-plt.xlim(0.1, 20)
+plt.xlim(0.2, 350)
 #plt.tight_layout()
 plt.xlabel("Box Size", fontsize=15)
 plt.ylabel("Count", fontsize=15)
 plt.show()
 
 
+#%%
 
+poptBcount_calyx_b_avg = []
+poptBcount_LH_b_avg = []
+poptBcount_AL_b_avg = []
+for i in range(len(sp_l)):
+    poptBcount_calyx_b_avg.append(np.average(np.array(poptBcount_calyx_b[i:len(poptBcount_calyx_b):len(sp_l)])[:,0]))
+    poptBcount_LH_b_avg.append(np.average(np.array(poptBcount_LH_b[i:len(poptBcount_LH_b):len(sp_l)])[:,0]))
+    poptBcount_AL_b_avg.append(np.average(np.array(poptBcount_AL_b[i:len(poptBcount_AL_b):len(sp_l)])[:,0]))
+    
+    # poptBcount_calyx_b_avg.append(np.average(np.array(poptBcount_calyx_b[i:len(poptBcount_calyx_b):len(sp_l)])[:,0]))
+    # poptBcount_LH_b_avg.append(np.average(np.array(poptBcount_LH_b[i:len(poptBcount_LH_b):len(sp_l)])[:,0]))
+    # poptBcount_AL_b_avg.append(np.average(np.array(poptBcount_AL_b[i:len(poptBcount_AL_b):len(sp_l)])[:,0]))
+
+
+fig = plt.figure(figsize=(12,8))
+plt.plot(sp_l, poptBcount_calyx_b_avg, lw=2, linestyle='--', color='tab:blue')
+plt.plot(sp_l, poptBcount_LH_b_avg, lw=2, linestyle='--', color='tab:orange')
+plt.plot(sp_l, poptBcount_AL_b_avg, lw=2, linestyle='--', color='tab:green')
+plt.legend(['Calyx', 'LH', 'AL'], fontsize=15)
+#plt.tight_layout()
+plt.xlabel("Box Size", fontsize=15)
+plt.ylabel("Dimension", fontsize=15)
+plt.show()
 
 t9 = time.time()
 
