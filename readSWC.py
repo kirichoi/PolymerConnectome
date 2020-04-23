@@ -2060,14 +2060,35 @@ for i in range(len(BranchData.branchP)):
     branchP_dist_t = []
     for j in range(len(BranchData.branchP[i])):
         branchP_dist_t.append(MorphData.morph_dist[i][MorphData.morph_id[i].index(BranchData.branchP[i][j])])
-    BranchData.branchP_dist.append(branchP_dist_t)
+    if len(branchP_dist_t) > 0:
+        BranchData.branchP_dist.append(branchP_dist_t)
     
 for i in range(len(MorphData.endP)):
     endP_dist_t = []
     for j in range(len(MorphData.endP[i])):
         endP_dist_t.append(MorphData.morph_dist[i][MorphData.morph_id[i].index(MorphData.endP[i][j])])
-    MorphData.endP_dist.append(endP_dist_t)
+    if len(endP_dist_t) > 0:
+        MorphData.endP_dist.append(endP_dist_t)
 
+
+fig = plt.figure(figsize=(24, 16))
+ax = plt.axes(projection='3d')
+cmap = cm.get_cmap('viridis', len(BranchData.branchP_dist))
+for f in range(len(BranchData.branchP_dist)):
+    ax.scatter3D(np.array(BranchData.branchP_dist[f])[:,0], 
+                 np.array(BranchData.branchP_dist[f])[:,1], 
+                 np.array(BranchData.branchP_dist[f])[:,2], color=cmap(f), marker='o')
+plt.show()
+
+
+fig = plt.figure(figsize=(24, 16))
+ax = plt.axes(projection='3d')
+cmap = cm.get_cmap('viridis', len(MorphData.endP_dist))
+for f in range(len(MorphData.endP_dist)):
+    ax.scatter3D(np.array(MorphData.endP_dist[f])[:,0], 
+                 np.array(MorphData.endP_dist[f])[:,1], 
+                 np.array(MorphData.endP_dist[f])[:,2], color=cmap(f), marker='o')
+plt.show()
 
 
 t11 = time.time()
