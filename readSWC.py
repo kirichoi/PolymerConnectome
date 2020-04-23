@@ -2049,5 +2049,28 @@ plt.show()
 
 t10 = time.time()
 
-print('Run Time: ' + str(t10-t0))
+print('checkpoint 10: ' + str(t10-t9))
+
+#%%
+
+BranchData.branchP_dist = []
+MorphData.endP_dist = []
+        
+for i in range(len(BranchData.branchP)):
+    branchP_dist_t = []
+    for j in range(len(BranchData.branchP[i])):
+        branchP_dist_t.append(MorphData.morph_dist[i][MorphData.morph_id[i].index(BranchData.branchP[i][j])])
+    BranchData.branchP_dist.append(branchP_dist_t)
+    
+for i in range(len(MorphData.endP)):
+    endP_dist_t = []
+    for j in range(len(MorphData.endP[i])):
+        endP_dist_t.append(MorphData.morph_dist[i][MorphData.morph_id[i].index(MorphData.endP[i][j])])
+    MorphData.endP_dist.append(endP_dist_t)
+
+
+
+t11 = time.time()
+
+print('Run Time: ' + str(t11-t0))
 
