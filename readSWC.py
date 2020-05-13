@@ -2727,8 +2727,56 @@ MorphData.plotNeuron(glo1, label=False, scale=True)
 
 
 #%%
+morph_dist_calyx = []
+morph_dist_LH = []
+morph_dist_AL = []
+
+for i in range(len(MorphData.morph_dist)):
+    morph_dist_calyx_temp = []
+    morph_dist_LH_temp = []
+    morph_dist_AL_temp = []
+    for p in range(len(MorphData.morph_dist[i])):
+        if ((np.array(MorphData.morph_dist[i][p])[0] > 475) and (np.array(MorphData.morph_dist[i][p])[0] < 550) and
+            (np.array(MorphData.morph_dist[i][p])[1] < 260) and (np.array(MorphData.morph_dist[i][p])[2] > 150)):
+            morph_dist_calyx_temp.append(MorphData.morph_dist[i][p])
+        elif ((np.array(MorphData.morph_dist[i][p])[0] < 475) and (np.array(MorphData.morph_dist[i][p])[1] < 260) and
+            (np.array(MorphData.morph_dist[i][p])[1] > 180) and (np.array(MorphData.morph_dist[i][p])[2] > 125)):
+            morph_dist_LH_temp.append(MorphData.morph_dist[i][p])
+        elif ((np.array(MorphData.morph_dist[i][p])[0] > 475) and (np.array(MorphData.morph_dist[i][p])[0] < 600) and 
+              (np.array(MorphData.morph_dist[i][p])[1] > 280) and (np.array(MorphData.morph_dist[i][p])[1] < 400) and
+              (np.array(MorphData.morph_dist[i][p])[2] < 90)):
+            morph_dist_AL_temp.append(MorphData.morph_dist[i][p])
+        
+    morph_dist_calyx.append(morph_dist_calyx_temp)
+    morph_dist_LH.append(morph_dist_LH_temp)
+    morph_dist_AL.append(morph_dist_AL_temp)
+
+morph_dist_calyx_CM = []
+morph_dist_LH_CM = []
+morph_dist_AL_CM = []
+
+for i in range(len(morph_dist_AL)):
+    if (len(morph_dist_calyx[i]) > 0) and (len(morph_dist_LH[i]) > 0) and (len(morph_dist_AL[i]) > 0):
+        morph_dist_calyx_CM.append(np.sum(np.array(morph_dist_calyx[i]), axis=0)/len(np.array(morph_dist_calyx[i])))
+        morph_dist_LH_CM.append(np.sum(np.array(morph_dist_LH[i]), axis=0)/len(np.array(morph_dist_LH[i])))
+        morph_dist_AL_CM.append(np.sum(np.array(morph_dist_AL[i]), axis=0)/len(np.array(morph_dist_AL[i])))
 
 
+#%%
+from sklearn.cluster import KMeans
+
+est = KMeans(n_clusters=50)
+est.fit(morph_dist_AL_CM)
+labels = est.labels_
+
+fig = plt.figure(figsize=(24, 16))
+ax = plt.axes(projection='3d')
+cmap = cm.get_cmap('tab20', est.n_clusters)
+for f in range(len(morph_dist_calyx_CM)):
+    ax.scatter3D(morph_dist_calyx_CM[f][0], morph_dist_calyx_CM[f][1], morph_dist_calyx_CM[f][2], color=cmap(labels[f]), marker='x')
+    ax.scatter3D(morph_dist_LH_CM[f][0], morph_dist_LH_CM[f][1], morph_dist_LH_CM[f][2], color=cmap(labels[f]), marker='x')
+    ax.scatter3D(morph_dist_AL_CM[f][0], morph_dist_AL_CM[f][1], morph_dist_AL_CM[f][2], color=cmap(labels[f]), marker='x')
+plt.show()
 
 t12 = time.time()
 
