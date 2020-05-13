@@ -139,7 +139,7 @@ class MorphData():
         plt.show()
         
         
-    def plotNeuron(self, idx, scale=False, cmass=False, showPoint=False, lw=1, label=True, show=True, save=None):
+    def plotNeuron(self, idx, scale=False, cmass=False, showPoint=False, lw=1, label=True, show=True, save=False):
         fig = plt.figure(figsize=(24, 16))
         ax = plt.axes(projection='3d')
         if scale:
@@ -181,7 +181,7 @@ class MorphData():
         if label:
             plt.title(np.array(self.neuron_id)[idx], fontsize=15)
         
-        if save != None:
+        if save:
             plt.savefig(Parameter.outputdir + '/neuron_' + str(idx) + '.png', dpi=300, bbox_inches='tight')
         if show:
             plt.show()
@@ -189,7 +189,7 @@ class MorphData():
             plt.close()
         
             
-    def plotProjection(self, idx, project='z', scale=False, customBound=None, lw=1, label=True):
+    def plotProjection(self, idx, project='z', scale=False, customBound=None, lw=1, label=True, show=True, save=False):
         if project != 'x' and project != 'y' and project != 'z':
             raise(Exception("Unrecognized plane to project"))
         fig = plt.figure(figsize=(24, 16))
@@ -252,7 +252,13 @@ class MorphData():
                 plt.scatter(tararr[somaIdx,1], tararr[somaIdx,2], color=cmap(idx))
         if label:
             plt.title(np.array(self.neuron_id)[idx], fontsize=15)
-        plt.show()
+            
+        if save:
+            plt.savefig(Parameter.outputdir + '/neuron_' + str(idx) + '.png', dpi=300, bbox_inches='tight')
+        if show:
+            plt.show()
+        else:
+            plt.close()
     
     
     def _spat_pos(self, nodeList):
@@ -2677,36 +2683,51 @@ t11 = time.time()
 
 #%%
 
-project = 'y'
-lw=1
-
-fig = plt.figure(figsize=(24, 16))
-
-cmap = cm.get_cmap('viridis', len(MorphData.ALdist))
-for i in range(len(MorphData.ALdist[1000:2000])):
-    for p in range(len(MorphData.ALdist[i])-1):
-        morph_line = np.vstack((MorphData.ALdist[i][p], MorphData.ALdist[i][p+1]))
-        if project == 'z':
-            plt.plot(morph_line[:,0], morph_line[:,1], color=cmap(i), lw=lw)
-        elif project == 'y':
-            plt.plot(morph_line[:,0], morph_line[:,2], color=cmap(i), lw=lw)
-        elif project == 'x':
-            plt.plot(morph_line[:,1], morph_line[:,2], color=cmap(i), lw=lw)
-plt.show()
-
-#%%
-
 for i in range(len(MorphData.morph_dist)):
-    MorphData.plotNeuron(i, scale=True)
+    MorphData.plotProjection(i, project='y', scale=True, show=False, save=True)
 
 #%%
 
-glo1 = []
-for m in range(len(MorphData.morph_dist)):
-    if ((np.array(MorphData.morph_dist[m])[:,0] < 530).any() and (np.array(MorphData.morph_dist[m])[:,0] > 520).any() and 
-    (np.array(MorphData.morph_dist[m])[:,1] < 300).any() and (np.array(MorphData.morph_dist[m])[:,1] > 290).any() and
-    (np.array(MorphData.morph_dist[m])[:,2] < 40).any() and (np.array(MorphData.morph_dist[m])[:,2] > 30).any()):
-        glo1.append(m)
+glo1 = [0, 73]
+glo2 = [6]
+glo3 = [8]
+glo4 = [11, 39]
+glo5 = [12, 75]
+glo6 = [13]
+glo7 = [14, 16, 77]
+glo8 = [18, 25]
+glo9 = [19]
+glo10 = [20, 23, 35, 37, 74, 80]
+glo11 = [21, 36]
+glo12 = [24]
+glo13 = [27, 31]
+glo14 = [28]
+glo15 = [29, 57]
+glo16 = [30]
+glo17 = [32]
+glo18 = [33]
+glo19 = [34, 72]
+glo20 = [38, 53]
+glo21 = [52]
+glo22 = [59]
+glo23 = [60]
+glo24 = [62, 68]
+glo25 = [63, 69]
+glo26 = [64]
+glo27 = [66]
+glo28 = [67]
+glo29 = [51, 76]
+glo30 = [78]
+glo31 = [79]
+
+
+
+MorphData.plotNeuron(glo1, label=False, scale=True)
+# MorphData.plotProjection(np.arange(161), project='z', label=False, scale=True)
+
+
+#%%
+
 
 
 t12 = time.time()
