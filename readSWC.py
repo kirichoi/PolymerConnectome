@@ -41,7 +41,7 @@ class Parameter:
     
     SEED = 1234
     
-    outputdir = './output_TEMCA/RN_' + str(RN)
+    outputdir = './output_TEMCA2/RN_' + str(RN)
 
 fp = [f for f in os.listdir(Parameter.PATH) if os.path.isfile(os.path.join(Parameter.PATH, f))]
 fp = [os.path.join(Parameter.PATH, f) for f in fp]
@@ -139,7 +139,7 @@ class MorphData():
         plt.show()
         
         
-    def plotNeuron(self, idx, scale=False, cmass=False, showPoint=False, lw=1, label=True):
+    def plotNeuron(self, idx, scale=False, cmass=False, showPoint=False, lw=1, label=True, show=True, save=None):
         fig = plt.figure(figsize=(24, 16))
         ax = plt.axes(projection='3d')
         if scale:
@@ -180,7 +180,13 @@ class MorphData():
             ax.scatter3D(tararr[somaIdx,0], tararr[somaIdx,1], tararr[somaIdx,2], color=cmap(idx))
         if label:
             plt.title(np.array(self.neuron_id)[idx], fontsize=15)
-        plt.show()
+        
+        if save != None:
+            plt.savefig(Parameter.outputdir + '/neuron_' + str(idx) + '.png', dpi=300, bbox_inches='tight')
+        if show:
+            plt.show()
+        else:
+            plt.close()
         
             
     def plotProjection(self, idx, project='z', scale=False, customBound=None, lw=1, label=True):
@@ -2075,6 +2081,8 @@ for i in range(len(MorphData.endP)):
     if len(endP_dist_t) > 0:
         MorphData.endP_dist.append(endP_dist_t)
 
+branchP_dist_flat = np.array([item for sublist in BranchData.branchP_dist for item in sublist])
+endP_dist_flat = np.array([item for sublist in MorphData.endP_dist for item in sublist])
 
 fig = plt.figure(figsize=(24, 16))
 ax = plt.axes(projection='3d')
@@ -2101,8 +2109,6 @@ plt.show()
 
 
 binsize = np.logspace(-1, 3, 100)[13:99:3]
-
-branchP_dist_flat = np.array([item for sublist in BranchData.branchP_dist for item in sublist])
 
 xmax_bp = np.max(branchP_dist_flat[:,0])
 xmin_bp = np.min(branchP_dist_flat[:,0])
@@ -2159,8 +2165,6 @@ plt.show()
 
 
 binsize = np.logspace(-1, 3, 100)[13:99:3]
-
-endP_dist_flat = np.array([item for sublist in MorphData.endP_dist for item in sublist])
 
 xmax_endP = np.max(endP_dist_flat[:,0])
 xmin_endP = np.min(endP_dist_flat[:,0])
@@ -2530,10 +2534,182 @@ plt.show()
 
 
 
+#%% Branching point and tip combined region fractal dimension calculation
 
+binsize = np.logspace(-1, 3, 100)[13:90:3]
+
+baeP_calyx_dist = np.array(branchP_calyx_dist + endP_calyx_dist)
+baeP_LH_dist = np.array(branchP_LH_dist + endP_LH_dist)
+baeP_AL_dist = np.array(branchP_AL_dist + endP_AL_dist)
+
+xmax_baep_calyx = np.max(baeP_calyx_dist[:,0])
+xmin_baep_calyx = np.min(baeP_calyx_dist[:,0])
+ymax_baep_calyx = np.max(baeP_calyx_dist[:,1])
+ymin_baep_calyx = np.min(baeP_calyx_dist[:,1])
+zmax_baep_calyx = np.max(baeP_calyx_dist[:,2])
+zmin_baep_calyx = np.min(baeP_calyx_dist[:,2])
+
+xmax_baep_LH = np.max(baeP_LH_dist[:,0])
+xmin_baep_LH = np.min(baeP_LH_dist[:,0])
+ymax_baep_LH = np.max(baeP_LH_dist[:,1])
+ymin_baep_LH = np.min(baeP_LH_dist[:,1])
+zmax_baep_LH = np.max(baeP_LH_dist[:,2])
+zmin_baep_LH = np.min(baeP_LH_dist[:,2])
+
+xmax_baep_AL = np.max(baeP_AL_dist[:,0])
+xmin_baep_AL = np.min(baeP_AL_dist[:,0])
+ymax_baep_AL = np.max(baeP_AL_dist[:,1])
+ymin_baep_AL = np.min(baeP_AL_dist[:,1])
+zmax_baep_AL = np.max(baeP_AL_dist[:,2])
+zmin_baep_AL = np.min(baeP_AL_dist[:,2])
+
+hlist_calyx_baep = []
+hlist_calyx_baep_count = []
+hlist_calyx_baep_numbox = []
+hlist_LH_baep = []
+hlist_LH_baep_count = []
+hlist_LH_baep_numbox = []
+hlist_AL_baep = []
+hlist_AL_baep_count = []
+hlist_AL_baep_numbox = []
+
+for b in range(len(binsize)):
+    xbin_calyx = np.arange(xmin_baep_calyx, xmax_baep_calyx+binsize[b], binsize[b])
+    ybin_calyx = np.arange(ymin_baep_calyx, ymax_baep_calyx+binsize[b], binsize[b])
+    zbin_calyx = np.arange(zmin_baep_calyx, zmax_baep_calyx+binsize[b], binsize[b])
+    if len(xbin_calyx) == 1:
+        xbin_calyx = [-1000, 1000]
+    if len(ybin_calyx) == 1:
+        ybin_calyx = [-1000, 1000]
+    if len(zbin_calyx) == 1:
+        zbin_calyx = [-1000, 1000]
+    
+    hc, e = np.histogramdd(baeP_calyx_dist, 
+                          bins=[xbin_calyx, 
+                                ybin_calyx,
+                                zbin_calyx])
+    hlist_calyx_baep_count.append(np.count_nonzero(hc))
+    
+    xbin_LH = np.arange(xmin_baep_LH, xmax_baep_LH+binsize[b], binsize[b])
+    ybin_LH = np.arange(ymin_baep_LH, ymax_baep_LH+binsize[b], binsize[b])
+    zbin_LH = np.arange(zmin_baep_LH, zmax_baep_LH+binsize[b], binsize[b])
+    if len(xbin_LH) == 1:
+        xbin_LH = [-1000, 1000]
+    if len(ybin_LH) == 1:
+        ybin_LH = [-1000, 1000]
+    if len(zbin_LH) == 1:
+        zbin_LH = [-1000, 1000]
+    
+    hh, e = np.histogramdd(baeP_LH_dist, 
+                          bins=[xbin_LH, 
+                                ybin_LH,
+                                zbin_LH])
+    hlist_LH_baep_count.append(np.count_nonzero(hh))
+    
+    xbin_AL = np.arange(xmin_baep_AL, xmax_baep_AL+binsize[b], binsize[b])
+    ybin_AL = np.arange(ymin_baep_AL, ymax_baep_AL+binsize[b], binsize[b])
+    zbin_AL = np.arange(zmin_baep_AL, zmax_baep_AL+binsize[b], binsize[b])
+    if len(xbin_AL) == 1:
+        xbin_AL = [-1000, 1000]
+    if len(ybin_AL) == 1:
+        ybin_AL = [-1000, 1000]
+    if len(zbin_AL) == 1:
+        zbin_AL = [-1000, 1000]
+        
+    ha, e = np.histogramdd(baeP_AL_dist, 
+                          bins=[xbin_AL, 
+                                ybin_AL,
+                                zbin_AL])
+    hlist_AL_baep_count.append(np.count_nonzero(ha))
+
+
+
+
+#%%
+    
+    
+poptBcount_baep_calyx, pcovBcount_calyx = scipy.optimize.curve_fit(objFuncGL, 
+                                                        np.log10(binsize[7:20]), 
+                                                        np.log10(hlist_calyx_baep_count[7:20]),
+                                                        p0=[0.1, 0.1], 
+                                                        maxfev=10000)
+perrBcount_baep_calyx = np.sqrt(np.diag(pcovBcount_calyx))
+
+poptBcount_baep_LH, pcovBcount_LH = scipy.optimize.curve_fit(objFuncGL, 
+                                                        np.log10(binsize[7:20]), 
+                                                        np.log10(hlist_LH_baep_count[7:20]),
+                                                        p0=[0.1, 0.1], 
+                                                        maxfev=10000)
+perrBcount_baep_LH = np.sqrt(np.diag(pcovBcount_LH))
+
+poptBcount_baep_AL, pcovBcount_AL = scipy.optimize.curve_fit(objFuncGL, 
+                                                        np.log10(binsize[7:20]), 
+                                                        np.log10(hlist_AL_baep_count[7:20]),
+                                                        p0=[0.1, 0.1], 
+                                                        maxfev=10000)
+perrBcount_baep_AL = np.sqrt(np.diag(pcovBcount_AL))
+
+fitYBcount_baep_calyx = objFuncPpow(binsize, poptBcount_baep_calyx[0], poptBcount_baep_calyx[1])
+fitYBcount_baep_LH = objFuncPpow(binsize, poptBcount_baep_LH[0], poptBcount_baep_LH[1])
+fitYBcount_baep_AL = objFuncPpow(binsize, poptBcount_baep_AL[0], poptBcount_baep_AL[1])
+    
+fig = plt.figure(figsize=(12,8))
+plt.scatter(binsize, hlist_calyx_baep_count)
+plt.scatter(binsize, hlist_LH_baep_count)
+plt.scatter(binsize, hlist_AL_baep_count)
+plt.plot(binsize, fitYBcount_baep_calyx, lw=2, linestyle='--')
+plt.plot(binsize, fitYBcount_baep_LH, lw=2, linestyle='--')
+plt.plot(binsize, fitYBcount_baep_AL, lw=2, linestyle='--')
+plt.yscale('log')
+plt.xscale('log')
+plt.legend(['Calyx: ' + str(round(poptBcount_baep_calyx[0], 3)) + '$\pm$' + str(round(perrBcount_baep_calyx[0], 3)),
+            'LH: ' + str(round(poptBcount_baep_LH[0], 3)) + '$\pm$' + str(round(perrBcount_baep_LH[0], 3)),
+            'AL: ' + str(round(poptBcount_baep_AL[0], 3)) + '$\pm$' + str(round(perrBcount_baep_AL[0], 3))], fontsize=15)
+#plt.xlim(0.1, 20)
+#plt.tight_layout()
+plt.xlabel("Box Size", fontsize=15)
+plt.ylabel("Count", fontsize=15)
+plt.show()
 
 
 t11 = time.time()
 
-print('Run Time: ' + str(t11-t0))
+
+#%%
+
+project = 'y'
+lw=1
+
+fig = plt.figure(figsize=(24, 16))
+
+cmap = cm.get_cmap('viridis', len(MorphData.ALdist))
+for i in range(len(MorphData.ALdist[1000:2000])):
+    for p in range(len(MorphData.ALdist[i])-1):
+        morph_line = np.vstack((MorphData.ALdist[i][p], MorphData.ALdist[i][p+1]))
+        if project == 'z':
+            plt.plot(morph_line[:,0], morph_line[:,1], color=cmap(i), lw=lw)
+        elif project == 'y':
+            plt.plot(morph_line[:,0], morph_line[:,2], color=cmap(i), lw=lw)
+        elif project == 'x':
+            plt.plot(morph_line[:,1], morph_line[:,2], color=cmap(i), lw=lw)
+plt.show()
+
+#%%
+
+for i in range(len(MorphData.morph_dist)):
+    MorphData.plotNeuron(i, scale=True)
+
+#%%
+
+glo1 = []
+for m in range(len(MorphData.morph_dist)):
+    if ((np.array(MorphData.morph_dist[m])[:,0] < 530).any() and (np.array(MorphData.morph_dist[m])[:,0] > 520).any() and 
+    (np.array(MorphData.morph_dist[m])[:,1] < 300).any() and (np.array(MorphData.morph_dist[m])[:,1] > 290).any() and
+    (np.array(MorphData.morph_dist[m])[:,2] < 40).any() and (np.array(MorphData.morph_dist[m])[:,2] > 30).any()):
+        glo1.append(m)
+
+
+t12 = time.time()
+
+print('Run Time: ' + str(t12-t0))
 
