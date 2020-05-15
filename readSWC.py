@@ -2090,6 +2090,8 @@ for i in range(len(MorphData.endP)):
 branchP_dist_flat = np.array([item for sublist in BranchData.branchP_dist for item in sublist])
 endP_dist_flat = np.array([item for sublist in MorphData.endP_dist for item in sublist])
 
+#%%
+
 fig = plt.figure(figsize=(24, 16))
 ax = plt.axes(projection='3d')
 cmap = cm.get_cmap('viridis', len(BranchData.branchP_dist))
@@ -2838,6 +2840,77 @@ for f in range(est.n_clusters):
                marker=markerlist[f],
                label=str(f))
 plt.show()
+
+
+#%%
+from scipy.stats import kde
+
+nbins=100
+ni=12
+
+kdecalyxdorsal = kde.gaussian_kde([np.array(morph_dist_calyx[ni])[:,0], np.array(morph_dist_calyx[ni])[:,1]])
+kdecalyxant = kde.gaussian_kde([np.array(morph_dist_calyx[ni])[:,0], np.array(morph_dist_calyx[ni])[:,2]])
+xcalyxd, ycalyxd = np.mgrid[470:560:nbins*1j, 180:260:nbins*1j]
+xcalyxa, ycalyxa = np.mgrid[470:560:nbins*1j, 130:210:nbins*1j]
+zcalyxd = kdecalyxdorsal(np.vstack([xcalyxd.flatten(), ycalyxd.flatten()]))
+zcalyxa = kdecalyxant(np.vstack([xcalyxa.flatten(), ycalyxa.flatten()]))
+
+fig = plt.figure(figsize=(16, 6))
+ax1 = fig.add_subplot(121)
+ax2 = fig.add_subplot(122)
+ax1.pcolormesh(xcalyxd, ycalyxd, zcalyxd.reshape(xcalyxd.shape), cmap=plt.cm.jet)
+ax2.pcolormesh(xcalyxa, ycalyxa, zcalyxa.reshape(xcalyxa.shape), cmap=plt.cm.jet)
+ax1.set_xlim(470, 560)
+ax1.set_ylim(180, 260)
+ax2.set_xlim(470, 560)
+ax2.set_ylim(130, 210)
+fig.suptitle("Neuron ID " + str(ni) + " calyx")
+ax1.set_title("Dorsal")
+ax2.set_title("Anterior")
+plt.show()
+
+kdeLHdorsal = kde.gaussian_kde([np.array(morph_dist_LH[ni])[:,0], np.array(morph_dist_LH[ni])[:,1]])
+kdeLHant = kde.gaussian_kde([np.array(morph_dist_LH[ni])[:,0], np.array(morph_dist_LH[ni])[:,2]])
+xLHd, yLHd = np.mgrid[380:500:nbins*1j, 170:270:nbins*1j]
+xLHa, yLHa = np.mgrid[380:500:nbins*1j, 125:180:nbins*1j]
+zLHd = kdeLHdorsal(np.vstack([xLHd.flatten(), yLHd.flatten()]))
+zLHa = kdeLHant(np.vstack([xLHa.flatten(), yLHa.flatten()]))
+
+fig = plt.figure(figsize=(16, 6))
+ax1 = fig.add_subplot(121)
+ax2 = fig.add_subplot(122)
+ax1.pcolormesh(xLHd, yLHd, zLHd.reshape(xLHd.shape), cmap=plt.cm.jet)
+ax2.pcolormesh(xLHa, yLHa, zLHa.reshape(xLHa.shape), cmap=plt.cm.jet)
+ax1.set_xlim(380, 500)
+ax1.set_ylim(170, 270)
+ax2.set_xlim(380, 500)
+ax2.set_ylim(125, 180)
+fig.suptitle("Neuron ID " + str(ni) + " LH")
+ax1.set_title("Dorsal")
+ax2.set_title("Anterior")
+plt.show()
+
+kdeALdorsal = kde.gaussian_kde([np.array(morph_dist_AL[ni])[:,0], np.array(morph_dist_AL[ni])[:,1]])
+kdeALant = kde.gaussian_kde([np.array(morph_dist_AL[ni])[:,0], np.array(morph_dist_AL[ni])[:,2]])
+xALd, yALd = np.mgrid[475:600:nbins*1j, 280:400:nbins*1j]
+xALa, yALa = np.mgrid[475:600:nbins*1j, 0:90:nbins*1j]
+zALd = kdeALdorsal(np.vstack([xALd.flatten(), yALd.flatten()]))
+zALa = kdeALant(np.vstack([xALa.flatten(), yALa.flatten()]))
+
+fig = plt.figure(figsize=(16, 6))
+ax1 = fig.add_subplot(121)
+ax2 = fig.add_subplot(122)
+ax1.pcolormesh(xALd, yALd, zALd.reshape(xALd.shape), cmap=plt.cm.jet)
+ax2.pcolormesh(xALa, yALa, zALa.reshape(xALa.shape), cmap=plt.cm.jet)
+ax1.set_xlim(475, 600)
+ax1.set_ylim(280, 400)
+ax2.set_xlim(475, 600)
+ax2.set_ylim(0, 90)
+fig.suptitle("Neuron ID " + str(ni) + " AL")
+ax1.set_title("Dorsal")
+ax2.set_title("Anterior")
+plt.show()
+
 
 t12 = time.time()
 
