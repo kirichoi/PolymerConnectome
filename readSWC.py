@@ -2683,88 +2683,96 @@ plt.show()
 t11 = time.time()
 
 
-#%%
 
-for i in range(len(MorphData.morph_dist)):
-    MorphData.plotProjection(i, project='y', scale=True, show=False, save=True)
+#%% regional dist categorization
 
-#%%
+glo_info = pd.read_excel(os.path.join(Parameter.PATH, '../all_skeletons_type_list_180919.xlsx'))
 
-glo1 = [0, 73]
-glo2 = [6]
-glo3 = [8]
-glo4 = [11, 39]
-glo5 = [12, 75]
-glo6 = [13]
-glo7 = [14, 16, 77]
-glo8 = [18, 25]
-glo9 = [19]
-glo10 = [20, 23, 35, 37, 74, 80]
-glo11 = [21, 36]
-glo12 = [24]
-glo13 = [27, 31]
-glo14 = [28]
-glo15 = [29, 57]
-glo16 = [30]
-glo17 = [32]
-glo18 = [33]
-glo19 = [34, 72]
-glo20 = [38, 53]
-glo21 = [52]
-glo22 = [59]
-glo23 = [60]
-glo24 = [62, 68]
-glo25 = [63, 69]
-glo26 = [64]
-glo27 = [66]
-glo28 = [67]
-glo29 = [51, 76]
-glo30 = [78]
-glo31 = [79]
+glo_list = []
+glo_idx = []
 
+for f in range(len(MorphData.neuron_id)):
+    idx = np.where(glo_info.skid == int(MorphData.neuron_id[f]))[0][0]
+    if 'glomerulus' in glo_info['old neuron name'][idx]:
+        if glo_info['type'][idx] in glo_list:
+            glo_idx[glo_list.index(glo_info['type'][idx])].append(f)
+        else:
+            glo_list.append(glo_info['type'][idx])
+            glo_idx.append([f])
 
-
-MorphData.plotNeuron(glo1, label=False, scale=True)
-# MorphData.plotProjection(np.arange(161), project='z', label=False, scale=True)
-
-
-#%%
 morph_dist_calyx = []
 morph_dist_LH = []
 morph_dist_AL = []
 
-for i in range(len(MorphData.morph_dist)):
+for i in range(len(glo_list)):
     morph_dist_calyx_temp = []
     morph_dist_LH_temp = []
     morph_dist_AL_temp = []
-    for p in range(len(MorphData.morph_dist[i])):
-        if ((np.array(MorphData.morph_dist[i][p])[0] > 475) and (np.array(MorphData.morph_dist[i][p])[0] < 550) and
-            (np.array(MorphData.morph_dist[i][p])[1] < 260) and (np.array(MorphData.morph_dist[i][p])[2] > 150)):
-            morph_dist_calyx_temp.append(MorphData.morph_dist[i][p])
-        elif ((np.array(MorphData.morph_dist[i][p])[0] < 475) and (np.array(MorphData.morph_dist[i][p])[1] < 260) and
-            (np.array(MorphData.morph_dist[i][p])[1] > 180) and (np.array(MorphData.morph_dist[i][p])[2] > 125)):
-            morph_dist_LH_temp.append(MorphData.morph_dist[i][p])
-        elif ((np.array(MorphData.morph_dist[i][p])[0] > 475) and (np.array(MorphData.morph_dist[i][p])[0] < 600) and 
-              (np.array(MorphData.morph_dist[i][p])[1] > 280) and (np.array(MorphData.morph_dist[i][p])[1] < 400) and
-              (np.array(MorphData.morph_dist[i][p])[2] < 90)):
-            morph_dist_AL_temp.append(MorphData.morph_dist[i][p])
+    for j in range(len(glo_idx[i])):
+        morph_dist_calyx_temp2 = []
+        morph_dist_LH_temp2 = []
+        morph_dist_AL_temp2 = []
+        for p in range(len(MorphData.morph_dist[glo_idx[i][j]])):
+            if ((np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] > 475) and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] < 550) and
+                (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] < 260) and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[2] > 150)):
+                morph_dist_calyx_temp2.append(MorphData.morph_dist[glo_idx[i][j]][p])
+            elif ((np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] < 475) and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] < 260) and
+                (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] > 180) and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[2] > 125)):
+                morph_dist_LH_temp2.append(MorphData.morph_dist[glo_idx[i][j]][p])
+            elif ((np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] > 475) and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] < 600) and 
+                  (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] > 280) and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] < 400) and
+                  (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[2] < 90)):
+                morph_dist_AL_temp2.append(MorphData.morph_dist[glo_idx[i][j]][p])
         
+        morph_dist_calyx_temp.append(morph_dist_calyx_temp2)
+        morph_dist_LH_temp.append(morph_dist_LH_temp2)
+        morph_dist_AL_temp.append(morph_dist_AL_temp2)
+                
     morph_dist_calyx.append(morph_dist_calyx_temp)
     morph_dist_LH.append(morph_dist_LH_temp)
     morph_dist_AL.append(morph_dist_AL_temp)
+            
+
+
+#%%
 
 morph_dist_calyx_CM = []
 morph_dist_LH_CM = []
 morph_dist_AL_CM = []
 
+morph_dist_calyx_std = []
+morph_dist_LH_std = []
+morph_dist_AL_std = []
+
 for i in range(len(morph_dist_AL)):
-    if (len(morph_dist_calyx[i]) > 0) and (len(morph_dist_LH[i]) > 0) and (len(morph_dist_AL[i]) > 0):
-        morph_dist_calyx_CM.append(np.sum(np.array(morph_dist_calyx[i]), axis=0)/len(np.array(morph_dist_calyx[i])))
-        morph_dist_LH_CM.append(np.sum(np.array(morph_dist_LH[i]), axis=0)/len(np.array(morph_dist_LH[i])))
-        morph_dist_AL_CM.append(np.sum(np.array(morph_dist_AL[i]), axis=0)/len(np.array(morph_dist_AL[i])))
-
-
-#%%
+    morph_dist_calyx_CM_temp = []
+    morph_dist_LH_CM_temp = []
+    morph_dist_AL_CM_temp = []
+    
+    morph_dist_calyx_std_temp = []
+    morph_dist_LH_std_temp = []
+    morph_dist_AL_std_temp = []
+    
+    for j in range(len(morph_dist_AL[i])):
+        morph_dist_calyx_CM_temp.append(np.average(np.array(morph_dist_calyx[i][j]), axis=0))
+        morph_dist_LH_CM_temp.append(np.average(np.array(morph_dist_LH[i][j]), axis=0))
+        morph_dist_AL_CM_temp.append(np.average(np.array(morph_dist_AL[i][j]), axis=0))
+        
+        morph_dist_calyx_std_temp.append(np.std(np.array(morph_dist_calyx[i][j]), axis=0))
+        morph_dist_LH_std_temp.append(np.std(np.array(morph_dist_LH[i][j]), axis=0))
+        morph_dist_AL_std_temp.append(np.std(np.array(morph_dist_AL[i][j]), axis=0))
+    
+    morph_dist_calyx_CM.append(morph_dist_calyx_CM_temp)
+    morph_dist_LH_CM.append(morph_dist_LH_CM_temp)
+    morph_dist_AL_CM.append(morph_dist_AL_CM_temp)
+    
+    morph_dist_calyx_std.append(morph_dist_calyx_std_temp)
+    morph_dist_LH_std.append(morph_dist_LH_std_temp)
+    morph_dist_AL_std.append(morph_dist_AL_std_temp)
+    
+    
+#%% K-means clustering of AL
+        
 from sklearn.cluster import KMeans
 
 est = KMeans(n_clusters=50, tol=1e-6, n_init=100, random_state=Parameter.SEED)
@@ -2792,7 +2800,7 @@ for f in range(est.n_clusters):
                color=cmap(f), 
                marker=markerlist[f],
                label=str(f))
-    morph_dist_calyx_CMCM.append(np.sum(np.array(calyxtemp), axis=0)/len(np.array(calyxtemp)))
+    morph_dist_calyx_CMCM.append(np.average(np.array(calyxtemp), axis=0))
 ax.legend()
 for f in range(est.n_clusters):
     LHtemp = np.array(morph_dist_LH_CM)[np.where(labels == f)[0]]
@@ -2809,11 +2817,12 @@ for f in range(est.n_clusters):
                color=cmap(f), 
                marker=markerlist[f],
                label=str(f))
-    morph_dist_LH_CMCM.append(np.sum(np.array(LHtemp), axis=0)/len(np.array(LHtemp)))
-    morph_dist_AL_CMCM.append(np.sum(np.array(ALtemp), axis=0)/len(np.array(ALtemp)))
+    morph_dist_LH_CMCM.append(np.average(np.array(LHtemp), axis=0))
+    morph_dist_AL_CMCM.append(np.average(np.array(ALtemp), axis=0))
 plt.show()
 
-#%%
+
+#%% CM of CM plot of K-Means clustering
 
 fig = plt.figure(figsize=(24, 16))
 ax = plt.axes(projection='3d')
@@ -2842,11 +2851,74 @@ for f in range(est.n_clusters):
 plt.show()
 
 
-#%%
+#%% Cluster quantification
+
+morph_dist_calyx_r = scipy.spatial.distance.cdist(np.array(morph_dist_calyx_CM), np.array(morph_dist_calyx_CM))
+calyxclusterstat = []
+calyxdist_cluster_u_full = []
+calyxdist_noncluster_u_full = []
+
+for f in range(est.n_clusters):
+    idx = np.where(labels == f)[0]
+    dist_cluster = []
+    dist_noncluster = []
+    for i in range(len(idx)):
+        dist_cluster.append(morph_dist_calyx_r[idx][i][np.delete(idx, i)])
+        dist_noncluster.append(morph_dist_calyx_r[idx][i][np.delete(np.arange(len(morph_dist_calyx_r)), idx)])
+    
+    dist_cluster_u = np.unique(dist_cluster)
+    dist_noncluster_u = np.unique(dist_noncluster)
+    
+    calyxdist_cluster_u_full.append(dist_cluster_u)
+    calyxdist_noncluster_u_full.append(dist_noncluster_u)
+    
+    calyxclusterstat.append([np.mean(dist_cluster_u), np.std(dist_cluster_u), np.mean(dist_noncluster_u), np.std(dist_noncluster_u)])
+
+calyxdist_cluster_u_full_flat = [item for sublist in calyxdist_cluster_u_full for item in sublist]
+calyxdist_noncluster_u_full_flat = [item for sublist in calyxdist_noncluster_u_full for item in sublist]
+
+morph_dist_LH_r = scipy.spatial.distance.cdist(np.array(morph_dist_LH_CM), np.array(morph_dist_LH_CM))
+LHclusterstat = []
+LHdist_cluster_u_full = []
+LHdist_noncluster_u_full = []
+
+for f in range(est.n_clusters):
+    idx = np.where(labels == f)[0]
+    dist_cluster = []
+    dist_noncluster = []
+    for i in range(len(idx)):
+        dist_cluster.append(morph_dist_LH_r[idx][i][np.delete(idx, i)])
+        dist_noncluster.append(morph_dist_LH_r[idx][i][np.delete(np.arange(len(morph_dist_LH_r)), idx)])
+    
+    dist_cluster_u = np.unique(dist_cluster)
+    dist_noncluster_u = np.unique(dist_noncluster)
+    
+    LHdist_cluster_u_full.append(dist_cluster_u)
+    LHdist_noncluster_u_full.append(dist_noncluster_u)
+    
+    LHclusterstat.append([np.mean(dist_cluster_u), np.std(dist_cluster_u), np.mean(dist_noncluster_u), np.std(dist_noncluster_u)])
+
+LHdist_cluster_u_full_flat = [item for sublist in LHdist_cluster_u_full for item in sublist]
+LHdist_noncluster_u_full_flat = [item for sublist in LHdist_noncluster_u_full for item in sublist]
+
+
+print("Mean: " + str(np.mean(LHdist_cluster_u_full_flat)) + ", SEM: " + str(scipy.stats.sem(LHdist_cluster_u_full_flat)))
+print("Mean: " + str(np.mean(LHdist_noncluster_u_full_flat)) + ", SEM: " + str(scipy.stats.sem(LHdist_noncluster_u_full_flat)))
+
+
+
+#%% Cluster quantification heatmap visualization
+
+
+
+
+
+#%% 2D heatmap of spatial distribution of each neuron in calyx, LH, and AL
+
 from scipy.stats import kde
 
 nbins=100
-ni=12
+ni=21
 
 kdecalyxdorsal = kde.gaussian_kde([np.array(morph_dist_calyx[ni])[:,0], np.array(morph_dist_calyx[ni])[:,1]])
 kdecalyxant = kde.gaussian_kde([np.array(morph_dist_calyx[ni])[:,0], np.array(morph_dist_calyx[ni])[:,2]])
