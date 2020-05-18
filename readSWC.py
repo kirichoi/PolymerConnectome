@@ -2772,12 +2772,11 @@ for i in range(len(morph_dist_AL)):
     
     
 #%% K-means clustering of AL
-        
-from sklearn.cluster import KMeans
+# from sklearn.cluster import KMeans
 
-est = KMeans(n_clusters=50, tol=1e-6, n_init=100, random_state=Parameter.SEED)
-est.fit(morph_dist_AL_CM)
-labels = est.labels_
+# est = KMeans(n_clusters=50, tol=1e-6, n_init=100, random_state=Parameter.SEED)
+# est.fit(morph_dist_AL_CM)
+# labels = est.labels_
 
 markerlist = ["o", "v", "^", "<", ">", "1", "2", "s", "p", "P", "*", "H", "+", 
               "x", "D", "o", "v", "^", "<", ">", "1", "2", "s", "p", "P", "*", 
@@ -2791,32 +2790,35 @@ morph_dist_AL_CMCM = []
 
 fig = plt.figure(figsize=(24, 16))
 ax = plt.axes(projection='3d')
-cmap = cm.get_cmap('tab20', est.n_clusters)
-for f in range(est.n_clusters):
-    calyxtemp = np.array(morph_dist_calyx_CM)[np.where(labels == f)[0]]
+cmap = cm.get_cmap('tab20', len(glo_list))
+for f in range(len(glo_list)):
+    calyxtemp = np.array(morph_dist_calyx_CM[f])
     ax.scatter(calyxtemp[:,0], 
                calyxtemp[:,1], 
                calyxtemp[:,2], 
                color=cmap(f), 
                marker=markerlist[f],
-               label=str(f))
+               label=str(glo_list[f]))
     morph_dist_calyx_CMCM.append(np.average(np.array(calyxtemp), axis=0))
 ax.legend()
-for f in range(est.n_clusters):
-    LHtemp = np.array(morph_dist_LH_CM)[np.where(labels == f)[0]]
-    ax.scatter(LHtemp[:,0], 
-               LHtemp[:,1], 
-               LHtemp[:,2], 
-               color=cmap(f), 
-               marker=markerlist[f],
-               label=str(f))
-    ALtemp = np.array(morph_dist_AL_CM)[np.where(labels == f)[0]]
+for f in range(len(glo_list)):
+    if np.isnan(morph_dist_LH_CM[f]).any():
+        pass
+    else:
+        LHtemp = np.array(morph_dist_LH_CM[f])
+        ax.scatter(LHtemp[:,0], 
+                   LHtemp[:,1], 
+                   LHtemp[:,2], 
+                   color=cmap(f), 
+                   marker=markerlist[f],
+                   label=str(glo_list[f]))
+    ALtemp = np.array(morph_dist_AL_CM[f])
     ax.scatter(ALtemp[:,0], 
                ALtemp[:,1], 
                ALtemp[:,2], 
                color=cmap(f), 
                marker=markerlist[f],
-               label=str(f))
+               label=str(glo_list[f]))
     morph_dist_LH_CMCM.append(np.average(np.array(LHtemp), axis=0))
     morph_dist_AL_CMCM.append(np.average(np.array(ALtemp), axis=0))
 plt.show()
