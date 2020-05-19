@@ -2684,7 +2684,7 @@ t11 = time.time()
 
 
 
-#%% regional dist categorization
+#%% Regional dist categorization
 
 glo_info = pd.read_excel(os.path.join(Parameter.PATH, '../all_skeletons_type_list_180919.xlsx'))
 
@@ -2766,17 +2766,12 @@ for i in range(len(morph_dist_AL)):
     morph_dist_LH_CM.append(morph_dist_LH_CM_temp)
     morph_dist_AL_CM.append(morph_dist_AL_CM_temp)
     
-    morph_dist_calyx_std.append(morph_dist_calyx_std_temp)
     morph_dist_LH_std.append(morph_dist_LH_std_temp)
+    morph_dist_calyx_std.append(morph_dist_calyx_std_temp)
     morph_dist_AL_std.append(morph_dist_AL_std_temp)
     
     
-#%% K-means clustering of AL
-# from sklearn.cluster import KMeans
-
-# est = KMeans(n_clusters=50, tol=1e-6, n_init=100, random_state=Parameter.SEED)
-# est.fit(morph_dist_AL_CM)
-# labels = est.labels_
+#%% Scatterplot of CM based on glomeruli ID
 
 markerlist = ["o", "v", "^", "<", ">", "1", "2", "s", "p", "P", "*", "H", "+", 
               "x", "D", "o", "v", "^", "<", ">", "1", "2", "s", "p", "P", "*", 
@@ -2798,7 +2793,8 @@ for f in range(len(glo_list)):
                calyxtemp[:,2], 
                color=cmap(f), 
                marker=markerlist[f],
-               label=str(glo_list[f]))
+               label=str(glo_list[f]),
+               depthshade=False)
     morph_dist_calyx_CMCM.append(np.average(np.array(calyxtemp), axis=0))
 ax.legend()
 for f in range(len(glo_list)):
@@ -2811,62 +2807,42 @@ for f in range(len(glo_list)):
                    LHtemp[:,2], 
                    color=cmap(f), 
                    marker=markerlist[f],
-                   label=str(glo_list[f]))
+                   label=str(glo_list[f]),
+                   depthshade=False)
     ALtemp = np.array(morph_dist_AL_CM[f])
     ax.scatter(ALtemp[:,0], 
                ALtemp[:,1], 
                ALtemp[:,2], 
                color=cmap(f), 
                marker=markerlist[f],
-               label=str(glo_list[f]))
+               label=str(glo_list[f]),
+               depthshade=False)
     morph_dist_LH_CMCM.append(np.average(np.array(LHtemp), axis=0))
     morph_dist_AL_CMCM.append(np.average(np.array(ALtemp), axis=0))
 plt.show()
 
 
-#%% CM of CM plot of K-Means clustering
-
-fig = plt.figure(figsize=(24, 16))
-ax = plt.axes(projection='3d')
-cmap = cm.get_cmap('tab20', est.n_clusters)
-for f in range(est.n_clusters):
-    ax.scatter(morph_dist_calyx_CMCM[f][0], 
-               morph_dist_calyx_CMCM[f][1], 
-               morph_dist_calyx_CMCM[f][2], 
-               color=cmap(f), 
-               marker=markerlist[f],
-               label=str(f))
-ax.legend()
-for f in range(est.n_clusters):
-    ax.scatter(morph_dist_LH_CMCM[f][0], 
-               morph_dist_LH_CMCM[f][1], 
-               morph_dist_LH_CMCM[f][2], 
-               color=cmap(f), 
-               marker=markerlist[f],
-               label=str(f))
-    ax.scatter(morph_dist_AL_CMCM[f][0], 
-               morph_dist_AL_CMCM[f][1], 
-               morph_dist_AL_CMCM[f][2], 
-               color=cmap(f), 
-               marker=markerlist[f],
-               label=str(f))
-plt.show()
-
 
 #%% Cluster quantification
 
-morph_dist_calyx_r = scipy.spatial.distance.cdist(np.array(morph_dist_calyx_CM), np.array(morph_dist_calyx_CM))
+morph_dist_calyx_CM_flat = [item for sublist in morph_dist_calyx_CM for item in sublist]
+
+morph_dist_calyx_r = scipy.spatial.distance.cdist(np.array(morph_dist_calyx_CM_flat), np.array(morph_dist_calyx_CM_flat))
 calyxclusterstat = []
 calyxdist_cluster_u_full = []
 calyxdist_noncluster_u_full = []
 
-for f in range(est.n_clusters):
-    idx = np.where(labels == f)[0]
+idx = np.arange(len(morph_dist_calyx_r))
+trk1 = 0
+trk2 = 0
+
+for f in range(len(glo_list)):
     dist_cluster = []
     dist_noncluster = []
-    for i in range(len(idx)):
-        dist_cluster.append(morph_dist_calyx_r[idx][i][np.delete(idx, i)])
-        dist_noncluster.append(morph_dist_calyx_r[idx][i][np.delete(np.arange(len(morph_dist_calyx_r)), idx)])
+    for i in range(len(morph_dist_calyx_CM[f])):
+        dist_cluster.append(morph_dist_calyx_r[trk1:trk1+len(morph_dist_calyx_CM[f]),trk1:trk1+len(morph_dist_calyx_CM[f])])
+        dist_noncluster.append(morph_dist_calyx_r[trk1:trk1+len(morph_dist_calyx_CM[f]),np.delete(idx, np.arange(trk1,trk1+len(morph_dist_calyx_CM[f])))])
+    trk1 += len(morph_dist_calyx_CM[f])
     
     dist_cluster_u = np.unique(dist_cluster)
     dist_noncluster_u = np.unique(dist_noncluster)
@@ -2879,18 +2855,32 @@ for f in range(est.n_clusters):
 calyxdist_cluster_u_full_flat = [item for sublist in calyxdist_cluster_u_full for item in sublist]
 calyxdist_noncluster_u_full_flat = [item for sublist in calyxdist_noncluster_u_full for item in sublist]
 
-morph_dist_LH_r = scipy.spatial.distance.cdist(np.array(morph_dist_LH_CM), np.array(morph_dist_LH_CM))
+calyxdist_cluster_u_full_flat = np.array(calyxdist_cluster_u_full_flat)[np.nonzero(calyxdist_cluster_u_full_flat)[0]]
+calyxdist_noncluster_u_full_flat = np.array(calyxdist_noncluster_u_full_flat)[np.nonzero(calyxdist_noncluster_u_full_flat)[0]]
+
+print("Calyx cluster Mean: " + str(np.mean(calyxdist_cluster_u_full_flat)) + ", STD: " + str(np.std(calyxdist_cluster_u_full_flat)))
+print("Calyx noncluster Mean: " + str(np.mean(calyxdist_noncluster_u_full_flat)) + ", STD: " + str(np.std(calyxdist_noncluster_u_full_flat)))
+
+
+morph_dist_LH_CM_flat = [item for sublist in morph_dist_LH_CM for item in sublist]
+morph_dist_LH_CM_flat = [x for x in morph_dist_LH_CM_flat if str(x) != 'nan'] # Remove nan
+
+morph_dist_LH_r = scipy.spatial.distance.cdist(np.array(morph_dist_LH_CM_flat), np.array(morph_dist_LH_CM_flat))
 LHclusterstat = []
 LHdist_cluster_u_full = []
 LHdist_noncluster_u_full = []
 
-for f in range(est.n_clusters):
-    idx = np.where(labels == f)[0]
+idx = np.arange(len(morph_dist_LH_r))
+trk1 = 0
+trk2 = 0
+
+for f in range(len(glo_list)-1):
     dist_cluster = []
     dist_noncluster = []
-    for i in range(len(idx)):
-        dist_cluster.append(morph_dist_LH_r[idx][i][np.delete(idx, i)])
-        dist_noncluster.append(morph_dist_LH_r[idx][i][np.delete(np.arange(len(morph_dist_LH_r)), idx)])
+    for i in range(len(morph_dist_LH_CM[f])):
+        dist_cluster.append(morph_dist_LH_r[trk1:trk1+len(morph_dist_LH_CM[f]),trk1:trk1+len(morph_dist_LH_CM[f])])
+        dist_noncluster.append(morph_dist_LH_r[trk1:trk1+len(morph_dist_LH_CM[f]),np.delete(idx, np.arange(trk1,trk1+len(morph_dist_LH_CM[f])))])
+    trk1 += len(morph_dist_LH_CM[f])
     
     dist_cluster_u = np.unique(dist_cluster)
     dist_noncluster_u = np.unique(dist_noncluster)
@@ -2903,10 +2893,32 @@ for f in range(est.n_clusters):
 LHdist_cluster_u_full_flat = [item for sublist in LHdist_cluster_u_full for item in sublist]
 LHdist_noncluster_u_full_flat = [item for sublist in LHdist_noncluster_u_full for item in sublist]
 
+LHdist_cluster_u_full_flat = np.array(LHdist_cluster_u_full_flat)[np.nonzero(LHdist_cluster_u_full_flat)[0]]
+LHdist_noncluster_u_full_flat = np.array(LHdist_noncluster_u_full_flat)[np.nonzero(LHdist_noncluster_u_full_flat)[0]]
 
-print("Mean: " + str(np.mean(LHdist_cluster_u_full_flat)) + ", SEM: " + str(scipy.stats.sem(LHdist_cluster_u_full_flat)))
-print("Mean: " + str(np.mean(LHdist_noncluster_u_full_flat)) + ", SEM: " + str(scipy.stats.sem(LHdist_noncluster_u_full_flat)))
+print("LH cluster Mean: " + str(np.mean(LHdist_cluster_u_full_flat)) + ", STD: " + str(np.std(LHdist_cluster_u_full_flat)))
+print("LH noncluster Mean: " + str(np.mean(LHdist_noncluster_u_full_flat)) + ", STD: " + str(np.std(LHdist_noncluster_u_full_flat)))
 
+
+#%%
+
+fig, ax = plt.subplots()
+labels = ['Calyx', 'LH']
+x = np.arange(len(labels))  # the label locations
+width = .3  # the width of the bars
+cmeans = [np.mean(calyxdist_cluster_u_full_flat), np.mean(LHdist_cluster_u_full_flat)]
+cerr = [np.std(calyxdist_cluster_u_full_flat), np.std(LHdist_cluster_u_full_flat)]
+ncmeans = [np.mean(calyxdist_noncluster_u_full_flat), np.mean(LHdist_noncluster_u_full_flat)]
+ncerr = [np.std(calyxdist_noncluster_u_full_flat), np.std(LHdist_noncluster_u_full_flat)]
+ax.bar(x - width/2, cmeans, width, yerr=cerr, capsize=5, label='Cluster')
+ax.bar(x + width/2, ncmeans, width, yerr=ncerr, capsize=5, label='Non-Cluster')
+ax.set_ylabel('Distance')
+ax.set_xticks(x)
+ax.set_xticklabels(labels)
+ax.legend()
+
+plt.tight_layout()
+plt.show()
 
 
 #%% Cluster quantification heatmap visualization
@@ -2920,71 +2932,73 @@ print("Mean: " + str(np.mean(LHdist_noncluster_u_full_flat)) + ", SEM: " + str(s
 from scipy.stats import kde
 
 nbins=100
-ni=21
+gi=1
 
-kdecalyxdorsal = kde.gaussian_kde([np.array(morph_dist_calyx[ni])[:,0], np.array(morph_dist_calyx[ni])[:,1]])
-kdecalyxant = kde.gaussian_kde([np.array(morph_dist_calyx[ni])[:,0], np.array(morph_dist_calyx[ni])[:,2]])
-xcalyxd, ycalyxd = np.mgrid[470:560:nbins*1j, 180:260:nbins*1j]
-xcalyxa, ycalyxa = np.mgrid[470:560:nbins*1j, 130:210:nbins*1j]
+morph_dist_calyx_n_flat = [item for sublist in morph_dist_calyx[gi] for item in sublist]
+
+kdecalyxdorsal = kde.gaussian_kde([np.array(morph_dist_calyx_n_flat)[:,0], np.array(morph_dist_calyx_n_flat)[:,1]])
+kdecalyxant = kde.gaussian_kde([np.array(morph_dist_calyx_n_flat)[:,0], np.array(morph_dist_calyx_n_flat)[:,2]])
+xcalyxd, ycalyxd = np.mgrid[450:580:nbins*1j, 170:280:nbins*1j]
+xcalyxa, ycalyxa = np.mgrid[450:580:nbins*1j, 120:230:nbins*1j]
+xcalyxl, ycalyxl = np.mgrid[170:280:nbins*1j, 120:230:nbins*1j]
 zcalyxd = kdecalyxdorsal(np.vstack([xcalyxd.flatten(), ycalyxd.flatten()]))
 zcalyxa = kdecalyxant(np.vstack([xcalyxa.flatten(), ycalyxa.flatten()]))
 
-fig = plt.figure(figsize=(16, 6))
-ax1 = fig.add_subplot(121)
-ax2 = fig.add_subplot(122)
-ax1.pcolormesh(xcalyxd, ycalyxd, zcalyxd.reshape(xcalyxd.shape), cmap=plt.cm.jet)
-ax2.pcolormesh(xcalyxa, ycalyxa, zcalyxa.reshape(xcalyxa.shape), cmap=plt.cm.jet)
-ax1.set_xlim(470, 560)
-ax1.set_ylim(180, 260)
-ax2.set_xlim(470, 560)
-ax2.set_ylim(130, 210)
-fig.suptitle("Neuron ID " + str(ni) + " calyx")
-ax1.set_title("Dorsal")
-ax2.set_title("Anterior")
-plt.show()
+morph_dist_LH_n_flat = [item for sublist in morph_dist_LH[gi] for item in sublist]
 
-kdeLHdorsal = kde.gaussian_kde([np.array(morph_dist_LH[ni])[:,0], np.array(morph_dist_LH[ni])[:,1]])
-kdeLHant = kde.gaussian_kde([np.array(morph_dist_LH[ni])[:,0], np.array(morph_dist_LH[ni])[:,2]])
-xLHd, yLHd = np.mgrid[380:500:nbins*1j, 170:270:nbins*1j]
-xLHa, yLHa = np.mgrid[380:500:nbins*1j, 125:180:nbins*1j]
+kdeLHdorsal = kde.gaussian_kde([np.array(morph_dist_LH_n_flat)[:,0], np.array(morph_dist_LH_n_flat)[:,1]])
+kdeLHant = kde.gaussian_kde([np.array(morph_dist_LH_n_flat)[:,0], np.array(morph_dist_LH_n_flat)[:,2]])
+xLHd, yLHd = np.mgrid[370:520:nbins*1j, 160:280:nbins*1j]
+xLHa, yLHa = np.mgrid[370:520:nbins*1j, 100:210:nbins*1j]
 zLHd = kdeLHdorsal(np.vstack([xLHd.flatten(), yLHd.flatten()]))
 zLHa = kdeLHant(np.vstack([xLHa.flatten(), yLHa.flatten()]))
 
-fig = plt.figure(figsize=(16, 6))
-ax1 = fig.add_subplot(121)
-ax2 = fig.add_subplot(122)
-ax1.pcolormesh(xLHd, yLHd, zLHd.reshape(xLHd.shape), cmap=plt.cm.jet)
-ax2.pcolormesh(xLHa, yLHa, zLHa.reshape(xLHa.shape), cmap=plt.cm.jet)
-ax1.set_xlim(380, 500)
-ax1.set_ylim(170, 270)
-ax2.set_xlim(380, 500)
-ax2.set_ylim(125, 180)
-fig.suptitle("Neuron ID " + str(ni) + " LH")
-ax1.set_title("Dorsal")
-ax2.set_title("Anterior")
-plt.show()
+morph_dist_AL_n_flat = [item for sublist in morph_dist_AL[gi] for item in sublist]
 
-kdeALdorsal = kde.gaussian_kde([np.array(morph_dist_AL[ni])[:,0], np.array(morph_dist_AL[ni])[:,1]])
-kdeALant = kde.gaussian_kde([np.array(morph_dist_AL[ni])[:,0], np.array(morph_dist_AL[ni])[:,2]])
-xALd, yALd = np.mgrid[475:600:nbins*1j, 280:400:nbins*1j]
-xALa, yALa = np.mgrid[475:600:nbins*1j, 0:90:nbins*1j]
+kdeALdorsal = kde.gaussian_kde([np.array(morph_dist_AL_n_flat)[:,0], np.array(morph_dist_AL_n_flat)[:,1]])
+kdeALant = kde.gaussian_kde([np.array(morph_dist_AL_n_flat)[:,0], np.array(morph_dist_AL_n_flat)[:,2]])
+xALd, yALd = np.mgrid[470:650:nbins*1j, 220:450:nbins*1j]
+xALa, yALa = np.mgrid[470:650:nbins*1j, 0:200:nbins*1j]
 zALd = kdeALdorsal(np.vstack([xALd.flatten(), yALd.flatten()]))
 zALa = kdeALant(np.vstack([xALa.flatten(), yALa.flatten()]))
 
-fig = plt.figure(figsize=(16, 6))
-ax1 = fig.add_subplot(121)
-ax2 = fig.add_subplot(122)
-ax1.pcolormesh(xALd, yALd, zALd.reshape(xALd.shape), cmap=plt.cm.jet)
-ax2.pcolormesh(xALa, yALa, zALa.reshape(xALa.shape), cmap=plt.cm.jet)
-ax1.set_xlim(475, 600)
-ax1.set_ylim(280, 400)
-ax2.set_xlim(475, 600)
-ax2.set_ylim(0, 90)
-fig.suptitle("Neuron ID " + str(ni) + " AL")
-ax1.set_title("Dorsal")
-ax2.set_title("Anterior")
-plt.show()
 
+fig = plt.figure(figsize=(16, 18))
+ax1 = fig.add_subplot(321)
+ax2 = fig.add_subplot(322)
+ax1.pcolormesh(xcalyxd, ycalyxd, zcalyxd.reshape(xcalyxd.shape), cmap=plt.cm.jet)
+ax2.pcolormesh(xcalyxa, ycalyxa, zcalyxa.reshape(xcalyxa.shape), cmap=plt.cm.jet)
+ax1.set_xlim(450, 580)
+ax1.set_ylim(170, 280)
+ax2.set_xlim(450, 580)
+ax2.set_ylim(120, 230)
+ax1.set_title("Dorsal", fontsize=20)
+ax1.set_ylabel("Calyx", fontsize=20)
+ax2.set_title("Anterior", fontsize=20)
+
+ax3 = fig.add_subplot(323)
+ax4 = fig.add_subplot(324)
+ax3.pcolormesh(xLHd, yLHd, zLHd.reshape(xLHd.shape), cmap=plt.cm.jet)
+ax4.pcolormesh(xLHa, yLHa, zLHa.reshape(xLHa.shape), cmap=plt.cm.jet)
+ax3.set_xlim(370, 520)
+ax3.set_ylim(160, 280)
+ax4.set_xlim(370, 520)
+ax4.set_ylim(100, 210)
+ax3.set_ylabel("LH", fontsize=20)
+
+ax5 = fig.add_subplot(325)
+ax6 = fig.add_subplot(326)
+ax5.pcolormesh(xALd, yALd, zALd.reshape(xALd.shape), cmap=plt.cm.jet)
+ax6.pcolormesh(xALa, yALa, zALa.reshape(xALa.shape), cmap=plt.cm.jet)
+ax5.set_xlim(470, 650)
+ax5.set_ylim(220, 450)
+ax6.set_xlim(470, 650)
+ax6.set_ylim(0, 200)
+ax5.set_ylabel("AL", fontsize=20)
+
+fig.suptitle(str(glo_list[gi]), fontsize=30)
+plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+plt.show()
 
 t12 = time.time()
 
