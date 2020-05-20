@@ -2923,35 +2923,35 @@ plt.show()
 
 #%% Cluster quantification heatmap visualization
 
-from sklearn import metrics
+from scipy.stats import kde
+import logging
+from mayavi import mlab
 
-labelcalyx = []
-lab_i = 0
+nbins=10
+gi=1
 
-morph_dist_calyx_flat = [item for sublist in morph_dist_calyx for item in sublist]
-morph_dist_calyx_flat = [item for sublist in morph_dist_calyx_flat for item in sublist]
+morph_dist_calyx_n_flat = [item for sublist in morph_dist_calyx[gi] for item in sublist]
 
-for i in range(len(morph_dist_calyx)):
-    for j in range(len(morph_dist_calyx[i])):
-        for k in range(len(morph_dist_calyx[i][j])):
-            labelcalyx.append(lab_i)
-    lab_i += 1
-    
-silhouette_avgcalyx = metrics.silhouette_score(morph_dist_calyx_flat, labelcalyx)
+x = np.array(morph_dist_calyx_n_flat)[:,0]
+y = np.array(morph_dist_calyx_n_flat)[:,1]
+z = np.array(morph_dist_calyx_n_flat)[:,2]
 
-labelLH = []
-lab_i = 0
+xyz = np.vstack([x,y,z])
+kdecalyx = kde.gaussian_kde(xyz)
 
-morph_dist_LH_flat = [item for sublist in morph_dist_LH for item in sublist]
-morph_dist_LH_flat = [item for sublist in morph_dist_LH_flat for item in sublist]
+# Evaluate kde on a grid
+xi, yi, zi = np.mgrid[450:580:nbins*1j, 170:280:nbins*1j, 120:230:nbins*1j]
+coords = np.vstack([item.ravel() for item in [xi, yi, zi]]) 
+density = kdecalyx(coords).reshape(xi.shape)
 
-for i in range(len(morph_dist_LH)):
-    for j in range(len(morph_dist_LH[i])):
-        for k in range(len(morph_dist_LH[i][j])):
-            labelLH.append(lab_i)
-    lab_i += 1
-    
-silhouette_avgLH = metrics.silhouette_score(morph_dist_LH_flat, labelLH)
+# Plot scatter with mayavi
+figure = mlab.figure('DensityPlot')
+
+grid = mlab.pipeline.scalar_field(xi, yi, zi, density)
+mlab.pipeline.volume(grid, color=(0.2, 0.4, 0.5))
+
+mlab.axes()
+mlab.show()
 
 
 
