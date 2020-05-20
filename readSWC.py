@@ -2923,6 +2923,35 @@ plt.show()
 
 #%% Cluster quantification heatmap visualization
 
+from sklearn import metrics
+
+labelcalyx = []
+lab_i = 0
+
+morph_dist_calyx_flat = [item for sublist in morph_dist_calyx for item in sublist]
+morph_dist_calyx_flat = [item for sublist in morph_dist_calyx_flat for item in sublist]
+
+for i in range(len(morph_dist_calyx)):
+    for j in range(len(morph_dist_calyx[i])):
+        for k in range(len(morph_dist_calyx[i][j])):
+            labelcalyx.append(lab_i)
+    lab_i += 1
+    
+silhouette_avgcalyx = metrics.silhouette_score(morph_dist_calyx_flat, labelcalyx)
+
+labelLH = []
+lab_i = 0
+
+morph_dist_LH_flat = [item for sublist in morph_dist_LH for item in sublist]
+morph_dist_LH_flat = [item for sublist in morph_dist_LH_flat for item in sublist]
+
+for i in range(len(morph_dist_LH)):
+    for j in range(len(morph_dist_LH[i])):
+        for k in range(len(morph_dist_LH[i][j])):
+            labelLH.append(lab_i)
+    lab_i += 1
+    
+silhouette_avgLH = metrics.silhouette_score(morph_dist_LH_flat, labelLH)
 
 
 
@@ -2940,7 +2969,6 @@ kdecalyxdorsal = kde.gaussian_kde([np.array(morph_dist_calyx_n_flat)[:,0], np.ar
 kdecalyxant = kde.gaussian_kde([np.array(morph_dist_calyx_n_flat)[:,0], np.array(morph_dist_calyx_n_flat)[:,2]])
 xcalyxd, ycalyxd = np.mgrid[450:580:nbins*1j, 170:280:nbins*1j]
 xcalyxa, ycalyxa = np.mgrid[450:580:nbins*1j, 120:230:nbins*1j]
-xcalyxl, ycalyxl = np.mgrid[170:280:nbins*1j, 120:230:nbins*1j]
 zcalyxd = kdecalyxdorsal(np.vstack([xcalyxd.flatten(), ycalyxd.flatten()]))
 zcalyxa = kdecalyxant(np.vstack([xcalyxa.flatten(), ycalyxa.flatten()]))
 
