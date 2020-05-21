@@ -2921,39 +2921,85 @@ plt.tight_layout()
 plt.show()
 
 
-#%% Cluster quantification heatmap visualization
+#%% Cluster quantification heatmap visualization for calyx
 
 from scipy.stats import kde
 import logging
 from mayavi import mlab
 
-nbins=10
-gi=1
+nbins = 100
 
-morph_dist_calyx_n_flat = [item for sublist in morph_dist_calyx[gi] for item in sublist]
+cmap1 = cm.get_cmap('Set1')
+cmap2 = cm.get_cmap('Set2')
+cmap3 = cm.get_cmap('Set3')
+cmap4 = cm.get_cmap('tab20b')
+cmap5 = cm.get_cmap('tab20c')
 
-x = np.array(morph_dist_calyx_n_flat)[:,0]
-y = np.array(morph_dist_calyx_n_flat)[:,1]
-z = np.array(morph_dist_calyx_n_flat)[:,2]
+cmap = cmap1.colors + cmap2.colors + cmap3.colors + cmap4.colors + cmap5.colors
 
-xyz = np.vstack([x,y,z])
-kdecalyx = kde.gaussian_kde(xyz)
+# figure = mlab.figure('DensityPlot')
 
-# Evaluate kde on a grid
-xi, yi, zi = np.mgrid[450:580:nbins*1j, 170:280:nbins*1j, 120:230:nbins*1j]
-coords = np.vstack([item.ravel() for item in [xi, yi, zi]]) 
-density = kdecalyx(coords).reshape(xi.shape)
+for i in range(len(morph_dist_calyx)):
+    morph_dist_calyx_n_flat = [item for sublist in morph_dist_calyx[i] for item in sublist]
+    
+    x = np.array(morph_dist_calyx_n_flat)[:,0]
+    y = np.array(morph_dist_calyx_n_flat)[:,1]
+    z = np.array(morph_dist_calyx_n_flat)[:,2]
+    
+    xyz = np.vstack([x,y,z])
+    kdecalyx = kde.gaussian_kde(xyz)
+    
+    def calc_kdecalyx(data):
+        return kdecalyx(data.T)
 
-# Plot scatter with mayavi
+    xi, yi, zi = np.mgrid[450:580:nbins*1j, 170:280:nbins*1j, 120:230:nbins*1j]
+    coords = np.vstack([item.ravel() for item in [xi, yi, zi]]) 
+    
+    cores = mp.cpu_count()
+    pool = mp.Pool(processes=10)
+    results = pool.map(calc_kdecalyx, np.array_split(coords.T, 2))
+    density = np.concatenate(results).reshape(xi.shape)
+    
+    # density = kdecalyx(coords).reshape(xi.shape)
+    
+    dmin = density.min()
+    dmax = density.max()
+    # mlab.contour3d(xi, yi, zi, density, color=cmap[i])
+    
+    # grid = mlab.pipeline.scalar_field(xi, yi, zi, density)
+    # mlab.pipeline.volume(grid, vmin=dmin, vmax=dmin + .5*(dmax-dmin), color=cmap[i])
+    
+# mlab.axes()
+# mlab.show()
+
+#%% Cluster quantification heatmap visualization for LH
+
 figure = mlab.figure('DensityPlot')
 
-grid = mlab.pipeline.scalar_field(xi, yi, zi, density)
-mlab.pipeline.volume(grid, color=(0.2, 0.4, 0.5))
-
+for i in range(len(morph_dist_LH)):
+    if i != 49:
+        morph_dist_LH_n_flat = [item for sublist in morph_dist_LH[i] for item in sublist]
+        
+        x = np.array(morph_dist_LH_n_flat)[:,0]
+        y = np.array(morph_dist_LH_n_flat)[:,1]
+        z = np.array(morph_dist_LH_n_flat)[:,2]
+        
+        xyz = np.vstack([x,y,z])
+        kdeLH = kde.gaussian_kde(xyz)
+        
+        # Evaluate kde on a grid
+        xi, yi, zi = np.mgrid[370:520:nbins*1j, 160:280:nbins*1j, 100:210:nbins*1j]
+        coords = np.vstack([item.ravel() for item in [xi, yi, zi]]) 
+        density = kdeLH(coords).reshape(xi.shape)
+        
+        dmin = density.min()
+        dmax = density.max()
+        grid = mlab.pipeline.scalar_field(xi, yi, zi, density)
+        mlab.contour3d(density, color=cmap[i])
+        # mlab.pipeline.volume(grid, vmin=dmin, vmax=dmin + .5*(dmax-dmin), color=cmap[i])
+    
 mlab.axes()
 mlab.show()
-
-
 
 
 #%% 2D heatmap of spatial distribution of each neuron in calyx, LH, and AL
