@@ -2927,7 +2927,7 @@ from scipy.stats import kde
 import logging
 from mayavi import mlab
 
-nbins = 100
+nbins = 10
 
 cmap1 = cm.get_cmap('Set1')
 cmap2 = cm.get_cmap('Set2')
@@ -2935,9 +2935,21 @@ cmap3 = cm.get_cmap('Set3')
 cmap4 = cm.get_cmap('tab20b')
 cmap5 = cm.get_cmap('tab20c')
 
-cmap = cmap1.colors + cmap2.colors + cmap3.colors + cmap4.colors + cmap5.colors
+cmap = cmap1.colors + cmap4.colors + cmap5.colors + cmap2.colors + cmap3.colors
 
-# figure = mlab.figure('DensityPlot')
+morph_dist_calyx_flat = [item for sublist in morph_dist_calyx for item in sublist]
+morph_dist_calyx_flat = [item for sublist in morph_dist_calyx_flat for item in sublist]
+
+mdcalyx_xmax = np.max(np.array(morph_dist_calyx_flat)[:,0])+5
+mdcalyx_xmin = np.min(np.array(morph_dist_calyx_flat)[:,0])-5
+mdcalyx_ymax = np.max(np.array(morph_dist_calyx_flat)[:,1])+5
+mdcalyx_ymin = np.min(np.array(morph_dist_calyx_flat)[:,1])-5
+mdcalyx_zmax = np.max(np.array(morph_dist_calyx_flat)[:,2])+5
+mdcalyx_zmin = np.min(np.array(morph_dist_calyx_flat)[:,2])-5
+
+t13 = time.time()
+
+figure = mlab.figure('DensityPlot')
 
 for i in range(len(morph_dist_calyx)):
     morph_dist_calyx_n_flat = [item for sublist in morph_dist_calyx[i] for item in sublist]
@@ -2947,32 +2959,35 @@ for i in range(len(morph_dist_calyx)):
     z = np.array(morph_dist_calyx_n_flat)[:,2]
     
     xyz = np.vstack([x,y,z])
-    kdecalyx = kde.gaussian_kde(xyz)
+    kdecalyx = kde.gaussian_kde(xyz, bw_method=0.3)
     
-    def calc_kdecalyx(data):
-        return kdecalyx(data.T)
-
-    xi, yi, zi = np.mgrid[450:580:nbins*1j, 170:280:nbins*1j, 120:230:nbins*1j]
+    xi, yi, zi = np.mgrid[mdcalyx_xmin:mdcalyx_xmax:nbins*1j, 
+                          mdcalyx_ymin:mdcalyx_ymax:nbins*1j, 
+                          mdcalyx_zmin:mdcalyx_zmax:nbins*1j]
     coords = np.vstack([item.ravel() for item in [xi, yi, zi]]) 
-    
-    cores = mp.cpu_count()
-    pool = mp.Pool(processes=10)
-    results = pool.map(calc_kdecalyx, np.array_split(coords.T, 2))
-    density = np.concatenate(results).reshape(xi.shape)
-    
-    # density = kdecalyx(coords).reshape(xi.shape)
+    density = kdecalyx(coords).reshape(xi.shape)
     
     dmin = density.min()
     dmax = density.max()
-    # mlab.contour3d(xi, yi, zi, density, color=cmap[i])
+    mlab.contour3d(xi, yi, zi, density, color=cmap[i])
+    # mlab.text3d(morph_dist_calyx_CMCM[i][0], 
+    #             morph_dist_calyx_CMCM[i][1], 
+    #             morph_dist_calyx_CMCM[i][2],
+    #             glo_list[i])
     
     # grid = mlab.pipeline.scalar_field(xi, yi, zi, density)
     # mlab.pipeline.volume(grid, vmin=dmin, vmax=dmin + .5*(dmax-dmin), color=cmap[i])
     
-# mlab.axes()
-# mlab.show()
+mlab.axes()
+mlab.show()
+
+t14 = time.time()
+
+print('checkpoint mayavi: ' + str(t14-t13))
 
 #%% Cluster quantification heatmap visualization for LH
+
+nbins = 50
 
 figure = mlab.figure('DensityPlot')
 
