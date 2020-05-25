@@ -1188,9 +1188,14 @@ poptD_AL1, pcovD_AL1 = scipy.optimize.curve_fit(objFuncGL,
                                               maxfev=10000)
 perrD_AL1 = np.sqrt(np.diag(pcovD_AL1))
 
+# poptD_AL2, pcovD_AL2 = scipy.optimize.curve_fit(objFuncGL, 
+#                                               np.log10(radiussize_inv[12:22]), 
+#                                               np.log10(spheredist_AL_sum_avg[12:22]), 
+#                                               p0=[-0.1, 0.1], 
+#                                               maxfev=10000)
 poptD_AL2, pcovD_AL2 = scipy.optimize.curve_fit(objFuncGL, 
-                                              np.log10(radiussize_inv[12:22]), 
-                                              np.log10(spheredist_AL_sum_avg[12:22]), 
+                                              np.log10(radiussize_inv[12:29]), 
+                                              np.log10(spheredist_AL_sum_avg[12:29]), 
                                               p0=[-0.1, 0.1], 
                                               maxfev=10000)
 perrD_AL2 = np.sqrt(np.diag(pcovD_AL2))
@@ -1207,17 +1212,17 @@ plt.scatter(radiussize_inv,
                     spheredist_calyx_sum_avg, color='tab:blue', facecolors='none')
 plt.scatter(radiussize_inv, 
                     spheredist_LH_sum_avg, color='tab:orange', facecolors='none')
-plt.scatter(radiussize_inv[22:29], 
-                    spheredist_AL_sum_avg[22:29], color='tab:green')
+plt.scatter(radiussize_inv[:29], 
+                    spheredist_AL_sum_avg[:29], color='tab:green')
 plt.scatter(radiussize_inv[29:], 
                     spheredist_AL_sum_avg[29:], color='tab:green', facecolors='none')
-plt.scatter(radiussize_inv[:22], 
-                    spheredist_AL_sum_avg[:22], color='tab:green', facecolors='none')
+# plt.scatter(radiussize_inv[:22], 
+#                     spheredist_AL_sum_avg[:22], color='tab:green', facecolors='none')
 
 plt.plot(radiussize_inv, fitYD_calyx, lw=2, linestyle='--', color='tab:blue')
 plt.plot(radiussize_inv, fitYD_LH, lw=2, linestyle='--', color='tab:orange')
 plt.plot(radiussize_inv, fitYD_AL1, lw=2, linestyle='--', color='tab:green')
-plt.plot(radiussize_inv, fitYD_AL2, lw=2, linestyle='--', color='tab:green')
+plt.plot(radiussize_inv, fitYD_AL2, lw=2, linestyle='dashdot', color='tab:green')
 plt.yscale('log')
 plt.xscale('log')
 plt.legend(['Calyx: ' + str(round(poptD_calyx[0], 3)) + '$\pm$' + str(round(perrD_calyx[0], 3)),
@@ -1241,7 +1246,7 @@ LHmwerr = []
 ALmw = []
 ALmwerr = []
 mwx = []
-shiftN = 11
+shiftN = 7
 for i in range(len(radiussize) - shiftN):
     mwx.append(np.average(radiussize[i:i+shiftN]))
     
@@ -1278,6 +1283,7 @@ plt.fill_between(mwx, np.array(Calyxmw)-np.array(Calyxmwerr), np.array(Calyxmw)+
 plt.fill_between(mwx, np.array(LHmw)-np.array(LHmwerr), np.array(LHmw)+np.array(LHmwerr), alpha=0.3)
 plt.fill_between(mwx, np.array(ALmw)-np.array(ALmwerr), np.array(ALmw)+np.array(ALmwerr), alpha=0.3)
 plt.xscale('log')
+plt.legend(["Calyx", "LH", "AL"], fontsize=15)
 # plt.yscale('log')
 #plt.xlim(1, 75)
 #plt.ylim(3, 1500)
@@ -2924,18 +2930,8 @@ plt.show()
 #%% Cluster quantification heatmap visualization for calyx
 
 from scipy.stats import kde
-import logging
-from mayavi import mlab
 
-nbins = 10
-
-cmap1 = cm.get_cmap('Set1')
-cmap2 = cm.get_cmap('Set2')
-cmap3 = cm.get_cmap('Set3')
-cmap4 = cm.get_cmap('tab20b')
-cmap5 = cm.get_cmap('tab20c')
-
-cmap = cmap1.colors + cmap4.colors + cmap5.colors + cmap2.colors + cmap3.colors
+nscale = 1
 
 morph_dist_calyx_flat = [item for sublist in morph_dist_calyx for item in sublist]
 morph_dist_calyx_flat = [item for sublist in morph_dist_calyx_flat for item in sublist]
@@ -2947,9 +2943,11 @@ mdcalyx_ymin = np.min(np.array(morph_dist_calyx_flat)[:,1])-5
 mdcalyx_zmax = np.max(np.array(morph_dist_calyx_flat)[:,2])+5
 mdcalyx_zmin = np.min(np.array(morph_dist_calyx_flat)[:,2])-5
 
-t13 = time.time()
+nbinsx = int((mdcalyx_xmax-mdcalyx_xmin)/nscale)
+nbinsy = int((mdcalyx_ymax-mdcalyx_ymin)/nscale)
+nbinsz = int((mdcalyx_zmax-mdcalyx_zmin)/nscale)
 
-figure = mlab.figure('DensityPlot')
+t13 = time.time()
 
 for i in range(len(morph_dist_calyx)):
     morph_dist_calyx_n_flat = [item for sublist in morph_dist_calyx[i] for item in sublist]
@@ -2959,39 +2957,88 @@ for i in range(len(morph_dist_calyx)):
     z = np.array(morph_dist_calyx_n_flat)[:,2]
     
     xyz = np.vstack([x,y,z])
-    kdecalyx = kde.gaussian_kde(xyz, bw_method=0.3)
+    kdecalyx = kde.gaussian_kde(xyz, bw_method=0.16)
     
-    xi, yi, zi = np.mgrid[mdcalyx_xmin:mdcalyx_xmax:nbins*1j, 
-                          mdcalyx_ymin:mdcalyx_ymax:nbins*1j, 
-                          mdcalyx_zmin:mdcalyx_zmax:nbins*1j]
+    xi, yi, zi = np.mgrid[mdcalyx_xmin:mdcalyx_xmax:nbinsx*1j, 
+                          mdcalyx_ymin:mdcalyx_ymax:nbinsy*1j, 
+                          mdcalyx_zmin:mdcalyx_zmax:nbinsz*1j]
     coords = np.vstack([item.ravel() for item in [xi, yi, zi]]) 
     density = kdecalyx(coords).reshape(xi.shape)
     
-    dmin = density.min()
-    dmax = density.max()
-    mlab.contour3d(xi, yi, zi, density, color=cmap[i])
-    # mlab.text3d(morph_dist_calyx_CMCM[i][0], 
-    #             morph_dist_calyx_CMCM[i][1], 
-    #             morph_dist_calyx_CMCM[i][2],
-    #             glo_list[i])
+    np.save('./clusterdata/calyx_xi_' + str(i), xi)
+    np.save('./clusterdata/calyx_yi_' + str(i), yi)
+    np.save('./clusterdata/calyx_zi_' + str(i), zi)
+    np.save('./clusterdata/calyx_d_' + str(i), density)
     
-    # grid = mlab.pipeline.scalar_field(xi, yi, zi, density)
-    # mlab.pipeline.volume(grid, vmin=dmin, vmax=dmin + .5*(dmax-dmin), color=cmap[i])
-    
-mlab.axes()
-mlab.show()
 
 t14 = time.time()
 
 print('checkpoint mayavi: ' + str(t14-t13))
+    
 
-#%% Cluster quantification heatmap visualization for LH
+#%%
 
-nbins = 50
+import logging
+from mayavi import mlab
+
+cmap1 = cm.get_cmap('Set1')
+cmap2 = cm.get_cmap('Set2')
+cmap3 = cm.get_cmap('Set3')
+cmap4 = cm.get_cmap('tab20b')
+cmap5 = cm.get_cmap('tab20c')
+
+cmap = cmap1.colors + cmap4.colors + cmap5.colors + cmap2.colors + cmap3.colors
+cmap = cm.get_cmap('jet', 53)
 
 figure = mlab.figure('DensityPlot')
 
-for i in range(len(morph_dist_LH)):
+for i in range(53):
+    
+    xi = np.load('./clusterdata/calyx_xi_' + str(i) + '.npy')
+    yi = np.load('./clusterdata/calyx_yi_' + str(i) + '.npy')
+    zi = np.load('./clusterdata/calyx_zi_' + str(i) + '.npy')
+    density = np.load('./clusterdata/calyx_d_' + str(i) + '.npy')
+    
+    dmin = density.min()
+    dmax = density.max()
+    mlab.contour3d(xi, yi, zi, density, color=cmap(i)[:3])
+
+mlab.axes()
+mlab.show()
+
+
+
+#%% Cluster quantification heatmap visualization for LH
+
+from scipy.stats import kde
+
+nscale = 1
+
+cmap1 = cm.get_cmap('Set1')
+cmap2 = cm.get_cmap('Set2')
+cmap3 = cm.get_cmap('Set3')
+cmap4 = cm.get_cmap('tab20b')
+cmap5 = cm.get_cmap('tab20c')
+
+cmap = cmap1.colors + cmap4.colors + cmap5.colors + cmap2.colors + cmap3.colors
+
+morph_dist_LH_flat = [item for sublist in morph_dist_LH for item in sublist]
+morph_dist_LH_flat = [item for sublist in morph_dist_LH_flat for item in sublist]
+
+mdLH_xmax = np.max(np.array(morph_dist_LH_flat)[:,0])+5
+mdLH_xmin = np.min(np.array(morph_dist_LH_flat)[:,0])-5
+mdLH_ymax = np.max(np.array(morph_dist_LH_flat)[:,1])+5
+mdLH_ymin = np.min(np.array(morph_dist_LH_flat)[:,1])-5
+mdLH_zmax = np.max(np.array(morph_dist_LH_flat)[:,2])+5
+mdLH_zmin = np.min(np.array(morph_dist_LH_flat)[:,2])-5
+
+nbinsx = int((mdLH_xmax-mdLH_xmin)/nscale)
+nbinsy = int((mdLH_ymax-mdLH_ymin)/nscale)
+nbinsz = int((mdLH_zmax-mdLH_zmin)/nscale)
+
+t13 = time.time()
+
+for i in range(len(morph_dist_calyx)):
     if i != 49:
         morph_dist_LH_n_flat = [item for sublist in morph_dist_LH[i] for item in sublist]
         
@@ -3000,19 +3047,75 @@ for i in range(len(morph_dist_LH)):
         z = np.array(morph_dist_LH_n_flat)[:,2]
         
         xyz = np.vstack([x,y,z])
-        kdeLH = kde.gaussian_kde(xyz)
+        kdeLH = kde.gaussian_kde(xyz, bw_method=0.16)
         
-        # Evaluate kde on a grid
-        xi, yi, zi = np.mgrid[370:520:nbins*1j, 160:280:nbins*1j, 100:210:nbins*1j]
+        xi, yi, zi = np.mgrid[mdLH_xmin:mdLH_xmax:nbinsx*1j, 
+                              mdLH_ymin:mdLH_ymax:nbinsy*1j, 
+                              mdLH_zmin:mdLH_zmax:nbinsz*1j]
         coords = np.vstack([item.ravel() for item in [xi, yi, zi]]) 
         density = kdeLH(coords).reshape(xi.shape)
         
+        np.save('./clusterdata/LH_xi_' + str(i), xi)
+        np.save('./clusterdata/LH_yi_' + str(i), yi)
+        np.save('./clusterdata/LH_zi_' + str(i), zi)
+        np.save('./clusterdata/LH_d_' + str(i), density)
+    
+
+t14 = time.time()
+
+print('checkpoint mayavi: ' + str(t14-t13))
+
+
+#%%
+
+import logging
+from mayavi import mlab
+from colorsys import hls_to_rgb
+
+cmap1 = cm.get_cmap('Set1')
+cmap2 = cm.get_cmap('Set2')
+cmap3 = cm.get_cmap('Set3')
+cmap4 = cm.get_cmap('tab20b')
+cmap5 = cm.get_cmap('tab20c')
+
+cmap = cmap1.colors + cmap4.colors + cmap5.colors + cmap2.colors + cmap3.colors
+cmap = cm.get_cmap('gist_rainbow', 53)
+colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255),
+          (0, 255, 255), (255, 125, 0), (125, 255, 0), (0, 125, 255),
+          (125, 0, 255), (255, 0, 125), (125, 125, 0), (125, 0, 125),
+          (0, 125, 125), (125, 60, 0), (125, 0, 60), (60, 125, 0), (60, 0, 125),
+          (0, 125, 60), (0, 60, 125), (60, 0, 0), (0, 60, 0), (0, 0, 60), 
+          (255, 60, 0), (255, 0, 60), (60, 255, 0), (60, 0, 255), (0, 255, 60),
+          (0, 60, 255), (190, 0, 0), (0, 190, 0), (0, 0, 190), (190, 60, 0),
+          (190, 0, 60), (60, 190, 0), (60, 0, 190), (0, 190, 60), (0, 60, 190),
+          (190, 125, 0), (190, 0, 125), (125, 190, 0), (125, 0, 190), (0, 190, 125),
+          (0, 125, 190), (255, 190, 0), (255, 0, 190), (190, 255, 0), (190, 0, 255),
+          (0, 255, 190), (0, 190, 255), (0, 0, 0), (120, 120, 120), (255, 255, 255)]
+colors = np.divide(colors, 255)
+
+# for i in np.arange(0., 360., 360. / 53):
+#     h = i / 360.
+#     l = (50 + np.random.rand() * 10) / 100.
+#     s = (90 + np.random.rand() * 10) / 100.
+#     colors.append(hls_to_rgb(h, l, s))
+
+# l = [glo_list.index('VA2'), glo_list.index('VA3'), glo_list.index('VA7m'), glo_list.index('VA7l'), glo_list.index('VA6'), glo_list.index('VA5')]
+# l = [glo_list.index('VA2'), glo_list.index('VA1v'), glo_list.index('DA2'), glo_list.index('DL3')]
+# l = [glo_list.index('DA1')]
+
+figure = mlab.figure('DensityPlot')
+
+for i in range(53):
+    if i != 49:
+        xi = np.load('./clusterdata/LH_xi_' + str(i) + '.npy')
+        yi = np.load('./clusterdata/LH_yi_' + str(i) + '.npy')
+        zi = np.load('./clusterdata/LH_zi_' + str(i) + '.npy')
+        density = np.load('./clusterdata/LH_d_' + str(i) + '.npy')
+        
         dmin = density.min()
         dmax = density.max()
-        grid = mlab.pipeline.scalar_field(xi, yi, zi, density)
-        mlab.contour3d(density, color=cmap[i])
-        # mlab.pipeline.volume(grid, vmin=dmin, vmax=dmin + .5*(dmax-dmin), color=cmap[i])
-    
+        mlab.contour3d(xi, yi, zi, density, color=tuple(colors[i]))
+
 mlab.axes()
 mlab.show()
 
