@@ -1078,7 +1078,7 @@ fullCM = np.average(OutputData.cMLSeg, axis=0)
 
 #%% Cluster Spread Calculation
         
-radiussize = np.logspace(0, 2, 100)[34:85]
+radiussize = np.logspace(0, 2, 100)[34:95]
 
 spheredist_calyx_sum = np.empty((len(MorphData.neuron_id), len(radiussize)))
 spheredist_LH_sum = np.empty((len(MorphData.neuron_id), len(radiussize)))
@@ -1203,10 +1203,10 @@ fitYD_AL2 = objFuncPpow(radiussize_inv, poptD_AL2[0], poptD_AL2[1])
 
 fig = plt.figure(figsize=(12,8))
 
-plt.scatter(radiussize_inv, 
-                    spheredist_calyx_sum_avg, color='tab:blue', facecolors='none')
-plt.scatter(radiussize_inv, 
-                    spheredist_LH_sum_avg, color='tab:orange', facecolors='none')
+plt.scatter(radiussize_inv[:49], 
+                    spheredist_calyx_sum_avg[:49], color='tab:blue', facecolors='none')
+plt.scatter(radiussize_inv[:53], 
+                    spheredist_LH_sum_avg[:53], color='tab:orange', facecolors='none')
 plt.scatter(radiussize_inv[8:15], 
                     spheredist_AL_sum_avg[8:15], color='tab:green')
 plt.scatter(radiussize_inv[15:], 
@@ -1241,7 +1241,7 @@ LHmwerr = []
 ALmw = []
 ALmwerr = []
 mwx = []
-shiftN = 3
+shiftN = 4
 for i in range(len(radiussize) - shiftN):
     mwx.append(np.average(radiussize[i:i+shiftN]))
     
@@ -1271,11 +1271,13 @@ for i in range(len(radiussize) - shiftN):
     
 
 fig = plt.figure(figsize=(12,8))
-plt.plot(mwx, Calyxmw, lw=2)
-plt.plot(mwx, LHmw, lw=2)
+plt.plot(mwx[:49-shiftN], Calyxmw[:49-shiftN], lw=2)
+plt.plot(mwx[:53-shiftN], LHmw[:53-shiftN], lw=2)
 plt.plot(mwx, ALmw, lw=2)
-plt.fill_between(mwx, np.array(Calyxmw)-np.array(Calyxmwerr), np.array(Calyxmw)+np.array(Calyxmwerr), alpha=0.3)
-plt.fill_between(mwx, np.array(LHmw)-np.array(LHmwerr), np.array(LHmw)+np.array(LHmwerr), alpha=0.3)
+plt.fill_between(mwx[:49-shiftN], np.array(Calyxmw[:49-shiftN])-np.array(Calyxmwerr[:49-shiftN]), 
+                 np.array(Calyxmw[:49-shiftN])+np.array(Calyxmwerr[:49-shiftN]), alpha=0.3)
+plt.fill_between(mwx[:53-shiftN], np.array(LHmw[:53-shiftN])-np.array(LHmwerr[:53-shiftN]),
+                 np.array(LHmw[:53-shiftN])+np.array(LHmwerr[:53-shiftN]), alpha=0.3)
 plt.fill_between(mwx, np.array(ALmw)-np.array(ALmwerr), np.array(ALmw)+np.array(ALmwerr), alpha=0.3)
 plt.xscale('log')
 plt.legend(["Calyx", "LH", "AL"], fontsize=15)
@@ -3194,6 +3196,9 @@ mlab.show()
 #%% Calculate convex hull
 
 from scipy.spatial import ConvexHull
+import logging
+from mayavi import mlab
+from colorsys import hls_to_rgb
 
 morph_dist_calyx_flat = [item for sublist in morph_dist_calyx for item in sublist]
 morph_dist_calyx_flat = [item for sublist in morph_dist_calyx_flat for item in sublist]
@@ -3215,11 +3220,27 @@ mdLH_ymin = np.min(np.array(morph_dist_LH_flat)[:,1])
 mdLH_zmax = np.max(np.array(morph_dist_LH_flat)[:,2])
 mdLH_zmin = np.min(np.array(morph_dist_LH_flat)[:,2])
 
+morph_dist_AL_flat = [item for sublist in morph_dist_AL for item in sublist]
+morph_dist_AL_flat = [item for sublist in morph_dist_AL_flat for item in sublist]
+
 hull_calyx = ConvexHull(np.array(morph_dist_calyx_flat))
 calyx_vol = hull_calyx.volume
+calyx_area = hull_calyx.area
 
 hull_LH = ConvexHull(np.array(morph_dist_LH_flat))
 LH_vol = hull_LH.volume
+LH_area = hull_LH.area
+
+hull_AL = ConvexHull(np.array(morph_dist_AL_flat))
+AL_vol = hull_AL.volume
+AL_area = hull_AL.area
+
+triangles = [(i, i+1, i+2) for i in range(0, len(hull_calyx.vertices)-2)]
+# mlab.triangular_mesh(np.array(morph_dist_calyx_flat)[hull_calyx.vertices,0], 
+#                      np.array(morph_dist_calyx_flat)[hull_calyx.vertices,1],
+#                      np.array(morph_dist_calyx_flat)[hull_calyx.vertices,2],
+#                      triangles)
+
 
 
 #%%
