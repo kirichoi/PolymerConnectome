@@ -1078,7 +1078,7 @@ fullCM = np.average(OutputData.cMLSeg, axis=0)
 
 #%% Cluster Spread Calculation
         
-radiussize = np.logspace(0, 2, 100)[20:85]
+radiussize = np.logspace(0, 2, 100)[34:85]
 
 spheredist_calyx_sum = np.empty((len(MorphData.neuron_id), len(radiussize)))
 spheredist_LH_sum = np.empty((len(MorphData.neuron_id), len(radiussize)))
@@ -1168,34 +1168,29 @@ poptD_LH_all = []
 poptD_AL_all = []
 
 poptD_calyx, pcovD_calyx = scipy.optimize.curve_fit(objFuncGL, 
-                                                    np.log10(radiussize_inv[12:49]), 
-                                                    np.log10(spheredist_calyx_sum_avg[12:49]), 
+                                                    np.log10(radiussize_inv[0:35]), 
+                                                    np.log10(spheredist_calyx_sum_avg[0:35]), 
                                                     p0=[-0.1, 0.1], 
                                                     maxfev=10000)
 perrD_calyx = np.sqrt(np.diag(pcovD_calyx))
 
 poptD_LH, pcovD_LH = scipy.optimize.curve_fit(objFuncGL, 
-                                              np.log10(radiussize_inv[12:49]), 
-                                              np.log10(spheredist_LH_sum_avg[12:49]), 
+                                              np.log10(radiussize_inv[0:35]), 
+                                              np.log10(spheredist_LH_sum_avg[0:35]), 
                                               p0=[-0.1, 0.1], 
                                               maxfev=10000)
 perrD_LH = np.sqrt(np.diag(pcovD_LH))
 
 poptD_AL1, pcovD_AL1 = scipy.optimize.curve_fit(objFuncGL, 
-                                              np.log10(radiussize_inv[29:]), 
-                                              np.log10(spheredist_AL_sum_avg[29:]), 
+                                              np.log10(radiussize_inv[14:35]), 
+                                              np.log10(spheredist_AL_sum_avg[14:35]), 
                                               p0=[-0.1, 0.1], 
                                               maxfev=10000)
 perrD_AL1 = np.sqrt(np.diag(pcovD_AL1))
 
-# poptD_AL2, pcovD_AL2 = scipy.optimize.curve_fit(objFuncGL, 
-#                                               np.log10(radiussize_inv[12:22]), 
-#                                               np.log10(spheredist_AL_sum_avg[12:22]), 
-#                                               p0=[-0.1, 0.1], 
-#                                               maxfev=10000)
 poptD_AL2, pcovD_AL2 = scipy.optimize.curve_fit(objFuncGL, 
-                                              np.log10(radiussize_inv[12:29]), 
-                                              np.log10(spheredist_AL_sum_avg[12:29]), 
+                                              np.log10(radiussize_inv[0:9]), 
+                                              np.log10(spheredist_AL_sum_avg[0:9]), 
                                               p0=[-0.1, 0.1], 
                                               maxfev=10000)
 perrD_AL2 = np.sqrt(np.diag(pcovD_AL2))
@@ -1212,12 +1207,12 @@ plt.scatter(radiussize_inv,
                     spheredist_calyx_sum_avg, color='tab:blue', facecolors='none')
 plt.scatter(radiussize_inv, 
                     spheredist_LH_sum_avg, color='tab:orange', facecolors='none')
-plt.scatter(radiussize_inv[:29], 
-                    spheredist_AL_sum_avg[:29], color='tab:green')
-plt.scatter(radiussize_inv[29:], 
-                    spheredist_AL_sum_avg[29:], color='tab:green', facecolors='none')
-# plt.scatter(radiussize_inv[:22], 
-#                     spheredist_AL_sum_avg[:22], color='tab:green', facecolors='none')
+plt.scatter(radiussize_inv[8:15], 
+                    spheredist_AL_sum_avg[8:15], color='tab:green')
+plt.scatter(radiussize_inv[15:], 
+                    spheredist_AL_sum_avg[15:], color='tab:green', facecolors='none')
+plt.scatter(radiussize_inv[:8], 
+                    spheredist_AL_sum_avg[:8], color='tab:green', facecolors='none')
 
 plt.plot(radiussize_inv, fitYD_calyx, lw=2, linestyle='--', color='tab:blue')
 plt.plot(radiussize_inv, fitYD_LH, lw=2, linestyle='--', color='tab:orange')
@@ -1246,7 +1241,7 @@ LHmwerr = []
 ALmw = []
 ALmwerr = []
 mwx = []
-shiftN = 7
+shiftN = 3
 for i in range(len(radiussize) - shiftN):
     mwx.append(np.average(radiussize[i:i+shiftN]))
     
@@ -2085,6 +2080,8 @@ for i in range(len(BranchData.branchP)):
         branchP_dist_t.append(MorphData.morph_dist[i][MorphData.morph_id[i].index(BranchData.branchP[i][j])])
     if len(branchP_dist_t) > 0:
         BranchData.branchP_dist.append(branchP_dist_t)
+    else:
+        BranchData.branchP_dist.append([])
     
 for i in range(len(MorphData.endP)):
     endP_dist_t = []
@@ -2092,6 +2089,8 @@ for i in range(len(MorphData.endP)):
         endP_dist_t.append(MorphData.morph_dist[i][MorphData.morph_id[i].index(MorphData.endP[i][j])])
     if len(endP_dist_t) > 0:
         MorphData.endP_dist.append(endP_dist_t)
+    else:
+        MorphData.endP_dist.append([])
 
 branchP_dist_flat = np.array([item for sublist in BranchData.branchP_dist for item in sublist])
 endP_dist_flat = np.array([item for sublist in MorphData.endP_dist for item in sublist])
@@ -2710,14 +2709,34 @@ morph_dist_calyx = []
 morph_dist_LH = []
 morph_dist_AL = []
 
+morph_dist_calyx_bp = []
+morph_dist_LH_bp = []
+morph_dist_AL_bp = []
+
+morph_dist_calyx_ep = []
+morph_dist_LH_ep = []
+morph_dist_AL_ep = []
+
 for i in range(len(glo_list)):
     morph_dist_calyx_temp = []
     morph_dist_LH_temp = []
     morph_dist_AL_temp = []
+    morph_dist_calyx_bp_temp = []
+    morph_dist_LH_bp_temp = []
+    morph_dist_AL_bp_temp = []
+    morph_dist_calyx_ep_temp = []
+    morph_dist_LH_ep_temp = []
+    morph_dist_AL_ep_temp = []
     for j in range(len(glo_idx[i])):
         morph_dist_calyx_temp2 = []
         morph_dist_LH_temp2 = []
         morph_dist_AL_temp2 = []
+        morph_dist_calyx_bp_temp2 = []
+        morph_dist_LH_bp_temp2 = []
+        morph_dist_AL_bp_temp2 = []
+        morph_dist_calyx_ep_temp2 = []
+        morph_dist_LH_ep_temp2 = []
+        morph_dist_AL_ep_temp2 = []
         for p in range(len(MorphData.morph_dist[glo_idx[i][j]])):
             if ((np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] > 475) and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] < 550) and
                 (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] < 260) and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[2] > 150)):
@@ -2730,15 +2749,50 @@ for i in range(len(glo_list)):
                   (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[2] < 90)):
                 morph_dist_AL_temp2.append(MorphData.morph_dist[glo_idx[i][j]][p])
         
+        for q in range(len(BranchData.branchP_dist[glo_idx[i][j]])):
+            if ((np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[0] > 475).all() and (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[0] < 550).all() and
+                (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[1] < 260).all() and (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[2] > 150).all()):
+                morph_dist_calyx_bp_temp2.append(np.array(BranchData.branchP_dist[glo_idx[i][j]][q]))
+            elif ((np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[0] < 475).all() and (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[1] < 260).all() and
+                  (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[1] > 180).all() and (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[2] > 125).all()):
+                morph_dist_LH_bp_temp2.append(np.array(BranchData.branchP_dist[glo_idx[i][j]][q]))
+            elif ((np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[0] > 475).all() and (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[0] < 600).all() and 
+                  (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[1] > 280).all() and (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[1] < 400).all() and
+                  (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[2] < 90).all()):
+                morph_dist_AL_bp_temp2.append(np.array(BranchData.branchP_dist[glo_idx[i][j]][q]))
+        
+        for r in range(len(MorphData.endP_dist[glo_idx[i][j]])):
+            if ((np.array(MorphData.endP_dist[glo_idx[i][j]][r])[0] > 475).all() and (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[0] < 550).all() and
+                (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[1] < 260).all() and (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[2] > 150).all()):
+                morph_dist_calyx_ep_temp2.append(np.array(MorphData.endP_dist[glo_idx[i][j]][r]))
+            elif ((np.array(MorphData.endP_dist[glo_idx[i][j]][r])[0] < 475).all() and (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[1] < 260).all() and
+                  (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[1] > 180).all() and (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[2] > 125).all()):
+                morph_dist_LH_ep_temp2.append(np.array(MorphData.endP_dist[glo_idx[i][j]][r]))
+            elif ((np.array(MorphData.endP_dist[glo_idx[i][j]][r])[0] > 475).all() and (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[0] < 600).all() and 
+                  (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[1] > 280).all() and (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[1] < 400).all() and
+                  (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[2] < 90).all()):
+                morph_dist_AL_ep_temp2.append(np.array(MorphData.endP_dist[glo_idx[i][j]][r]))
+        
         morph_dist_calyx_temp.append(morph_dist_calyx_temp2)
         morph_dist_LH_temp.append(morph_dist_LH_temp2)
         morph_dist_AL_temp.append(morph_dist_AL_temp2)
+        morph_dist_calyx_bp_temp.append(morph_dist_calyx_bp_temp2)
+        morph_dist_LH_bp_temp.append(morph_dist_LH_bp_temp2)
+        morph_dist_AL_bp_temp.append(morph_dist_AL_bp_temp2)
+        morph_dist_calyx_ep_temp.append(morph_dist_calyx_ep_temp2)
+        morph_dist_LH_ep_temp.append(morph_dist_LH_ep_temp2)
+        morph_dist_AL_ep_temp.append(morph_dist_AL_ep_temp2)
                 
     morph_dist_calyx.append(morph_dist_calyx_temp)
     morph_dist_LH.append(morph_dist_LH_temp)
     morph_dist_AL.append(morph_dist_AL_temp)
+    morph_dist_calyx_bp.append(morph_dist_calyx_bp_temp)
+    morph_dist_LH_bp.append(morph_dist_LH_bp_temp)
+    morph_dist_AL_bp.append(morph_dist_AL_bp_temp)
+    morph_dist_calyx_ep.append(morph_dist_calyx_ep_temp)
+    morph_dist_LH_ep.append(morph_dist_LH_ep_temp)
+    morph_dist_AL_ep.append(morph_dist_AL_ep_temp)
             
-
 
 #%%
 
@@ -2825,6 +2879,9 @@ for f in range(len(glo_list)):
                depthshade=False)
     morph_dist_LH_CMCM.append(np.average(np.array(LHtemp), axis=0))
     morph_dist_AL_CMCM.append(np.average(np.array(ALtemp), axis=0))
+ax.set_xlim(430, 580)
+ax.set_ylim(210, 350)
+ax.set_zlim(40, 170)
 plt.show()
 
 
@@ -2990,6 +3047,20 @@ cmap5 = cm.get_cmap('tab20c')
 cmap = cmap1.colors + cmap4.colors + cmap5.colors + cmap2.colors + cmap3.colors
 cmap = cm.get_cmap('jet', 53)
 
+colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255),
+          (0, 255, 255), (255, 125, 0), (125, 255, 0), (0, 125, 255),
+          (125, 0, 255), (255, 0, 125), (125, 125, 0), (125, 0, 125),
+          (0, 125, 125), (125, 60, 0), (125, 0, 60), (60, 125, 0), (60, 0, 125),
+          (0, 125, 60), (0, 60, 125), (60, 0, 0), (0, 60, 0), (0, 0, 60), 
+          (255, 60, 0), (255, 0, 60), (60, 255, 0), (60, 0, 255), (0, 255, 60),
+          (0, 60, 255), (190, 0, 0), (0, 190, 0), (0, 0, 190), (190, 60, 0),
+          (190, 0, 60), (60, 190, 0), (60, 0, 190), (0, 190, 60), (0, 60, 190),
+          (190, 125, 0), (190, 0, 125), (125, 190, 0), (125, 0, 190), (0, 190, 125),
+          (0, 125, 190), (255, 190, 0), (255, 0, 190), (190, 255, 0), (190, 0, 255),
+          (0, 255, 190), (0, 190, 255), (0, 0, 0), (120, 120, 120), (255, 255, 255)]
+colors = np.divide(colors, 255)
+
+
 figure = mlab.figure('DensityPlot')
 
 for i in range(53):
@@ -3001,7 +3072,7 @@ for i in range(53):
     
     dmin = density.min()
     dmax = density.max()
-    mlab.contour3d(xi, yi, zi, density, color=cmap(i)[:3])
+    mlab.contour3d(xi, yi, zi, density, color=tuple(colors[i]))
 
 mlab.axes()
 mlab.show()
@@ -3105,7 +3176,7 @@ colors = np.divide(colors, 255)
 
 figure = mlab.figure('DensityPlot')
 
-for i in range(53):
+for i in range(6):
     if i != 49:
         xi = np.load('./clusterdata/LH_xi_' + str(i) + '.npy')
         yi = np.load('./clusterdata/LH_yi_' + str(i) + '.npy')
@@ -3118,6 +3189,43 @@ for i in range(53):
 
 mlab.axes()
 mlab.show()
+
+
+#%% Calculate convex hull
+
+from scipy.spatial import ConvexHull
+
+morph_dist_calyx_flat = [item for sublist in morph_dist_calyx for item in sublist]
+morph_dist_calyx_flat = [item for sublist in morph_dist_calyx_flat for item in sublist]
+
+mdcalyx_xmax = np.max(np.array(morph_dist_calyx_flat)[:,0])
+mdcalyx_xmin = np.min(np.array(morph_dist_calyx_flat)[:,0])
+mdcalyx_ymax = np.max(np.array(morph_dist_calyx_flat)[:,1])
+mdcalyx_ymin = np.min(np.array(morph_dist_calyx_flat)[:,1])
+mdcalyx_zmax = np.max(np.array(morph_dist_calyx_flat)[:,2])
+mdcalyx_zmin = np.min(np.array(morph_dist_calyx_flat)[:,2])
+
+morph_dist_LH_flat = [item for sublist in morph_dist_LH for item in sublist]
+morph_dist_LH_flat = [item for sublist in morph_dist_LH_flat for item in sublist]
+
+mdLH_xmax = np.max(np.array(morph_dist_LH_flat)[:,0])
+mdLH_xmin = np.min(np.array(morph_dist_LH_flat)[:,0])
+mdLH_ymax = np.max(np.array(morph_dist_LH_flat)[:,1])
+mdLH_ymin = np.min(np.array(morph_dist_LH_flat)[:,1])
+mdLH_zmax = np.max(np.array(morph_dist_LH_flat)[:,2])
+mdLH_zmin = np.min(np.array(morph_dist_LH_flat)[:,2])
+
+hull_calyx = ConvexHull(np.array(morph_dist_calyx_flat))
+calyx_vol = hull_calyx.volume
+
+hull_LH = ConvexHull(np.array(morph_dist_LH_flat))
+LH_vol = hull_LH.volume
+
+
+#%%
+
+
+
 
 
 #%% 2D heatmap of spatial distribution of each neuron in calyx, LH, and AL
