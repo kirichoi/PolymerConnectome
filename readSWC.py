@@ -1784,9 +1784,9 @@ plt.show()
 
 #%% Binary Box-counting for Sub-physiological Region Length Scale
 
-binsize = np.logspace(-1, 3, 100)[13:75:1]
+binsize = np.logspace(-1, 3, 100)[13:75]
 
-sp_l = np.arange(5, 60, 1)
+sp_l = np.arange(5, 80, 1)
 bbr = 5
 
 hlist_calyx_b_count = np.empty((bbr, len(sp_l), len(binsize)), dtype=int)
