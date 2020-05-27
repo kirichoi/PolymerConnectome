@@ -3300,6 +3300,100 @@ mlab.axes()
 mlab.show()
 
 
+#%% Cluster quantification heatmap visualization for AL
+
+from scipy.stats import kde
+
+nscale = 1
+
+morph_dist_AL_flat = [item for sublist in morph_dist_AL for item in sublist]
+morph_dist_AL_flat = [item for sublist in morph_dist_AL_flat for item in sublist]
+
+mdAL_xmax = np.max(np.array(morph_dist_AL_flat)[:,0])+5
+mdAL_xmin = np.min(np.array(morph_dist_AL_flat)[:,0])-5
+mdAL_ymax = np.max(np.array(morph_dist_AL_flat)[:,1])+5
+mdAL_ymin = np.min(np.array(morph_dist_AL_flat)[:,1])-5
+mdAL_zmax = np.max(np.array(morph_dist_AL_flat)[:,2])+5
+mdAL_zmin = np.min(np.array(morph_dist_AL_flat)[:,2])-5
+
+nbinsx = int((mdAL_xmax-mdAL_xmin)/nscale)
+nbinsy = int((mdAL_ymax-mdAL_ymin)/nscale)
+nbinsz = int((mdAL_zmax-mdAL_zmin)/nscale)
+
+t13 = time.time()
+
+for i in range(len(morph_dist_AL)):
+    morph_dist_AL_n_flat = [item for sublist in morph_dist_AL[i] for item in sublist]
+    
+    x = np.array(morph_dist_AL_n_flat)[:,0]
+    y = np.array(morph_dist_AL_n_flat)[:,1]
+    z = np.array(morph_dist_AL_n_flat)[:,2]
+    
+    xyz = np.vstack([x,y,z])
+    kdeAL = kde.gaussian_kde(xyz, bw_method=0.16)
+    
+    xi, yi, zi = np.mgrid[mdAL_xmin:mdAL_xmax:nbinsx*1j, 
+                          mdAL_ymin:mdAL_ymax:nbinsy*1j, 
+                          mdAL_zmin:mdAL_zmax:nbinsz*1j]
+    coords = np.vstack([item.ravel() for item in [xi, yi, zi]]) 
+    density = kdeAL(coords).reshape(xi.shape)
+    
+    np.save('./clusterdata/AL_xi_' + str(i), xi)
+    np.save('./clusterdata/AL_yi_' + str(i), yi)
+    np.save('./clusterdata/AL_zi_' + str(i), zi)
+    np.save('./clusterdata/AL_d_' + str(i), density)
+    
+
+t14 = time.time()
+
+print('checkpoint mayavi: ' + str(t14-t13))
+    
+
+#%%
+
+from matplotlib import cm
+import numpy as np
+import logging
+from mayavi import mlab
+
+cmap1 = cm.get_cmap('Set1')
+cmap2 = cm.get_cmap('Set2')
+cmap3 = cm.get_cmap('Set3')
+cmap4 = cm.get_cmap('tab20b')
+cmap5 = cm.get_cmap('tab20c')
+
+cmap = cmap1.colors + cmap4.colors + cmap5.colors + cmap2.colors + cmap3.colors
+cmap = cm.get_cmap('jet', 53)
+
+colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255),
+          (0, 255, 255), (255, 125, 0), (125, 255, 0), (0, 125, 255),
+          (125, 0, 255), (255, 0, 125), (125, 125, 0), (125, 0, 125),
+          (0, 125, 125), (125, 60, 0), (125, 0, 60), (60, 125, 0), (60, 0, 125),
+          (0, 125, 60), (0, 60, 125), (60, 0, 0), (0, 60, 0), (0, 0, 60), 
+          (255, 60, 0), (255, 0, 60), (60, 255, 0), (60, 0, 255), (0, 255, 60),
+          (0, 60, 255), (190, 0, 0), (0, 190, 0), (0, 0, 190), (190, 60, 0),
+          (190, 0, 60), (60, 190, 0), (60, 0, 190), (0, 190, 60), (0, 60, 190),
+          (190, 125, 0), (190, 0, 125), (125, 190, 0), (125, 0, 190), (0, 190, 125),
+          (0, 125, 190), (255, 190, 0), (255, 0, 190), (190, 255, 0), (190, 0, 255),
+          (0, 255, 190), (0, 190, 255), (0, 0, 0), (120, 120, 120), (255, 255, 255)]
+colors = np.divide(colors, 255)
+
+
+figure = mlab.figure('DensityPlot', size=(1000,1000))
+
+for i in range(53):
+    
+    xi = np.load('./clusterdata/AL_xi_' + str(i) + '.npy')
+    yi = np.load('./clusterdata/AL_yi_' + str(i) + '.npy')
+    zi = np.load('./clusterdata/AL_zi_' + str(i) + '.npy')
+    density = np.load('./clusterdata/AL_d_' + str(i) + '.npy')
+    
+    mlab.contour3d(xi, yi, zi, density, color=tuple(colors[i]))
+        
+mlab.axes()
+mlab.show()
+
+
 #%% Calculate convex hull
 
 from scipy.spatial import ConvexHull
@@ -3329,6 +3423,13 @@ mdLH_zmin = np.min(np.array(morph_dist_LH_flat)[:,2])
 
 morph_dist_AL_flat = [item for sublist in morph_dist_AL for item in sublist]
 morph_dist_AL_flat = [item for sublist in morph_dist_AL_flat for item in sublist]
+
+mdAL_xmax = np.max(np.array(morph_dist_AL_flat)[:,0])
+mdAL_xmin = np.min(np.array(morph_dist_AL_flat)[:,0])
+mdAL_ymax = np.max(np.array(morph_dist_AL_flat)[:,1])
+mdAL_ymin = np.min(np.array(morph_dist_AL_flat)[:,1])
+mdAL_zmax = np.max(np.array(morph_dist_AL_flat)[:,2])
+mdAL_zmin = np.min(np.array(morph_dist_AL_flat)[:,2])
 
 hull_calyx = ConvexHull(np.array(morph_dist_calyx_flat))
 calyx_vol = hull_calyx.volume
@@ -3378,6 +3479,24 @@ mlab.triangular_mesh(np.array(morph_dist_LH_flat)[hull_LH.vertices,0],
 mlab.axes()
 mlab.show()
 
+
+#%% AL volume
+
+tri_AL = []
+for i in range(len(hull_AL.simplices)):
+    tt = []
+    for j in range(len(hull_AL.simplices[i])):
+        tt.append(np.where(hull_AL.vertices == hull_AL.simplices[i][j])[0][0])
+    tri_AL.append(tuple(tt))
+    
+figure = mlab.figure('DensityPlot', size=(1000,1000))
+
+mlab.triangular_mesh(np.array(morph_dist_AL_flat)[hull_AL.vertices,0], 
+                      np.array(morph_dist_AL_flat)[hull_AL.vertices,1],
+                      np.array(morph_dist_AL_flat)[hull_AL.vertices,2],
+                      tri_AL)
+mlab.axes()
+mlab.show()
 
 #%%
 
