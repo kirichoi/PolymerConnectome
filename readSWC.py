@@ -2102,11 +2102,9 @@ print('checkpoint 9: ' + str(t9-t8))
 
 #%% Single Neuron Dimnesion Calculation using Binary Box-counting
 
-binsize = np.logspace(-2, 3, 100)[10:95:3]
+binsize = np.logspace(-2, 3, 100)[25:95:3]
 
-hlist_single = []
 hlist_single_count = np.empty((len(MorphData.morph_dist), len(binsize)))
-hlist_single_numbox = np.empty((len(MorphData.morph_dist), len(binsize)))
 
 for i in range(len(MorphData.morph_dist)):
     morph_dist_single = np.array(MorphData.morph_dist[i])
@@ -2189,6 +2187,293 @@ plt.show()
 # t10 = time.time()
 
 # print('checkpoint 10: ' + str(t10-t9))
+
+#%% Single Neuron Dimnesion Calculation by calyx, LH, and AL using Binary Box-counting
+
+MorphData.calyxdist_neuron = []
+MorphData.LHdist_neuron = []
+MorphData.ALdist_neuron = []
+
+for i in range(len(MorphData.morph_dist)):
+    calyxdist_neuron_t = []
+    LHdist_neuron_t = []
+    ALdist_neuron_t = []
+    for j in range(len(MorphData.morph_dist[i])):
+        if ((np.array(MorphData.morph_dist[i][j])[0] > 475).all() and (np.array(MorphData.morph_dist[i][j])[0] < 550).all() and
+            (np.array(MorphData.morph_dist[i][j])[1] < 260).all() and (np.array(MorphData.morph_dist[i][j])[2] > 150).all()):
+            calyxdist_neuron_t.append(MorphData.morph_dist[i][j])
+        elif ((np.array(MorphData.morph_dist[i][j])[0] < 475).all() and (np.array(MorphData.morph_dist[i][j])[1] < 260).all() and
+              (np.array(MorphData.morph_dist[i][j])[1] > 180).all() and (np.array(MorphData.morph_dist[i][j])[2] > 125).all()):
+            LHdist_neuron_t.append(MorphData.morph_dist[i][j])
+        elif ((np.array(MorphData.morph_dist[i][j])[0] > 475).all() and (np.array(MorphData.morph_dist[i][j])[0] < 600).all() and 
+              (np.array(MorphData.morph_dist[i][j])[1] > 280).all() and (np.array(MorphData.morph_dist[i][j])[1] < 400).all() and
+              (np.array(MorphData.morph_dist[i][j])[2] < 90).all()):
+            ALdist_neuron_t.append(MorphData.morph_dist[i][j])
+    if len(calyxdist_neuron_t) > 0:
+        MorphData.calyxdist_neuron.append(calyxdist_neuron_t)
+    if len(LHdist_neuron_t) > 0:
+        MorphData.LHdist_neuron.append(LHdist_neuron_t)
+    if len(ALdist_neuron_t) > 0:
+        MorphData.ALdist_neuron.append(ALdist_neuron_t)
+
+
+#%% Single Neuron Dimnesion Calculation by calyx
+
+binsize = np.logspace(-2, 3, 100)[20:85:3]
+
+hlist_single_count_calyx = np.empty((len(MorphData.calyxdist_neuron), len(binsize)))
+
+for i in range(len(MorphData.calyxdist_neuron)):
+    morph_dist_single = np.array(MorphData.calyxdist_neuron[i])
+    xmax_single = np.max(morph_dist_single[:,0])
+    xmin_single = np.min(morph_dist_single[:,0])
+    ymax_single = np.max(morph_dist_single[:,1])
+    ymin_single = np.min(morph_dist_single[:,1])
+    zmax_single = np.max(morph_dist_single[:,2])
+    zmin_single = np.min(morph_dist_single[:,2])
+    
+    for b in range(len(binsize)):
+        xbin = np.arange(xmin_single, xmax_single+binsize[b], binsize[b])
+        ybin = np.arange(ymin_single, ymax_single+binsize[b], binsize[b])
+        zbin = np.arange(zmin_single, zmax_single+binsize[b], binsize[b])
+        if len(xbin) == 1:
+            xbin = [-1000, 1000]
+        if len(ybin) == 1:
+            ybin = [-1000, 1000]
+        if len(zbin) == 1:
+            zbin = [-1000, 1000]
+            
+        h, e = np.histogramdd(morph_dist_single, bins=[xbin, ybin, zbin])
+        hlist_single_count_calyx[i][b] = np.count_nonzero(h)
+   
+
+
+#%%
+
+cmap = cm.get_cmap('viridis', len(MorphData.calyxdist_neuron))
+
+poptBcount_single_list_calyx = []
+pcovBcount_single_list_calyx = []
+
+fig = plt.figure(figsize=(12,8))
+for i in range(len(MorphData.calyxdist_neuron)):
+    farg = np.argwhere(hlist_single_count_calyx[i] > 1)[-1][0] + 2
+    iarg = farg - 4
+    if iarg < 0:
+        iarg = 0
+    poptBcount_single_calyx, pcovBcount_single_calyx = scipy.optimize.curve_fit(objFuncGL, 
+                                                        np.log10(binsize[iarg:farg]), 
+                                                        np.log10(hlist_single_count_calyx[i][iarg:farg]),
+                                                        p0=[0.1, 0.1], 
+                                                        maxfev=10000)
+    perrBcount_single_calyx = np.sqrt(np.diag(pcovBcount_single_calyx))
+    
+    poptBcount_single_list_calyx.append(poptBcount_single_calyx)
+    pcovBcount_single_list_calyx.append(perrBcount_single_calyx)
+    
+    fitYBcount_single_calyx = objFuncPpow(binsize, poptBcount_single_calyx[0], poptBcount_single_calyx[1])
+    plt.scatter(binsize, hlist_single_count_calyx[i], color=cmap(i))
+    plt.plot(binsize, fitYBcount_single_calyx, lw=2, linestyle='--', color=cmap(i))
+    
+#plt.legend([str(i) + ': ' + str(round(poptBcount_single[0], 3)) + '$\pm$' + str(round(perrBcount_single[0], 3))], fontsize=15)    
+plt.yscale('log')
+plt.xscale('log')
+#plt.xlim(0.1, 1000)
+#plt.ylim(0.1, 100000)
+#plt.tight_layout()
+plt.xlabel("Box Count", fontsize=15)
+plt.ylabel("Count", fontsize=15)
+plt.show()
+
+poptBcount_single_all_calyx = np.sort(np.array(poptBcount_single_list_calyx)[:,0])[:-2]
+xval_calyx = np.linspace(min(poptBcount_single_all_calyx)-0.1, max(poptBcount_single_all_calyx)+0.1, 300)
+
+kde_calyx = neighbors.KernelDensity(kernel='gaussian', bandwidth=0.05).fit(poptBcount_single_all_calyx.reshape((len(poptBcount_single_all_calyx),1)))
+
+log_dens_calyx = kde_calyx.score_samples(xval_calyx.reshape((len(xval_calyx),1)))
+
+fig = plt.figure(figsize=(12,8))
+plt.hist(poptBcount_single_all_calyx, bins=int(len(hlist_single_count_calyx)/5), density=True)
+plt.plot(xval_calyx, np.exp(log_dens_calyx), lw=3)
+plt.vlines(xval_calyx[np.argmax(np.exp(log_dens_calyx))], 0, 5, linestyle='--', 
+           label=str(round(xval_calyx[np.argmax(np.exp(log_dens_calyx))], 3)), 
+           color='tab:red')
+plt.ylim(0, 4.5)
+plt.legend(fontsize=15)
+plt.show()
+
+
+#%% Single Neuron Dimnesion Calculation by LH
+
+binsize = np.logspace(-2, 3, 100)[20:85:3]
+
+hlist_single_count_LH = np.empty((len(MorphData.LHdist_neuron), len(binsize)))
+
+for i in range(len(MorphData.LHdist_neuron)):
+    morph_dist_single = np.array(MorphData.LHdist_neuron[i])
+    xmax_single = np.max(morph_dist_single[:,0])
+    xmin_single = np.min(morph_dist_single[:,0])
+    ymax_single = np.max(morph_dist_single[:,1])
+    ymin_single = np.min(morph_dist_single[:,1])
+    zmax_single = np.max(morph_dist_single[:,2])
+    zmin_single = np.min(morph_dist_single[:,2])
+    
+    for b in range(len(binsize)):
+        xbin = np.arange(xmin_single, xmax_single+binsize[b], binsize[b])
+        ybin = np.arange(ymin_single, ymax_single+binsize[b], binsize[b])
+        zbin = np.arange(zmin_single, zmax_single+binsize[b], binsize[b])
+        if len(xbin) == 1:
+            xbin = [-1000, 1000]
+        if len(ybin) == 1:
+            ybin = [-1000, 1000]
+        if len(zbin) == 1:
+            zbin = [-1000, 1000]
+            
+        h, e = np.histogramdd(morph_dist_single, bins=[xbin, ybin, zbin])
+        hlist_single_count_LH[i][b] = np.count_nonzero(h)
+   
+
+
+#%%
+
+cmap = cm.get_cmap('viridis', len(MorphData.LHdist_neuron))
+
+poptBcount_single_list_LH = []
+pcovBcount_single_list_LH = []
+
+fig = plt.figure(figsize=(12,8))
+for i in range(len(MorphData.LHdist_neuron)):
+    farg = np.argwhere(hlist_single_count_LH[i] > 1)[-1][0] + 2
+    iarg = farg - 7
+    if iarg < 0:
+        iarg = 0
+    poptBcount_single_LH, pcovBcount_single_LH = scipy.optimize.curve_fit(objFuncGL, 
+                                                        np.log10(binsize[iarg:farg]), 
+                                                        np.log10(hlist_single_count_LH[i][iarg:farg]),
+                                                        p0=[0.1, 0.1], 
+                                                        maxfev=10000)
+    perrBcount_single_LH = np.sqrt(np.diag(pcovBcount_single_LH))
+    
+    poptBcount_single_list_LH.append(poptBcount_single_LH)
+    pcovBcount_single_list_LH.append(perrBcount_single_LH)
+    
+    fitYBcount_single_LH = objFuncPpow(binsize, poptBcount_single_LH[0], poptBcount_single_LH[1])
+    plt.scatter(binsize, hlist_single_count_LH[i], color=cmap(i))
+    plt.plot(binsize, fitYBcount_single_LH, lw=2, linestyle='--', color=cmap(i))
+    
+#plt.legend([str(i) + ': ' + str(round(poptBcount_single[0], 3)) + '$\pm$' + str(round(perrBcount_single[0], 3))], fontsize=15)    
+plt.yscale('log')
+plt.xscale('log')
+#plt.xlim(0.1, 1000)
+#plt.ylim(0.1, 100000)
+#plt.tight_layout()
+plt.xlabel("Box Count", fontsize=15)
+plt.ylabel("Count", fontsize=15)
+plt.show()
+
+poptBcount_single_all_LH = np.sort(np.array(poptBcount_single_list_LH)[:,0])[:-2]
+xval_LH = np.linspace(min(poptBcount_single_all_LH)-0.1, max(poptBcount_single_all_LH)+0.1, 300)
+
+kde_LH = neighbors.KernelDensity(kernel='gaussian', bandwidth=0.05).fit(poptBcount_single_all_LH.reshape((len(poptBcount_single_all_LH),1)))
+
+log_dens_LH = kde_LH.score_samples(xval_LH.reshape((len(xval_LH),1)))
+
+fig = plt.figure(figsize=(12,8))
+plt.hist(poptBcount_single_all_LH, bins=int(len(hlist_single_count_LH)/5), density=True)
+plt.plot(xval_LH, np.exp(log_dens_LH), lw=3)
+plt.vlines(xval_LH[np.argmax(np.exp(log_dens_LH))], 0, 5, linestyle='--', 
+           label=str(round(xval_LH[np.argmax(np.exp(log_dens_LH))], 3)), 
+           color='tab:red')
+plt.ylim(0, 4.5)
+plt.legend(fontsize=15)
+plt.show()
+
+
+#%% Single Neuron Dimnesion Calculation by AL
+
+binsize = np.logspace(-2, 3, 100)[20:85:3]
+
+hlist_single_count_AL = np.empty((len(MorphData.ALdist_neuron), len(binsize)))
+
+for i in range(len(MorphData.ALdist_neuron)):
+    morph_dist_single = np.array(MorphData.ALdist_neuron[i])
+    xmax_single = np.max(morph_dist_single[:,0])
+    xmin_single = np.min(morph_dist_single[:,0])
+    ymax_single = np.max(morph_dist_single[:,1])
+    ymin_single = np.min(morph_dist_single[:,1])
+    zmax_single = np.max(morph_dist_single[:,2])
+    zmin_single = np.min(morph_dist_single[:,2])
+    
+    for b in range(len(binsize)):
+        xbin = np.arange(xmin_single, xmax_single+binsize[b], binsize[b])
+        ybin = np.arange(ymin_single, ymax_single+binsize[b], binsize[b])
+        zbin = np.arange(zmin_single, zmax_single+binsize[b], binsize[b])
+        if len(xbin) == 1:
+            xbin = [-1000, 1000]
+        if len(ybin) == 1:
+            ybin = [-1000, 1000]
+        if len(zbin) == 1:
+            zbin = [-1000, 1000]
+            
+        h, e = np.histogramdd(morph_dist_single, bins=[xbin, ybin, zbin])
+        hlist_single_count_AL[i][b] = np.count_nonzero(h)
+   
+
+
+#%%
+
+cmap = cm.get_cmap('viridis', len(MorphData.ALdist_neuron))
+
+poptBcount_single_list_AL = []
+pcovBcount_single_list_AL = []
+
+fig = plt.figure(figsize=(12,8))
+for i in range(len(MorphData.ALdist_neuron)):
+    farg = np.argwhere(hlist_single_count_AL[i] > 1)[-1][0] + 2
+    iarg = farg - 7
+    if iarg < 0:
+        iarg = 0
+    poptBcount_single_AL, pcovBcount_single_AL = scipy.optimize.curve_fit(objFuncGL, 
+                                                        np.log10(binsize[iarg:farg]), 
+                                                        np.log10(hlist_single_count_AL[i][iarg:farg]),
+                                                        p0=[0.1, 0.1], 
+                                                        maxfev=10000)
+    perrBcount_single_AL = np.sqrt(np.diag(pcovBcount_single_AL))
+    
+    poptBcount_single_list_AL.append(poptBcount_single_AL)
+    pcovBcount_single_list_AL.append(perrBcount_single_AL)
+    
+    fitYBcount_single_AL = objFuncPpow(binsize, poptBcount_single_AL[0], poptBcount_single_AL[1])
+    plt.scatter(binsize, hlist_single_count_AL[i], color=cmap(i))
+    plt.plot(binsize, fitYBcount_single_AL, lw=2, linestyle='--', color=cmap(i))
+    
+#plt.legend([str(i) + ': ' + str(round(poptBcount_single[0], 3)) + '$\pm$' + str(round(perrBcount_single[0], 3))], fontsize=15)    
+plt.yscale('log')
+plt.xscale('log')
+#plt.xlim(0.1, 1000)
+#plt.ylim(0.1, 100000)
+#plt.tight_layout()
+plt.xlabel("Box Count", fontsize=15)
+plt.ylabel("Count", fontsize=15)
+plt.show()
+
+poptBcount_single_all_AL = np.sort(np.array(poptBcount_single_list_AL)[:,0])[:-2]
+xval_AL = np.linspace(min(poptBcount_single_all_AL)-0.1, max(poptBcount_single_all_AL)+0.1, 300)
+
+kde_AL = neighbors.KernelDensity(kernel='gaussian', bandwidth=0.05).fit(poptBcount_single_all_AL.reshape((len(poptBcount_single_all_AL),1)))
+
+log_dens_AL = kde_AL.score_samples(xval_AL.reshape((len(xval_AL),1)))
+
+fig = plt.figure(figsize=(12,8))
+plt.hist(poptBcount_single_all_AL, bins=int(len(hlist_single_count_AL)/5), density=True)
+plt.plot(xval_AL, np.exp(log_dens_AL), lw=3)
+plt.vlines(xval_AL[np.argmax(np.exp(log_dens_AL))], 0, 5, linestyle='--', 
+           label=str(round(xval_AL[np.argmax(np.exp(log_dens_AL))], 3)), 
+           color='tab:red')
+plt.ylim(0, 4.5)
+plt.legend(fontsize=15)
+plt.show()
+
 
 #%% Branching point and tip coordinate collection
 
