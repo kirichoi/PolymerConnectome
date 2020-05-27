@@ -3156,6 +3156,8 @@ print('checkpoint mayavi: ' + str(t14-t13))
 
 #%%
 
+from matplotlib import cm
+import numpy as np
 import logging
 from mayavi import mlab
 
@@ -3182,7 +3184,7 @@ colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255),
 colors = np.divide(colors, 255)
 
 
-figure = mlab.figure('DensityPlot')
+figure = mlab.figure('DensityPlot', size=(1000,1000))
 
 for i in range(53):
     
@@ -3191,10 +3193,8 @@ for i in range(53):
     zi = np.load('./clusterdata/calyx_zi_' + str(i) + '.npy')
     density = np.load('./clusterdata/calyx_d_' + str(i) + '.npy')
     
-    dmin = density.min()
-    dmax = density.max()
-    s = mlab.contour3d(xi, yi, zi, density, color=tuple(colors[i]))
-
+    mlab.contour3d(xi, yi, zi, density, color=tuple(colors[i]))
+        
 mlab.axes()
 mlab.show()
 
@@ -3285,27 +3285,15 @@ colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255),
           (0, 255, 190), (0, 190, 255), (0, 0, 0), (120, 120, 120), (255, 255, 255)]
 colors = np.divide(colors, 255)
 
-# for i in np.arange(0., 360., 360. / 53):
-#     h = i / 360.
-#     l = (50 + np.random.rand() * 10) / 100.
-#     s = (90 + np.random.rand() * 10) / 100.
-#     colors.append(hls_to_rgb(h, l, s))
+figure = mlab.figure('DensityPlot', size=(1000,1000))
 
-# l = [glo_list.index('VA2'), glo_list.index('VA3'), glo_list.index('VA7m'), glo_list.index('VA7l'), glo_list.index('VA6'), glo_list.index('VA5')]
-# l = [glo_list.index('VA2'), glo_list.index('VA1v'), glo_list.index('DA2'), glo_list.index('DL3')]
-# l = [glo_list.index('DA1')]
-
-figure = mlab.figure('DensityPlot')
-
-for i in range(6):
+for i in range(53):
     if i != 49:
         xi = np.load('./clusterdata/LH_xi_' + str(i) + '.npy')
         yi = np.load('./clusterdata/LH_yi_' + str(i) + '.npy')
         zi = np.load('./clusterdata/LH_zi_' + str(i) + '.npy')
         density = np.load('./clusterdata/LH_d_' + str(i) + '.npy')
         
-        dmin = density.min()
-        dmax = density.max()
         mlab.contour3d(xi, yi, zi, density, color=tuple(colors[i]))
 
 mlab.axes()
@@ -3363,6 +3351,8 @@ for i in range(len(hull_calyx.simplices)):
         tt.append(np.where(hull_calyx.vertices == hull_calyx.simplices[i][j])[0][0])
     tri_calyx.append(tuple(tt))
     
+figure = mlab.figure('DensityPlot', size=(1000,1000))
+
 mlab.triangular_mesh(np.array(morph_dist_calyx_flat)[hull_calyx.vertices,0], 
                       np.array(morph_dist_calyx_flat)[hull_calyx.vertices,1],
                       np.array(morph_dist_calyx_flat)[hull_calyx.vertices,2],
@@ -3379,6 +3369,8 @@ for i in range(len(hull_LH.simplices)):
         tt.append(np.where(hull_LH.vertices == hull_LH.simplices[i][j])[0][0])
     tri_LH.append(tuple(tt))
     
+figure = mlab.figure('DensityPlot', size=(1000,1000))
+
 mlab.triangular_mesh(np.array(morph_dist_LH_flat)[hull_LH.vertices,0], 
                       np.array(morph_dist_LH_flat)[hull_LH.vertices,1],
                       np.array(morph_dist_LH_flat)[hull_LH.vertices,2],
