@@ -270,6 +270,31 @@ class MorphData():
     
         return pos
         
+def objFuncP(xdata, a, b):
+    y = a*np.power(xdata, b)
+    
+    return y
+    
+def objFuncPL(xdata, a):
+    y = np.power(xdata, a)
+    
+    return y
+
+def objFuncPpow(xdata, a, b):
+    y = np.power(10, b)*np.power(xdata, a)
+    
+    return y
+
+def objFuncL(xdata, a):
+    y = a*xdata
+    
+    return y
+
+def objFuncGL(xdata, a, b):
+    y = a*xdata + b
+    
+    return y
+
 
 #%%
     
@@ -489,30 +514,7 @@ t5 = time.time()
 print('checkpoint 5: ' + str(t5-t4))
 
 
-def objFuncP(xdata, a, b):
-    y = a*np.power(xdata, b)
-    
-    return y
-    
-def objFuncPL(xdata, a):
-    y = np.power(xdata, a)
-    
-    return y
 
-def objFuncPpow(xdata, a, b):
-    y = np.power(10, b)*np.power(xdata, a)
-    
-    return y
-
-def objFuncL(xdata, a):
-    y = a*xdata
-    
-    return y
-
-def objFuncGL(xdata, a, b):
-    y = a*xdata + b
-    
-    return y
 
 
 #%%
@@ -1607,8 +1609,8 @@ for b in range(len(binsize)):
 #%%
 
 poptBcount_all, pcovBcount_all = scipy.optimize.curve_fit(objFuncGL, 
-                                                        np.log10(binsize[8:21]), 
-                                                        np.log10(hlist_count[8:21]),
+                                                        np.log10(binsize[8:27]), 
+                                                        np.log10(hlist_count[8:27]),
                                                         p0=[0.1, 0.1], 
                                                         maxfev=10000)
 perrBcount_all = np.sqrt(np.diag(pcovBcount_all))
@@ -1660,15 +1662,9 @@ ymin_AL = np.min(AL_dist_flat[:,1])
 zmax_AL = np.max(AL_dist_flat[:,2])
 zmin_AL = np.min(AL_dist_flat[:,2])
 
-hlist_calyx = []
 hlist_calyx_count = []
-hlist_calyx_numbox = []
-hlist_LH = []
 hlist_LH_count = []
-hlist_LH_numbox = []
-hlist_AL = []
 hlist_AL_count = []
-hlist_AL_numbox = []
 
 for b in range(len(binsize)):
     xbin_calyx = np.arange(xmin_calyx, xmax_calyx+binsize[b], binsize[b])
@@ -1685,11 +1681,7 @@ for b in range(len(binsize)):
                           bins=[xbin_calyx, 
                                 ybin_calyx,
                                 zbin_calyx])
-    # hlist_calyx.append(hc)
     hlist_calyx_count.append(np.count_nonzero(hc))
-    # hlist_calyx_numbox.append((len(xbin_calyx)-1)*
-    #                           (len(ybin_calyx)-1)*
-    #                           (len(zbin_calyx)-1))
     
     xbin_LH = np.arange(xmin_LH, xmax_LH+binsize[b], binsize[b])
     ybin_LH = np.arange(ymin_LH, ymax_LH+binsize[b], binsize[b])
@@ -1705,11 +1697,7 @@ for b in range(len(binsize)):
                           bins=[xbin_LH, 
                                 ybin_LH,
                                 zbin_LH])
-    # hlist_LH.append(hh)
     hlist_LH_count.append(np.count_nonzero(hh))
-    # hlist_LH_numbox.append((len(xbin_LH)-1)*
-    #                        (len(ybin_LH)-1)*
-    #                        (len(zbin_LH)-1))
     
     xbin_AL = np.arange(xmin_AL, xmax_AL+binsize[b], binsize[b])
     ybin_AL = np.arange(ymin_AL, ymax_AL+binsize[b], binsize[b])
@@ -1725,11 +1713,7 @@ for b in range(len(binsize)):
                           bins=[xbin_AL, 
                                 ybin_AL,
                                 zbin_AL])
-    # hlist_AL.append(ha)
     hlist_AL_count.append(np.count_nonzero(ha))
-    # hlist_AL_numbox.append((len(xbin_AL)-1)*
-    #                        (len(ybin_AL)-1)*
-    #                        (len(zbin_AL)-1))
 
 
 
@@ -1738,22 +1722,22 @@ for b in range(len(binsize)):
     
     
 poptBcount_calyx, pcovBcount_calyx = scipy.optimize.curve_fit(objFuncGL, 
-                                                        np.log10(binsize[7:20]), 
-                                                        np.log10(hlist_calyx_count[7:20]),
+                                                        np.log10(binsize[7:21]), 
+                                                        np.log10(hlist_calyx_count[7:21]),
                                                         p0=[0.1, 0.1], 
                                                         maxfev=10000)
 perrBcount_calyx = np.sqrt(np.diag(pcovBcount_calyx))
 
 poptBcount_LH, pcovBcount_LH = scipy.optimize.curve_fit(objFuncGL, 
-                                                        np.log10(binsize[7:20]), 
-                                                        np.log10(hlist_LH_count[7:20]),
+                                                        np.log10(binsize[7:21]), 
+                                                        np.log10(hlist_LH_count[7:21]),
                                                         p0=[0.1, 0.1], 
                                                         maxfev=10000)
 perrBcount_LH = np.sqrt(np.diag(pcovBcount_LH))
 
 poptBcount_AL, pcovBcount_AL = scipy.optimize.curve_fit(objFuncGL, 
-                                                        np.log10(binsize[7:20]), 
-                                                        np.log10(hlist_AL_count[7:20]),
+                                                        np.log10(binsize[7:23]), 
+                                                        np.log10(hlist_AL_count[7:23]),
                                                         p0=[0.1, 0.1], 
                                                         maxfev=10000)
 perrBcount_AL = np.sqrt(np.diag(pcovBcount_AL))
@@ -1781,12 +1765,154 @@ plt.ylabel("Count", fontsize=15)
 plt.show()
 
 
+#%% Fractal dimension using binary box counting for each region in sub-physiological scale
+
+binsize = np.logspace(-1, 3, 100)[13:85:3]
+
+sp_l = 30
+
+max_calyx_b = calyxCM + sp_l
+min_calyx_b = calyxCM - sp_l
+
+max_LH_b = LHCM + sp_l
+min_LH_b = LHCM - sp_l
+
+max_AL_b = ALCM + sp_l
+min_AL_b = ALCM - sp_l
+
+hlist_calyx_b = []
+hlist_calyx_b_count = []
+hlist_calyx_b_numbox = []
+hlist_LH_b = []
+hlist_LH_b_count = []
+hlist_LH_b_numbox = []
+hlist_AL_b = []
+hlist_AL_b_count = []
+hlist_AL_b_numbox = []
+
+
+for b in range(len(binsize)):
+    xbin_calyx_b = np.arange(min_calyx_b[0], max_calyx_b[0]+binsize[b], binsize[b])
+    ybin_calyx_b = np.arange(min_calyx_b[1], max_calyx_b[1]+binsize[b], binsize[b])
+    zbin_calyx_b = np.arange(min_calyx_b[2], max_calyx_b[2]+binsize[b], binsize[b])
+    if len(xbin_calyx_b) == 1:
+        xbin_calyx_b = [-1000, 1000]
+    if len(ybin_calyx_b) == 1:
+        ybin_calyx_b = [-1000, 1000]
+    if len(zbin_calyx_b) == 1:
+        zbin_calyx_b = [-1000, 1000]
+    
+    hc, e = np.histogramdd(calyx_dist_flat, 
+                          bins=[xbin_calyx_b, 
+                                ybin_calyx_b,
+                                zbin_calyx_b])
+    hlist_calyx_b.append(hc)
+    hlist_calyx_b_count.append(np.count_nonzero(hc))
+    hlist_calyx_b_numbox.append((len(xbin_calyx_b)-1)*
+                              (len(ybin_calyx_b)-1)*
+                              (len(zbin_calyx_b)-1))
+    
+    xbin_LH_b = np.arange(min_LH_b[0], max_LH_b[0]+binsize[b], binsize[b])
+    ybin_LH_b = np.arange(min_LH_b[1], max_LH_b[1]+binsize[b], binsize[b])
+    zbin_LH_b = np.arange(min_LH_b[2], max_LH_b[2]+binsize[b], binsize[b])
+    if len(xbin_LH_b) == 1:
+        xbin_LH_b = [-1000, 1000]
+    if len(ybin_LH_b) == 1:
+        ybin_LH_b = [-1000, 1000]
+    if len(zbin_LH_b) == 1:
+        zbin_LH_b = [-1000, 1000]
+    
+    hh, e = np.histogramdd(LH_dist_flat, 
+                          bins=[xbin_LH_b, 
+                                ybin_LH_b,
+                                zbin_LH_b])
+    hlist_LH_b.append(hh)
+    hlist_LH_b_count.append(np.count_nonzero(hh))
+    hlist_LH_b_numbox.append((len(xbin_LH_b)-1)*
+                           (len(ybin_LH_b)-1)*
+                           (len(zbin_LH_b)-1))
+    
+    xbin_AL_b = np.arange(min_AL_b[0], max_AL_b[0]+binsize[b], binsize[b])
+    ybin_AL_b = np.arange(min_AL_b[1], max_AL_b[1]+binsize[b], binsize[b])
+    zbin_AL_b = np.arange(min_AL_b[2], max_AL_b[2]+binsize[b], binsize[b])
+    if len(xbin_AL_b) == 1:
+        xbin_AL_b = [-1000, 1000]
+    if len(ybin_AL_b) == 1:
+        ybin_AL_b = [-1000, 1000]
+    if len(zbin_AL_b) == 1:
+        zbin_AL_b = [-1000, 1000]
+        
+    ha, e = np.histogramdd(AL_dist_flat, 
+                          bins=[xbin_AL_b, 
+                                ybin_AL_b,
+                                zbin_AL_b])
+    hlist_AL_b.append(ha)
+    hlist_AL_b_count.append(np.count_nonzero(ha))
+    hlist_AL_b_numbox.append((len(xbin_AL_b)-1)*
+                           (len(ybin_AL_b)-1)*
+                           (len(zbin_AL_b)-1))
+
+
+
+
+#%%
+    
+farg = np.argwhere(np.array(hlist_calyx_b_count) > 1)[-1][0] + 2
+iarg = farg - 14
+poptBcount_calyx_b, pcovBcount_calyx_b = scipy.optimize.curve_fit(objFuncGL, 
+                                                        np.log10(binsize[iarg:farg]), 
+                                                        np.log10(hlist_calyx_b_count[iarg:farg]),
+                                                        p0=[0.1, 0.1], 
+                                                        maxfev=10000)
+perrBcount_calyx_b = np.sqrt(np.diag(pcovBcount_calyx_b))
+
+farg = np.argwhere(np.array(hlist_LH_b_count) > 1)[-1][0] + 2
+iarg = farg - 14
+poptBcount_LH_b, pcovBcount_LH_b = scipy.optimize.curve_fit(objFuncGL, 
+                                                        np.log10(binsize[iarg:farg]), 
+                                                        np.log10(hlist_LH_b_count[iarg:farg]),
+                                                        p0=[0.1, 0.1], 
+                                                        maxfev=10000)
+perrBcount_LH_b = np.sqrt(np.diag(pcovBcount_LH_b))
+
+farg = np.argwhere(np.array(hlist_AL_b_count) > 1)[-1][0] + 2
+iarg = farg - 14
+poptBcount_AL_b, pcovBcount_AL_b = scipy.optimize.curve_fit(objFuncGL, 
+                                                        np.log10(binsize[iarg:farg]), 
+                                                        np.log10(hlist_AL_b_count[iarg:farg]),
+                                                        p0=[0.1, 0.1], 
+                                                        maxfev=10000)
+perrBcount_AL_b = np.sqrt(np.diag(pcovBcount_AL_b))
+
+fitYBcount_calyx_b = objFuncPpow(binsize, poptBcount_calyx_b[0], poptBcount_calyx_b[1])
+fitYBcount_LH_b = objFuncPpow(binsize, poptBcount_LH_b[0], poptBcount_LH_b[1])
+fitYBcount_AL_b = objFuncPpow(binsize, poptBcount_AL_b[0], poptBcount_AL_b[1])
+    
+fig = plt.figure(figsize=(12,8))
+plt.scatter(binsize, hlist_calyx_b_count)
+plt.scatter(binsize, hlist_LH_b_count)
+plt.scatter(binsize, hlist_AL_b_count)
+plt.plot(binsize, fitYBcount_calyx_b, lw=2, linestyle='--')
+plt.plot(binsize, fitYBcount_LH_b, lw=2, linestyle='--')
+plt.plot(binsize, fitYBcount_AL_b, lw=2, linestyle='--')
+plt.yscale('log')
+plt.xscale('log')
+plt.legend(['Calyx: ' + str(round(poptBcount_calyx_b[0], 3)) + '$\pm$' + str(round(perrBcount_calyx_b[0], 3)),
+            'LH: ' + str(round(poptBcount_LH_b[0], 3)) + '$\pm$' + str(round(perrBcount_LH_b[0], 3)),
+            'AL: ' + str(round(poptBcount_AL_b[0], 3)) + '$\pm$' + str(round(perrBcount_AL_b[0], 3))], fontsize=15)
+plt.xlim(0.2, 300)
+#plt.tight_layout()
+plt.xlabel("Box Size", fontsize=15)
+plt.ylabel("Count", fontsize=15)
+plt.show()
+
+
 
 #%% Binary Box-counting for Sub-physiological Region Length Scale
 
-binsize = np.logspace(-1, 3, 100)[13:75]
+binsize = np.logspace(-1, 3, 100)[10:95]
 
-sp_l = np.arange(5, 80, 1)
+sp_l = np.arange(5, 120, 1)
 bbr = 5
 
 hlist_calyx_b_count = np.empty((bbr, len(sp_l), len(binsize)), dtype=int)
@@ -1882,7 +2008,7 @@ fitYBcount_AL_b = np.empty((bbr, len(sp_l), len(binsize)))
 
 for r in range(bbr):
     for l in range(len(sp_l)):
-        farg = np.argwhere(np.array(hlist_calyx_b_count[r][l]) > 1)[-1][0]
+        farg = np.argwhere(np.array(hlist_calyx_b_count[r][l]) > 1)[-1][0] + 2
         iarg = farg - 30
         if iarg < 0:
             iarg = 0
@@ -1893,7 +2019,7 @@ for r in range(bbr):
                                                                 maxfev=10000)
         perrBcount_calyx_b_t = np.sqrt(np.diag(pcovBcount_calyx_b_t))
         
-        farg = np.argwhere(np.array(hlist_LH_b_count[r][l]) > 1)[-1][0]
+        farg = np.argwhere(np.array(hlist_LH_b_count[r][l]) > 1)[-1][0] + 2
         iarg = farg - 30
         if iarg < 0:
             iarg = 0
@@ -1904,7 +2030,7 @@ for r in range(bbr):
                                                                 maxfev=10000)
         perrBcount_LH_b_t = np.sqrt(np.diag(pcovBcount_LH_b_t))
         
-        farg = np.argwhere(np.array(hlist_AL_b_count[r][l]) > 1)[-1][0]
+        farg = np.argwhere(np.array(hlist_AL_b_count[r][l]) > 1)[-1][0] + 2
         iarg = farg - 30
         if iarg < 0:
             iarg = 0
@@ -1976,7 +2102,7 @@ print('checkpoint 9: ' + str(t9-t8))
 
 #%% Single Neuron Dimnesion Calculation using Binary Box-counting
 
-binsize = np.logspace(-2, 3, 100)[25:95:3]
+binsize = np.logspace(-2, 3, 100)[10:95:3]
 
 hlist_single = []
 hlist_single_count = np.empty((len(MorphData.morph_dist), len(binsize)))
@@ -1984,7 +2110,6 @@ hlist_single_numbox = np.empty((len(MorphData.morph_dist), len(binsize)))
 
 for i in range(len(MorphData.morph_dist)):
     morph_dist_single = np.array(MorphData.morph_dist[i])
-    z
     xmax_single = np.max(morph_dist_single[:,0])
     xmin_single = np.min(morph_dist_single[:,0])
     ymax_single = np.max(morph_dist_single[:,1])
@@ -2003,14 +2128,8 @@ for i in range(len(MorphData.morph_dist)):
         if len(zbin) == 1:
             zbin = [-1000, 1000]
             
-        h, e = np.histogramdd(morph_dist_single, 
-                              bins=[xbin, 
-                                    ybin,
-                                    zbin])
+        h, e = np.histogramdd(morph_dist_single, bins=[xbin, ybin, zbin])
         hlist_single_count[i][b] = np.count_nonzero(h)
-        # hlist_single_numbox[i][b] = ((len(xbin)-1)*
-        #                              (len(ybin)-1)*
-        #                              (len(zbin)-1))
    
 
 
@@ -2023,7 +2142,7 @@ pcovBcount_single_list = []
 
 fig = plt.figure(figsize=(12,8))
 for i in range(len(MorphData.morph_dist)):
-    farg = np.argwhere(hlist_single_count[i] > 1)[-1][0]
+    farg = np.argwhere(hlist_single_count[i] > 1)[-1][0] + 2
     iarg = farg - 5
     if iarg < 0:
         iarg = 0
@@ -2067,9 +2186,9 @@ plt.legend(fontsize=15)
 plt.show()
 
 
-t10 = time.time()
+# t10 = time.time()
 
-print('checkpoint 10: ' + str(t10-t9))
+# print('checkpoint 10: ' + str(t10-t9))
 
 #%% Branching point and tip coordinate collection
 
@@ -3074,7 +3193,7 @@ for i in range(53):
     
     dmin = density.min()
     dmax = density.max()
-    mlab.contour3d(xi, yi, zi, density, color=tuple(colors[i]))
+    s = mlab.contour3d(xi, yi, zi, density, color=tuple(colors[i]))
 
 mlab.axes()
 mlab.show()
@@ -3235,17 +3354,402 @@ hull_AL = ConvexHull(np.array(morph_dist_AL_flat))
 AL_vol = hull_AL.volume
 AL_area = hull_AL.area
 
-triangles = [(i, i+1, i+2) for i in range(0, len(hull_calyx.vertices)-2)]
-# mlab.triangular_mesh(np.array(morph_dist_calyx_flat)[hull_calyx.vertices,0], 
-#                      np.array(morph_dist_calyx_flat)[hull_calyx.vertices,1],
-#                      np.array(morph_dist_calyx_flat)[hull_calyx.vertices,2],
-#                      triangles)
+#%% Calyx volume
 
+tri_calyx = []
+for i in range(len(hull_calyx.simplices)):
+    tt = []
+    for j in range(len(hull_calyx.simplices[i])):
+        tt.append(np.where(hull_calyx.vertices == hull_calyx.simplices[i][j])[0][0])
+    tri_calyx.append(tuple(tt))
+    
+mlab.triangular_mesh(np.array(morph_dist_calyx_flat)[hull_calyx.vertices,0], 
+                      np.array(morph_dist_calyx_flat)[hull_calyx.vertices,1],
+                      np.array(morph_dist_calyx_flat)[hull_calyx.vertices,2],
+                      tri_calyx)
+mlab.axes()
+mlab.show()
+
+#%% LH volume
+
+tri_LH = []
+for i in range(len(hull_LH.simplices)):
+    tt = []
+    for j in range(len(hull_LH.simplices[i])):
+        tt.append(np.where(hull_LH.vertices == hull_LH.simplices[i][j])[0][0])
+    tri_LH.append(tuple(tt))
+    
+mlab.triangular_mesh(np.array(morph_dist_LH_flat)[hull_LH.vertices,0], 
+                      np.array(morph_dist_LH_flat)[hull_LH.vertices,1],
+                      np.array(morph_dist_LH_flat)[hull_LH.vertices,2],
+                      tri_LH)
+mlab.axes()
+mlab.show()
 
 
 #%%
 
+morph_dist_calyx_ep_flat = [item for sublist in morph_dist_calyx_ep for item in sublist]
+morph_dist_calyx_ep_flat = [item for sublist in morph_dist_calyx_ep_flat for item in sublist]
 
+morph_dist_LH_ep_flat = [item for sublist in morph_dist_LH_ep for item in sublist]
+morph_dist_LH_ep_flat = [item for sublist in morph_dist_LH_ep_flat for item in sublist]
+
+calyx_mean = np.mean(morph_dist_calyx_flat, axis=0)
+LH_mean = np.mean(morph_dist_LH_flat, axis=0)
+
+calyx_std = np.std(morph_dist_calyx_flat, axis=0)
+LH_std = np.std(morph_dist_LH_flat, axis=0)
+
+morph_dist_calyx_ep_norm = []
+
+for i in range(len(morph_dist_calyx_ep)):
+    morph_dist_calyx_ep_t1 = []
+    for j in range(len(morph_dist_calyx_ep[i])):
+        morph_dist_calyx_ep_t2 = []
+        for k in range(len(morph_dist_calyx_ep[i][j])):
+            morph_dist_calyx_ep_t2.append([np.divide(np.array(morph_dist_calyx_ep[i][j][k])[0] - mdcalyx_xmin, mdcalyx_xmax),
+                                           np.divide(np.array(morph_dist_calyx_ep[i][j][k])[1] - mdcalyx_ymin, mdcalyx_ymax),
+                                           np.divide(np.array(morph_dist_calyx_ep[i][j][k])[2] - mdcalyx_zmin, mdcalyx_zmax)])
+        morph_dist_calyx_ep_t1.append(np.array(morph_dist_calyx_ep_t2))
+    morph_dist_calyx_ep_norm.append(morph_dist_calyx_ep_t1)
+
+morph_dist_LH_ep_norm = []
+
+for i in range(len(morph_dist_LH_ep)):
+    morph_dist_LH_ep_t1 = []
+    for j in range(len(morph_dist_LH_ep[i])):
+        morph_dist_LH_ep_t2 = []
+        for k in range(len(morph_dist_LH_ep[i][j])):
+            morph_dist_LH_ep_t2.append([np.divide(np.array(morph_dist_LH_ep[i][j][k])[0] - mdLH_xmin, mdLH_xmax),
+                                           np.divide(np.array(morph_dist_LH_ep[i][j][k])[1] - mdLH_ymin, mdLH_ymax),
+                                           np.divide(np.array(morph_dist_LH_ep[i][j][k])[2] - mdLH_zmin, mdLH_zmax)])
+        morph_dist_LH_ep_t1.append(np.array(morph_dist_LH_ep_t2))
+    morph_dist_LH_ep_norm.append(morph_dist_LH_ep_t1)
+
+morph_dist_calyx_ep_std = []
+morph_dist_calyx_ep_mean = []
+morph_dist_LH_ep_std = []
+morph_dist_LH_ep_mean = []
+
+for i in range(len(morph_dist_calyx_ep)):
+    for j in range(len(morph_dist_calyx_ep[i])):
+    # morph_dist_calyx_ep_g_flat = [item for sublist in morph_dist_calyx_ep[i] for item in sublist]
+        morph_dist_calyx_ep_mean.append(np.mean(morph_dist_calyx_ep_norm[i][j], axis=0))
+        morph_dist_calyx_ep_std.append(np.std(morph_dist_calyx_ep_norm[i][j], axis=0))
+
+for i in range(len(morph_dist_LH_ep)):
+    for j in range(len(morph_dist_LH_ep[i])):
+        if i != 49:
+            # morph_dist_LH_ep_g_flat = [item for sublist in morph_dist_LH_ep[i] for item in sublist]
+            morph_dist_LH_ep_mean.append(np.mean(morph_dist_LH_ep_norm[i][j], axis=0))
+            morph_dist_LH_ep_std.append(np.std(morph_dist_LH_ep_norm[i][j], axis=0))
+
+
+#%%
+            
+# print(np.mean(np.divide(morph_dist_calyx_ep_std, calyx_std), axis=0))
+# print(np.mean(np.divide(morph_dist_LH_ep_std, LH_std), axis=0))
+
+fig = plt.figure(figsize=(24, 16))
+ax = plt.axes(projection='3d')
+ax.scatter3D(np.array(morph_dist_calyx_ep_mean)[:,0], np.array(morph_dist_calyx_ep_mean)[:,1], np.array(morph_dist_calyx_ep_mean)[:,2], color='tab:blue')
+ax.scatter3D(np.array(morph_dist_LH_ep_mean)[:,0], np.array(morph_dist_LH_ep_mean)[:,1], np.array(morph_dist_LH_ep_mean)[:,2], color='tab:orange')
+plt.show()
+
+# plt.hist(np.array(morph_dist_calyx_ep_mean)[:,0], bins=10, density=True, alpha=0.5)
+# plt.hist(np.array(morph_dist_calyx_ep_mean)[:,1], bins=10, density=True, alpha=0.5)
+# plt.hist(np.array(morph_dist_calyx_ep_mean)[:,2], bins=10, density=True, alpha=0.5)
+# plt.show()
+
+plt.hist(np.array(morph_dist_calyx_ep_mean)[:,0], bins=10, alpha=0.5, color='tab:blue')
+plt.hist(np.array(morph_dist_LH_ep_mean)[:,0], bins=10, alpha=0.5, color='tab:orange')
+plt.show()
+
+plt.hist(np.array(morph_dist_calyx_ep_mean)[:,1], bins=10, alpha=0.5, color='tab:blue')
+plt.hist(np.array(morph_dist_LH_ep_mean)[:,1], bins=10, alpha=0.5, color='tab:orange')
+plt.show()
+
+plt.hist(np.array(morph_dist_calyx_ep_mean)[:,2], bins=10, alpha=0.5, color='tab:blue')
+plt.hist(np.array(morph_dist_LH_ep_mean)[:,2], bins=10, alpha=0.5, color='tab:orange')
+plt.show()
+
+plt.hist(np.array(morph_dist_calyx_ep_std)[:,0], bins=10, alpha=0.5, color='tab:blue')
+plt.hist(np.array(morph_dist_LH_ep_std)[:,0], bins=10, alpha=0.5, color='tab:orange')
+plt.show()
+
+plt.hist(np.array(morph_dist_calyx_ep_std)[:,1], bins=10, alpha=0.5, color='tab:blue')
+plt.hist(np.array(morph_dist_LH_ep_std)[:,1], bins=10, alpha=0.5, color='tab:orange')
+plt.show()
+
+plt.hist(np.array(morph_dist_calyx_ep_std)[:,2], bins=10, alpha=0.5, color='tab:blue')
+plt.hist(np.array(morph_dist_LH_ep_std)[:,2], bins=10, alpha=0.5, color='tab:orange')
+plt.show()
+
+#%%
+
+ornlist = ['TB', 'SB', 'LB', 'TB', 'unknown', 'LB', 'AC', 'PB', 'AC', 'AC', 'LB', 
+           'TB', 'unknown', 'unknown', 'unknown', 'SB', 'PB', 'AC', 'SB', 'PB', 
+           'SB', 'AC', 'unknown', 'SB', 'T1', 'TB', 'AC', 'LB', 'T2', 'T3', 'unknown', 
+           'T3', 'T3', 'SB', 'unknown', 'TB', 'LB', 'PB', 'unknown', 'PB', 'AC', 
+           'T3', 'SB', 'LB', 'unknown', 'SB', 'T2', 'AI', 'PB', 'unknown',
+           'AC', 'unknown', 'T3']
+
+senslist = []
+
+for i in range(len(ornlist)):
+    if ornlist[i] == 'LB' or ornlist[i] == 'TB' or ornlist[i] == 'SB':
+        senslist.append('ab')
+    elif ornlist[i] == 'T1' or ornlist[i] == 'T2' or ornlist[i] == 'T3':
+        senslist.append('at')
+    elif ornlist[i] == 'AC':
+        senslist.append('ac')
+    elif ornlist[i] == 'PB':
+        senslist.append('pb')
+    else:
+        senslist.append('unknown')
+        
+
+#%% ORN based calyx
+
+import logging
+from mayavi import mlab
+from colorsys import hls_to_rgb
+
+cmap1 = cm.get_cmap('Set1')
+cmap2 = cm.get_cmap('Set2')
+cmap3 = cm.get_cmap('Set3')
+cmap4 = cm.get_cmap('tab20b')
+cmap5 = cm.get_cmap('tab20c')
+
+cmap = cmap1.colors + cmap4.colors + cmap5.colors + cmap2.colors + cmap3.colors
+cmap = cm.get_cmap('gist_rainbow', 53)
+colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255),
+          (0, 255, 255), (255, 125, 0), (125, 255, 0), (0, 125, 255),
+          (125, 0, 255), (255, 0, 125), (125, 125, 0), (125, 0, 125),
+          (0, 125, 125), (125, 60, 0), (125, 0, 60), (60, 125, 0), (60, 0, 125),
+          (0, 125, 60), (0, 60, 125), (60, 0, 0), (0, 60, 0), (0, 0, 60), 
+          (255, 60, 0), (255, 0, 60), (60, 255, 0), (60, 0, 255), (0, 255, 60),
+          (0, 60, 255), (190, 0, 0), (0, 190, 0), (0, 0, 190), (190, 60, 0),
+          (190, 0, 60), (60, 190, 0), (60, 0, 190), (0, 190, 60), (0, 60, 190),
+          (190, 125, 0), (190, 0, 125), (125, 190, 0), (125, 0, 190), (0, 190, 125),
+          (0, 125, 190), (255, 190, 0), (255, 0, 190), (190, 255, 0), (190, 0, 255),
+          (0, 255, 190), (0, 190, 255), (0, 0, 0), (120, 120, 120), (255, 255, 255)]
+colors = np.divide(colors, 255)
+
+figure = mlab.figure('DensityPlot')
+
+for k in range(len(np.unique(ornlist))):
+    kidx = np.where(np.array(ornlist) == np.unique(ornlist)[k])[0]
+    for i in kidx:
+        xi = np.load('./clusterdata/calyx_xi_' + str(i) + '.npy')
+        yi = np.load('./clusterdata/calyx_yi_' + str(i) + '.npy')
+        zi = np.load('./clusterdata/calyx_zi_' + str(i) + '.npy')
+        density = np.load('./clusterdata/calyx_d_' + str(i) + '.npy')
+        
+        dmin = density.min()
+        dmax = density.max()
+        mlab.contour3d(xi, yi, zi, density, color=tuple(colors[k]))
+
+mlab.axes()
+mlab.show()
+
+
+#%% ORN based LH
+
+import logging
+from mayavi import mlab
+from colorsys import hls_to_rgb
+
+cmap1 = cm.get_cmap('Set1')
+cmap2 = cm.get_cmap('Set2')
+cmap3 = cm.get_cmap('Set3')
+cmap4 = cm.get_cmap('tab20b')
+cmap5 = cm.get_cmap('tab20c')
+
+cmap = cmap1.colors + cmap4.colors + cmap5.colors + cmap2.colors + cmap3.colors
+cmap = cm.get_cmap('gist_rainbow', 53)
+colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255),
+          (0, 255, 255), (255, 125, 0), (125, 255, 0), (0, 125, 255),
+          (125, 0, 255), (255, 0, 125), (125, 125, 0), (125, 0, 125),
+          (0, 125, 125), (125, 60, 0), (125, 0, 60), (60, 125, 0), (60, 0, 125),
+          (0, 125, 60), (0, 60, 125), (60, 0, 0), (0, 60, 0), (0, 0, 60), 
+          (255, 60, 0), (255, 0, 60), (60, 255, 0), (60, 0, 255), (0, 255, 60),
+          (0, 60, 255), (190, 0, 0), (0, 190, 0), (0, 0, 190), (190, 60, 0),
+          (190, 0, 60), (60, 190, 0), (60, 0, 190), (0, 190, 60), (0, 60, 190),
+          (190, 125, 0), (190, 0, 125), (125, 190, 0), (125, 0, 190), (0, 190, 125),
+          (0, 125, 190), (255, 190, 0), (255, 0, 190), (190, 255, 0), (190, 0, 255),
+          (0, 255, 190), (0, 190, 255), (0, 0, 0), (120, 120, 120), (255, 255, 255)]
+colors = np.divide(colors, 255)
+
+figure = mlab.figure('DensityPlot')
+
+for k in range(len(np.unique(ornlist))):
+    kidx = np.where(np.array(ornlist) == np.unique(ornlist)[k])[0]
+    for i in kidx:
+        if i != 49:
+            xi = np.load('./clusterdata/LH_xi_' + str(i) + '.npy')
+            yi = np.load('./clusterdata/LH_yi_' + str(i) + '.npy')
+            zi = np.load('./clusterdata/LH_zi_' + str(i) + '.npy')
+            density = np.load('./clusterdata/LH_d_' + str(i) + '.npy')
+            
+            dmin = density.min()
+            dmax = density.max()
+            mlab.contour3d(xi, yi, zi, density, color=tuple(colors[k]))
+
+mlab.axes()
+mlab.show()
+
+
+#%% Sensilary based calyx
+
+import logging
+from mayavi import mlab
+from colorsys import hls_to_rgb
+
+cmap1 = cm.get_cmap('Set1')
+cmap2 = cm.get_cmap('Set2')
+cmap3 = cm.get_cmap('Set3')
+cmap4 = cm.get_cmap('tab20b')
+cmap5 = cm.get_cmap('tab20c')
+
+cmap = cmap1.colors + cmap4.colors + cmap5.colors + cmap2.colors + cmap3.colors
+cmap = cm.get_cmap('gist_rainbow', 53)
+colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255),
+          (0, 255, 255), (255, 125, 0), (125, 255, 0), (0, 125, 255),
+          (125, 0, 255), (255, 0, 125), (125, 125, 0), (125, 0, 125),
+          (0, 125, 125), (125, 60, 0), (125, 0, 60), (60, 125, 0), (60, 0, 125),
+          (0, 125, 60), (0, 60, 125), (60, 0, 0), (0, 60, 0), (0, 0, 60), 
+          (255, 60, 0), (255, 0, 60), (60, 255, 0), (60, 0, 255), (0, 255, 60),
+          (0, 60, 255), (190, 0, 0), (0, 190, 0), (0, 0, 190), (190, 60, 0),
+          (190, 0, 60), (60, 190, 0), (60, 0, 190), (0, 190, 60), (0, 60, 190),
+          (190, 125, 0), (190, 0, 125), (125, 190, 0), (125, 0, 190), (0, 190, 125),
+          (0, 125, 190), (255, 190, 0), (255, 0, 190), (190, 255, 0), (190, 0, 255),
+          (0, 255, 190), (0, 190, 255), (0, 0, 0), (120, 120, 120), (255, 255, 255)]
+colors = np.divide(colors, 255)
+
+figure = mlab.figure('DensityPlot')
+
+for k in range(len(np.unique(senslist))):
+    kidx = np.where(np.array(senslist) == np.unique(senslist)[k])[0]
+    for i in kidx:
+        xi = np.load('./clusterdata/calyx_xi_' + str(i) + '.npy')
+        yi = np.load('./clusterdata/calyx_yi_' + str(i) + '.npy')
+        zi = np.load('./clusterdata/calyx_zi_' + str(i) + '.npy')
+        density = np.load('./clusterdata/calyx_d_' + str(i) + '.npy')
+        
+        dmin = density.min()
+        dmax = density.max()
+        mlab.contour3d(xi, yi, zi, density, color=tuple(colors[k]))
+
+mlab.axes()
+mlab.show()
+
+#%% Sensilary based LH
+
+import logging
+from mayavi import mlab
+from colorsys import hls_to_rgb
+
+cmap1 = cm.get_cmap('Set1')
+cmap2 = cm.get_cmap('Set2')
+cmap3 = cm.get_cmap('Set3')
+cmap4 = cm.get_cmap('tab20b')
+cmap5 = cm.get_cmap('tab20c')
+
+cmap = cmap1.colors + cmap4.colors + cmap5.colors + cmap2.colors + cmap3.colors
+cmap = cm.get_cmap('gist_rainbow', 53)
+colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255),
+          (0, 255, 255), (255, 125, 0), (125, 255, 0), (0, 125, 255),
+          (125, 0, 255), (255, 0, 125), (125, 125, 0), (125, 0, 125),
+          (0, 125, 125), (125, 60, 0), (125, 0, 60), (60, 125, 0), (60, 0, 125),
+          (0, 125, 60), (0, 60, 125), (60, 0, 0), (0, 60, 0), (0, 0, 60), 
+          (255, 60, 0), (255, 0, 60), (60, 255, 0), (60, 0, 255), (0, 255, 60),
+          (0, 60, 255), (190, 0, 0), (0, 190, 0), (0, 0, 190), (190, 60, 0),
+          (190, 0, 60), (60, 190, 0), (60, 0, 190), (0, 190, 60), (0, 60, 190),
+          (190, 125, 0), (190, 0, 125), (125, 190, 0), (125, 0, 190), (0, 190, 125),
+          (0, 125, 190), (255, 190, 0), (255, 0, 190), (190, 255, 0), (190, 0, 255),
+          (0, 255, 190), (0, 190, 255), (0, 0, 0), (120, 120, 120), (255, 255, 255)]
+colors = np.divide(colors, 255)
+
+figure = mlab.figure('DensityPlot')
+
+for k in range(len(np.unique(senslist))):
+    kidx = np.where(np.array(senslist) == np.unique(senslist)[k])[0]
+    for i in kidx:
+        if i != 49:
+            xi = np.load('./clusterdata/LH_xi_' + str(i) + '.npy')
+            yi = np.load('./clusterdata/LH_yi_' + str(i) + '.npy')
+            zi = np.load('./clusterdata/LH_zi_' + str(i) + '.npy')
+            density = np.load('./clusterdata/LH_d_' + str(i) + '.npy')
+            
+            dmin = density.min()
+            dmax = density.max()
+            mlab.contour3d(xi, yi, zi, density, color=tuple(colors[k]))
+
+mlab.axes()
+mlab.show()
+
+#%% orn and sensilary based
+
+morph_dist_calyx_ep_std = []
+morph_dist_calyx_ep_mean = []
+morph_dist_LH_ep_std = []
+morph_dist_LH_ep_mean = []
+
+for k in range(len(np.unique(ornlist))):
+    morph_dist_calyx_ep_t = []
+    kidx = np.where(np.array(ornlist) == np.unique(ornlist)[k])[0]
+    for i in kidx:
+        morph_dist_calyx_ep_t.append(morph_dist_calyx_ep_norm[i])
+            
+    morph_dist_calyx_ep_t = [item for sublist in morph_dist_calyx_ep_t for item in sublist]
+    morph_dist_calyx_ep_t = [item for sublist in morph_dist_calyx_ep_t for item in sublist]
+    morph_dist_calyx_ep_mean.append(np.mean(morph_dist_calyx_ep_t, axis=0))
+    morph_dist_calyx_ep_std.append(np.std(morph_dist_calyx_ep_t, axis=0))
+
+
+for k in range(len(np.unique(ornlist))):
+    morph_dist_LH_ep_t = []
+    kidx = np.where(np.array(ornlist) == np.unique(ornlist)[k])[0]
+    for i in kidx:
+        if i != 49:
+            morph_dist_LH_ep_t.append(morph_dist_LH_ep_norm[i])
+            
+    morph_dist_LH_ep_t = [item for sublist in morph_dist_LH_ep_t for item in sublist]
+    morph_dist_LH_ep_t = [item for sublist in morph_dist_LH_ep_t for item in sublist]
+    morph_dist_LH_ep_mean.append(np.mean(morph_dist_LH_ep_t, axis=0))
+    morph_dist_LH_ep_std.append(np.std(morph_dist_LH_ep_t, axis=0))
+
+fig = plt.figure(figsize=(24, 16))
+ax = plt.axes(projection='3d')
+ax.scatter3D(np.array(morph_dist_calyx_ep_mean)[:,0], np.array(morph_dist_calyx_ep_mean)[:,1], np.array(morph_dist_calyx_ep_mean)[:,2], color='tab:blue')
+ax.scatter3D(np.array(morph_dist_LH_ep_mean)[:,0], np.array(morph_dist_LH_ep_mean)[:,1], np.array(morph_dist_LH_ep_mean)[:,2], color='tab:orange')
+plt.show()
+
+plt.hist(np.array(morph_dist_calyx_ep_mean)[:,0], bins=10, density=True, alpha=0.5, color='tab:blue')
+plt.hist(np.array(morph_dist_LH_ep_mean)[:,0], bins=10, density=True, alpha=0.5, color='tab:orange')
+plt.show()
+
+plt.hist(np.array(morph_dist_calyx_ep_mean)[:,1], bins=10, density=True, alpha=0.5, color='tab:blue')
+plt.hist(np.array(morph_dist_LH_ep_mean)[:,1], bins=10, density=True, alpha=0.5, color='tab:orange')
+plt.show()
+
+plt.hist(np.array(morph_dist_calyx_ep_mean)[:,2], bins=10, density=True, alpha=0.5, color='tab:blue')
+plt.hist(np.array(morph_dist_LH_ep_mean)[:,2], bins=10, density=True, alpha=0.5, color='tab:orange')
+plt.show()
+
+plt.hist(np.array(morph_dist_calyx_ep_std)[:,0], bins=10, density=True, alpha=0.5, color='tab:blue')
+plt.hist(np.array(morph_dist_LH_ep_std)[:,0], bins=10, density=True, alpha=0.5, color='tab:orange')
+plt.show()
+
+plt.hist(np.array(morph_dist_calyx_ep_std)[:,1], bins=10, density=True, alpha=0.5, color='tab:blue')
+plt.hist(np.array(morph_dist_LH_ep_std)[:,1], bins=10, density=True, alpha=0.5, color='tab:orange')
+plt.show()
+
+plt.hist(np.array(morph_dist_calyx_ep_std)[:,2], bins=10, density=True, alpha=0.5, color='tab:blue')
+plt.hist(np.array(morph_dist_LH_ep_std)[:,2], bins=10, density=True, alpha=0.5, color='tab:orange')
+plt.show()
 
 
 
@@ -3254,7 +3758,7 @@ triangles = [(i, i+1, i+2) for i in range(0, len(hull_calyx.vertices)-2)]
 from scipy.stats import kde
 
 nbins=100
-gi=1
+gi=39
 
 morph_dist_calyx_n_flat = [item for sublist in morph_dist_calyx[gi] for item in sublist]
 
