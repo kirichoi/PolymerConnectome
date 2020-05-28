@@ -3302,6 +3302,7 @@ plt.show()
 morph_dist_calyx_CM_flat = [item for sublist in morph_dist_calyx_CM for item in sublist]
 
 morph_dist_calyx_r = scipy.spatial.distance.cdist(np.array(morph_dist_calyx_CM_flat), np.array(morph_dist_calyx_CM_flat))
+
 calyxclusterstat = []
 calyxdist_cluster_u_full = []
 calyxdist_noncluster_u_full = []
@@ -3374,16 +3375,53 @@ print("LH cluster Mean: " + str(np.mean(LHdist_cluster_u_full_flat)) + ", STD: "
 print("LH noncluster Mean: " + str(np.mean(LHdist_noncluster_u_full_flat)) + ", STD: " + str(np.std(LHdist_noncluster_u_full_flat)))
 
 
+morph_dist_AL_CM_flat = [item for sublist in morph_dist_AL_CM for item in sublist]
+
+morph_dist_AL_r = scipy.spatial.distance.cdist(np.array(morph_dist_AL_CM_flat), np.array(morph_dist_AL_CM_flat))
+ALclusterstat = []
+ALdist_cluster_u_full = []
+ALdist_noncluster_u_full = []
+
+idx = np.arange(len(morph_dist_AL_r))
+trk1 = 0
+trk2 = 0
+
+for f in range(len(glo_list)-1):
+    dist_cluster = []
+    dist_noncluster = []
+    for i in range(len(morph_dist_AL_CM[f])):
+        dist_cluster.append(morph_dist_AL_r[trk1:trk1+len(morph_dist_AL_CM[f]),trk1:trk1+len(morph_dist_AL_CM[f])])
+        dist_noncluster.append(morph_dist_AL_r[trk1:trk1+len(morph_dist_AL_CM[f]),np.delete(idx, np.arange(trk1,trk1+len(morph_dist_AL_CM[f])))])
+    trk1 += len(morph_dist_AL_CM[f])
+    
+    dist_cluster_u = np.unique(dist_cluster)
+    dist_noncluster_u = np.unique(dist_noncluster)
+    
+    ALdist_cluster_u_full.append(dist_cluster_u)
+    ALdist_noncluster_u_full.append(dist_noncluster_u)
+    
+    ALclusterstat.append([np.mean(dist_cluster_u), np.std(dist_cluster_u), np.mean(dist_noncluster_u), np.std(dist_noncluster_u)])
+
+ALdist_cluster_u_full_flat = [item for sublist in ALdist_cluster_u_full for item in sublist]
+ALdist_noncluster_u_full_flat = [item for sublist in ALdist_noncluster_u_full for item in sublist]
+
+ALdist_cluster_u_full_flat = np.array(ALdist_cluster_u_full_flat)[np.nonzero(ALdist_cluster_u_full_flat)[0]]
+ALdist_noncluster_u_full_flat = np.array(ALdist_noncluster_u_full_flat)[np.nonzero(ALdist_noncluster_u_full_flat)[0]]
+
+print("AL cluster Mean: " + str(np.mean(ALdist_cluster_u_full_flat)) + ", STD: " + str(np.std(ALdist_cluster_u_full_flat)))
+print("AL noncluster Mean: " + str(np.mean(ALdist_noncluster_u_full_flat)) + ", STD: " + str(np.std(ALdist_noncluster_u_full_flat)))
+
+
 #%%
 
 fig, ax = plt.subplots()
-labels = ['Calyx', 'LH']
+labels = ['Calyx', 'LH', 'AL']
 x = np.arange(len(labels))  # the label locations
 width = .3  # the width of the bars
-cmeans = [np.mean(calyxdist_cluster_u_full_flat), np.mean(LHdist_cluster_u_full_flat)]
-cerr = [np.std(calyxdist_cluster_u_full_flat), np.std(LHdist_cluster_u_full_flat)]
-ncmeans = [np.mean(calyxdist_noncluster_u_full_flat), np.mean(LHdist_noncluster_u_full_flat)]
-ncerr = [np.std(calyxdist_noncluster_u_full_flat), np.std(LHdist_noncluster_u_full_flat)]
+cmeans = [np.mean(calyxdist_cluster_u_full_flat), np.mean(LHdist_cluster_u_full_flat), np.mean(ALdist_cluster_u_full_flat)]
+cerr = [np.std(calyxdist_cluster_u_full_flat), np.std(LHdist_cluster_u_full_flat), np.std(ALdist_cluster_u_full_flat)]
+ncmeans = [np.mean(calyxdist_noncluster_u_full_flat), np.mean(LHdist_noncluster_u_full_flat), np.mean(ALdist_noncluster_u_full_flat)]
+ncerr = [np.std(calyxdist_noncluster_u_full_flat), np.std(LHdist_noncluster_u_full_flat), np.std(ALdist_noncluster_u_full_flat)]
 ax.bar(x - width/2, cmeans, width, yerr=cerr, capsize=5, label='Cluster')
 ax.bar(x + width/2, ncmeans, width, yerr=ncerr, capsize=5, label='Non-Cluster')
 ax.set_ylabel('Distance')
