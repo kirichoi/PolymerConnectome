@@ -3242,6 +3242,53 @@ for i in range(len(morph_dist_AL)):
     morph_dist_AL_std.append(morph_dist_AL_std_temp)
     
     
+#%% Calculate convex hull
+
+from scipy.spatial import ConvexHull
+
+morph_dist_calyx_flat = [item for sublist in morph_dist_calyx for item in sublist]
+morph_dist_calyx_flat = [item for sublist in morph_dist_calyx_flat for item in sublist]
+
+mdcalyx_xmax = np.max(np.array(morph_dist_calyx_flat)[:,0])
+mdcalyx_xmin = np.min(np.array(morph_dist_calyx_flat)[:,0])
+mdcalyx_ymax = np.max(np.array(morph_dist_calyx_flat)[:,1])
+mdcalyx_ymin = np.min(np.array(morph_dist_calyx_flat)[:,1])
+mdcalyx_zmax = np.max(np.array(morph_dist_calyx_flat)[:,2])
+mdcalyx_zmin = np.min(np.array(morph_dist_calyx_flat)[:,2])
+
+morph_dist_LH_flat = [item for sublist in morph_dist_LH for item in sublist]
+morph_dist_LH_flat = [item for sublist in morph_dist_LH_flat for item in sublist]
+
+mdLH_xmax = np.max(np.array(morph_dist_LH_flat)[:,0])
+mdLH_xmin = np.min(np.array(morph_dist_LH_flat)[:,0])
+mdLH_ymax = np.max(np.array(morph_dist_LH_flat)[:,1])
+mdLH_ymin = np.min(np.array(morph_dist_LH_flat)[:,1])
+mdLH_zmax = np.max(np.array(morph_dist_LH_flat)[:,2])
+mdLH_zmin = np.min(np.array(morph_dist_LH_flat)[:,2])
+
+morph_dist_AL_flat = [item for sublist in morph_dist_AL for item in sublist]
+morph_dist_AL_flat = [item for sublist in morph_dist_AL_flat for item in sublist]
+
+mdAL_xmax = np.max(np.array(morph_dist_AL_flat)[:,0])
+mdAL_xmin = np.min(np.array(morph_dist_AL_flat)[:,0])
+mdAL_ymax = np.max(np.array(morph_dist_AL_flat)[:,1])
+mdAL_ymin = np.min(np.array(morph_dist_AL_flat)[:,1])
+mdAL_zmax = np.max(np.array(morph_dist_AL_flat)[:,2])
+mdAL_zmin = np.min(np.array(morph_dist_AL_flat)[:,2])
+
+hull_calyx = ConvexHull(np.array(morph_dist_calyx_flat))
+calyx_vol = hull_calyx.volume
+calyx_area = hull_calyx.area
+
+hull_LH = ConvexHull(np.array(morph_dist_LH_flat))
+LH_vol = hull_LH.volume
+LH_area = hull_LH.area
+
+hull_AL = ConvexHull(np.array(morph_dist_AL_flat))
+AL_vol = hull_AL.volume
+AL_area = hull_AL.area
+
+    
 #%% Scatterplot of CM based on glomeruli ID
 
 markerlist = ["o", "v", "^", "<", ">", "1", "2", "s", "p", "P", "*", "H", "+", 
@@ -3722,56 +3769,11 @@ mlab.axes()
 mlab.show()
 
 
-#%% Calculate convex hull
+#%% Calyx volume
 
-from scipy.spatial import ConvexHull
 import logging
 from mayavi import mlab
 from colorsys import hls_to_rgb
-
-morph_dist_calyx_flat = [item for sublist in morph_dist_calyx for item in sublist]
-morph_dist_calyx_flat = [item for sublist in morph_dist_calyx_flat for item in sublist]
-
-mdcalyx_xmax = np.max(np.array(morph_dist_calyx_flat)[:,0])
-mdcalyx_xmin = np.min(np.array(morph_dist_calyx_flat)[:,0])
-mdcalyx_ymax = np.max(np.array(morph_dist_calyx_flat)[:,1])
-mdcalyx_ymin = np.min(np.array(morph_dist_calyx_flat)[:,1])
-mdcalyx_zmax = np.max(np.array(morph_dist_calyx_flat)[:,2])
-mdcalyx_zmin = np.min(np.array(morph_dist_calyx_flat)[:,2])
-
-morph_dist_LH_flat = [item for sublist in morph_dist_LH for item in sublist]
-morph_dist_LH_flat = [item for sublist in morph_dist_LH_flat for item in sublist]
-
-mdLH_xmax = np.max(np.array(morph_dist_LH_flat)[:,0])
-mdLH_xmin = np.min(np.array(morph_dist_LH_flat)[:,0])
-mdLH_ymax = np.max(np.array(morph_dist_LH_flat)[:,1])
-mdLH_ymin = np.min(np.array(morph_dist_LH_flat)[:,1])
-mdLH_zmax = np.max(np.array(morph_dist_LH_flat)[:,2])
-mdLH_zmin = np.min(np.array(morph_dist_LH_flat)[:,2])
-
-morph_dist_AL_flat = [item for sublist in morph_dist_AL for item in sublist]
-morph_dist_AL_flat = [item for sublist in morph_dist_AL_flat for item in sublist]
-
-mdAL_xmax = np.max(np.array(morph_dist_AL_flat)[:,0])
-mdAL_xmin = np.min(np.array(morph_dist_AL_flat)[:,0])
-mdAL_ymax = np.max(np.array(morph_dist_AL_flat)[:,1])
-mdAL_ymin = np.min(np.array(morph_dist_AL_flat)[:,1])
-mdAL_zmax = np.max(np.array(morph_dist_AL_flat)[:,2])
-mdAL_zmin = np.min(np.array(morph_dist_AL_flat)[:,2])
-
-hull_calyx = ConvexHull(np.array(morph_dist_calyx_flat))
-calyx_vol = hull_calyx.volume
-calyx_area = hull_calyx.area
-
-hull_LH = ConvexHull(np.array(morph_dist_LH_flat))
-LH_vol = hull_LH.volume
-LH_area = hull_LH.area
-
-hull_AL = ConvexHull(np.array(morph_dist_AL_flat))
-AL_vol = hull_AL.volume
-AL_area = hull_AL.area
-
-#%% Calyx volume
 
 tri_calyx = []
 for i in range(len(hull_calyx.simplices)):
@@ -3791,6 +3793,10 @@ mlab.show()
 
 #%% LH volume
 
+import logging
+from mayavi import mlab
+from colorsys import hls_to_rgb
+
 tri_LH = []
 for i in range(len(hull_LH.simplices)):
     tt = []
@@ -3809,6 +3815,10 @@ mlab.show()
 
 
 #%% AL volume
+
+import logging
+from mayavi import mlab
+from colorsys import hls_to_rgb
 
 tri_AL = []
 for i in range(len(hull_AL.simplices)):
