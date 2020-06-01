@@ -3299,9 +3299,12 @@ plt.show()
 
 #%% Cluster quantification
 
-morph_dist_calyx_CM_flat = [item for sublist in morph_dist_calyx_CM for item in sublist]
+morph_dist_calyx_CM_flat = np.array([item for sublist in morph_dist_calyx_CM for item in sublist])
 
-morph_dist_calyx_r = scipy.spatial.distance.cdist(np.array(morph_dist_calyx_CM_flat), np.array(morph_dist_calyx_CM_flat))
+morph_dist_calyx_r = scipy.spatial.distance.cdist(morph_dist_calyx_CM_flat, morph_dist_calyx_CM_flat)
+
+# xu, yu = np.triu_indices_from(morph_dist_calyx_r, k=1)
+# morph_dist_calyx_r = morph_dist_calyx_r[(xu, yu)]
 
 calyxclusterstat = []
 calyxdist_cluster_u_full = []
@@ -3309,7 +3312,6 @@ calyxdist_noncluster_u_full = []
 
 idx = np.arange(len(morph_dist_calyx_r))
 trk1 = 0
-trk2 = 0
 
 for f in range(len(glo_list)):
     dist_cluster = []
@@ -3338,16 +3340,15 @@ print("Calyx noncluster Mean: " + str(np.mean(calyxdist_noncluster_u_full_flat))
 
 
 morph_dist_LH_CM_flat = [item for sublist in morph_dist_LH_CM for item in sublist]
-morph_dist_LH_CM_flat = [x for x in morph_dist_LH_CM_flat if str(x) != 'nan'] # Remove nan
+morph_dist_LH_CM_flat = np.array([x for x in morph_dist_LH_CM_flat if str(x) != 'nan']) # Remove nan
 
-morph_dist_LH_r = scipy.spatial.distance.cdist(np.array(morph_dist_LH_CM_flat), np.array(morph_dist_LH_CM_flat))
+morph_dist_LH_r = scipy.spatial.distance.cdist(morph_dist_LH_CM_flat, morph_dist_LH_CM_flat)
 LHclusterstat = []
 LHdist_cluster_u_full = []
 LHdist_noncluster_u_full = []
 
 idx = np.arange(len(morph_dist_LH_r))
 trk1 = 0
-trk2 = 0
 
 for f in range(len(glo_list)-1):
     dist_cluster = []
@@ -3375,16 +3376,15 @@ print("LH cluster Mean: " + str(np.mean(LHdist_cluster_u_full_flat)) + ", STD: "
 print("LH noncluster Mean: " + str(np.mean(LHdist_noncluster_u_full_flat)) + ", STD: " + str(np.std(LHdist_noncluster_u_full_flat)))
 
 
-morph_dist_AL_CM_flat = [item for sublist in morph_dist_AL_CM for item in sublist]
+morph_dist_AL_CM_flat = np.array([item for sublist in morph_dist_AL_CM for item in sublist])
 
-morph_dist_AL_r = scipy.spatial.distance.cdist(np.array(morph_dist_AL_CM_flat), np.array(morph_dist_AL_CM_flat))
+morph_dist_AL_r = scipy.spatial.distance.cdist(morph_dist_AL_CM_flat, morph_dist_AL_CM_flat)
 ALclusterstat = []
 ALdist_cluster_u_full = []
 ALdist_noncluster_u_full = []
 
 idx = np.arange(len(morph_dist_AL_r))
 trk1 = 0
-trk2 = 0
 
 for f in range(len(glo_list)-1):
     dist_cluster = []
