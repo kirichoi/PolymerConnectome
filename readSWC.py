@@ -3461,23 +3461,54 @@ print("AL noncluster Mean: " + str(np.mean(ALdist_noncluster_u_full_flat)) + ", 
 
 #%%
 
+import scipy.stats
+
 fig, ax = plt.subplots()
 labels = ['Calyx', 'LH', 'AL']
-x = np.arange(len(labels))  # the label locations
-width = .3  # the width of the bars
-cmeans = [np.mean(calyxdist_cluster_u_full_flat), np.mean(LHdist_cluster_u_full_flat), np.mean(ALdist_cluster_u_full_flat)]
-cerr = [np.std(calyxdist_cluster_u_full_flat), np.std(LHdist_cluster_u_full_flat), np.std(ALdist_cluster_u_full_flat)]
+x = np.arange(len(labels))
+width = .3
+
+# cmeans = [np.mean(calyxdist_cluster_u_full_flat), np.mean(LHdist_cluster_u_full_flat), np.mean(ALdist_cluster_u_full_flat)]
+# cerr = [np.std(calyxdist_cluster_u_full_flat), np.std(LHdist_cluster_u_full_flat), np.std(ALdist_cluster_u_full_flat)]
+# ncmeans = [np.mean(calyxdist_noncluster_u_full_flat), np.mean(LHdist_noncluster_u_full_flat), np.mean(ALdist_noncluster_u_full_flat)]
+# ncerr = [np.std(calyxdist_noncluster_u_full_flat), np.std(LHdist_noncluster_u_full_flat), np.std(ALdist_noncluster_u_full_flat)]
+
+cmeans = [scipy.stats.trim_mean(calyxdist_cluster_u_full_flat, 0.2), 
+          scipy.stats.trim_mean(LHdist_cluster_u_full_flat, 0.2), 
+          scipy.stats.trim_mean(ALdist_cluster_u_full_flat, 0.2)]
+cerr = [scipy.stats.trim_mean(calyxdist_cluster_u_full_flat, 0.2), 
+          scipy.stats.trim_mean(LHdist_cluster_u_full_flat, 0.2), 
+          scipy.stats.trim_mean(ALdist_cluster_u_full_flat, 0.2)]
+
 ncmeans = [np.mean(calyxdist_noncluster_u_full_flat), np.mean(LHdist_noncluster_u_full_flat), np.mean(ALdist_noncluster_u_full_flat)]
 ncerr = [np.std(calyxdist_noncluster_u_full_flat), np.std(LHdist_noncluster_u_full_flat), np.std(ALdist_noncluster_u_full_flat)]
+
+
 ax.bar(x - width/2, cmeans, width, yerr=cerr, capsize=5, label='Cluster')
 ax.bar(x + width/2, ncmeans, width, yerr=ncerr, capsize=5, label='Non-Cluster')
 ax.set_ylabel('Distance')
 ax.set_xticks(x)
 ax.set_xticklabels(labels)
 ax.legend()
-
 plt.tight_layout()
 plt.show()
+
+
+fig = plt.figure(figsize=(6, 4))
+plt.hist(calyxdist_cluster_u_full_flat, alpha=0.5, density=True)
+plt.hist(calyxdist_noncluster_u_full_flat, alpha=0.5, density=True)
+plt.show()
+
+fig = plt.figure(figsize=(6, 4))
+plt.hist(LHdist_cluster_u_full_flat, alpha=0.5, density=True)
+plt.hist(LHdist_noncluster_u_full_flat, alpha=0.5, density=True)
+plt.show()
+
+fig = plt.figure(figsize=(6, 4))
+plt.hist(ALdist_cluster_u_full_flat, alpha=0.5, density=True)
+plt.hist(ALdist_noncluster_u_full_flat, alpha=0.5, density=True)
+plt.show()
+
 
 
 #%% Cluster quantification heatmap visualization for calyx
@@ -3529,7 +3560,7 @@ t14 = time.time()
 print('checkpoint mayavi: ' + str(t14-t13))
     
 
-#%%
+#%% 3D plotting
 
 from matplotlib import cm
 import numpy as np
@@ -4207,7 +4238,7 @@ plt.show()
 from scipy.stats import kde
 
 nbins=100
-gi=39
+gi=52
 
 morph_dist_calyx_n_flat = [item for sublist in morph_dist_calyx[gi] for item in sublist]
 
