@@ -3468,21 +3468,10 @@ labels = ['Calyx', 'LH', 'AL']
 x = np.arange(len(labels))
 width = .3
 
-# cmeans = [np.mean(calyxdist_cluster_u_full_flat), np.mean(LHdist_cluster_u_full_flat), np.mean(ALdist_cluster_u_full_flat)]
-# cerr = [np.std(calyxdist_cluster_u_full_flat), np.std(LHdist_cluster_u_full_flat), np.std(ALdist_cluster_u_full_flat)]
-# ncmeans = [np.mean(calyxdist_noncluster_u_full_flat), np.mean(LHdist_noncluster_u_full_flat), np.mean(ALdist_noncluster_u_full_flat)]
-# ncerr = [np.std(calyxdist_noncluster_u_full_flat), np.std(LHdist_noncluster_u_full_flat), np.std(ALdist_noncluster_u_full_flat)]
-
-cmeans = [scipy.stats.trim_mean(calyxdist_cluster_u_full_flat, 0.2), 
-          scipy.stats.trim_mean(LHdist_cluster_u_full_flat, 0.2), 
-          scipy.stats.trim_mean(ALdist_cluster_u_full_flat, 0.2)]
-cerr = [scipy.stats.trim_mean(calyxdist_cluster_u_full_flat, 0.2), 
-          scipy.stats.trim_mean(LHdist_cluster_u_full_flat, 0.2), 
-          scipy.stats.trim_mean(ALdist_cluster_u_full_flat, 0.2)]
-
+cmeans = [np.mean(calyxdist_cluster_u_full_flat), np.mean(LHdist_cluster_u_full_flat), np.mean(ALdist_cluster_u_full_flat)]
+cerr = [np.std(calyxdist_cluster_u_full_flat), np.std(LHdist_cluster_u_full_flat), np.std(ALdist_cluster_u_full_flat)]
 ncmeans = [np.mean(calyxdist_noncluster_u_full_flat), np.mean(LHdist_noncluster_u_full_flat), np.mean(ALdist_noncluster_u_full_flat)]
 ncerr = [np.std(calyxdist_noncluster_u_full_flat), np.std(LHdist_noncluster_u_full_flat), np.std(ALdist_noncluster_u_full_flat)]
-
 
 ax.bar(x - width/2, cmeans, width, yerr=cerr, capsize=5, label='Cluster')
 ax.bar(x + width/2, ncmeans, width, yerr=ncerr, capsize=5, label='Non-Cluster')
@@ -3508,6 +3497,33 @@ fig = plt.figure(figsize=(6, 4))
 plt.hist(ALdist_cluster_u_full_flat, alpha=0.5, density=True)
 plt.hist(ALdist_noncluster_u_full_flat, alpha=0.5, density=True)
 plt.show()
+
+
+fig, ax = plt.subplots()
+labels = ['Calyx', 'LH', 'AL']
+x = np.arange(len(labels))
+width = .3
+
+cmeans = [np.median(calyxdist_cluster_u_full_flat), np.median(LHdist_cluster_u_full_flat), np.median(ALdist_cluster_u_full_flat)]
+cerr = [scipy.stats.median_absolute_deviation(calyxdist_cluster_u_full_flat, center=np.median), 
+        scipy.stats.median_absolute_deviation(LHdist_cluster_u_full_flat, center=np.median), 
+        scipy.stats.median_absolute_deviation(ALdist_cluster_u_full_flat, center=np.median)]
+ncmeans = [np.median(calyxdist_noncluster_u_full_flat), np.median(LHdist_noncluster_u_full_flat), np.median(ALdist_noncluster_u_full_flat)]
+ncerr = [scipy.stats.median_absolute_deviation(calyxdist_noncluster_u_full_flat, center=np.median), 
+         scipy.stats.median_absolute_deviation(LHdist_noncluster_u_full_flat, center=np.median), 
+         scipy.stats.median_absolute_deviation(ALdist_noncluster_u_full_flat, center=np.median)]
+
+ax.bar(x - width/2, cmeans, width, yerr=cerr, capsize=5, label='Cluster')
+ax.bar(x + width/2, ncmeans, width, yerr=ncerr, capsize=5, label='Non-Cluster')
+ax.set_ylabel('Distance')
+ax.set_xticks(x)
+ax.set_xticklabels(labels)
+ax.legend()
+plt.tight_layout()
+plt.show()
+
+
+#%% Entropy
 
 
 
