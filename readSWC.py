@@ -3350,9 +3350,6 @@ morph_dist_calyx_CM_flat = np.array([item for sublist in morph_dist_calyx_CM for
 
 morph_dist_calyx_r = scipy.spatial.distance.cdist(morph_dist_calyx_CM_flat, morph_dist_calyx_CM_flat)
 
-# xu, yu = np.triu_indices_from(morph_dist_calyx_r, k=1)
-# morph_dist_calyx_r = morph_dist_calyx_r[(xu, yu)]
-
 calyxclusterstat = []
 calyxdist_cluster_u_full = []
 calyxdist_noncluster_u_full = []
@@ -3433,7 +3430,7 @@ ALdist_noncluster_u_full = []
 idx = np.arange(len(morph_dist_AL_r))
 trk1 = 0
 
-for f in range(len(glo_list)-1):
+for f in range(len(glo_list)):
     dist_cluster = []
     dist_noncluster = []
     for i in range(len(morph_dist_AL_CM[f])):
@@ -3523,7 +3520,344 @@ plt.tight_layout()
 plt.show()
 
 
+fig, ax = plt.subplots()
+lab = ['Calyx C', 'Calyx NC', 'LH C', 'LH NC', 'AL C', 'AL NC']
+plt.boxplot([calyxdist_cluster_u_full_flat, calyxdist_noncluster_u_full_flat, 
+             LHdist_cluster_u_full_flat, LHdist_noncluster_u_full_flat, 
+             ALdist_cluster_u_full_flat, ALdist_noncluster_u_full_flat], 
+            notch=True, labels=lab, bootstrap=500)
+plt.tight_layout()
+plt.show()
+
+
 #%% Entropy
+
+morph_dist_calyx_hist_x = []
+morph_dist_calyx_hist_y = []
+morph_dist_calyx_hist_z = []
+
+for i in range(len(morph_dist_calyx)):
+    morph_dist_calyx_hist_x_t = []
+    morph_dist_calyx_hist_y_t = []
+    morph_dist_calyx_hist_z_t = []
+    for j in range(len(morph_dist_calyx[i])):
+        xval = np.linspace(mdcalyx_xmin-1, mdcalyx_xmax+1, 300)
+        yval = np.linspace(mdcalyx_ymin-1, mdcalyx_ymax+1, 300)
+        zval = np.linspace(mdcalyx_zmin-1, mdcalyx_zmax+1, 300)
+        
+        hx = np.array(morph_dist_calyx[i][j])[:,0]
+        hy = np.array(morph_dist_calyx[i][j])[:,1]
+        hz = np.array(morph_dist_calyx[i][j])[:,2]
+        
+        kdecalyx_hx = neighbors.KernelDensity(kernel='gaussian', bandwidth=2.0).fit(hx.reshape((len(hx),1)))
+        kdecalyx_hy = neighbors.KernelDensity(kernel='gaussian', bandwidth=2.0).fit(hy.reshape((len(hy),1)))
+        kdecalyx_hz = neighbors.KernelDensity(kernel='gaussian', bandwidth=2.0).fit(hz.reshape((len(hz),1)))
+        
+        log_dens_hx = kdecalyx_hx.score_samples(xval.reshape((len(xval),1)))
+        log_dens_hy = kdecalyx_hy.score_samples(yval.reshape((len(yval),1)))
+        log_dens_hz = kdecalyx_hz.score_samples(zval.reshape((len(zval),1)))
+        
+        morph_dist_calyx_hist_x_t.append(np.exp(log_dens_hx)*(xval[1]-xval[0]))
+        morph_dist_calyx_hist_y_t.append(np.exp(log_dens_hy)*(yval[1]-yval[0]))
+        morph_dist_calyx_hist_z_t.append(np.exp(log_dens_hz)*(zval[1]-zval[0]))
+    
+    morph_dist_calyx_hist_x.append(morph_dist_calyx_hist_x_t)
+    morph_dist_calyx_hist_y.append(morph_dist_calyx_hist_y_t)
+    morph_dist_calyx_hist_z.append(morph_dist_calyx_hist_z_t)
+
+calyx_ent_cluster = []
+calyx_ent_noncluster = []
+
+morph_dist_calyx_hist_x_flat = np.array([item for sublist in morph_dist_calyx_hist_x for item in sublist])
+morph_dist_calyx_hist_y_flat = np.array([item for sublist in morph_dist_calyx_hist_y for item in sublist])
+morph_dist_calyx_hist_z_flat = np.array([item for sublist in morph_dist_calyx_hist_z for item in sublist])
+
+ent_calyx_x = []
+ent_calyx_y = []
+ent_calyx_z = []
+
+for i in range(len(morph_dist_calyx_hist_x_flat)):
+    ent_calyx_x_t = []
+    ent_calyx_y_t = []
+    ent_calyx_z_t = []
+    
+    for j in range(len(morph_dist_calyx_hist_x_flat)):
+        ent_x = scipy.stats.entropy(morph_dist_calyx_hist_x_flat[i], qk=morph_dist_calyx_hist_x_flat[j])
+        ent_y = scipy.stats.entropy(morph_dist_calyx_hist_y_flat[i], qk=morph_dist_calyx_hist_y_flat[j])
+        ent_z = scipy.stats.entropy(morph_dist_calyx_hist_z_flat[i], qk=morph_dist_calyx_hist_z_flat[j])
+        
+        ent_calyx_x_t.append(ent_x)
+        ent_calyx_y_t.append(ent_y)
+        ent_calyx_z_t.append(ent_z)
+        
+    ent_calyx_x.append(ent_calyx_x_t)
+    ent_calyx_y.append(ent_calyx_y_t)
+    ent_calyx_z.append(ent_calyx_z_t)
+
+ent_calyx = np.add(np.add(np.array(ent_calyx_x), np.array(ent_calyx_y)), np.array(ent_calyx_z))
+
+calyx_ent_clusterstat = []
+calyx_ent_cluster = []
+calyx_ent_noncluster = []
+
+idx = np.arange(len(ent_calyx))
+trk1 = 0
+
+for f in range(len(glo_list)):
+    dist_cluster = []
+    dist_noncluster = []
+    for i in range(len(morph_dist_calyx_hist_x[f])):
+        dist_cluster.append(ent_calyx[trk1:trk1+len(morph_dist_calyx_hist_x[f]),trk1:trk1+len(morph_dist_calyx_hist_x[f])])
+        dist_noncluster.append(ent_calyx[trk1:trk1+len(morph_dist_calyx_hist_x[f]),np.delete(idx, np.arange(trk1,trk1+len(morph_dist_calyx_hist_x[f])))])
+    trk1 += len(morph_dist_calyx_hist_x[f])
+    
+    dist_cluster_u = np.unique(dist_cluster)
+    dist_noncluster_u = np.unique(dist_noncluster)
+    
+    calyx_ent_cluster.append(dist_cluster_u)
+    calyx_ent_noncluster.append(dist_noncluster_u)
+    
+    calyx_ent_clusterstat.append([np.mean(dist_cluster_u), np.std(dist_cluster_u), np.mean(dist_noncluster_u), np.std(dist_noncluster_u)])
+
+calyx_ent_cluster_flat = [item for sublist in calyx_ent_cluster for item in sublist]
+calyx_ent_noncluster_flat = [item for sublist in calyx_ent_noncluster for item in sublist]
+
+calyx_ent_cluster_flat = np.array(calyx_ent_cluster_flat)[np.nonzero(calyx_ent_cluster_flat)[0]]
+calyx_ent_noncluster_flat = np.array(calyx_ent_noncluster_flat)[np.nonzero(calyx_ent_noncluster_flat)[0]]
+
+print("Calyx cluster Mean: " + str(np.median(calyx_ent_cluster_flat)) + ", STD: " + str(scipy.stats.median_absolute_deviation(calyx_ent_cluster_flat)))
+print("Calyx noncluster Mean: " + str(np.median(calyx_ent_noncluster_flat)) + ", STD: " + str(scipy.stats.median_absolute_deviation(calyx_ent_noncluster_flat)))
+
+
+morph_dist_LH_hist_x = []
+morph_dist_LH_hist_y = []
+morph_dist_LH_hist_z = []
+
+for i in range(len(morph_dist_LH)):
+    if i != 49:
+        morph_dist_LH_hist_x_t = []
+        morph_dist_LH_hist_y_t = []
+        morph_dist_LH_hist_z_t = []
+        for j in range(len(morph_dist_LH[i])):
+            xval = np.linspace(mdLH_xmin-1, mdLH_xmax+1, 300)
+            yval = np.linspace(mdLH_ymin-1, mdLH_ymax+1, 300)
+            zval = np.linspace(mdLH_zmin-1, mdLH_zmax+1, 300)
+            
+            hx = np.array(morph_dist_LH[i][j])[:,0]
+            hy = np.array(morph_dist_LH[i][j])[:,1]
+            hz = np.array(morph_dist_LH[i][j])[:,2]
+            
+            kdeLH_hx = neighbors.KernelDensity(kernel='gaussian', bandwidth=2.0).fit(hx.reshape((len(hx),1)))
+            kdeLH_hy = neighbors.KernelDensity(kernel='gaussian', bandwidth=2.0).fit(hy.reshape((len(hy),1)))
+            kdeLH_hz = neighbors.KernelDensity(kernel='gaussian', bandwidth=2.0).fit(hz.reshape((len(hz),1)))
+            
+            log_dens_hx = kdeLH_hx.score_samples(xval.reshape((len(xval),1)))
+            log_dens_hy = kdeLH_hy.score_samples(yval.reshape((len(yval),1)))
+            log_dens_hz = kdeLH_hz.score_samples(zval.reshape((len(zval),1)))
+            
+            morph_dist_LH_hist_x_t.append(np.exp(log_dens_hx)*(xval[1]-xval[0]))
+            morph_dist_LH_hist_y_t.append(np.exp(log_dens_hy)*(yval[1]-yval[0]))
+            morph_dist_LH_hist_z_t.append(np.exp(log_dens_hz)*(zval[1]-zval[0]))
+        
+        morph_dist_LH_hist_x.append(morph_dist_LH_hist_x_t)
+        morph_dist_LH_hist_y.append(morph_dist_LH_hist_y_t)
+        morph_dist_LH_hist_z.append(morph_dist_LH_hist_z_t)
+
+LH_ent_cluster = []
+LH_ent_noncluster = []
+
+morph_dist_LH_hist_x_flat = np.array([item for sublist in morph_dist_LH_hist_x for item in sublist])
+morph_dist_LH_hist_y_flat = np.array([item for sublist in morph_dist_LH_hist_y for item in sublist])
+morph_dist_LH_hist_z_flat = np.array([item for sublist in morph_dist_LH_hist_z for item in sublist])
+
+ent_LH_x = []
+ent_LH_y = []
+ent_LH_z = []
+
+for i in range(len(morph_dist_LH_hist_x_flat)):
+    ent_LH_x_t = []
+    ent_LH_y_t = []
+    ent_LH_z_t = []
+    
+    for j in range(len(morph_dist_LH_hist_x_flat)):
+        ent_x = scipy.stats.entropy(morph_dist_LH_hist_x_flat[i], qk=morph_dist_LH_hist_x_flat[j])
+        ent_y = scipy.stats.entropy(morph_dist_LH_hist_y_flat[i], qk=morph_dist_LH_hist_y_flat[j])
+        ent_z = scipy.stats.entropy(morph_dist_LH_hist_z_flat[i], qk=morph_dist_LH_hist_z_flat[j])
+        
+        ent_LH_x_t.append(ent_x)
+        ent_LH_y_t.append(ent_y)
+        ent_LH_z_t.append(ent_z)
+        
+    ent_LH_x.append(ent_LH_x_t)
+    ent_LH_y.append(ent_LH_y_t)
+    ent_LH_z.append(ent_LH_z_t)
+
+ent_LH = np.add(np.add(np.array(ent_LH_x), np.array(ent_LH_y)), np.array(ent_LH_z))
+
+LH_ent_clusterstat = []
+LH_ent_cluster = []
+LH_ent_noncluster = []
+
+idx = np.arange(len(ent_LH))
+trk1 = 0
+
+for f in range(len(glo_list)-1):
+    dist_cluster = []
+    dist_noncluster = []
+    for i in range(len(morph_dist_LH_hist_x[f])):
+        dist_cluster.append(ent_LH[trk1:trk1+len(morph_dist_LH_hist_x[f]),trk1:trk1+len(morph_dist_LH_hist_x[f])])
+        dist_noncluster.append(ent_LH[trk1:trk1+len(morph_dist_LH_hist_x[f]),np.delete(idx, np.arange(trk1,trk1+len(morph_dist_LH_hist_x[f])))])
+    trk1 += len(morph_dist_LH_hist_x[f])
+    
+    dist_cluster_u = np.unique(dist_cluster)
+    dist_noncluster_u = np.unique(dist_noncluster)
+    
+    LH_ent_cluster.append(dist_cluster_u)
+    LH_ent_noncluster.append(dist_noncluster_u)
+    
+    LH_ent_clusterstat.append([np.mean(dist_cluster_u), np.std(dist_cluster_u), np.mean(dist_noncluster_u), np.std(dist_noncluster_u)])
+
+LH_ent_cluster_flat = [item for sublist in LH_ent_cluster for item in sublist]
+LH_ent_noncluster_flat = [item for sublist in LH_ent_noncluster for item in sublist]
+
+LH_ent_cluster_flat = np.array(LH_ent_cluster_flat)[np.nonzero(LH_ent_cluster_flat)[0]]
+LH_ent_noncluster_flat = np.array(LH_ent_noncluster_flat)[np.nonzero(LH_ent_noncluster_flat)[0]]
+
+print("LH cluster Mean: " + str(np.median(LH_ent_cluster_flat)) + ", STD: " + str(scipy.stats.median_absolute_deviation(LH_ent_cluster_flat)))
+print("LH noncluster Mean: " + str(np.median(LH_ent_noncluster_flat)) + ", STD: " + str(scipy.stats.median_absolute_deviation(LH_ent_noncluster_flat)))
+
+
+morph_dist_AL_hist_x = []
+morph_dist_AL_hist_y = []
+morph_dist_AL_hist_z = []
+
+for i in range(len(morph_dist_AL)):
+    morph_dist_AL_hist_x_t = []
+    morph_dist_AL_hist_y_t = []
+    morph_dist_AL_hist_z_t = []
+    for j in range(len(morph_dist_AL[i])):
+        xval = np.linspace(mdAL_xmin-1, mdAL_xmax+1, 300)
+        yval = np.linspace(mdAL_ymin-1, mdAL_ymax+1, 300)
+        zval = np.linspace(mdAL_zmin-1, mdAL_zmax+1, 300)
+        
+        hx = np.array(morph_dist_AL[i][j])[:,0]
+        hy = np.array(morph_dist_AL[i][j])[:,1]
+        hz = np.array(morph_dist_AL[i][j])[:,2]
+        
+        kdeAL_hx = neighbors.KernelDensity(kernel='gaussian', bandwidth=3.0).fit(hx.reshape((len(hx),1)))
+        kdeAL_hy = neighbors.KernelDensity(kernel='gaussian', bandwidth=3.0).fit(hy.reshape((len(hy),1)))
+        kdeAL_hz = neighbors.KernelDensity(kernel='gaussian', bandwidth=3.0).fit(hz.reshape((len(hz),1)))
+        
+        log_dens_hx = kdeAL_hx.score_samples(xval.reshape((len(xval),1)))
+        log_dens_hy = kdeAL_hy.score_samples(yval.reshape((len(yval),1)))
+        log_dens_hz = kdeAL_hz.score_samples(zval.reshape((len(zval),1)))
+        
+        morph_dist_AL_hist_x_t.append(np.exp(log_dens_hx)*(xval[1]-xval[0]))
+        morph_dist_AL_hist_y_t.append(np.exp(log_dens_hy)*(yval[1]-yval[0]))
+        morph_dist_AL_hist_z_t.append(np.exp(log_dens_hz)*(zval[1]-zval[0]))
+    
+    morph_dist_AL_hist_x.append(morph_dist_AL_hist_x_t)
+    morph_dist_AL_hist_y.append(morph_dist_AL_hist_y_t)
+    morph_dist_AL_hist_z.append(morph_dist_AL_hist_z_t)
+
+AL_ent_cluster = []
+AL_ent_noncluster = []
+
+morph_dist_AL_hist_x_flat = np.array([item for sublist in morph_dist_AL_hist_x for item in sublist])
+morph_dist_AL_hist_y_flat = np.array([item for sublist in morph_dist_AL_hist_y for item in sublist])
+morph_dist_AL_hist_z_flat = np.array([item for sublist in morph_dist_AL_hist_z for item in sublist])
+
+ent_AL_x = []
+ent_AL_y = []
+ent_AL_z = []
+
+for i in range(len(morph_dist_AL_hist_x_flat)):
+    ent_AL_x_t = []
+    ent_AL_y_t = []
+    ent_AL_z_t = []
+    
+    for j in range(len(morph_dist_AL_hist_x_flat)):
+        ent_x = scipy.stats.entropy(morph_dist_AL_hist_x_flat[i], qk=morph_dist_AL_hist_x_flat[j])
+        ent_y = scipy.stats.entropy(morph_dist_AL_hist_y_flat[i], qk=morph_dist_AL_hist_y_flat[j])
+        ent_z = scipy.stats.entropy(morph_dist_AL_hist_z_flat[i], qk=morph_dist_AL_hist_z_flat[j])
+        
+        ent_AL_x_t.append(ent_x)
+        ent_AL_y_t.append(ent_y)
+        ent_AL_z_t.append(ent_z)
+        
+    ent_AL_x.append(ent_AL_x_t)
+    ent_AL_y.append(ent_AL_y_t)
+    ent_AL_z.append(ent_AL_z_t)
+
+ent_AL = np.add(np.add(np.array(ent_AL_x), np.array(ent_AL_y)), np.array(ent_AL_z))
+
+AL_ent_clusterstat = []
+AL_ent_cluster = []
+AL_ent_noncluster = []
+
+idx = np.arange(len(ent_AL))
+trk1 = 0
+
+for f in range(len(glo_list)):
+    dist_cluster = []
+    dist_noncluster = []
+    for i in range(len(morph_dist_AL_hist_x[f])):
+        dist_cluster.append(ent_AL[trk1:trk1+len(morph_dist_AL_hist_x[f]),trk1:trk1+len(morph_dist_AL_hist_x[f])])
+        dist_noncluster.append(ent_AL[trk1:trk1+len(morph_dist_AL_hist_x[f]),np.delete(idx, np.arange(trk1,trk1+len(morph_dist_AL_hist_x[f])))])
+    trk1 += len(morph_dist_AL_hist_x[f])
+    
+    dist_cluster_u = np.unique(dist_cluster)
+    dist_noncluster_u = np.unique(dist_noncluster)
+    
+    AL_ent_cluster.append(dist_cluster_u)
+    AL_ent_noncluster.append(dist_noncluster_u)
+    
+    AL_ent_clusterstat.append([np.mean(dist_cluster_u), np.std(dist_cluster_u), np.mean(dist_noncluster_u), np.std(dist_noncluster_u)])
+
+AL_ent_cluster_flat = [item for sublist in AL_ent_cluster for item in sublist]
+AL_ent_noncluster_flat = [item for sublist in AL_ent_noncluster for item in sublist]
+
+AL_ent_cluster_flat = np.array(AL_ent_cluster_flat)[np.nonzero(AL_ent_cluster_flat)[0]]
+AL_ent_noncluster_flat = np.array(AL_ent_noncluster_flat)[np.nonzero(AL_ent_noncluster_flat)[0]]
+
+print("AL cluster Mean: " + str(np.median(AL_ent_cluster_flat)) + ", STD: " + str(scipy.stats.median_absolute_deviation(AL_ent_cluster_flat)))
+print("AL noncluster Mean: " + str(np.median(AL_ent_noncluster_flat)) + ", STD: " + str(scipy.stats.median_absolute_deviation(AL_ent_noncluster_flat)))
+
+
+#%%
+
+fig, ax = plt.subplots()
+labels = ['Calyx', 'LH', 'AL']
+x = np.arange(len(labels))
+width = .3
+
+cmeans = [np.median(calyx_ent_cluster_flat), np.median(LH_ent_cluster_flat), np.median(AL_ent_cluster_flat)]
+cerr = [scipy.stats.median_absolute_deviation(calyx_ent_cluster_flat, center=np.median), 
+        scipy.stats.median_absolute_deviation(LH_ent_cluster_flat, center=np.median), 
+        scipy.stats.median_absolute_deviation(AL_ent_cluster_flat, center=np.median)]
+ncmeans = [np.median(calyx_ent_noncluster_flat), np.median(LH_ent_noncluster_flat), np.median(AL_ent_noncluster_flat)]
+ncerr = [scipy.stats.median_absolute_deviation(calyx_ent_noncluster_flat, center=np.median), 
+         scipy.stats.median_absolute_deviation(LH_ent_noncluster_flat, center=np.median), 
+         scipy.stats.median_absolute_deviation(AL_ent_noncluster_flat, center=np.median)]
+
+ax.bar(x - width/2, cmeans, width, yerr=cerr, capsize=5, label='Cluster')
+ax.bar(x + width/2, ncmeans, width, yerr=ncerr, capsize=5, label='Non-Cluster')
+ax.set_ylabel('Entropy')
+ax.set_xticks(x)
+ax.set_xticklabels(labels)
+ax.legend()
+plt.tight_layout()
+plt.show()
+
+
+fig, ax = plt.subplots()
+lab = ['Calyx C', 'Calyx NC', 'LH C', 'LH NC', 'AL C', 'AL NC']
+plt.boxplot([calyx_ent_cluster_flat, calyx_ent_noncluster_flat, 
+             LH_ent_cluster_flat, LH_ent_noncluster_flat, 
+             AL_ent_cluster_flat, AL_ent_noncluster_flat], 
+            notch=True, labels=lab, bootstrap=500)
+plt.tight_layout()
+plt.show()
 
 
 
