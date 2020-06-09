@@ -477,35 +477,35 @@ t2 = time.time()
 
 print('checkpoint 2: ' + str(t2-t1))
 
-#(MorphData.regMDist, MorphData.regMDistLen) = utils.segmentMorph(Parameter, BranchData)
+# (MorphData.regMDist, MorphData.regMDistLen) = utils.segmentMorph(Parameter, BranchData)
 #(MorphData.indRegMDist, MorphData.indMDistN) = utils.indSegmentMorph(Parameter, BranchData)
 
 
-(rGy, cML) = utils.radiusOfGyration(MorphData)
+(rGy, cML) = utils.radiusOfGyration(MorphData.morph_dist)
 
-#(rGyEP, cMLEP) = utils.endPointRadiusOfGyration(MorphData, BranchData)
+# (rGyEP, cMLEP) = utils.endPointRadiusOfGyration(MorphData, BranchData)
 
 t3 = time.time()
 
 print('checkpoint 3: ' + str(t3-t2))
 
-#(rGyReg, cMLReg) = utils.regularRadiusOfGyration(MorphData.regMDist, MorphData.regMDistLen)
+# (rGyReg, cMLReg) = utils.regularRadiusOfGyration(MorphData.regMDist, MorphData.regMDistLen)
 
 t4 = time.time()
 
 print('checkpoint 4: ' + str(t4-t3))
 
 if Parameter.RUN:
-    (OutputData.rGySeg, 
-     OutputData.cMLSeg, 
-     OutputData.segOrdN, 
-     OutputData.randTrk) = utils.regularSegmentRadiusOfGyration(Parameter,
-                                                                 BranchData,
-                                                                 np.array(MorphData.indMorph_dist_flat), 
-                                                                 LengthData.indMDistN, 
-                                                                 numScaleSample=Parameter.numScaleSample,
-                                                                 stochastic=True,
-                                                                 p=indMorph_dist_id)
+    # (OutputData.rGySeg, 
+    #  OutputData.cMLSeg, 
+    #  OutputData.segOrdN, 
+    #  OutputData.randTrk) = utils.regularSegmentRadiusOfGyration(Parameter,
+    #                                                              BranchData,
+    #                                                              np.array(MorphData.indMorph_dist_flat), 
+    #                                                              LengthData.indMDistN, 
+    #                                                              numScaleSample=Parameter.numScaleSample,
+    #                                                              stochastic=True,
+    #                                                              p=indMorph_dist_id)
     if Parameter.SAVE:
         utils.exportMorph(Parameter, t4-t0, MorphData, BranchData, LengthData)
 
@@ -745,19 +745,20 @@ if Parameter.PLOT:
     plt.tight_layout()
     plt.show()
     
+    
     #==============================================================================
     
     #reg_len_scale = np.average(np.divide(regMDistLen, morph_dist_len))
     poptR, pcovR = scipy.optimize.curve_fit(objFuncGL, 
                                             np.log10(LengthData.length_total), 
-                                            np.log10(np.sqrt(np.square(rGy))), 
+                                            np.log10(rGy), 
                                             p0=[1., 0.], 
                                             maxfev=100000)
     perrR = np.sqrt(np.diag(pcovR))
     fitYR = objFuncPpow(LengthData.length_total, poptR[0], poptR[1])
     
     fig = plt.figure(figsize=(8,6))
-    plt.scatter(LengthData.length_total, np.sqrt(np.square(rGy)))
+    plt.scatter(LengthData.length_total, rGy)
     plt.plot(LengthData.length_total, fitYR, color='tab:red')
     plt.yscale('log')
     plt.xscale('log')
@@ -772,6 +773,7 @@ if Parameter.PLOT:
     
     
     #==============================================================================
+    
     OutputData.segOrdLen = np.empty(len(Parameter.nSize)*Parameter.numScaleSample)
     for r in range(len(OutputData.randTrk)):
         val = np.array(MorphData.indMorph_dist_flat[OutputData.randTrk[r][0]])[OutputData.randTrk[r][1]:OutputData.randTrk[r][2]]
@@ -3098,6 +3100,91 @@ plt.show()
 
 t11 = time.time()
 
+
+
+#%% Radius of Gyration for minmax contour
+
+poptR, pcovR = scipy.optimize.curve_fit(objFuncGL, 
+                                        np.log10(LengthData.length_total), 
+                                        np.log10(rGy), 
+                                        p0=[1., 0.], 
+                                        maxfev=100000)
+perrR = np.sqrt(np.diag(pcovR))
+fitYR = objFuncPpow(LengthData.length_total, poptR[0], poptR[1])
+
+fig = plt.figure(figsize=(8,6))
+plt.scatter(LengthData.length_total, rGy)
+plt.plot(LengthData.length_total, fitYR, color='tab:red')
+plt.yscale('log')
+plt.xscale('log')
+#    plt.xlim(10, 10000)
+#    plt.ylim(7, 4000)
+plt.legend([str(round(poptR[0], 3)) + '$\pm$' + str(round(perrR[0], 3))], fontsize=15)
+plt.title(r"Scaling Behavior of $R_{g}$ to Length", fontsize=20)
+plt.xlabel(r"Length ($\lambda N$)", fontsize=15)
+plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
+plt.tight_layout()
+plt.show()
+
+
+#%% Radius of Gyration for minmax coordinate (end-to-end)
+
+LengthData.length_ee = []
+
+for i in range(len(MorphData.morph_dist)):
+    LengthData.length_ee.append(np.max(scipy.spatial.distance.cdist(MorphData.morph_dist[i], MorphData.morph_dist[i])))
+    
+poptR_ee, pcovR_ee = scipy.optimize.curve_fit(objFuncGL, 
+                                              np.log10(LengthData.length_ee), 
+                                              np.log10(rGy), 
+                                              p0=[1., 0.], 
+                                              maxfev=100000)
+perrR_ee = np.sqrt(np.diag(pcovR_ee))
+fitYR_ee = objFuncPpow(LengthData.length_ee, poptR_ee[0], poptR_ee[1])
+
+fig = plt.figure(figsize=(8,6))
+plt.scatter(LengthData.length_ee, rGy)
+plt.plot(LengthData.length_ee, fitYR_ee, color='tab:red')
+plt.yscale('log')
+plt.xscale('log')
+#    plt.xlim(10, 10000)
+#    plt.ylim(7, 4000)
+plt.legend([str(round(poptR_ee[0], 3)) + '$\pm$' + str(round(perrR_ee[0], 3))], fontsize=15)
+plt.title(r"Scaling Behavior of $R_{g}$ to Maximal Length", fontsize=20)
+plt.xlabel(r"Length ($\lambda N$)", fontsize=15)
+plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
+plt.tight_layout()
+plt.show()
+
+
+
+#%% Radius of Gyration for calyx, LH, and AL
+
+(rGy_calyx, cML_calyx) = utils.radiusOfGyration(MorphData.calyxdist)
+(rGy_LH, cML_LH) = utils.radiusOfGyration(MorphData.LH_dist)
+(rGy_AL, cML_AL) = utils.radiusOfGyration(MorphData.AL_dist)
+
+poptR, pcovR = scipy.optimize.curve_fit(objFuncGL, 
+                                        np.log10(LengthData.length_total), 
+                                        np.log10(rGy), 
+                                        p0=[1., 0.], 
+                                        maxfev=100000)
+perrR = np.sqrt(np.diag(pcovR))
+fitYR = objFuncPpow(LengthData.length_total, poptR[0], poptR[1])
+
+fig = plt.figure(figsize=(8,6))
+plt.scatter(LengthData.length_total, rGy)
+plt.plot(LengthData.length_total, fitYR, color='tab:red')
+plt.yscale('log')
+plt.xscale('log')
+#    plt.xlim(10, 10000)
+#    plt.ylim(7, 4000)
+plt.legend([str(round(poptR[0], 3)) + '$\pm$' + str(round(perrR[0], 3))], fontsize=15)
+plt.title(r"Scaling Behavior of $R_{g}$ to Length", fontsize=20)
+plt.xlabel(r"Length ($\lambda N$)", fontsize=15)
+plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
+plt.tight_layout()
+plt.show()
 
 
 #%% Regional dist categorization

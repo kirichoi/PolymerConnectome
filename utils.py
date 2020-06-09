@@ -227,14 +227,15 @@ def indSegmentMorph(Parameter, BranchData):
     return indRegMDist, indRegMDistLen
 
 
-def radiusOfGyration(MorphData):
-    cML = np.empty((len(MorphData.morph_dist), 3))
-    rGy = np.empty(len(MorphData.morph_dist))
-    for i in range(len(MorphData.morph_dist)):
-        cML[i] = np.sum(np.array(MorphData.morph_dist[i]), axis=0)[:3]/len(np.array(MorphData.morph_dist[i]))
-        rList = scipy.spatial.distance.cdist(np.array(MorphData.morph_dist[i])[:,:3], 
-                                             np.array([cML[i]])).flatten()
-        rGy[i] = np.sqrt(np.sum(np.square(rList))/len(rList))
+def radiusOfGyration(morph_dist):
+    cML = np.empty((len(morph_dist), 3))
+    rGy = np.empty(len(morph_dist))
+    for i in range(len(morph_dist)):
+        cML[i] = np.average(np.array(morph_dist[i]), axis=0)
+        #np.sum(np.array(MorphData.morph_dist[i]), axis=0)[:3]/len(np.array(MorphData.morph_dist[i]))
+        rList = scipy.spatial.distance.cdist(np.array(morph_dist[i]), 
+                                              np.array([cML[i]])).flatten()
+        rGy[i] = np.sqrt(np.average(np.square(rList)))
     
     return (rGy, cML)
 
