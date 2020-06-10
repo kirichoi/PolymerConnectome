@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import axes3d, Axes3D
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes, InsetPosition, mark_inset
 from matplotlib import cm
+import matplotlib.ticker as ticker
+from mpl_toolkits.axes_grid1.parasite_axes import SubplotHost
 import matplotlib.patches as mpatches
 import seaborn
 import pandas as pd
@@ -3197,11 +3199,12 @@ glo_idx = []
 for f in range(len(MorphData.neuron_id)):
     idx = np.where(glo_info.skid == int(MorphData.neuron_id[f]))[0][0]
     if 'glomerulus' in glo_info['old neuron name'][idx]:
-        if glo_info['type'][idx] in glo_list:
-            glo_idx[glo_list.index(glo_info['type'][idx])].append(f)
-        else:
-            glo_list.append(glo_info['type'][idx])
-            glo_idx.append([f])
+        if glo_info['type'][idx] != 'unknown glomerulus':
+            if glo_info['type'][idx] in glo_list:
+                glo_idx[glo_list.index(glo_info['type'][idx])].append(f)
+            else:
+                glo_list.append(glo_info['type'][idx])
+                glo_idx.append([f])
 
 morph_dist_calyx = []
 morph_dist_LH = []
@@ -3403,17 +3406,14 @@ for f in range(len(glo_list)):
     morph_dist_calyx_CMCM.append(np.average(np.array(calyxtemp), axis=0))
 ax.legend()
 for f in range(len(glo_list)):
-    if np.isnan(morph_dist_LH_CM[f]).any():
-        pass
-    else:
-        LHtemp = np.array(morph_dist_LH_CM[f])
-        ax.scatter(LHtemp[:,0], 
-                   LHtemp[:,1], 
-                   LHtemp[:,2], 
-                   color=cmap(f), 
-                   marker=markerlist[f],
-                   label=str(glo_list[f]),
-                   depthshade=False)
+    LHtemp = np.array(morph_dist_LH_CM[f])
+    ax.scatter(LHtemp[:,0], 
+               LHtemp[:,1], 
+               LHtemp[:,2], 
+               color=cmap(f), 
+               marker=markerlist[f],
+               label=str(glo_list[f]),
+               depthshade=False)
     ALtemp = np.array(morph_dist_AL_CM[f])
     ax.scatter(ALtemp[:,0], 
                ALtemp[:,1], 
@@ -3481,7 +3481,7 @@ LHdist_noncluster_u_full = []
 idx = np.arange(len(morph_dist_LH_r))
 trk1 = 0
 
-for f in range(len(glo_list)-1):
+for f in range(len(glo_list)):
     dist_cluster = []
     dist_noncluster = []
     for i in range(len(morph_dist_LH_CM[f])):
@@ -3617,6 +3617,24 @@ plt.tight_layout()
 plt.show()
 
 
+fig, ax = plt.subplots()
+ax1 = SubplotHost(fig, 111)
+fig.add_subplot(ax1)
+plt.imshow(morph_dist_calyx_r)
+ax.tick_params(axis=u'both', which=u'both',length=0)
+ax2 = ax1.twiny()
+offset = 0, -25 
+new_axisline = ax2.get_grid_helper().new_fixed_axis
+ax2.axis["bottom"] = new_axisline(loc="bottom", axes=ax2, offset=offset)
+ax2.axis["top"].set_visible(False)
+ax2.set_xticks([0.0, 0.6, 1.0])
+ax2.xaxis.set_major_formatter(ticker.NullFormatter())
+ax2.xaxis.set_minor_locator(ticker.FixedLocator([0.3, 0.8]))
+ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(['mammal', 'reptiles']))
+plt.show()
+
+
+
 #%% Entropy
 
 morph_dist_calyx_hist_x = []
@@ -3721,34 +3739,33 @@ morph_dist_LH_hist_y = []
 morph_dist_LH_hist_z = []
 
 for i in range(len(morph_dist_LH)):
-    if i != 49:
-        morph_dist_LH_hist_x_t = []
-        morph_dist_LH_hist_y_t = []
-        morph_dist_LH_hist_z_t = []
-        for j in range(len(morph_dist_LH[i])):
-            xval = np.linspace(mdLH_xmin-1, mdLH_xmax+1, 300)
-            yval = np.linspace(mdLH_ymin-1, mdLH_ymax+1, 300)
-            zval = np.linspace(mdLH_zmin-1, mdLH_zmax+1, 300)
-            
-            hx = np.array(morph_dist_LH[i][j])[:,0]
-            hy = np.array(morph_dist_LH[i][j])[:,1]
-            hz = np.array(morph_dist_LH[i][j])[:,2]
-            
-            kdeLH_hx = neighbors.KernelDensity(kernel='gaussian', bandwidth=2.0).fit(hx.reshape((len(hx),1)))
-            kdeLH_hy = neighbors.KernelDensity(kernel='gaussian', bandwidth=2.0).fit(hy.reshape((len(hy),1)))
-            kdeLH_hz = neighbors.KernelDensity(kernel='gaussian', bandwidth=2.0).fit(hz.reshape((len(hz),1)))
-            
-            log_dens_hx = kdeLH_hx.score_samples(xval.reshape((len(xval),1)))
-            log_dens_hy = kdeLH_hy.score_samples(yval.reshape((len(yval),1)))
-            log_dens_hz = kdeLH_hz.score_samples(zval.reshape((len(zval),1)))
-            
-            morph_dist_LH_hist_x_t.append(np.exp(log_dens_hx)*(xval[1]-xval[0]))
-            morph_dist_LH_hist_y_t.append(np.exp(log_dens_hy)*(yval[1]-yval[0]))
-            morph_dist_LH_hist_z_t.append(np.exp(log_dens_hz)*(zval[1]-zval[0]))
+    morph_dist_LH_hist_x_t = []
+    morph_dist_LH_hist_y_t = []
+    morph_dist_LH_hist_z_t = []
+    for j in range(len(morph_dist_LH[i])):
+        xval = np.linspace(mdLH_xmin-1, mdLH_xmax+1, 300)
+        yval = np.linspace(mdLH_ymin-1, mdLH_ymax+1, 300)
+        zval = np.linspace(mdLH_zmin-1, mdLH_zmax+1, 300)
         
-        morph_dist_LH_hist_x.append(morph_dist_LH_hist_x_t)
-        morph_dist_LH_hist_y.append(morph_dist_LH_hist_y_t)
-        morph_dist_LH_hist_z.append(morph_dist_LH_hist_z_t)
+        hx = np.array(morph_dist_LH[i][j])[:,0]
+        hy = np.array(morph_dist_LH[i][j])[:,1]
+        hz = np.array(morph_dist_LH[i][j])[:,2]
+        
+        kdeLH_hx = neighbors.KernelDensity(kernel='gaussian', bandwidth=2.0).fit(hx.reshape((len(hx),1)))
+        kdeLH_hy = neighbors.KernelDensity(kernel='gaussian', bandwidth=2.0).fit(hy.reshape((len(hy),1)))
+        kdeLH_hz = neighbors.KernelDensity(kernel='gaussian', bandwidth=2.0).fit(hz.reshape((len(hz),1)))
+        
+        log_dens_hx = kdeLH_hx.score_samples(xval.reshape((len(xval),1)))
+        log_dens_hy = kdeLH_hy.score_samples(yval.reshape((len(yval),1)))
+        log_dens_hz = kdeLH_hz.score_samples(zval.reshape((len(zval),1)))
+        
+        morph_dist_LH_hist_x_t.append(np.exp(log_dens_hx)*(xval[1]-xval[0]))
+        morph_dist_LH_hist_y_t.append(np.exp(log_dens_hy)*(yval[1]-yval[0]))
+        morph_dist_LH_hist_z_t.append(np.exp(log_dens_hz)*(zval[1]-zval[0]))
+    
+    morph_dist_LH_hist_x.append(morph_dist_LH_hist_x_t)
+    morph_dist_LH_hist_y.append(morph_dist_LH_hist_y_t)
+    morph_dist_LH_hist_z.append(morph_dist_LH_hist_z_t)
 
 LH_ent_cluster = []
 LH_ent_noncluster = []
@@ -3788,7 +3805,7 @@ LH_ent_noncluster = []
 idx = np.arange(len(ent_LH))
 trk1 = 0
 
-for f in range(len(glo_list)-1):
+for f in range(len(glo_list)):
     dist_cluster = []
     dist_noncluster = []
     for i in range(len(morph_dist_LH_hist_x[f])):
@@ -4011,7 +4028,7 @@ cmap4 = cm.get_cmap('tab20b')
 cmap5 = cm.get_cmap('tab20c')
 
 cmap = cmap1.colors + cmap4.colors + cmap5.colors + cmap2.colors + cmap3.colors
-cmap = cm.get_cmap('jet', 53)
+cmap = cm.get_cmap('jet', len(glo_list))
 
 colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255),
           (0, 255, 255), (255, 125, 0), (125, 255, 0), (0, 125, 255),
@@ -4029,7 +4046,7 @@ colors = np.divide(colors, 255)
 
 figure = mlab.figure('DensityPlot', size=(1000,1000))
 
-for i in range(53):
+for i in range(len(glo_list)):
     
     xi = np.load('./clusterdata/calyx_xi_' + str(i) + '.npy')
     yi = np.load('./clusterdata/calyx_yi_' + str(i) + '.npy')
@@ -4074,26 +4091,25 @@ nbinsz = int((mdLH_zmax-mdLH_zmin)/nscale)
 t13 = time.time()
 
 for i in range(len(morph_dist_calyx)):
-    if i != 49:
-        morph_dist_LH_n_flat = [item for sublist in morph_dist_LH[i] for item in sublist]
-        
-        x = np.array(morph_dist_LH_n_flat)[:,0]
-        y = np.array(morph_dist_LH_n_flat)[:,1]
-        z = np.array(morph_dist_LH_n_flat)[:,2]
-        
-        xyz = np.vstack([x,y,z])
-        kdeLH = kde.gaussian_kde(xyz, bw_method=0.16)
-        
-        xi, yi, zi = np.mgrid[mdLH_xmin:mdLH_xmax:nbinsx*1j, 
-                              mdLH_ymin:mdLH_ymax:nbinsy*1j, 
-                              mdLH_zmin:mdLH_zmax:nbinsz*1j]
-        coords = np.vstack([item.ravel() for item in [xi, yi, zi]]) 
-        density = kdeLH(coords).reshape(xi.shape)
-        
-        np.save('./clusterdata/LH_xi_' + str(i), xi)
-        np.save('./clusterdata/LH_yi_' + str(i), yi)
-        np.save('./clusterdata/LH_zi_' + str(i), zi)
-        np.save('./clusterdata/LH_d_' + str(i), density)
+    morph_dist_LH_n_flat = [item for sublist in morph_dist_LH[i] for item in sublist]
+    
+    x = np.array(morph_dist_LH_n_flat)[:,0]
+    y = np.array(morph_dist_LH_n_flat)[:,1]
+    z = np.array(morph_dist_LH_n_flat)[:,2]
+    
+    xyz = np.vstack([x,y,z])
+    kdeLH = kde.gaussian_kde(xyz, bw_method=0.16)
+    
+    xi, yi, zi = np.mgrid[mdLH_xmin:mdLH_xmax:nbinsx*1j, 
+                          mdLH_ymin:mdLH_ymax:nbinsy*1j, 
+                          mdLH_zmin:mdLH_zmax:nbinsz*1j]
+    coords = np.vstack([item.ravel() for item in [xi, yi, zi]]) 
+    density = kdeLH(coords).reshape(xi.shape)
+    
+    np.save('./clusterdata/LH_xi_' + str(i), xi)
+    np.save('./clusterdata/LH_yi_' + str(i), yi)
+    np.save('./clusterdata/LH_zi_' + str(i), zi)
+    np.save('./clusterdata/LH_d_' + str(i), density)
     
 
 t14 = time.time()
@@ -4114,7 +4130,7 @@ cmap4 = cm.get_cmap('tab20b')
 cmap5 = cm.get_cmap('tab20c')
 
 cmap = cmap1.colors + cmap4.colors + cmap5.colors + cmap2.colors + cmap3.colors
-cmap = cm.get_cmap('gist_rainbow', 53)
+cmap = cm.get_cmap('gist_rainbow', len(glo_list))
 colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255),
           (0, 255, 255), (255, 125, 0), (125, 255, 0), (0, 125, 255),
           (125, 0, 255), (255, 0, 125), (125, 125, 0), (125, 0, 125),
@@ -4130,14 +4146,13 @@ colors = np.divide(colors, 255)
 
 figure = mlab.figure('DensityPlot', size=(1000,1000))
 
-for i in range(53):
-    if i != 49:
-        xi = np.load('./clusterdata/LH_xi_' + str(i) + '.npy')
-        yi = np.load('./clusterdata/LH_yi_' + str(i) + '.npy')
-        zi = np.load('./clusterdata/LH_zi_' + str(i) + '.npy')
-        density = np.load('./clusterdata/LH_d_' + str(i) + '.npy')
+for i in range(len(glo_list)):
+    xi = np.load('./clusterdata/LH_xi_' + str(i) + '.npy')
+    yi = np.load('./clusterdata/LH_yi_' + str(i) + '.npy')
+    zi = np.load('./clusterdata/LH_zi_' + str(i) + '.npy')
+    density = np.load('./clusterdata/LH_d_' + str(i) + '.npy')
         
-        mlab.contour3d(xi, yi, zi, density, color=tuple(colors[i]))
+    mlab.contour3d(xi, yi, zi, density, color=tuple(colors[i]))
 
 mlab.axes()
 mlab.show()
@@ -4206,7 +4221,7 @@ cmap4 = cm.get_cmap('tab20b')
 cmap5 = cm.get_cmap('tab20c')
 
 cmap = cmap1.colors + cmap4.colors + cmap5.colors + cmap2.colors + cmap3.colors
-cmap = cm.get_cmap('jet', 53)
+cmap = cm.get_cmap('jet', len(glo_list))
 
 colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255),
           (0, 255, 255), (255, 125, 0), (125, 255, 0), (0, 125, 255),
@@ -4224,7 +4239,7 @@ colors = np.divide(colors, 255)
 
 figure = mlab.figure('DensityPlot', size=(1000,1000))
 
-for i in range(53):
+for i in range(len(glo_list)):
     
     xi = np.load('./clusterdata/AL_xi_' + str(i) + '.npy')
     yi = np.load('./clusterdata/AL_yi_' + str(i) + '.npy')
@@ -4357,10 +4372,9 @@ for i in range(len(morph_dist_calyx_ep)):
 
 for i in range(len(morph_dist_LH_ep)):
     for j in range(len(morph_dist_LH_ep[i])):
-        if i != 49:
-            # morph_dist_LH_ep_g_flat = [item for sublist in morph_dist_LH_ep[i] for item in sublist]
-            morph_dist_LH_ep_mean.append(np.mean(morph_dist_LH_ep_norm[i][j], axis=0))
-            morph_dist_LH_ep_std.append(np.std(morph_dist_LH_ep_norm[i][j], axis=0))
+        # morph_dist_LH_ep_g_flat = [item for sublist in morph_dist_LH_ep[i] for item in sublist]
+        morph_dist_LH_ep_mean.append(np.mean(morph_dist_LH_ep_norm[i][j], axis=0))
+        morph_dist_LH_ep_std.append(np.std(morph_dist_LH_ep_norm[i][j], axis=0))
 
 
 #%%
@@ -4440,7 +4454,7 @@ cmap4 = cm.get_cmap('tab20b')
 cmap5 = cm.get_cmap('tab20c')
 
 cmap = cmap1.colors + cmap4.colors + cmap5.colors + cmap2.colors + cmap3.colors
-cmap = cm.get_cmap('gist_rainbow', 53)
+cmap = cm.get_cmap('gist_rainbow', len(glo_list))
 colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255),
           (0, 255, 255), (255, 125, 0), (125, 255, 0), (0, 125, 255),
           (125, 0, 255), (255, 0, 125), (125, 125, 0), (125, 0, 125),
@@ -4485,7 +4499,7 @@ cmap4 = cm.get_cmap('tab20b')
 cmap5 = cm.get_cmap('tab20c')
 
 cmap = cmap1.colors + cmap4.colors + cmap5.colors + cmap2.colors + cmap3.colors
-cmap = cm.get_cmap('gist_rainbow', 53)
+cmap = cm.get_cmap('gist_rainbow', len(glo_list))
 colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255),
           (0, 255, 255), (255, 125, 0), (125, 255, 0), (0, 125, 255),
           (125, 0, 255), (255, 0, 125), (125, 125, 0), (125, 0, 125),
@@ -4504,15 +4518,14 @@ figure = mlab.figure('DensityPlot')
 for k in range(len(np.unique(ornlist))):
     kidx = np.where(np.array(ornlist) == np.unique(ornlist)[k])[0]
     for i in kidx:
-        if i != 49:
-            xi = np.load('./clusterdata/LH_xi_' + str(i) + '.npy')
-            yi = np.load('./clusterdata/LH_yi_' + str(i) + '.npy')
-            zi = np.load('./clusterdata/LH_zi_' + str(i) + '.npy')
-            density = np.load('./clusterdata/LH_d_' + str(i) + '.npy')
-            
-            dmin = density.min()
-            dmax = density.max()
-            mlab.contour3d(xi, yi, zi, density, color=tuple(colors[k]))
+        xi = np.load('./clusterdata/LH_xi_' + str(i) + '.npy')
+        yi = np.load('./clusterdata/LH_yi_' + str(i) + '.npy')
+        zi = np.load('./clusterdata/LH_zi_' + str(i) + '.npy')
+        density = np.load('./clusterdata/LH_d_' + str(i) + '.npy')
+        
+        dmin = density.min()
+        dmax = density.max()
+        mlab.contour3d(xi, yi, zi, density, color=tuple(colors[k]))
 
 mlab.axes()
 mlab.show()
@@ -4531,7 +4544,7 @@ cmap4 = cm.get_cmap('tab20b')
 cmap5 = cm.get_cmap('tab20c')
 
 cmap = cmap1.colors + cmap4.colors + cmap5.colors + cmap2.colors + cmap3.colors
-cmap = cm.get_cmap('gist_rainbow', 53)
+cmap = cm.get_cmap('gist_rainbow', len(glo_list))
 colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255),
           (0, 255, 255), (255, 125, 0), (125, 255, 0), (0, 125, 255),
           (125, 0, 255), (255, 0, 125), (125, 125, 0), (125, 0, 125),
@@ -4575,7 +4588,7 @@ cmap4 = cm.get_cmap('tab20b')
 cmap5 = cm.get_cmap('tab20c')
 
 cmap = cmap1.colors + cmap4.colors + cmap5.colors + cmap2.colors + cmap3.colors
-cmap = cm.get_cmap('gist_rainbow', 53)
+cmap = cm.get_cmap('gist_rainbow', len(glo_list))
 colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255),
           (0, 255, 255), (255, 125, 0), (125, 255, 0), (0, 125, 255),
           (125, 0, 255), (255, 0, 125), (125, 125, 0), (125, 0, 125),
@@ -4594,15 +4607,14 @@ figure = mlab.figure('DensityPlot')
 for k in range(len(np.unique(senslist))):
     kidx = np.where(np.array(senslist) == np.unique(senslist)[k])[0]
     for i in kidx:
-        if i != 49:
-            xi = np.load('./clusterdata/LH_xi_' + str(i) + '.npy')
-            yi = np.load('./clusterdata/LH_yi_' + str(i) + '.npy')
-            zi = np.load('./clusterdata/LH_zi_' + str(i) + '.npy')
-            density = np.load('./clusterdata/LH_d_' + str(i) + '.npy')
-            
-            dmin = density.min()
-            dmax = density.max()
-            mlab.contour3d(xi, yi, zi, density, color=tuple(colors[k]))
+        xi = np.load('./clusterdata/LH_xi_' + str(i) + '.npy')
+        yi = np.load('./clusterdata/LH_yi_' + str(i) + '.npy')
+        zi = np.load('./clusterdata/LH_zi_' + str(i) + '.npy')
+        density = np.load('./clusterdata/LH_d_' + str(i) + '.npy')
+        
+        dmin = density.min()
+        dmax = density.max()
+        mlab.contour3d(xi, yi, zi, density, color=tuple(colors[k]))
 
 mlab.axes()
 mlab.show()
@@ -4630,8 +4642,7 @@ for k in range(len(np.unique(ornlist))):
     morph_dist_LH_ep_t = []
     kidx = np.where(np.array(ornlist) == np.unique(ornlist)[k])[0]
     for i in kidx:
-        if i != 49:
-            morph_dist_LH_ep_t.append(morph_dist_LH_ep_norm[i])
+        morph_dist_LH_ep_t.append(morph_dist_LH_ep_norm[i])
             
     morph_dist_LH_ep_t = [item for sublist in morph_dist_LH_ep_t for item in sublist]
     morph_dist_LH_ep_t = [item for sublist in morph_dist_LH_ep_t for item in sublist]
