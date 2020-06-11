@@ -12,7 +12,7 @@ from mpl_toolkits.mplot3d import axes3d, Axes3D
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes, InsetPosition, mark_inset
 from matplotlib import cm
 import matplotlib.ticker as ticker
-from mpl_toolkits.axes_grid1.parasite_axes import SubplotHost
+from mpl_toolkits.axisartist.parasite_axes import SubplotHost
 import matplotlib.patches as mpatches
 import seaborn
 import pandas as pd
@@ -3563,6 +3563,7 @@ ax.set_ylabel('Distance')
 ax.set_xticks(x)
 ax.set_xticklabels(labels)
 ax.legend()
+ax.set_title('Average distance within and outside cluster')
 plt.tight_layout()
 plt.show()
 
@@ -3570,16 +3571,28 @@ plt.show()
 fig = plt.figure(figsize=(6, 4))
 plt.hist(calyxdist_cluster_u_full_flat, alpha=0.5, density=True)
 plt.hist(calyxdist_noncluster_u_full_flat, alpha=0.5, density=True)
+plt.xlabel('Distance')
+plt.ylabel('Probability')
+plt.title('Distances between within and outside cluster distances of calyx')
+plt.legend('Cluster', 'Non-Cluster')
 plt.show()
 
 fig = plt.figure(figsize=(6, 4))
 plt.hist(LHdist_cluster_u_full_flat, alpha=0.5, density=True)
 plt.hist(LHdist_noncluster_u_full_flat, alpha=0.5, density=True)
+plt.xlabel('Distance')
+plt.ylabel('Probability')
+plt.title('Distances between within and outside cluster distances of LH')
+plt.legend('Cluster', 'Non-Cluster')
 plt.show()
 
 fig = plt.figure(figsize=(6, 4))
 plt.hist(ALdist_cluster_u_full_flat, alpha=0.5, density=True)
 plt.hist(ALdist_noncluster_u_full_flat, alpha=0.5, density=True)
+plt.xlabel('Distance')
+plt.ylabel('Probability')
+plt.title('Distances between within and outside cluster distances of AL')
+plt.legend('Cluster', 'Non-Cluster')
 plt.show()
 
 
@@ -3603,6 +3616,7 @@ ax.set_ylabel('Distance')
 ax.set_xticks(x)
 ax.set_xticklabels(labels)
 ax.legend()
+ax.set_title('Median distance within and outside cluster')
 plt.tight_layout()
 plt.show()
 
@@ -3613,19 +3627,24 @@ plt.boxplot([calyxdist_cluster_u_full_flat, calyxdist_noncluster_u_full_flat,
              LHdist_cluster_u_full_flat, LHdist_noncluster_u_full_flat, 
              ALdist_cluster_u_full_flat, ALdist_noncluster_u_full_flat], 
             notch=True, labels=lab, bootstrap=500)
+plt.title('Median distance within and outside cluster')
 plt.tight_layout()
 plt.show()
 
 
-fig, ax = plt.subplots()
+# fig, ax = plt.subplots()
+fig = plt.figure()
 ax1 = SubplotHost(fig, 111)
 fig.add_subplot(ax1)
 plt.imshow(morph_dist_calyx_r)
-ax.tick_params(axis=u'both', which=u'both',length=0)
+# ax1.tick_params(axis=u'both', which=u'both',length=0)
+ax1.set_xticks([]) 
+ax1.set_yticks([]) 
 ax2 = ax1.twiny()
-offset = 0, -25 
+offset = 0, -10
 new_axisline = ax2.get_grid_helper().new_fixed_axis
 ax2.axis["bottom"] = new_axisline(loc="bottom", axes=ax2, offset=offset)
+ax2.axis["bottom"].minor_ticks.set_ticksize(0)
 ax2.axis["top"].set_visible(False)
 ax2.set_xticks([0.0, 0.6, 1.0])
 ax2.xaxis.set_major_formatter(ticker.NullFormatter())
