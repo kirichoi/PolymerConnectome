@@ -3574,7 +3574,7 @@ plt.hist(calyxdist_noncluster_u_full_flat, alpha=0.5, density=True)
 plt.xlabel('Distance')
 plt.ylabel('Probability')
 plt.title('Distances between within and outside cluster distances of calyx')
-plt.legend('Cluster', 'Non-Cluster')
+plt.legend(['Cluster', 'Non-Cluster'])
 plt.show()
 
 fig = plt.figure(figsize=(6, 4))
@@ -3583,7 +3583,7 @@ plt.hist(LHdist_noncluster_u_full_flat, alpha=0.5, density=True)
 plt.xlabel('Distance')
 plt.ylabel('Probability')
 plt.title('Distances between within and outside cluster distances of LH')
-plt.legend('Cluster', 'Non-Cluster')
+plt.legend(['Cluster', 'Non-Cluster'])
 plt.show()
 
 fig = plt.figure(figsize=(6, 4))
@@ -3592,7 +3592,7 @@ plt.hist(ALdist_noncluster_u_full_flat, alpha=0.5, density=True)
 plt.xlabel('Distance')
 plt.ylabel('Probability')
 plt.title('Distances between within and outside cluster distances of AL')
-plt.legend('Cluster', 'Non-Cluster')
+plt.legend(['Cluster', 'Non-Cluster'])
 plt.show()
 
 
@@ -3632,25 +3632,112 @@ plt.tight_layout()
 plt.show()
 
 
-# fig, ax = plt.subplots()
+glo_len = [len(arr) for arr in glo_idx]
+glo_lb = [sum(glo_len[0:i+1]) for i in range(len(glo_len))]
+glo_lbs = np.subtract(glo_lb, glo_lb[0])
+glo_float = np.divide(glo_lbs, glo_lbs[-1])
+
 fig = plt.figure()
 ax1 = SubplotHost(fig, 111)
 fig.add_subplot(ax1)
-plt.imshow(morph_dist_calyx_r)
-# ax1.tick_params(axis=u'both', which=u'both',length=0)
+plt.imshow(morph_dist_calyx_r, vmax=np.max(morph_dist_AL_r))
 ax1.set_xticks([]) 
 ax1.set_yticks([]) 
 ax2 = ax1.twiny()
-offset = 0, -10
-new_axisline = ax2.get_grid_helper().new_fixed_axis
-ax2.axis["bottom"] = new_axisline(loc="bottom", axes=ax2, offset=offset)
-ax2.axis["bottom"].minor_ticks.set_ticksize(0)
-ax2.axis["top"].set_visible(False)
-ax2.set_xticks([0.0, 0.6, 1.0])
+ax3 = ax1.twinx()
+offset1 = 0, 10
+offset2 = -10, 0
+new_axisline1 = ax2.get_grid_helper().new_fixed_axis
+new_axisline2 = ax3.get_grid_helper().new_fixed_axis
+ax2.axis["top"] = new_axisline1(loc="top", axes=ax2, offset=offset1)
+ax3.axis["left"] = new_axisline2(loc="left", axes=ax3, offset=offset2)
+ax2.axis["top"].minor_ticks.set_ticksize(0)
+ax3.axis["left"].minor_ticks.set_ticksize(0)
+ax2.axis["bottom"].set_visible(False)
+ax3.axis["right"].set_visible(False)
+ax2.set_xticks(glo_float)
+ax3.set_yticks(glo_float)
+ax3.invert_yaxis()
 ax2.xaxis.set_major_formatter(ticker.NullFormatter())
-ax2.xaxis.set_minor_locator(ticker.FixedLocator([0.3, 0.8]))
-ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(['mammal', 'reptiles']))
+ax3.yaxis.set_major_formatter(ticker.NullFormatter())
+ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float[1:] + glo_float[:-1])/2))
+ax3.yaxis.set_minor_locator(ticker.FixedLocator((glo_float[1:] + glo_float[:-1])/2))
+ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(glo_list))
+ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list))
+ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=4, rotation_mode='default')
+ax3.axis["left"].minor_ticklabels.set(fontsize=4, rotation_mode='default')
+plt.colorbar()
+plt.title("Inter-cluster distance calyx", pad=40)
 plt.show()
+
+fig = plt.figure()
+ax1 = SubplotHost(fig, 111)
+fig.add_subplot(ax1)
+plt.imshow(morph_dist_LH_r, vmax=np.max(morph_dist_AL_r))
+ax1.set_xticks([]) 
+ax1.set_yticks([]) 
+ax2 = ax1.twiny()
+ax3 = ax1.twinx()
+offset1 = 0, 10
+offset2 = -10, 0
+new_axisline1 = ax2.get_grid_helper().new_fixed_axis
+new_axisline2 = ax3.get_grid_helper().new_fixed_axis
+ax2.axis["top"] = new_axisline1(loc="top", axes=ax2, offset=offset1)
+ax3.axis["left"] = new_axisline2(loc="left", axes=ax3, offset=offset2)
+ax2.axis["top"].minor_ticks.set_ticksize(0)
+ax3.axis["left"].minor_ticks.set_ticksize(0)
+ax2.axis["bottom"].set_visible(False)
+ax3.axis["right"].set_visible(False)
+ax2.set_xticks(glo_float)
+ax3.set_yticks(glo_float)
+ax3.invert_yaxis()
+ax2.xaxis.set_major_formatter(ticker.NullFormatter())
+ax3.yaxis.set_major_formatter(ticker.NullFormatter())
+ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float[1:] + glo_float[:-1])/2))
+ax3.yaxis.set_minor_locator(ticker.FixedLocator((glo_float[1:] + glo_float[:-1])/2))
+ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(glo_list))
+ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list))
+ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=4, rotation_mode='default')
+ax3.axis["left"].minor_ticklabels.set(fontsize=4, rotation_mode='default')
+plt.colorbar()
+plt.title("Inter-cluster distance LH", pad=40)
+plt.show()
+
+fig = plt.figure()
+ax1 = SubplotHost(fig, 111)
+fig.add_subplot(ax1)
+plt.imshow(morph_dist_AL_r, vmax=np.max(morph_dist_AL_r))
+ax1.set_xticks([]) 
+ax1.set_yticks([]) 
+ax2 = ax1.twiny()
+ax3 = ax1.twinx()
+offset1 = 0, 10
+offset2 = -10, 0
+new_axisline1 = ax2.get_grid_helper().new_fixed_axis
+new_axisline2 = ax3.get_grid_helper().new_fixed_axis
+ax2.axis["top"] = new_axisline1(loc="top", axes=ax2, offset=offset1)
+ax3.axis["left"] = new_axisline2(loc="left", axes=ax3, offset=offset2)
+ax2.axis["top"].minor_ticks.set_ticksize(0)
+ax3.axis["left"].minor_ticks.set_ticksize(0)
+ax2.axis["bottom"].set_visible(False)
+ax3.axis["right"].set_visible(False)
+ax2.set_xticks(glo_float)
+ax3.set_yticks(glo_float)
+ax3.invert_yaxis()
+ax2.xaxis.set_major_formatter(ticker.NullFormatter())
+ax3.yaxis.set_major_formatter(ticker.NullFormatter())
+ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float[1:] + glo_float[:-1])/2))
+ax3.yaxis.set_minor_locator(ticker.FixedLocator((glo_float[1:] + glo_float[:-1])/2))
+ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(glo_list))
+ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list))
+ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=4, rotation_mode='default')
+ax3.axis["left"].minor_ticklabels.set(fontsize=4, rotation_mode='default')
+plt.colorbar()
+plt.title("Inter-cluster distance AL", pad=40)
+plt.show()
+
+
+
 
 
 
