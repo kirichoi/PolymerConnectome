@@ -2510,6 +2510,8 @@ for i in range(len(MorphData.endP)):
 branchP_dist_flat = np.array([item for sublist in BranchData.branchP_dist for item in sublist])
 endP_dist_flat = np.array([item for sublist in MorphData.endP_dist for item in sublist])
 
+
+
 #%%
 
 fig = plt.figure(figsize=(24, 16))
@@ -3633,7 +3635,7 @@ plt.show()
 
 
 glo_len = [len(arr) for arr in glo_idx]
-glo_lb = [sum(glo_len[0:i+1]) for i in range(len(glo_len))]
+glo_lb = [sum(glo_len[0:i]) for i in range(len(glo_len)+1)]
 glo_lbs = np.subtract(glo_lb, glo_lb[0])
 glo_float = np.divide(glo_lbs, glo_lbs[-1])
 
@@ -3736,6 +3738,39 @@ plt.colorbar()
 plt.title("Inter-cluster distance AL", pad=40)
 plt.show()
 
+
+
+calyxtri = morph_dist_calyx_r[np.triu_indices_from(morph_dist_calyx_r, k=1)]
+LHtri = morph_dist_LH_r[np.triu_indices_from(morph_dist_LH_r, k=1)]
+ALtri = morph_dist_AL_r[np.triu_indices_from(morph_dist_AL_r, k=1)]
+
+df = pd.DataFrame({'calyx': calyxtri})
+df['LH'] = LHtri
+df['AL'] = ALtri
+
+print(df.corr())
+
+pd.plotting.scatter_matrix(df, figsize=(6, 6))
+plt.show()
+
+
+
+df = pd.DataFrame({'calyx': calyxdist_noncluster_u_full_flat})
+df['LH'] = LHdist_noncluster_u_full_flat
+df['AL'] = ALdist_noncluster_u_full_flat
+
+print(df.corr())
+
+pd.plotting.scatter_matrix(df, figsize=(6, 6))
+plt.show()
+
+
+ALcalyx_corr = []
+ALLH_corr = []
+
+for i in range(len(morph_dist_AL_r)):
+    ALcalyx_corr.append(np.corrcoef(morph_dist_AL_r[i], morph_dist_calyx_r[i])[0][1])
+    ALLH_corr.append(np.corrcoef(morph_dist_AL_r[i], morph_dist_LH_r[i])[0][1])
 
 
 
