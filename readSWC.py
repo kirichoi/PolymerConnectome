@@ -3201,11 +3201,16 @@ glo_idx = []
 for f in range(len(MorphData.neuron_id)):
     idx = np.where(glo_info.skid == int(MorphData.neuron_id[f]))[0][0]
     if 'glomerulus' in glo_info['old neuron name'][idx]:
-        if glo_info['type'][idx] != 'unknown glomerulus':
-            if glo_info['type'][idx] in glo_list:
-                glo_idx[glo_list.index(glo_info['type'][idx])].append(f)
+        if glo_info['type'][idx] != 'unknown glomerulus': # One neuron in this glomerulus that does not project to LH
+            if glo_info['type'][idx] == 'DP1l, VL2p': # Neuron with both DP1l and VL2p label
+                glo_name = 'VL2p' # Neuron seems to have more similar spetrum as VL2p
             else:
-                glo_list.append(glo_info['type'][idx])
+                glo_name = glo_info['type'][idx]
+                
+            if glo_name in glo_list:
+                glo_idx[glo_list.index(glo_name)].append(f)
+            else:
+                glo_list.append(glo_name)
                 glo_idx.append([f])
 
 morph_dist_calyx = []
@@ -3598,7 +3603,7 @@ plt.show()
 fig = plt.figure()
 ax1 = SubplotHost(fig, 111)
 fig.add_subplot(ax1)
-plt.imshow(morph_dist_calyx_r, vmax=np.max(morph_dist_AL_r))
+plt.imshow(morph_dist_calyx_r)#, vmax=np.max(morph_dist_AL_r))
 ax1.set_xticks([]) 
 ax1.set_yticks([]) 
 ax2 = ax1.twiny()
@@ -3618,8 +3623,8 @@ ax3.set_yticks(glo_float)
 ax3.invert_yaxis()
 ax2.xaxis.set_major_formatter(ticker.NullFormatter())
 ax3.yaxis.set_major_formatter(ticker.NullFormatter())
-ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float[1:] + glo_float[:-1])/2+0.0045))
-ax3.yaxis.set_minor_locator(ticker.FixedLocator((glo_float[1:] + glo_float[:-1])/2+0.0045))
+ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float[1:] + glo_float[:-1])/2))
+ax3.yaxis.set_minor_locator(ticker.FixedLocator((glo_float[1:] + glo_float[:-1])/2))
 ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(glo_list))
 ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list))
 ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=4, rotation_mode='default')
@@ -3631,7 +3636,7 @@ plt.show()
 fig = plt.figure()
 ax1 = SubplotHost(fig, 111)
 fig.add_subplot(ax1)
-plt.imshow(morph_dist_LH_r, vmax=np.max(morph_dist_AL_r))
+plt.imshow(morph_dist_LH_r)#, vmax=np.max(morph_dist_AL_r))
 ax1.set_xticks([]) 
 ax1.set_yticks([]) 
 ax2 = ax1.twiny()
@@ -3651,8 +3656,8 @@ ax3.set_yticks(glo_float)
 ax3.invert_yaxis()
 ax2.xaxis.set_major_formatter(ticker.NullFormatter())
 ax3.yaxis.set_major_formatter(ticker.NullFormatter())
-ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float[1:] + glo_float[:-1])/2+0.0045))
-ax3.yaxis.set_minor_locator(ticker.FixedLocator((glo_float[1:] + glo_float[:-1])/2+0.0045))
+ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float[1:] + glo_float[:-1])/2))
+ax3.yaxis.set_minor_locator(ticker.FixedLocator((glo_float[1:] + glo_float[:-1])/2))
 ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(glo_list))
 ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list))
 ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=4, rotation_mode='default')
@@ -3664,7 +3669,7 @@ plt.show()
 fig = plt.figure()
 ax1 = SubplotHost(fig, 111)
 fig.add_subplot(ax1)
-plt.imshow(morph_dist_AL_r, vmax=np.max(morph_dist_AL_r))
+plt.imshow(morph_dist_AL_r)#, vmax=np.max(morph_dist_AL_r))
 ax1.set_xticks([]) 
 ax1.set_yticks([]) 
 ax2 = ax1.twiny()
@@ -3684,8 +3689,8 @@ ax3.set_yticks(glo_float)
 ax3.invert_yaxis()
 ax2.xaxis.set_major_formatter(ticker.NullFormatter())
 ax3.yaxis.set_major_formatter(ticker.NullFormatter())
-ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float[1:] + glo_float[:-1])/2+0.0045))
-ax3.yaxis.set_minor_locator(ticker.FixedLocator((glo_float[1:] + glo_float[:-1])/2+0.0045))
+ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float[1:] + glo_float[:-1])/2))
+ax3.yaxis.set_minor_locator(ticker.FixedLocator((glo_float[1:] + glo_float[:-1])/2))
 ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(glo_list))
 ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list))
 ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=4, rotation_mode='default')
@@ -3734,22 +3739,15 @@ ALcalyx_corr = []
 ALLH_corr = []
 
 for i in range(len(morph_dist_AL_r)):
-    ALcalyx_corr.append(np.corrcoef(morph_dist_AL_r[i], morph_dist_calyx_r[i])[0][1])
-    ALLH_corr.append(np.corrcoef(morph_dist_AL_r[i], morph_dist_LH_r[i])[0][1])
+    ALcalyx_corr.append(np.corrcoef(morph_dist_calyx_r[i], morph_dist_AL_r[i])[0][1])
+    ALLH_corr.append(np.corrcoef(morph_dist_LH_r[i], morph_dist_AL_r[i])[0][1])
 
 ALcalyx_corr_glo = []
 ALLH_corr_glo = []
-trk = 0
 
-for i in range(len(glo_idx)):
-    ALcalyx_corr_glo_temp = []
-    ALLH_corr_glo_temp = []
-    for j in range(len(glo_idx[i])):
-        ALcalyx_corr_glo_temp.append(ALcalyx_corr[trk])
-        ALLH_corr_glo_temp.append(ALLH_corr[trk])
-        trk += 1
-    ALcalyx_corr_glo.append(ALcalyx_corr_glo_temp)
-    ALLH_corr_glo.append(ALLH_corr_glo_temp)
+for i in range(len(glo_lb)-1):
+    ALcalyx_corr_glo.append(np.array(ALcalyx_corr)[np.arange(glo_lb[i],glo_lb[i+1])])
+    ALLH_corr_glo.append(np.array(ALLH_corr)[np.arange(glo_lb[i],glo_lb[i+1])])
 
 ALcalyx_corr_glo_avg = []
 ALcalyx_corr_glo_std = []
@@ -3781,13 +3779,12 @@ ax2.axis["bottom"] = new_axisline1(loc="bottom", axes=ax2, offset=offset1)
 ax2.axis["bottom"].minor_ticks.set_ticksize(0)
 ax2.set_xticks(glo_float)
 ax2.xaxis.set_major_formatter(ticker.NullFormatter())
-ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float[1:] + glo_float[:-1])/2+0.0045))
+ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float[1:] + glo_float[:-1])/2))
 ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(glo_list))
 ax2.axis["bottom"].minor_ticklabels.set(rotation=90, fontsize=4, ha='right')
 ax2.axis["top"].minor_ticks.set(visible=False)
 ax2.axis["top"].major_ticks.set(visible=False)
 plt.show()
-
 
 
 fig, ax = plt.subplots()
@@ -3798,6 +3795,212 @@ ax.bar(x, ALLH_corr_glo_avg, width, yerr=ALLH_corr_glo_std, label='LH-AL', alpha
 ax.set_ylabel('Distance')
 ax.set_xticks(x)
 ax.set_xticklabels(glo_list, rotation=90, fontsize=7)
+ax.legend()
+ax.set_title('Distance correlation between calyx/LH and AL by glomerulus')
+plt.xlim(0-0.5, len(glo_list)-0.5)
+plt.tight_layout()
+plt.show()
+
+
+validx = np.argwhere(np.array(ALLH_corr_glo_avg) > 0.5).T[0]
+
+diffidx = np.argwhere(np.subtract(ALLH_corr_glo_avg, ALcalyx_corr_glo_avg) > 0.5).T[0]
+
+print(np.sort(np.array(glo_list)[validx]))
+print(np.sort(np.array(glo_list)[diffidx]))
+
+
+#%% Correlation matrix cluster
+
+glo_list_neuron = np.repeat(glo_list, glo_len)
+glo_lb_idx = []
+
+for i in range(len(glo_lb)-1):
+    glo_lb_idx.append(np.arange(glo_lb[i],glo_lb[i+1]))
+
+morph_dist_calyx_CM_avg = []
+morph_dist_LH_CM_avg = []
+morph_dist_AL_CM_avg = []
+
+for i in range(len(morph_dist_calyx_CM)):
+    morph_dist_calyx_CM_avg.append(np.average(morph_dist_calyx_CM[i], axis=0))
+    morph_dist_LH_CM_avg.append(np.average(morph_dist_LH_CM[i], axis=0))
+    morph_dist_AL_CM_avg.append(np.average(morph_dist_AL_CM[i], axis=0))
+
+morph_dist_calyx_r_avg = scipy.spatial.distance.cdist(morph_dist_calyx_CM_avg, morph_dist_calyx_CM_avg)
+morph_dist_LH_r_avg = scipy.spatial.distance.cdist(morph_dist_LH_CM_avg, morph_dist_LH_CM_avg)
+morph_dist_AL_r_avg = scipy.spatial.distance.cdist(morph_dist_AL_CM_avg, morph_dist_AL_CM_avg)
+
+morph_dist_calyx_r_df = pd.DataFrame(morph_dist_calyx_r)
+morph_dist_calyx_r_avg_df = pd.DataFrame(morph_dist_calyx_r_avg)
+
+morph_dist_LH_r_df = pd.DataFrame(morph_dist_LH_r)
+morph_dist_LH_r_avg_df = pd.DataFrame(morph_dist_LH_r_avg)
+
+morph_dist_AL_r_df = pd.DataFrame(morph_dist_AL_r)
+morph_dist_AL_r_avg_df = pd.DataFrame(morph_dist_AL_r_avg)
+
+L = scipy.cluster.hierarchy.linkage(scipy.spatial.distance.squareform(morph_dist_AL_r_avg), method='complete')
+ind = scipy.cluster.hierarchy.fcluster(L, 100, 'maxclust')
+columns = [morph_dist_AL_r_avg_df.columns.tolist()[i] for i in list((np.argsort(ind)))]
+
+glo_list_cluster = np.array(glo_list)[columns]
+# glo_list_cluster = ['DL3', 'DA1', 'VM7d', 'VM7v', 'VC4', 'VM5v', 'VM5d', 'DM6', 'DM2', 'DM5', 
+#   'DA2', 'DC1', 'DA4l', 'VC1', 'VA6', 'DC2', 'DC4', 'DL5', 'D', 'DL1', 'DA3', 'DA4m',
+#   'DL4', 'VA1v', 'VA1d', 'DC3', 'VL2p', 'VL2a', 'VA7l', 'VA3', 'VA5', 'VA7m', 'VM1',
+#   'VC3l', 'VC3m', 'VM4', 'VM6', 'VL1', 'V', 'DL2d', 'DL2v', 'VM2', 'VM3', 'DP1l', 'VA4',
+#   'VC2', 'VA2', 'DP1m', 'DM3', 'DM4', 'DM1']
+
+# columns = [glo_list.index(glo_list_cluster[i]) for i in range(len(glo_list_cluster))]
+
+glo_len_cluster = np.array(glo_len)[columns]
+
+# Custom ordering based on unsupervised clustering using NBLAST from manuscript
+# glo_list_cluster = ['DL3', 'DA1', 'VM7d', 'VM7v', 'VC4', 'VM5v', 'VM5d', 'DM6', 'DM2', 'DM5', 
+#   'DA2', 'DC1', 'DA4l', 'VC1', 'VA6', 'DC2', 'DC4', 'DL5', 'D', 'DL1', 'DA3', 'DA4m',
+#   'DL4', 'VA1v', 'VA1d', 'DC3', 'VL2p', 'VL2a', 'VA7l', 'VA3', 'VA5', 'VA7m', 'VM1',
+#   'VC3l', 'VC3m', 'VM4', 'VM6', 'VL1', 'V', 'DL2d', 'DL2v', 'VM2', 'VM3', 'DP1l', 'VA4',
+#   'VC2', 'VA2', 'DP1m', 'DM3', 'DM4', 'DM1']
+
+# glo_idx_cluster = []
+# for i in range(len(glo_list_cluster)):
+#     glo_idx_cluster.append(glo_idx[np.argwhere(glo_list_cluster[i] == np.array(glo_list))[0][0]])
+
+# glo_list = glo_list_cluster
+# glo_idx = glo_idx_cluster
+
+glo_idx_cluster = []
+for i in range(len(glo_list)):
+    glo_idx_cluster.append(glo_lb_idx[np.argwhere(np.array(glo_list)[columns][i] == np.array(glo_list))[0][0]])
+
+glo_idx_cluster_flat = [item for sublist in glo_idx_cluster for item in sublist]
+
+glo_lb_cluster = [sum(glo_len_cluster[0:i]) for i in range(len(glo_len_cluster)+1)]
+glo_lb_cluster_s = np.subtract(glo_lb_cluster, glo_lb_cluster[0])
+glo_float_cluster = np.divide(glo_lb_cluster_s, glo_lb_cluster_s[-1])
+
+morph_dist_calyx_r_df = morph_dist_calyx_r_df.reindex(glo_idx_cluster_flat, axis=0)
+morph_dist_calyx_r_df = morph_dist_calyx_r_df.reindex(glo_idx_cluster_flat, axis=1)
+
+morph_dist_LH_r_df = morph_dist_LH_r_df.reindex(glo_idx_cluster_flat, axis=0)
+morph_dist_LH_r_df = morph_dist_LH_r_df.reindex(glo_idx_cluster_flat, axis=1)
+
+morph_dist_AL_r_df = morph_dist_AL_r_df.reindex(glo_idx_cluster_flat, axis=0)
+morph_dist_AL_r_df = morph_dist_AL_r_df.reindex(glo_idx_cluster_flat, axis=1)
+
+fig = plt.figure()
+ax1 = SubplotHost(fig, 111)
+fig.add_subplot(ax1)
+plt.imshow(morph_dist_calyx_r_df)#, vmax=np.max(morph_dist_calyx_r))
+ax1.set_xticks([]) 
+ax1.set_yticks([]) 
+ax2 = ax1.twiny()
+ax3 = ax1.twinx()
+offset1 = 0, 10
+offset2 = -10, 0
+new_axisline1 = ax2.get_grid_helper().new_fixed_axis
+new_axisline2 = ax3.get_grid_helper().new_fixed_axis
+ax2.axis["top"] = new_axisline1(loc="top", axes=ax2, offset=offset1)
+ax3.axis["left"] = new_axisline2(loc="left", axes=ax3, offset=offset2)
+ax2.axis["top"].minor_ticks.set_ticksize(0)
+ax3.axis["left"].minor_ticks.set_ticksize(0)
+ax2.axis["bottom"].set_visible(False)
+ax3.axis["right"].set_visible(False)
+ax2.set_xticks(glo_float_cluster)
+ax3.set_yticks(glo_float_cluster)
+ax3.invert_yaxis()
+ax2.xaxis.set_major_formatter(ticker.NullFormatter())
+ax3.yaxis.set_major_formatter(ticker.NullFormatter())
+ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster[1:] + glo_float_cluster[:-1])/2))
+ax3.yaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster[1:] + glo_float_cluster[:-1])/2))
+ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster))
+ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster))
+ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=4, rotation_mode='default')
+ax3.axis["left"].minor_ticklabels.set(fontsize=4, rotation_mode='default')
+plt.colorbar()
+plt.title("Reorganized inter-cluster distance calyx", pad=40)
+plt.show()
+
+fig = plt.figure()
+ax1 = SubplotHost(fig, 111)
+fig.add_subplot(ax1)
+plt.imshow(morph_dist_LH_r_df)#, vmax=np.max(morph_dist_LH_r))
+ax1.set_xticks([]) 
+ax1.set_yticks([]) 
+ax2 = ax1.twiny()
+ax3 = ax1.twinx()
+offset1 = 0, 10
+offset2 = -10, 0
+new_axisline1 = ax2.get_grid_helper().new_fixed_axis
+new_axisline2 = ax3.get_grid_helper().new_fixed_axis
+ax2.axis["top"] = new_axisline1(loc="top", axes=ax2, offset=offset1)
+ax3.axis["left"] = new_axisline2(loc="left", axes=ax3, offset=offset2)
+ax2.axis["top"].minor_ticks.set_ticksize(0)
+ax3.axis["left"].minor_ticks.set_ticksize(0)
+ax2.axis["bottom"].set_visible(False)
+ax3.axis["right"].set_visible(False)
+ax2.set_xticks(glo_float_cluster)
+ax3.set_yticks(glo_float_cluster)
+ax3.invert_yaxis()
+ax2.xaxis.set_major_formatter(ticker.NullFormatter())
+ax3.yaxis.set_major_formatter(ticker.NullFormatter())
+ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster[1:] + glo_float_cluster[:-1])/2))
+ax3.yaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster[1:] + glo_float_cluster[:-1])/2))
+ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster))
+ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster))
+ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=4, rotation_mode='default')
+ax3.axis["left"].minor_ticklabels.set(fontsize=4, rotation_mode='default')
+plt.colorbar()
+plt.title("Reorganized inter-cluster distance LH", pad=40)
+plt.show()
+
+fig = plt.figure()
+ax1 = SubplotHost(fig, 111)
+fig.add_subplot(ax1)
+plt.imshow(morph_dist_AL_r_df)#, vmax=np.max(morph_dist_AL_r))
+ax1.set_xticks([]) 
+ax1.set_yticks([]) 
+ax2 = ax1.twiny()
+ax3 = ax1.twinx()
+offset1 = 0, 10
+offset2 = -10, 0
+new_axisline1 = ax2.get_grid_helper().new_fixed_axis
+new_axisline2 = ax3.get_grid_helper().new_fixed_axis
+ax2.axis["top"] = new_axisline1(loc="top", axes=ax2, offset=offset1)
+ax3.axis["left"] = new_axisline2(loc="left", axes=ax3, offset=offset2)
+ax2.axis["top"].minor_ticks.set_ticksize(0)
+ax3.axis["left"].minor_ticks.set_ticksize(0)
+ax2.axis["bottom"].set_visible(False)
+ax3.axis["right"].set_visible(False)
+ax2.set_xticks(glo_float_cluster)
+ax3.set_yticks(glo_float_cluster)
+ax3.invert_yaxis()
+ax2.xaxis.set_major_formatter(ticker.NullFormatter())
+ax3.yaxis.set_major_formatter(ticker.NullFormatter())
+ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster[1:] + glo_float_cluster[:-1])/2))
+ax3.yaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster[1:] + glo_float_cluster[:-1])/2))
+ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster))
+ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster))
+ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=4, rotation_mode='default')
+ax3.axis["left"].minor_ticklabels.set(fontsize=4, rotation_mode='default')
+plt.colorbar()
+plt.title("Reorganized inter-cluster distance AL", pad=40)
+plt.show()
+
+
+
+fig, ax = plt.subplots()
+x = np.arange(len(glo_list))
+width = 1.
+ax.bar(x, np.array(ALcalyx_corr_glo_avg)[columns], width, 
+       yerr=np.array(ALcalyx_corr_glo_std)[columns], label='Calyx-AL', alpha=0.5, 
+       error_kw=dict(ecolor='tab:blue', lw=1, capsize=2, capthick=1))
+ax.bar(x, np.array(ALLH_corr_glo_avg)[columns], width, 
+       yerr=np.array(ALLH_corr_glo_std)[columns], label='LH-AL', alpha=0.5, 
+       error_kw=dict(ecolor='tab:orange', lw=1, capsize=2, capthick=1))
+ax.set_ylabel('Distance')
+ax.set_xticks(x)
+ax.set_xticklabels(glo_list_cluster, rotation=90, fontsize=7)
 ax.legend()
 ax.set_title('Distance correlation between calyx/LH and AL by glomerulus')
 plt.xlim(0-0.5, len(glo_list)-0.5)
