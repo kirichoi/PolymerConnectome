@@ -3841,7 +3841,7 @@ morph_dist_AL_r_df = pd.DataFrame(morph_dist_AL_r)
 morph_dist_AL_r_avg_df = pd.DataFrame(morph_dist_AL_r_avg)
 
 L = scipy.cluster.hierarchy.linkage(scipy.spatial.distance.squareform(morph_dist_AL_r_avg), method='complete')
-ind = scipy.cluster.hierarchy.fcluster(L, 100, 'maxclust')
+ind = scipy.cluster.hierarchy.fcluster(L, len(morph_dist_AL_r_avg), 'maxclust')
 columns = [morph_dist_AL_r_avg_df.columns.tolist()[i] for i in list((np.argsort(ind)))]
 
 glo_list_cluster = np.array(glo_list)[columns]
@@ -3854,20 +3854,6 @@ glo_list_cluster = np.array(glo_list)[columns]
 # columns = [glo_list.index(glo_list_cluster[i]) for i in range(len(glo_list_cluster))]
 
 glo_len_cluster = np.array(glo_len)[columns]
-
-# Custom ordering based on unsupervised clustering using NBLAST from manuscript
-# glo_list_cluster = ['DL3', 'DA1', 'VM7d', 'VM7v', 'VC4', 'VM5v', 'VM5d', 'DM6', 'DM2', 'DM5', 
-#   'DA2', 'DC1', 'DA4l', 'VC1', 'VA6', 'DC2', 'DC4', 'DL5', 'D', 'DL1', 'DA3', 'DA4m',
-#   'DL4', 'VA1v', 'VA1d', 'DC3', 'VL2p', 'VL2a', 'VA7l', 'VA3', 'VA5', 'VA7m', 'VM1',
-#   'VC3l', 'VC3m', 'VM4', 'VM6', 'VL1', 'V', 'DL2d', 'DL2v', 'VM2', 'VM3', 'DP1l', 'VA4',
-#   'VC2', 'VA2', 'DP1m', 'DM3', 'DM4', 'DM1']
-
-# glo_idx_cluster = []
-# for i in range(len(glo_list_cluster)):
-#     glo_idx_cluster.append(glo_idx[np.argwhere(glo_list_cluster[i] == np.array(glo_list))[0][0]])
-
-# glo_list = glo_list_cluster
-# glo_idx = glo_idx_cluster
 
 glo_idx_cluster = []
 for i in range(len(glo_list)):
