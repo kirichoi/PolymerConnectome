@@ -3570,13 +3570,13 @@ x = np.arange(len(labels))
 width = .3
 
 cmeans = [np.median(calyxdist_cluster_u_full_flat), np.median(LHdist_cluster_u_full_flat), np.median(ALdist_cluster_u_full_flat)]
-cerr = [scipy.stats.median_absolute_deviation(calyxdist_cluster_u_full_flat, center=np.median), 
-        scipy.stats.median_absolute_deviation(LHdist_cluster_u_full_flat, center=np.median), 
-        scipy.stats.median_absolute_deviation(ALdist_cluster_u_full_flat, center=np.median)]
+cerr = [scipy.stats.median_abs_deviation(calyxdist_cluster_u_full_flat, center=np.median), 
+        scipy.stats.median_abs_deviation(LHdist_cluster_u_full_flat, center=np.median), 
+        scipy.stats.median_abs_deviation(ALdist_cluster_u_full_flat, center=np.median)]
 ncmeans = [np.median(calyxdist_noncluster_u_full_flat), np.median(LHdist_noncluster_u_full_flat), np.median(ALdist_noncluster_u_full_flat)]
-ncerr = [scipy.stats.median_absolute_deviation(calyxdist_noncluster_u_full_flat, center=np.median), 
-         scipy.stats.median_absolute_deviation(LHdist_noncluster_u_full_flat, center=np.median), 
-         scipy.stats.median_absolute_deviation(ALdist_noncluster_u_full_flat, center=np.median)]
+ncerr = [scipy.stats.median_abs_deviation(calyxdist_noncluster_u_full_flat, center=np.median), 
+         scipy.stats.median_abs_deviation(LHdist_noncluster_u_full_flat, center=np.median), 
+         scipy.stats.median_abs_deviation(ALdist_noncluster_u_full_flat, center=np.median)]
 
 ax.bar(x - width/2, cmeans, width, yerr=cerr, capsize=5, label='Cluster')
 ax.bar(x + width/2, ncmeans, width, yerr=ncerr, capsize=5, label='Non-Cluster')
@@ -4091,8 +4091,8 @@ calyx_ent_noncluster_flat = [item for sublist in calyx_ent_noncluster for item i
 calyx_ent_cluster_flat = np.array(calyx_ent_cluster_flat)[np.nonzero(calyx_ent_cluster_flat)[0]]
 calyx_ent_noncluster_flat = np.array(calyx_ent_noncluster_flat)[np.nonzero(calyx_ent_noncluster_flat)[0]]
 
-print("Calyx cluster Mean: " + str(np.median(calyx_ent_cluster_flat)) + ", STD: " + str(scipy.stats.median_absolute_deviation(calyx_ent_cluster_flat)))
-print("Calyx noncluster Mean: " + str(np.median(calyx_ent_noncluster_flat)) + ", STD: " + str(scipy.stats.median_absolute_deviation(calyx_ent_noncluster_flat)))
+print("Calyx cluster Mean: " + str(np.median(calyx_ent_cluster_flat)) + ", STD: " + str(scipy.stats.median_abs_deviation(calyx_ent_cluster_flat)))
+print("Calyx noncluster Mean: " + str(np.median(calyx_ent_noncluster_flat)) + ", STD: " + str(scipy.stats.median_abs_deviation(calyx_ent_noncluster_flat)))
 
 
 morph_dist_LH_hist_x = []
@@ -4188,8 +4188,8 @@ LH_ent_noncluster_flat = [item for sublist in LH_ent_noncluster for item in subl
 LH_ent_cluster_flat = np.array(LH_ent_cluster_flat)[np.nonzero(LH_ent_cluster_flat)[0]]
 LH_ent_noncluster_flat = np.array(LH_ent_noncluster_flat)[np.nonzero(LH_ent_noncluster_flat)[0]]
 
-print("LH cluster Mean: " + str(np.median(LH_ent_cluster_flat)) + ", STD: " + str(scipy.stats.median_absolute_deviation(LH_ent_cluster_flat)))
-print("LH noncluster Mean: " + str(np.median(LH_ent_noncluster_flat)) + ", STD: " + str(scipy.stats.median_absolute_deviation(LH_ent_noncluster_flat)))
+print("LH cluster Mean: " + str(np.median(LH_ent_cluster_flat)) + ", STD: " + str(scipy.stats.median_abs_deviation(LH_ent_cluster_flat)))
+print("LH noncluster Mean: " + str(np.median(LH_ent_noncluster_flat)) + ", STD: " + str(scipy.stats.median_abs_deviation(LH_ent_noncluster_flat)))
 
 
 morph_dist_AL_hist_x = []
@@ -4285,8 +4285,8 @@ AL_ent_noncluster_flat = [item for sublist in AL_ent_noncluster for item in subl
 AL_ent_cluster_flat = np.array(AL_ent_cluster_flat)[np.nonzero(AL_ent_cluster_flat)[0]]
 AL_ent_noncluster_flat = np.array(AL_ent_noncluster_flat)[np.nonzero(AL_ent_noncluster_flat)[0]]
 
-print("AL cluster Mean: " + str(np.median(AL_ent_cluster_flat)) + ", STD: " + str(scipy.stats.median_absolute_deviation(AL_ent_cluster_flat)))
-print("AL noncluster Mean: " + str(np.median(AL_ent_noncluster_flat)) + ", STD: " + str(scipy.stats.median_absolute_deviation(AL_ent_noncluster_flat)))
+print("AL cluster Mean: " + str(np.median(AL_ent_cluster_flat)) + ", STD: " + str(scipy.stats.median_abs_deviation(AL_ent_cluster_flat)))
+print("AL noncluster Mean: " + str(np.median(AL_ent_noncluster_flat)) + ", STD: " + str(scipy.stats.median_abs_deviation(AL_ent_noncluster_flat)))
 
 
 #%%
@@ -4297,13 +4297,13 @@ x = np.arange(len(labels))
 width = .3
 
 cmeans = [np.median(calyx_ent_cluster_flat), np.median(LH_ent_cluster_flat), np.median(AL_ent_cluster_flat)]
-cerr = [scipy.stats.median_absolute_deviation(calyx_ent_cluster_flat, center=np.median), 
-        scipy.stats.median_absolute_deviation(LH_ent_cluster_flat, center=np.median), 
-        scipy.stats.median_absolute_deviation(AL_ent_cluster_flat, center=np.median)]
+cerr = [scipy.stats.median_abs_deviation(calyx_ent_cluster_flat, center=np.median), 
+        scipy.stats.median_abs_deviation(LH_ent_cluster_flat, center=np.median), 
+        scipy.stats.median_abs_deviation(AL_ent_cluster_flat, center=np.median)]
 ncmeans = [np.median(calyx_ent_noncluster_flat), np.median(LH_ent_noncluster_flat), np.median(AL_ent_noncluster_flat)]
-ncerr = [scipy.stats.median_absolute_deviation(calyx_ent_noncluster_flat, center=np.median), 
-         scipy.stats.median_absolute_deviation(LH_ent_noncluster_flat, center=np.median), 
-         scipy.stats.median_absolute_deviation(AL_ent_noncluster_flat, center=np.median)]
+ncerr = [scipy.stats.median_abs_deviation(calyx_ent_noncluster_flat, center=np.median), 
+         scipy.stats.median_abs_deviation(LH_ent_noncluster_flat, center=np.median), 
+         scipy.stats.median_abs_deviation(AL_ent_noncluster_flat, center=np.median)]
 
 ax.bar(x - width/2, cmeans, width, yerr=cerr, capsize=5, label='Cluster')
 ax.bar(x + width/2, ncmeans, width, yerr=ncerr, capsize=5, label='Non-Cluster')
