@@ -1080,7 +1080,7 @@ calyxCM = (np.sum(np.array(calyxdist_flat), axis=0)/len(np.array(calyxdist_flat)
 LHCM = (np.sum(np.array(LHdist_flat), axis=0)/len(np.array(LHdist_flat)))
 ALCM = (np.sum(np.array(ALdist_flat), axis=0)/len(np.array(ALdist_flat)))
 
-fullCM = np.average(OutputData.cMLSeg, axis=0)
+fullCM = cML#np.average(OutputData.cMLSeg, axis=0)
 
 #%% Cluster Spread Calculation
         
@@ -1161,9 +1161,13 @@ spheredist_calyx_sum[spheredist_calyx_sum == 0] = np.nan
 spheredist_LH_sum[spheredist_LH_sum == 0] = np.nan
 spheredist_AL_sum[spheredist_AL_sum == 0] = np.nan
 
-spheredist_calyx_sum_avg = np.nanmean(spheredist_calyx_sum, axis=0)
-spheredist_LH_sum_avg = np.nanmean(spheredist_LH_sum, axis=0)
-spheredist_AL_sum_avg = np.nanmean(spheredist_AL_sum, axis=0)
+spheredist_calyx_sum = np.nan_to_num(spheredist_calyx_sum)
+spheredist_LH_sum = np.nan_to_num(spheredist_LH_sum)
+spheredist_AL_sum = np.nan_to_num(spheredist_AL_sum)
+
+spheredist_calyx_sum_avg = np.sum(spheredist_calyx_sum, axis=0)
+spheredist_LH_sum_avg = np.sum(spheredist_LH_sum, axis=0)
+spheredist_AL_sum_avg = np.sum(spheredist_AL_sum, axis=0)
 
 #spheredist_calyx_sum_avg = spheredist_calyx_sum_avg[np.count_nonzero(~np.isnan(spheredist_calyx_sum), axis=0) >= 10]
 #spheredist_LH_sum_avg = spheredist_LH_sum_avg[np.count_nonzero(~np.isnan(spheredist_LH_sum), axis=0) >= 10]
@@ -3246,15 +3250,15 @@ for i in range(len(glo_list)):
         morph_dist_LH_ep_temp2 = []
         morph_dist_AL_ep_temp2 = []
         for p in range(len(MorphData.morph_dist[glo_idx[i][j]])):
-            if ((np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] > 475) and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] < 550) and
-                (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] < 260) and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[2] > 150)):
+            if ((np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] > 475).all() and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] < 550).all() and
+                (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] < 260).all() and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[2] > 150).all()):
                 morph_dist_calyx_temp2.append(MorphData.morph_dist[glo_idx[i][j]][p])
-            elif ((np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] < 475) and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] < 260) and
-                (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] > 180) and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[2] > 125)):
+            elif ((np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] < 475).all() and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] < 260).all() and
+                (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] > 180).all() and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[2] > 125).all()):
                 morph_dist_LH_temp2.append(MorphData.morph_dist[glo_idx[i][j]][p])
-            elif ((np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] > 475) and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] < 600) and 
-                  (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] > 280) and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] < 400) and
-                  (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[2] < 90)):
+            elif ((np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] > 475).all() and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] < 600).all() and 
+                  (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] > 280).all() and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] < 400).all() and
+                  (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[2] < 90).all()):
                 morph_dist_AL_temp2.append(MorphData.morph_dist[glo_idx[i][j]][p])
         
         for q in range(len(BranchData.branchP_dist[glo_idx[i][j]])):
@@ -3468,6 +3472,9 @@ for i in range(len(glo_list)):
 calyxdist_cluster_u_full_flat = [item for sublist in calyxdist_cluster_u_full for item in sublist]
 calyxdist_noncluster_u_full_flat = [item for sublist in calyxdist_noncluster_u_full for item in sublist]
 
+# calyxdist_cluster_u_full_flat = np.divide(calyxdist_cluster_u_full_flat, np.cbrt(calyx_vol))
+# calyxdist_noncluster_u_full_flat = np.divide(calyxdist_noncluster_u_full_flat, np.cbrt(calyx_vol))
+
 
 LHdist_cluster_u_full = []
 LHdist_noncluster_u_full = []
@@ -3484,6 +3491,9 @@ for i in range(len(glo_list)):
 LHdist_cluster_u_full_flat = [item for sublist in LHdist_cluster_u_full for item in sublist]
 LHdist_noncluster_u_full_flat = [item for sublist in LHdist_noncluster_u_full for item in sublist]
 
+# LHdist_cluster_u_full_flat = np.divide(LHdist_cluster_u_full_flat, np.cbrt(LH_vol))
+# LHdist_noncluster_u_full_flat = np.divide(LHdist_noncluster_u_full_flat, np.cbrt(LH_vol))
+
 
 ALdist_cluster_u_full = []
 ALdist_noncluster_u_full = []
@@ -3499,6 +3509,9 @@ for i in range(len(glo_list)):
 
 ALdist_cluster_u_full_flat = [item for sublist in ALdist_cluster_u_full for item in sublist]
 ALdist_noncluster_u_full_flat = [item for sublist in ALdist_noncluster_u_full for item in sublist]
+
+# ALdist_cluster_u_full_flat = np.divide(ALdist_cluster_u_full_flat, np.cbrt(AL_vol))
+# ALdist_noncluster_u_full_flat = np.divide(ALdist_noncluster_u_full_flat, np.cbrt(AL_vol))
 
 
 print("Calyx cluster Mean: " + str(np.mean(calyxdist_cluster_u_full_flat)) + ", STD: " + str(np.std(calyxdist_cluster_u_full_flat)))
@@ -3802,9 +3815,9 @@ plt.tight_layout()
 plt.show()
 
 
-validx = np.argwhere(np.array(ALLH_corr_glo_avg) > 0.5).T[0]
+validx = np.argwhere(np.array(ALLH_corr_glo_avg) > 0.6).T[0]
 
-diffidx = np.argwhere(np.subtract(ALLH_corr_glo_avg, ALcalyx_corr_glo_avg) > 0.5).T[0]
+diffidx = np.argwhere(np.subtract(ALLH_corr_glo_avg, ALcalyx_corr_glo_avg) > 0.6).T[0]
 
 print(np.sort(np.array(glo_list)[validx]))
 print(np.sort(np.array(glo_list)[diffidx]))
@@ -3992,6 +4005,9 @@ ax.set_title('Distance correlation between calyx/LH and AL by glomerulus')
 plt.xlim(0-0.5, len(glo_list)-0.5)
 plt.tight_layout()
 plt.show()
+
+
+#%% Plotting of glomeruli with high LH-AL correlations
 
 
 
