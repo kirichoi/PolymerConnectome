@@ -1157,72 +1157,72 @@ radiussize = np.logspace(0, 2, 100)[34:95]
 
 
 
-# spheredist_calyx_sum = np.empty(len(radiussize))
-# spheredist_LH_sum = np.empty(len(radiussize))
-# spheredist_AL_sum = np.empty(len(radiussize))
+spheredist_calyx_sum = np.empty(len(radiussize))
+spheredist_LH_sum = np.empty(len(radiussize))
+spheredist_AL_sum = np.empty(len(radiussize))
 
-# for b in range(len(radiussize)):
-#     spheredist_calyx_temp = []
-#     spheredist_LH_temp = []
-#     spheredist_AL_temp = []
+for b in range(len(radiussize)):
+    spheredist_calyx_temp = []
+    spheredist_LH_temp = []
+    spheredist_AL_temp = []
     
-#     for ib in range(len(MorphData.calyxdist)):
-#         inbound_calyx = np.where(np.sqrt(np.square(np.array(MorphData.calyxdist[ib])[:,0] - calyxCM[0]) +
-#                                     np.square(np.array(MorphData.calyxdist[ib])[:,1] - calyxCM[1]) +
-#                                     np.square(np.array(MorphData.calyxdist[ib])[:,2] - calyxCM[2])) <= radiussize[b])[0]
-#         if len(inbound_calyx) > 1:
-#             val = np.array(MorphData.calyxdist[ib])[inbound_calyx]
-#             x = val[:,0]
-#             y = val[:,1]
-#             z = val[:,2]
+    for ib in range(len(MorphData.calyxdist)):
+        inbound_calyx = np.where(np.sqrt(np.square(np.array(MorphData.calyxdist[ib])[:,0] - calyxCM[0]) +
+                                    np.square(np.array(MorphData.calyxdist[ib])[:,1] - calyxCM[1]) +
+                                    np.square(np.array(MorphData.calyxdist[ib])[:,2] - calyxCM[2])) <= radiussize[b])[0]
+        if len(inbound_calyx) > 1:
+            val = np.array(MorphData.calyxdist[ib])[inbound_calyx]
+            x = val[:,0]
+            y = val[:,1]
+            z = val[:,2]
             
-#             xd = [j-i for i, j in zip(x[:-1], x[1:])]
-#             yd = [j-i for i, j in zip(y[:-1], y[1:])]
-#             zd = [j-i for i, j in zip(z[:-1], z[1:])]
-#             dist_calyx = np.sum(np.sqrt(np.square(xd) + np.square(yd) + np.square(zd)))
-#             spheredist_calyx_temp.append(dist_calyx)
-#         else:
-#             spheredist_calyx_temp.append(0)
+            xd = [j-i for i, j in zip(x[:-1], x[1:])]
+            yd = [j-i for i, j in zip(y[:-1], y[1:])]
+            zd = [j-i for i, j in zip(z[:-1], z[1:])]
+            dist_calyx = np.sum(np.sqrt(np.square(xd) + np.square(yd) + np.square(zd)))
+            spheredist_calyx_temp.append(dist_calyx)
+        else:
+            spheredist_calyx_temp.append(0)
         
-#     for ib in range(len(MorphData.LHdist)):
-#         inbound_LH = np.where(np.sqrt(np.square(np.array(MorphData.LHdist[ib])[:,0] - LHCM[0]) +
-#                                     np.square(np.array(MorphData.LHdist[ib])[:,1] - LHCM[1]) +
-#                                     np.square(np.array(MorphData.LHdist[ib])[:,2] - LHCM[2])) <= radiussize[b])[0]
-#         if len(inbound_LH) > 1:
-#             val = np.array(MorphData.LHdist[ib])[inbound_LH]
-#             x = val[:,0]
-#             y = val[:,1]
-#             z = val[:,2]
+    for ib in range(len(MorphData.LHdist)):
+        inbound_LH = np.where(np.sqrt(np.square(np.array(MorphData.LHdist[ib])[:,0] - LHCM[0]) +
+                                    np.square(np.array(MorphData.LHdist[ib])[:,1] - LHCM[1]) +
+                                    np.square(np.array(MorphData.LHdist[ib])[:,2] - LHCM[2])) <= radiussize[b])[0]
+        if len(inbound_LH) > 1:
+            val = np.array(MorphData.LHdist[ib])[inbound_LH]
+            x = val[:,0]
+            y = val[:,1]
+            z = val[:,2]
             
-#             xd = [j-i for i, j in zip(x[:-1], x[1:])]
-#             yd = [j-i for i, j in zip(y[:-1], y[1:])]
-#             zd = [j-i for i, j in zip(z[:-1], z[1:])]
-#             dist_LH = np.sum(np.sqrt(np.square(xd) + np.square(yd) + np.square(zd)))
-#             spheredist_LH_temp.append(dist_LH)
-#         else:
-#             spheredist_LH_temp.append(0)
+            xd = [j-i for i, j in zip(x[:-1], x[1:])]
+            yd = [j-i for i, j in zip(y[:-1], y[1:])]
+            zd = [j-i for i, j in zip(z[:-1], z[1:])]
+            dist_LH = np.sum(np.sqrt(np.square(xd) + np.square(yd) + np.square(zd)))
+            spheredist_LH_temp.append(dist_LH)
+        else:
+            spheredist_LH_temp.append(0)
     
-#     for ib in range(len(MorphData.ALdist)):
-#         inbound_AL = np.where(np.sqrt(np.square(np.array(MorphData.ALdist[ib])[:,0] - ALCM[0]) +
-#                                     np.square(np.array(MorphData.ALdist[ib])[:,1] - ALCM[1]) +
-#                                     np.square(np.array(MorphData.ALdist[ib])[:,2] - ALCM[2])) <= radiussize[b])[0]    
-#         if len(inbound_AL) > 1:
-#             val = np.array(MorphData.ALdist[ib])[inbound_AL]
-#             x = val[:,0]
-#             y = val[:,1]
-#             z = val[:,2]
+    for ib in range(len(MorphData.ALdist)):
+        inbound_AL = np.where(np.sqrt(np.square(np.array(MorphData.ALdist[ib])[:,0] - ALCM[0]) +
+                                    np.square(np.array(MorphData.ALdist[ib])[:,1] - ALCM[1]) +
+                                    np.square(np.array(MorphData.ALdist[ib])[:,2] - ALCM[2])) <= radiussize[b])[0]    
+        if len(inbound_AL) > 1:
+            val = np.array(MorphData.ALdist[ib])[inbound_AL]
+            x = val[:,0]
+            y = val[:,1]
+            z = val[:,2]
             
-#             xd = [j-i for i, j in zip(x[:-1], x[1:])]
-#             yd = [j-i for i, j in zip(y[:-1], y[1:])]
-#             zd = [j-i for i, j in zip(z[:-1], z[1:])]
-#             dist_AL = np.sum(np.sqrt(np.square(xd) + np.square(yd) + np.square(zd)))
-#             spheredist_AL_temp.append(dist_AL)
-#         else:
-#             spheredist_AL_temp.append(0)
+            xd = [j-i for i, j in zip(x[:-1], x[1:])]
+            yd = [j-i for i, j in zip(y[:-1], y[1:])]
+            zd = [j-i for i, j in zip(z[:-1], z[1:])]
+            dist_AL = np.sum(np.sqrt(np.square(xd) + np.square(yd) + np.square(zd)))
+            spheredist_AL_temp.append(dist_AL)
+        else:
+            spheredist_AL_temp.append(0)
         
-#     spheredist_calyx_sum[b] = np.sum(spheredist_calyx_temp)
-#     spheredist_LH_sum[b] = np.sum(spheredist_LH_temp)
-#     spheredist_AL_sum[b] = np.sum(spheredist_AL_temp)
+    spheredist_calyx_sum[b] = np.sum(spheredist_calyx_temp)
+    spheredist_LH_sum[b] = np.sum(spheredist_LH_temp)
+    spheredist_AL_sum[b] = np.sum(spheredist_AL_temp)
 
 
 #%% 
