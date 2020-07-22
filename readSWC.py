@@ -63,8 +63,11 @@ class MorphData():
         self.somaP = []
         self.indMorph_dist = []
         self.calyxdist = []
+        self.calyxdist_per_n = []
         self.LHdist = []
+        self.LHdist_per_n = []
         self.ALdist = []
+        self.ALdist_per_n = []
     
     def plotNeuronFromPoints(self, listOfPoints, scale=False, showPoint=False):
         """
@@ -368,6 +371,10 @@ for f in range(len(fp)):
     MorphData.endP.append(list_end)
     bPoint = np.append(branchInd, list_end)
     
+    calyxdist_per_n_temp = []
+    LHdist_per_n_temp = []
+    ALdist_per_n_temp = []
+    
     for bp in range(len(bPoint)):
         if bPoint[bp] != scall:
             neu_branchTrk_temp = []
@@ -402,17 +409,24 @@ for f in range(len(fp)):
                 if ((np.array(branch_dist_temp2)[:,0] > 475).all() and (np.array(branch_dist_temp2)[:,0] < 550).all() and
                     (np.array(branch_dist_temp2)[:,1] < 260).all() and (np.array(branch_dist_temp2)[:,2] > 150).all()):
                     MorphData.calyxdist.append(branch_dist_temp2)
+                    calyxdist_per_n_temp.append(branch_dist_temp2)
                 elif ((np.array(branch_dist_temp2)[:,0] < 475).all() and (np.array(branch_dist_temp2)[:,1] < 260).all() and
                     (np.array(branch_dist_temp2)[:,1] > 180).all() and (np.array(branch_dist_temp2)[:,2] > 125).all()):
                     MorphData.LHdist.append(branch_dist_temp2)
+                    LHdist_per_n_temp.append(branch_dist_temp2)
                 elif ((np.array(branch_dist_temp2)[:,0] > 475).all() and (np.array(branch_dist_temp2)[:,0] < 600).all() and 
                       (np.array(branch_dist_temp2)[:,1] > 280).all() and (np.array(branch_dist_temp2)[:,1] < 400).all() and
                       (np.array(branch_dist_temp2)[:,2] < 90).all()):
                     MorphData.ALdist.append(branch_dist_temp2)
+                    ALdist_per_n_temp.append(branch_dist_temp2)
                 
     BranchData.branchTrk.append(neu_branchTrk)
     BranchData.branch_dist.append(branch_dist_temp1)
     LengthData.length_branch.append(length_branch_temp)
+    
+    MorphData.calyxdist_per_n.append(calyxdist_per_n_temp)
+    MorphData.LHdist_per_n.append(LHdist_per_n_temp)
+    MorphData.ALdist_per_n.append(ALdist_per_n_temp)
 
     for ep in range(len(list_end)):
         neu_indBranchTrk_temp = []
@@ -3351,12 +3365,12 @@ plt.show()
 #%% Radius of Gyration for calyx, LH, and AL
 
 (rGy_calyx, cML_calyx) = utils.radiusOfGyration(MorphData.calyxdist)
-(rGy_LH, cML_LH) = utils.radiusOfGyration(MorphData.LH_dist)
-(rGy_AL, cML_AL) = utils.radiusOfGyration(MorphData.AL_dist)
+(rGy_LH, cML_LH) = utils.radiusOfGyration(MorphData.LHdist)
+(rGy_AL, cML_AL) = utils.radiusOfGyration(MorphData.ALdist)
 
 poptR, pcovR = scipy.optimize.curve_fit(objFuncGL, 
                                         np.log10(LengthData.length_total), 
-                                        np.log10(rGy), 
+                                        np.log10(rGy_calyx), 
                                         p0=[1., 0.], 
                                         maxfev=100000)
 perrR = np.sqrt(np.diag(pcovR))
@@ -3515,6 +3529,7 @@ plt.xlabel(r"Length ($\lambda N$)", fontsize=15)
 plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
 plt.tight_layout()
 plt.show()
+
 
 
 #%%
@@ -4375,6 +4390,10 @@ ax1.set_xlim(380, 490)
 ax1.set_ylim(170, 270)
 ax2.set_xlim(380, 490)
 ax2.set_ylim(110, 190)
+ax1.set_xticks([])
+ax1.set_yticks([])
+ax2.set_xticks([])
+ax2.set_yticks([])
 ax1.set_title("Dorsal", fontsize=20)
 ax1.set_ylabel(np.array(glo_list)[validx[0]], fontsize=20)
 ax2.set_title("Anterior", fontsize=20)
@@ -4386,18 +4405,19 @@ ax2.plot(np.array(morph_dist_LH_flat)[:,0][v2],
          np.array(morph_dist_LH_flat)[:,2][v2],
          color='white',
          lw=3)
-ax1.plot([387, 397], [256, 256], 'w-', lw=2)
-ax1.plot([392, 392], [250, 262], 'w-', lw=2)
-ax1.text(390.5, 263, 'P', c='w')
-ax1.text(390.5, 245, 'A', c='w')
-ax1.text(384, 254, 'L', c='w')
-ax1.text(398, 254, 'M', c='w')
+ax1.plot([387, 397], [184, 184], 'w-', lw=2)
+ax1.plot([392, 392], [178, 190], 'w-', lw=2)
+ax1.text(391, 195, 'A', c='w')
+ax1.text(391, 176, 'P', c='w')
+ax1.text(384, 186, 'L', c='w')
+ax1.text(398, 186, 'M', c='w')
 ax2.plot([387, 397], [178, 178], 'w-', lw=2)
 ax2.plot([392, 392], [173, 183], 'w-', lw=2)
-ax2.text(390.5, 184, 'D', c='w')
-ax2.text(390.5, 169, 'V', c='w')
+ax2.text(391, 184, 'D', c='w')
+ax2.text(391, 169, 'V', c='w')
 ax2.text(384, 176, 'L', c='w')
 ax2.text(398, 176, 'M', c='w')
+ax1.invert_yaxis()
 
 
 ax3.pcolormesh(xLHa, yLHd, zLHd1.reshape(xLHd.shape), cmap=plt.cm.jet)
@@ -4406,6 +4426,10 @@ ax3.set_xlim(380, 490)
 ax3.set_ylim(170, 270)
 ax4.set_xlim(380, 490)
 ax4.set_ylim(110, 190)
+ax3.set_xticks([])
+ax3.set_yticks([])
+ax4.set_xticks([])
+ax4.set_yticks([])
 ax3.set_ylabel(np.array(glo_list)[validx[4]], fontsize=20)
 ax3.plot(np.array(morph_dist_LH_flat)[:,0][v1], 
          np.array(morph_dist_LH_flat)[:,1][v1],
@@ -4415,6 +4439,7 @@ ax4.plot(np.array(morph_dist_LH_flat)[:,0][v2],
          np.array(morph_dist_LH_flat)[:,2][v2],
          color='white',
          lw=3)
+ax3.invert_yaxis()
 
 ax5.pcolormesh(xLHa, yLHd, zLHd2.reshape(xLHd.shape), cmap=plt.cm.jet)
 ax6.pcolormesh(xLHa, yLHa, zLHa2.reshape(xLHa.shape), cmap=plt.cm.jet)
@@ -4422,6 +4447,10 @@ ax5.set_xlim(380, 490)
 ax5.set_ylim(170, 270)
 ax6.set_xlim(380, 490)
 ax6.set_ylim(110, 190)
+ax5.set_xticks([])
+ax5.set_yticks([])
+ax6.set_xticks([])
+ax6.set_yticks([])
 ax5.set_ylabel(np.array(glo_list)[validx[2]], fontsize=20)
 ax5.plot(np.array(morph_dist_LH_flat)[:,0][v1], 
          np.array(morph_dist_LH_flat)[:,1][v1],
@@ -4431,6 +4460,7 @@ ax6.plot(np.array(morph_dist_LH_flat)[:,0][v2],
          np.array(morph_dist_LH_flat)[:,2][v2],
          color='white',
          lw=3)
+ax5.invert_yaxis()
 
 ax7.pcolormesh(xLHa, yLHd, zLHd3.reshape(xLHd.shape), cmap=plt.cm.jet)
 ax8.pcolormesh(xLHa, yLHa, zLHa3.reshape(xLHa.shape), cmap=plt.cm.jet)
@@ -4438,6 +4468,10 @@ ax7.set_xlim(380, 490)
 ax7.set_ylim(170, 270)
 ax8.set_xlim(380, 490)
 ax8.set_ylim(110, 190)
+ax7.set_xticks([])
+ax7.set_yticks([])
+ax8.set_xticks([])
+ax8.set_yticks([])
 ax7.set_ylabel(np.array(glo_list)[validx[1]], fontsize=20)
 ax7.plot(np.array(morph_dist_LH_flat)[:,0][v1], 
          np.array(morph_dist_LH_flat)[:,1][v1],
@@ -4447,6 +4481,7 @@ ax8.plot(np.array(morph_dist_LH_flat)[:,0][v2],
          np.array(morph_dist_LH_flat)[:,2][v2],
          color='white',
          lw=3)
+ax7.invert_yaxis()
 
 ax9.pcolormesh(xLHa, yLHd, zLHd4.reshape(xLHd.shape), cmap=plt.cm.jet)
 ax10.pcolormesh(xLHa, yLHa, zLHa4.reshape(xLHa.shape), cmap=plt.cm.jet)
@@ -4454,6 +4489,10 @@ ax9.set_xlim(380, 490)
 ax9.set_ylim(170, 270)
 ax10.set_xlim(380, 490)
 ax10.set_ylim(110, 190)
+ax9.set_xticks([])
+ax9.set_yticks([])
+ax10.set_xticks([])
+ax10.set_yticks([])
 ax9.set_ylabel(np.array(glo_list)[validx[3]], fontsize=20)
 ax9.plot(np.array(morph_dist_LH_flat)[:,0][v1], 
          np.array(morph_dist_LH_flat)[:,1][v1],
@@ -4463,6 +4502,7 @@ ax10.plot(np.array(morph_dist_LH_flat)[:,0][v2],
          np.array(morph_dist_LH_flat)[:,2][v2],
          color='white',
          lw=3)
+ax9.invert_yaxis()
 
 # fig.suptitle(str(glo_list[gi]), fontsize=30)
 plt.tight_layout(rect=[0, 0.03, 1, 0.95])
@@ -4502,8 +4542,8 @@ kdeALant_3 = kde.gaussian_kde([np.array(morph_dist_AL_n_flat_3)[:,0], np.array(m
 kdeALdorsal_4 = kde.gaussian_kde([np.array(morph_dist_AL_n_flat_4)[:,0], np.array(morph_dist_AL_n_flat_4)[:,1]])
 kdeALant_4 = kde.gaussian_kde([np.array(morph_dist_AL_n_flat_4)[:,0], np.array(morph_dist_AL_n_flat_4)[:,2]])
 
-xALd, yALd = np.mgrid[455:625:nbins*1j, 250:400:nbins*1j]
-xALa, yALa = np.mgrid[455:625:nbins*1j, -10:110:nbins*1j]
+xALd, yALd = np.mgrid[455:625:nbins*1j, 240:400:nbins*1j]
+xALa, yALa = np.mgrid[455:625:nbins*1j, -10:120:nbins*1j]
 
 zALd0 = kdeALdorsal_0(np.vstack([xALd.flatten(), yALd.flatten()]))
 zALa0 = kdeALant_0(np.vstack([xALa.flatten(), yALa.flatten()]))
@@ -4541,9 +4581,13 @@ ax10 = fig.add_subplot(5,2,10)
 ax1.pcolormesh(xALa, yALd, zALd0.reshape(xALd.shape), cmap=plt.cm.jet)
 ax2.pcolormesh(xALa, yALa, zALa0.reshape(xALa.shape), cmap=plt.cm.jet)
 ax1.set_xlim(465, 615)
-ax1.set_ylim(260, 390)
+ax1.set_ylim(250, 390)
 ax2.set_xlim(465, 615)
-ax2.set_ylim(0, 100)
+ax2.set_ylim(0, 110)
+ax1.set_xticks([])
+ax1.set_yticks([])
+ax2.set_xticks([])
+ax2.set_yticks([])
 ax1.set_title("Dorsal", fontsize=20)
 ax1.set_ylabel(np.array(glo_list)[validx[0]], fontsize=20)
 ax2.set_title("Anterior", fontsize=20)
@@ -4555,26 +4599,30 @@ ax2.plot(np.array(morph_dist_AL_flat)[:,0][v2],
          np.array(morph_dist_AL_flat)[:,2][v2],
          color='white',
          lw=3)
-ax1.plot([471, 481], [378, 378], 'w-', lw=2)
-ax1.plot([476, 476], [373, 383], 'w-', lw=2)
-ax1.text(474.5, 385, 'P', c='w')
-ax1.text(474.5, 367, 'A', c='w')
-ax1.text(467, 376, 'L', c='w')
-ax1.text(482, 376, 'M', c='w')
-ax2.plot([471, 481], [90, 90], 'w-', lw=2)
-ax2.plot([476, 476], [86, 94], 'w-', lw=2)
-ax2.text(474.5, 95.5, 'D', c='w')
-ax2.text(474.5, 81.5, 'V', c='w')
-ax2.text(467, 88, 'L', c='w')
-ax2.text(482, 88, 'M', c='w')
-
+ax1.plot([473, 485], [270, 270], 'w-', lw=2)
+ax1.plot([479, 479], [263, 277], 'w-', lw=2)
+ax1.text(477.5, 261, 'P', c='w')
+ax1.text(477.5, 283, 'A', c='w')
+ax1.text(469, 272, 'L', c='w')
+ax1.text(486, 272, 'M', c='w')
+ax2.plot([473, 485], [94, 94], 'w-', lw=2)
+ax2.plot([479, 479], [88, 100], 'w-', lw=2)
+ax2.text(477.5, 102, 'D', c='w')
+ax2.text(477.5, 83, 'V', c='w')
+ax2.text(469, 92, 'L', c='w')
+ax2.text(486, 92, 'M', c='w')
+ax1.invert_yaxis()
 
 ax3.pcolormesh(xALa, yALd, zALd1.reshape(xALd.shape), cmap=plt.cm.jet)
 ax4.pcolormesh(xALa, yALa, zALa1.reshape(xALa.shape), cmap=plt.cm.jet)
 ax3.set_xlim(465, 615)
 ax3.set_ylim(260, 390)
 ax4.set_xlim(465, 615)
-ax4.set_ylim(0, 100)
+ax4.set_ylim(0, 110)
+ax3.set_xticks([])
+ax3.set_yticks([])
+ax4.set_xticks([])
+ax4.set_yticks([])
 ax3.set_ylabel(np.array(glo_list)[validx[4]], fontsize=20)
 ax3.plot(np.array(morph_dist_AL_flat)[:,0][v1], 
          np.array(morph_dist_AL_flat)[:,1][v1],
@@ -4584,13 +4632,18 @@ ax4.plot(np.array(morph_dist_AL_flat)[:,0][v2],
          np.array(morph_dist_AL_flat)[:,2][v2],
          color='white',
          lw=3)
+ax3.invert_yaxis()
 
 ax5.pcolormesh(xALa, yALd, zALd2.reshape(xALd.shape), cmap=plt.cm.jet)
 ax6.pcolormesh(xALa, yALa, zALa2.reshape(xALa.shape), cmap=plt.cm.jet)
 ax5.set_xlim(465, 615)
 ax5.set_ylim(260, 390)
 ax6.set_xlim(465, 615)
-ax6.set_ylim(0, 100)
+ax6.set_ylim(0, 110)
+ax5.set_xticks([])
+ax5.set_yticks([])
+ax6.set_xticks([])
+ax6.set_yticks([])
 ax5.set_ylabel(np.array(glo_list)[validx[2]], fontsize=20)
 ax5.plot(np.array(morph_dist_AL_flat)[:,0][v1], 
          np.array(morph_dist_AL_flat)[:,1][v1],
@@ -4600,13 +4653,18 @@ ax6.plot(np.array(morph_dist_AL_flat)[:,0][v2],
          np.array(morph_dist_AL_flat)[:,2][v2],
          color='white',
          lw=3)
+ax5.invert_yaxis()
 
 ax7.pcolormesh(xALa, yALd, zALd3.reshape(xALd.shape), cmap=plt.cm.jet)
 ax8.pcolormesh(xALa, yALa, zALa3.reshape(xALa.shape), cmap=plt.cm.jet)
 ax7.set_xlim(465, 615)
 ax7.set_ylim(260, 390)
 ax8.set_xlim(465, 615)
-ax8.set_ylim(0, 100)
+ax8.set_ylim(0, 110)
+ax7.set_xticks([])
+ax7.set_yticks([])
+ax8.set_xticks([])
+ax8.set_yticks([])
 ax7.set_ylabel(np.array(glo_list)[validx[1]], fontsize=20)
 ax7.plot(np.array(morph_dist_AL_flat)[:,0][v1], 
          np.array(morph_dist_AL_flat)[:,1][v1],
@@ -4616,13 +4674,18 @@ ax8.plot(np.array(morph_dist_AL_flat)[:,0][v2],
          np.array(morph_dist_AL_flat)[:,2][v2],
          color='white',
          lw=3)
+ax7.invert_yaxis()
 
 ax9.pcolormesh(xALa, yALd, zALd4.reshape(xALd.shape), cmap=plt.cm.jet)
 ax10.pcolormesh(xALa, yALa, zALa4.reshape(xALa.shape), cmap=plt.cm.jet)
 ax9.set_xlim(465, 615)
 ax9.set_ylim(260, 390)
 ax10.set_xlim(465, 615)
-ax10.set_ylim(0, 100)
+ax10.set_ylim(0, 110)
+ax9.set_xticks([])
+ax9.set_yticks([])
+ax10.set_xticks([])
+ax10.set_yticks([])
 ax9.set_ylabel(np.array(glo_list)[validx[3]], fontsize=20)
 ax9.plot(np.array(morph_dist_AL_flat)[:,0][v1], 
          np.array(morph_dist_AL_flat)[:,1][v1],
@@ -4632,6 +4695,7 @@ ax10.plot(np.array(morph_dist_AL_flat)[:,0][v2],
          np.array(morph_dist_AL_flat)[:,2][v2],
          color='white',
          lw=3)
+ax9.invert_yaxis()
 
 # fig.suptitle(str(glo_list[gi]), fontsize=30)
 plt.tight_layout(rect=[0, 0.03, 1, 0.95])
