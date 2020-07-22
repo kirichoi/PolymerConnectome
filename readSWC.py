@@ -3488,6 +3488,35 @@ for i in range(len(glo_list)):
     morph_dist_AL_ep.append(morph_dist_AL_ep_temp)
             
 
+#%% Radius of Gyration on neurons spanning AL, MB calyx, and LH
+
+glo_idx_flat = np.sort([item for sublist in glo_idx for item in sublist])
+
+
+
+poptR, pcovR = scipy.optimize.curve_fit(objFuncGL, 
+                                        np.log10(MorphData.morph_dist_len[glo_idx_flat]), 
+                                        np.log10(rGy[glo_idx_flat]), 
+                                        p0=[1., 0.], 
+                                        maxfev=100000)
+perrR = np.sqrt(np.diag(pcovR))
+fitYR = objFuncPpow(MorphData.morph_dist_len[glo_idx_flat], poptR[0], poptR[1])
+
+fig = plt.figure(figsize=(8,6))
+plt.scatter(MorphData.morph_dist_len[glo_idx_flat], rGy[glo_idx_flat])
+plt.plot(MorphData.morph_dist_len[glo_idx_flat], fitYR, color='tab:red')
+plt.yscale('log')
+plt.xscale('log')
+#    plt.xlim(10, 10000)
+#    plt.ylim(7, 4000)
+plt.legend([str(round(poptR[0], 3)) + '$\pm$' + str(round(perrR[0], 3))], fontsize=15)
+plt.title(r"Scaling Behavior of $R_{g}$ to Length", fontsize=20)
+plt.xlabel(r"Length ($\lambda N$)", fontsize=15)
+plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
+plt.tight_layout()
+plt.show()
+
+
 #%%
 
 morph_dist_calyx_CM = []
@@ -3933,10 +3962,25 @@ plt.show()
 
 ALcalyx_corr = []
 ALLH_corr = []
+LHcalyx_corr = []
 
 for i in range(len(morph_dist_AL_r)):
     ALcalyx_corr.append(np.corrcoef(morph_dist_calyx_r[i], morph_dist_AL_r[i])[0][1])
     ALLH_corr.append(np.corrcoef(morph_dist_LH_r[i], morph_dist_AL_r[i])[0][1])
+    LHcalyx_corr.append(np.corrcoef(morph_dist_calyx_r[i], morph_dist_LH_r[i])[0][1])
+
+##############################################################################
+# ALcalyx_corr = []
+# ALLH_corr = []
+# LHcalyx_corr = []
+
+# for i in range(len(morph_dist_AL_r)):
+#     sel = np.argsort(morph_dist_AL_r[i])[1:56]
+#     ALcalyx_corr.append(np.corrcoef(morph_dist_calyx_r[i][sel], morph_dist_AL_r[i][sel])[0][1])
+#     ALLH_corr.append(np.corrcoef(morph_dist_LH_r[i][sel], morph_dist_AL_r[i][sel])[0][1])
+#     LHcalyx_corr.append(np.corrcoef(morph_dist_calyx_r[i][sel], morph_dist_LH_r[i][sel])[0][1])
+##############################################################################
+
 
 ALcalyx_corr_glo = []
 ALLH_corr_glo = []
@@ -3988,7 +4032,7 @@ x = np.arange(len(glo_list))
 width = 1.
 ax.bar(x, ALcalyx_corr_glo_avg, width, yerr=ALcalyx_corr_glo_std, label='Calyx-AL', alpha=0.5, error_kw=dict(ecolor='tab:blue', lw=1, capsize=2, capthick=1))
 ax.bar(x, ALLH_corr_glo_avg, width, yerr=ALLH_corr_glo_std, label='LH-AL', alpha=0.5, error_kw=dict(ecolor='tab:orange', lw=1, capsize=2, capthick=1))
-ax.set_ylabel('Distance')
+ax.set_ylabel('Correlation Coefficient')
 ax.set_xticks(x)
 ax.set_xticklabels(glo_list, rotation=90, fontsize=7)
 ax.legend()
@@ -4256,7 +4300,7 @@ plt.show()
 
 
 
-#%% Plotting of glomeruli with high LH-AL correlations
+#%% Plotting of LH glomeruli with high LH-AL correlations
 
 
 hull_LH_1 = ConvexHull(np.array(morph_dist_LH_flat)[:,:2])
@@ -4422,7 +4466,218 @@ ax10.plot(np.array(morph_dist_LH_flat)[:,0][v2],
 
 # fig.suptitle(str(glo_list[gi]), fontsize=30)
 plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-# plt.savefig(Parameter.outputdir + '/heatmap_glo_high_corr.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/heatmap_glo_high_corr_LH.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+#%% Plotting of AL glomeruli with high LH-AL correlations
+
+
+hull_AL_1 = ConvexHull(np.array(morph_dist_AL_flat)[:,:2])
+hull_AL_2 = ConvexHull(np.array(morph_dist_AL_flat)[:,[0,2]])
+v1 = np.append(hull_AL_1.vertices, hull_AL_1.vertices[0])
+v2 = np.append(hull_AL_2.vertices, hull_AL_2.vertices[0])
+
+from scipy.stats import kde
+
+nbins=100
+
+morph_dist_AL_n_flat_0 = [item for sublist in morph_dist_AL[validx[0]] for item in sublist]
+morph_dist_AL_n_flat_1 = [item for sublist in morph_dist_AL[validx[4]] for item in sublist]
+morph_dist_AL_n_flat_2 = [item for sublist in morph_dist_AL[validx[2]] for item in sublist]
+morph_dist_AL_n_flat_3 = [item for sublist in morph_dist_AL[validx[1]] for item in sublist]
+morph_dist_AL_n_flat_4 = [item for sublist in morph_dist_AL[validx[3]] for item in sublist]
+
+kdeALdorsal_0 = kde.gaussian_kde([np.array(morph_dist_AL_n_flat_0)[:,0], np.array(morph_dist_AL_n_flat_0)[:,1]])
+kdeALant_0 = kde.gaussian_kde([np.array(morph_dist_AL_n_flat_0)[:,0], np.array(morph_dist_AL_n_flat_0)[:,2]])
+
+kdeALdorsal_1 = kde.gaussian_kde([np.array(morph_dist_AL_n_flat_1)[:,0], np.array(morph_dist_AL_n_flat_1)[:,1]])
+kdeALant_1 = kde.gaussian_kde([np.array(morph_dist_AL_n_flat_1)[:,0], np.array(morph_dist_AL_n_flat_1)[:,2]])
+
+kdeALdorsal_2 = kde.gaussian_kde([np.array(morph_dist_AL_n_flat_2)[:,0], np.array(morph_dist_AL_n_flat_2)[:,1]])
+kdeALant_2 = kde.gaussian_kde([np.array(morph_dist_AL_n_flat_2)[:,0], np.array(morph_dist_AL_n_flat_2)[:,2]])
+
+kdeALdorsal_3 = kde.gaussian_kde([np.array(morph_dist_AL_n_flat_3)[:,0], np.array(morph_dist_AL_n_flat_3)[:,1]])
+kdeALant_3 = kde.gaussian_kde([np.array(morph_dist_AL_n_flat_3)[:,0], np.array(morph_dist_AL_n_flat_3)[:,2]])
+
+kdeALdorsal_4 = kde.gaussian_kde([np.array(morph_dist_AL_n_flat_4)[:,0], np.array(morph_dist_AL_n_flat_4)[:,1]])
+kdeALant_4 = kde.gaussian_kde([np.array(morph_dist_AL_n_flat_4)[:,0], np.array(morph_dist_AL_n_flat_4)[:,2]])
+
+xALd, yALd = np.mgrid[455:625:nbins*1j, 250:400:nbins*1j]
+xALa, yALa = np.mgrid[455:625:nbins*1j, -10:110:nbins*1j]
+
+zALd0 = kdeALdorsal_0(np.vstack([xALd.flatten(), yALd.flatten()]))
+zALa0 = kdeALant_0(np.vstack([xALa.flatten(), yALa.flatten()]))
+
+zALd1 = kdeALdorsal_1(np.vstack([xALd.flatten(), yALd.flatten()]))
+zALa1 = kdeALant_1(np.vstack([xALa.flatten(), yALa.flatten()]))
+
+zALd2 = kdeALdorsal_2(np.vstack([xALd.flatten(), yALd.flatten()]))
+zALa2 = kdeALant_2(np.vstack([xALa.flatten(), yALa.flatten()]))
+
+zALd3 = kdeALdorsal_3(np.vstack([xALd.flatten(), yALd.flatten()]))
+zALa3 = kdeALant_3(np.vstack([xALa.flatten(), yALa.flatten()]))
+
+zALd4 = kdeALdorsal_4(np.vstack([xALd.flatten(), yALd.flatten()]))
+zALa4 = kdeALant_4(np.vstack([xALa.flatten(), yALa.flatten()]))
+
+
+fig = plt.figure(figsize=(10, 20))
+ax1 = fig.add_subplot(5,2,1)
+ax2 = fig.add_subplot(5,2,2)
+
+ax3 = fig.add_subplot(5,2,3)
+ax4 = fig.add_subplot(5,2,4)
+
+ax5 = fig.add_subplot(5,2,5)
+ax6 = fig.add_subplot(5,2,6)
+
+ax7 = fig.add_subplot(5,2,7)
+ax8 = fig.add_subplot(5,2,8)
+
+ax9 = fig.add_subplot(5,2,9)
+ax10 = fig.add_subplot(5,2,10)
+
+
+ax1.pcolormesh(xALa, yALd, zALd0.reshape(xALd.shape), cmap=plt.cm.jet)
+ax2.pcolormesh(xALa, yALa, zALa0.reshape(xALa.shape), cmap=plt.cm.jet)
+ax1.set_xlim(465, 615)
+ax1.set_ylim(260, 390)
+ax2.set_xlim(465, 615)
+ax2.set_ylim(0, 100)
+ax1.set_title("Dorsal", fontsize=20)
+ax1.set_ylabel(np.array(glo_list)[validx[0]], fontsize=20)
+ax2.set_title("Anterior", fontsize=20)
+ax1.plot(np.array(morph_dist_AL_flat)[:,0][v1], 
+         np.array(morph_dist_AL_flat)[:,1][v1],
+         color='white',
+         lw=3)
+ax2.plot(np.array(morph_dist_AL_flat)[:,0][v2], 
+         np.array(morph_dist_AL_flat)[:,2][v2],
+         color='white',
+         lw=3)
+ax1.plot([471, 481], [378, 378], 'w-', lw=2)
+ax1.plot([476, 476], [373, 383], 'w-', lw=2)
+ax1.text(474.5, 385, 'P', c='w')
+ax1.text(474.5, 367, 'A', c='w')
+ax1.text(467, 376, 'L', c='w')
+ax1.text(482, 376, 'M', c='w')
+ax2.plot([471, 481], [90, 90], 'w-', lw=2)
+ax2.plot([476, 476], [86, 94], 'w-', lw=2)
+ax2.text(474.5, 95.5, 'D', c='w')
+ax2.text(474.5, 81.5, 'V', c='w')
+ax2.text(467, 88, 'L', c='w')
+ax2.text(482, 88, 'M', c='w')
+
+
+ax3.pcolormesh(xALa, yALd, zALd1.reshape(xALd.shape), cmap=plt.cm.jet)
+ax4.pcolormesh(xALa, yALa, zALa1.reshape(xALa.shape), cmap=plt.cm.jet)
+ax3.set_xlim(465, 615)
+ax3.set_ylim(260, 390)
+ax4.set_xlim(465, 615)
+ax4.set_ylim(0, 100)
+ax3.set_ylabel(np.array(glo_list)[validx[4]], fontsize=20)
+ax3.plot(np.array(morph_dist_AL_flat)[:,0][v1], 
+         np.array(morph_dist_AL_flat)[:,1][v1],
+         color='white',
+         lw=3)
+ax4.plot(np.array(morph_dist_AL_flat)[:,0][v2], 
+         np.array(morph_dist_AL_flat)[:,2][v2],
+         color='white',
+         lw=3)
+
+ax5.pcolormesh(xALa, yALd, zALd2.reshape(xALd.shape), cmap=plt.cm.jet)
+ax6.pcolormesh(xALa, yALa, zALa2.reshape(xALa.shape), cmap=plt.cm.jet)
+ax5.set_xlim(465, 615)
+ax5.set_ylim(260, 390)
+ax6.set_xlim(465, 615)
+ax6.set_ylim(0, 100)
+ax5.set_ylabel(np.array(glo_list)[validx[2]], fontsize=20)
+ax5.plot(np.array(morph_dist_AL_flat)[:,0][v1], 
+         np.array(morph_dist_AL_flat)[:,1][v1],
+         color='white',
+         lw=3)
+ax6.plot(np.array(morph_dist_AL_flat)[:,0][v2], 
+         np.array(morph_dist_AL_flat)[:,2][v2],
+         color='white',
+         lw=3)
+
+ax7.pcolormesh(xALa, yALd, zALd3.reshape(xALd.shape), cmap=plt.cm.jet)
+ax8.pcolormesh(xALa, yALa, zALa3.reshape(xALa.shape), cmap=plt.cm.jet)
+ax7.set_xlim(465, 615)
+ax7.set_ylim(260, 390)
+ax8.set_xlim(465, 615)
+ax8.set_ylim(0, 100)
+ax7.set_ylabel(np.array(glo_list)[validx[1]], fontsize=20)
+ax7.plot(np.array(morph_dist_AL_flat)[:,0][v1], 
+         np.array(morph_dist_AL_flat)[:,1][v1],
+         color='white',
+         lw=3)
+ax8.plot(np.array(morph_dist_AL_flat)[:,0][v2], 
+         np.array(morph_dist_AL_flat)[:,2][v2],
+         color='white',
+         lw=3)
+
+ax9.pcolormesh(xALa, yALd, zALd4.reshape(xALd.shape), cmap=plt.cm.jet)
+ax10.pcolormesh(xALa, yALa, zALa4.reshape(xALa.shape), cmap=plt.cm.jet)
+ax9.set_xlim(465, 615)
+ax9.set_ylim(260, 390)
+ax10.set_xlim(465, 615)
+ax10.set_ylim(0, 100)
+ax9.set_ylabel(np.array(glo_list)[validx[3]], fontsize=20)
+ax9.plot(np.array(morph_dist_AL_flat)[:,0][v1], 
+         np.array(morph_dist_AL_flat)[:,1][v1],
+         color='white',
+         lw=3)
+ax10.plot(np.array(morph_dist_AL_flat)[:,0][v2], 
+         np.array(morph_dist_AL_flat)[:,2][v2],
+         color='white',
+         lw=3)
+
+# fig.suptitle(str(glo_list[gi]), fontsize=30)
+plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+# plt.savefig(Parameter.outputdir + '/heatmap_glo_high_corr_AL.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+
+#%% Correlation plot
+
+morph_dist_LH_r_sel_avg_list = []
+morph_dist_AL_r_sel_avg_list = []
+
+for i in [0,4,2,1,3]:
+    selidx = np.array(glo_lb_idx[validx[i]])
+    morph_dist_LH_r_sel_avg_list.append(np.average(morph_dist_LH_r[selidx], axis=0))
+    morph_dist_AL_r_sel_avg_list.append(np.average(morph_dist_AL_r[selidx], axis=0))
+
+fig = plt.figure(figsize=(5, 10))
+ax1 = fig.add_subplot(5,1,1)
+ax1.set_xticks([])
+ax1.set_yticks([])
+ax1.set_ylabel(np.array(glo_list)[validx[0]], fontsize=20)
+ax2 = fig.add_subplot(5,1,2)
+ax2.set_xticks([])
+ax2.set_yticks([])
+ax2.set_ylabel(np.array(glo_list)[validx[4]], fontsize=20)
+ax3 = fig.add_subplot(5,1,3)
+ax3.set_xticks([])
+ax3.set_yticks([])
+ax3.set_ylabel(np.array(glo_list)[validx[2]], fontsize=20)
+ax4 = fig.add_subplot(5,1,4)
+ax4.set_xticks([])
+ax4.set_yticks([])
+ax4.set_ylabel(np.array(glo_list)[validx[1]], fontsize=20)
+ax5 = fig.add_subplot(5,1,5)
+ax5.set_xticks([])
+ax5.set_yticks([])
+ax5.set_ylabel(np.array(glo_list)[validx[3]], fontsize=20)
+ax1.scatter(morph_dist_AL_r_sel_avg_list[0], morph_dist_LH_r_sel_avg_list[0])
+ax2.scatter(morph_dist_AL_r_sel_avg_list[1], morph_dist_LH_r_sel_avg_list[1])
+ax3.scatter(morph_dist_AL_r_sel_avg_list[2], morph_dist_LH_r_sel_avg_list[2])
+ax4.scatter(morph_dist_AL_r_sel_avg_list[3], morph_dist_LH_r_sel_avg_list[3])
+ax5.scatter(morph_dist_AL_r_sel_avg_list[4], morph_dist_LH_r_sel_avg_list[4])
+plt.tight_layout()
+# plt.savefig(Parameter.outputdir + '/high_corr_LH.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
