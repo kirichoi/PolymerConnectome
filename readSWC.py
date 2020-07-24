@@ -310,6 +310,12 @@ class LengthData:
     length_direct = []
     indMDistLen = []
     indMDistN = []
+    length_calyx = []
+    length_LH = []
+    length_AL = []
+    length_calyx_total = []
+    length_LH_total = []
+    length_AL_total = []
     
 class BranchData:
     branchTrk = []
@@ -374,6 +380,9 @@ for f in range(len(fp)):
     calyxdist_per_n_temp = []
     LHdist_per_n_temp = []
     ALdist_per_n_temp = []
+    length_calyx_per_n = []
+    length_LH_per_n = []
+    length_AL_per_n = []
     
     for bp in range(len(bPoint)):
         if bPoint[bp] != scall:
@@ -410,15 +419,18 @@ for f in range(len(fp)):
                     (np.array(branch_dist_temp2)[:,1] < 260).all() and (np.array(branch_dist_temp2)[:,2] > 150).all()):
                     MorphData.calyxdist.append(branch_dist_temp2)
                     calyxdist_per_n_temp.append(branch_dist_temp2)
+                    length_calyx_per_n.append(dist)
                 elif ((np.array(branch_dist_temp2)[:,0] < 475).all() and (np.array(branch_dist_temp2)[:,1] < 260).all() and
                     (np.array(branch_dist_temp2)[:,1] > 180).all() and (np.array(branch_dist_temp2)[:,2] > 125).all()):
                     MorphData.LHdist.append(branch_dist_temp2)
                     LHdist_per_n_temp.append(branch_dist_temp2)
+                    length_LH_per_n.append(dist)
                 elif ((np.array(branch_dist_temp2)[:,0] > 475).all() and (np.array(branch_dist_temp2)[:,0] < 600).all() and 
                       (np.array(branch_dist_temp2)[:,1] > 280).all() and (np.array(branch_dist_temp2)[:,1] < 400).all() and
                       (np.array(branch_dist_temp2)[:,2] < 90).all()):
                     MorphData.ALdist.append(branch_dist_temp2)
                     ALdist_per_n_temp.append(branch_dist_temp2)
+                    length_AL_per_n.append(dist)
                 
     BranchData.branchTrk.append(neu_branchTrk)
     BranchData.branch_dist.append(branch_dist_temp1)
@@ -427,6 +439,9 @@ for f in range(len(fp)):
     MorphData.calyxdist_per_n.append(calyxdist_per_n_temp)
     MorphData.LHdist_per_n.append(LHdist_per_n_temp)
     MorphData.ALdist_per_n.append(ALdist_per_n_temp)
+    LengthData.length_calyx.append(length_calyx_per_n)
+    LengthData.length_LH.append(length_LH_per_n)
+    LengthData.length_AL.append(length_AL_per_n)
 
     for ep in range(len(list_end)):
         neu_indBranchTrk_temp = []
@@ -1793,7 +1808,7 @@ for b in range(len(binsize)):
 
 #%%
 
-farg = np.argwhere(np.array(hlist_count) > 1)[-1][0] + 2
+farg = np.where(np.abs(np.diff(np.log10(hlist_count))) > 0.22)[0][-1]#np.argwhere(np.array(hlist_count) > 1)[-1][0] + 2
 iarg =  np.where(np.abs(np.diff(np.log10(hlist_count))) > 0.22)[0][0]
 
 poptBcount_all, pcovBcount_all = scipy.optimize.curve_fit(objFuncGL, 
@@ -1909,8 +1924,8 @@ for b in range(len(binsize)):
 
 #%%
 
-farg = np.argwhere(np.array(hlist_calyx_count) > 1)[-1][0] + 2
-iarg =  np.where(np.abs(np.diff(np.log10(hlist_calyx_count))) > 0.22)[0][0]
+farg = np.where(np.abs(np.diff(np.log10(hlist_calyx_count))) > 0.22)[0][-1]#np.argwhere(np.array(hlist_calyx_count) > 1)[-1][0] + 2
+iarg = np.where(np.abs(np.diff(np.log10(hlist_calyx_count))) > 0.22)[0][0]
 poptBcount_calyx, pcovBcount_calyx = scipy.optimize.curve_fit(objFuncGL, 
                                                         np.log10(binsize[iarg:farg]), 
                                                         np.log10(hlist_calyx_count[iarg:farg]),
@@ -1918,8 +1933,8 @@ poptBcount_calyx, pcovBcount_calyx = scipy.optimize.curve_fit(objFuncGL,
                                                         maxfev=10000)
 perrBcount_calyx = np.sqrt(np.diag(pcovBcount_calyx))
 
-farg = np.argwhere(np.array(hlist_LH_count) > 1)[-1][0] + 2
-iarg =  np.where(np.abs(np.diff(np.log10(hlist_LH_count))) > 0.22)[0][0]
+farg = np.where(np.abs(np.diff(np.log10(hlist_LH_count))) > 0.22)[0][-1]#np.argwhere(np.array(hlist_LH_count) > 1)[-1][0] + 2
+iarg = np.where(np.abs(np.diff(np.log10(hlist_LH_count))) > 0.22)[0][0]
 poptBcount_LH, pcovBcount_LH = scipy.optimize.curve_fit(objFuncGL, 
                                                         np.log10(binsize[iarg:farg]), 
                                                         np.log10(hlist_LH_count[iarg:farg]),
@@ -1927,8 +1942,8 @@ poptBcount_LH, pcovBcount_LH = scipy.optimize.curve_fit(objFuncGL,
                                                         maxfev=10000)
 perrBcount_LH = np.sqrt(np.diag(pcovBcount_LH))
 
-farg = np.argwhere(np.array(hlist_AL_count) > 1)[-1][0] + 2
-iarg =  np.where(np.abs(np.diff(np.log10(hlist_AL_count))) > 0.22)[0][0]
+farg = np.where(np.abs(np.diff(np.log10(hlist_AL_count))) > 0.22)[0][-1]#np.argwhere(np.array(hlist_AL_count) > 1)[-1][0] + 2
+iarg = np.where(np.abs(np.diff(np.log10(hlist_AL_count))) > 0.22)[0][0]
 poptBcount_AL, pcovBcount_AL = scipy.optimize.curve_fit(objFuncGL, 
                                                         np.log10(binsize[iarg:farg]), 
                                                         np.log10(hlist_AL_count[iarg:farg]),
@@ -2051,7 +2066,7 @@ for b in range(len(binsize)):
 
 #%%
     
-farg = np.argwhere(np.array(hlist_calyx_b_count) > 1)[-1][0] + 2
+farg = np.where(np.abs(np.diff(np.log10(hlist_calyx_b_count))) > 0.22)[0][-1]#np.argwhere(np.array(hlist_calyx_b_count) > 1)[-1][0] + 2
 iarg =  np.where(np.abs(np.diff(np.log10(hlist_calyx_b_count))) > 0.22)[0][0]
 poptBcount_calyx_b, pcovBcount_calyx_b = scipy.optimize.curve_fit(objFuncGL, 
                                                         np.log10(binsize[iarg:farg]), 
@@ -2060,7 +2075,7 @@ poptBcount_calyx_b, pcovBcount_calyx_b = scipy.optimize.curve_fit(objFuncGL,
                                                         maxfev=10000)
 perrBcount_calyx_b = np.sqrt(np.diag(pcovBcount_calyx_b))
 
-farg = np.argwhere(np.array(hlist_LH_b_count) > 1)[-1][0] + 2
+farg = np.where(np.abs(np.diff(np.log10(hlist_LH_b_count))) > 0.22)[0][-1]#np.argwhere(np.array(hlist_LH_b_count) > 1)[-1][0] + 2
 iarg = np.where(np.abs(np.diff(np.log10(hlist_LH_b_count))) > 0.22)[0][0]
 poptBcount_LH_b, pcovBcount_LH_b = scipy.optimize.curve_fit(objFuncGL, 
                                                         np.log10(binsize[iarg:farg]), 
@@ -2069,7 +2084,7 @@ poptBcount_LH_b, pcovBcount_LH_b = scipy.optimize.curve_fit(objFuncGL,
                                                         maxfev=10000)
 perrBcount_LH_b = np.sqrt(np.diag(pcovBcount_LH_b))
 
-farg = np.argwhere(np.array(hlist_AL_b_count) > 1)[-1][0] + 2
+farg = np.where(np.abs(np.diff(np.log10(hlist_AL_b_count))) > 0.22)[0][-1]#np.argwhere(np.array(hlist_AL_b_count) > 1)[-1][0] + 2
 iarg = np.where(np.abs(np.diff(np.log10(hlist_AL_b_count))) > 0.22)[0][0]
 poptBcount_AL_b, pcovBcount_AL_b = scipy.optimize.curve_fit(objFuncGL, 
                                                         np.log10(binsize[iarg:farg]), 
@@ -2203,7 +2218,7 @@ fitYBcount_AL_b = np.empty((bbr, len(sp_l), len(binsize)))
 
 for r in range(bbr):
     for l in range(len(sp_l)):
-        farg = np.argwhere(np.array(hlist_calyx_b_count[r][l]) > 1)[-1][0] + 2
+        farg = np.where(np.abs(np.diff(np.log10(hlist_calyx_b_count[r][l]))) > 0.15)[0][-1]#np.argwhere(np.array(hlist_calyx_b_count[r][l]) > 1)[-1][0] + 2
         iarg = np.where(np.abs(np.diff(np.log10(hlist_calyx_b_count[r][l]))) > 0.15)[0][0]
         if iarg < 0:
             iarg = 0
@@ -2214,7 +2229,7 @@ for r in range(bbr):
                                                                 maxfev=10000)
         perrBcount_calyx_b_t = np.sqrt(np.diag(pcovBcount_calyx_b_t))
         
-        farg = np.argwhere(np.array(hlist_LH_b_count[r][l]) > 1)[-1][0] + 2
+        farg = np.where(np.abs(np.diff(np.log10(hlist_LH_b_count[r][l]))) > 0.15)[0][-1]#np.argwhere(np.array(hlist_LH_b_count[r][l]) > 1)[-1][0] + 2
         iarg = np.where(np.abs(np.diff(np.log10(hlist_LH_b_count[r][l]))) > 0.15)[0][0]
         if iarg < 0:
             iarg = 0
@@ -2225,7 +2240,7 @@ for r in range(bbr):
                                                                 maxfev=10000)
         perrBcount_LH_b_t = np.sqrt(np.diag(pcovBcount_LH_b_t))
         
-        farg = np.argwhere(np.array(hlist_AL_b_count[r][l]) > 1)[-1][0] + 2
+        farg = np.where(np.abs(np.diff(np.log10(hlist_AL_b_count[r][l]))) > 0.15)[0][-1]#np.argwhere(np.array(hlist_AL_b_count[r][l]) > 1)[-1][0] + 2
         iarg = np.where(np.abs(np.diff(np.log10(hlist_AL_b_count[r][l]))) > 0.15)[0][0]
         if iarg < 0:
             iarg = 0
@@ -2296,7 +2311,7 @@ t9 = time.time()
 
 print('checkpoint 9: ' + str(t9-t8))
 
-#%% Single Neuron Dimnesion Calculation using Binary Box-counting
+#%% Single Neuron Dimension Calculation using Binary Box-counting
 
 binsize = np.logspace(-2, 3, 100)[25:95:2]
 
@@ -2337,8 +2352,8 @@ pcovBcount_single_list = []
 fig = plt.figure(figsize=(12,8))
 for i in range(len(MorphData.morph_dist)):
     if len(MorphData.morph_dist[i]) > 700:
-        farg = np.argwhere(hlist_single_count[i] > 1)[-1][0] + 2
-        iarg = np.where(np.abs(np.diff(np.log10(hlist_single_count[i]))) > 0.15)[0][0]
+        farg = np.where(np.abs(np.diff(np.log10(hlist_single_count[i]))) > 0.14)[0][-1]#np.argwhere(hlist_single_count[i] > 1)[-1][0] + 2
+        iarg = np.where(np.abs(np.diff(np.log10(hlist_single_count[i]))) > 0.14)[0][0]
         if iarg < 0:
             iarg = 0
         poptBcount_single, pcovBcount_single = scipy.optimize.curve_fit(objFuncGL, 
@@ -2377,10 +2392,10 @@ fig = plt.figure(figsize=(8,6))
 plt.hist(poptBcount_single_all, bins=int(len(hlist_single_count)/5), density=True)
 plt.plot(xval, np.exp(log_dens), lw=3)
 # plt.vlines(xval[np.argmax(np.exp(log_dens))], 0, 5, linestyle='--', label=str(round(xval[np.argmax(np.exp(log_dens))], 3)), color='tab:red')
-plt.vlines(np.mean(poptBcount_single_all), 0, 5, linestyle='--', label="Mean: " + str(round(np.mean(poptBcount_single_all), 3)), color='tab:red', lw=3)
+plt.vlines(np.mean(poptBcount_single_all), 0, 6, linestyle='--', label="Mean: " + str(round(np.mean(poptBcount_single_all), 3)), color='tab:red', lw=3)
 # plt.vlines(np.median(poptBcount_single_all), 0, 5, linestyle='--', label="Median: " + str(round(np.median(poptBcount_single_all), 3)), color='tab:green', lw=3)
 # plt.vlines(xval[np.argmax(np.exp(log_dens))], 0, 5, linestyle='--', label="Mode: " + str(round(xval[np.argmax(np.exp(log_dens))], 3)), color='tab:purple', lw=3)
-plt.ylim(0, 5)
+plt.ylim(0, 6)
 plt.legend(fontsize=13)
 #plt.tight_layout()
 plt.xlabel("Fractal Dimension", fontsize=15)
@@ -2425,7 +2440,7 @@ for i in range(len(MorphData.morph_dist)):
 
 #%% Single Neuron Dimnesion Calculation by calyx
 
-binsize = np.logspace(-2, 3, 100)[20:85:2]
+binsize = np.logspace(-2, 3, 100)[15:90:2]
 
 hlist_single_count_calyx = np.empty((len(MorphData.calyxdist_neuron), len(binsize)))
 
@@ -2462,8 +2477,8 @@ pcovBcount_single_list_calyx = []
 
 fig = plt.figure(figsize=(12,8))
 for i in range(len(MorphData.calyxdist_neuron)):
-    farg = np.argwhere(hlist_single_count_calyx[i] > 1)[-1][0] + 2
-    iarg = farg - 9
+    farg = np.where(np.abs(np.diff(np.log10(hlist_single_count_calyx[i]))) > 0.15)[0][-1]#np.argwhere(hlist_single_count_calyx[i] > 1)[-1][0] + 2
+    iarg = np.where(np.abs(np.diff(np.log10(hlist_single_count_calyx[i]))) > 0.15)[0][0]
     if iarg < 0:
         iarg = 0
     poptBcount_single_calyx, pcovBcount_single_calyx = scipy.optimize.curve_fit(objFuncGL, 
@@ -2490,29 +2505,29 @@ plt.xlabel("Box Count", fontsize=15)
 plt.ylabel("Count", fontsize=15)
 plt.show()
 
-poptBcount_single_all_calyx = np.sort(np.array(poptBcount_single_list_calyx)[:,0])
+poptBcount_single_all_calyx = np.abs(np.sort(np.array(poptBcount_single_list_calyx)[:,0]))
 xval_calyx = np.linspace(min(poptBcount_single_all_calyx)-0.1, max(poptBcount_single_all_calyx)+0.1, 300)
 
 kde_calyx = neighbors.KernelDensity(kernel='gaussian', bandwidth=0.05).fit(poptBcount_single_all_calyx.reshape((len(poptBcount_single_all_calyx),1)))
 
 log_dens_calyx = kde_calyx.score_samples(xval_calyx.reshape((len(xval_calyx),1)))
 
-fig = plt.figure(figsize=(12,8))
+fig = plt.figure(figsize=(8,6))
 plt.hist(poptBcount_single_all_calyx, bins=int(len(hlist_single_count_calyx)/5), density=True)
 plt.plot(xval_calyx, np.exp(log_dens_calyx), lw=3)
-plt.vlines(np.mean(poptBcount_single_all_calyx), 0, 5, linestyle='--', 
-           label=str(round(np.mean(poptBcount_single_all_calyx), 3)), 
-           color='tab:red')
-plt.ylim(0, 4.5)
-plt.legend(fontsize=15)
+plt.vlines(np.mean(poptBcount_single_all_calyx), 0, 5, linestyle='--', label="Mean: " + str(round(np.mean(poptBcount_single_all_calyx), 3)), color='tab:red', lw=3)
+plt.ylim(0, 4)
+plt.legend(fontsize=13)
+plt.xlabel("Fractal Dimension", fontsize=15)
+plt.ylabel("Frequency", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/fd_single_calyx_dist.pdf', dpi=300, bbox_inches='tight')
 plt.show()
-
 
 
 
 #%% Single Neuron Dimnesion Calculation by LH
 
-binsize = np.logspace(-2, 3, 100)[20:85:2]
+binsize = np.logspace(-2, 3, 100)[15:90:2]
 
 hlist_single_count_LH = np.empty((len(MorphData.LHdist_neuron), len(binsize)))
 
@@ -2550,8 +2565,8 @@ pcovBcount_single_list_LH = []
 
 fig = plt.figure(figsize=(12,8))
 for i in range(len(MorphData.LHdist_neuron)):
-    farg = np.argwhere(hlist_single_count_LH[i] > 1)[-1][0] + 2
-    iarg = farg - 9
+    farg = np.where(np.abs(np.diff(np.log10(hlist_single_count_LH[i]))) > 0.15)[0][-1]#np.argwhere(hlist_single_count_LH[i] > 1)[-1][0] + 2
+    iarg = np.where(np.abs(np.diff(np.log10(hlist_single_count_LH[i]))) > 0.15)[0][0]
     if iarg < 0:
         iarg = 0
     poptBcount_single_LH, pcovBcount_single_LH = scipy.optimize.curve_fit(objFuncGL, 
@@ -2578,28 +2593,29 @@ plt.xlabel("Box Count", fontsize=15)
 plt.ylabel("Count", fontsize=15)
 plt.show()
 
-poptBcount_single_all_LH = np.sort(np.array(poptBcount_single_list_LH)[:,0])
+poptBcount_single_all_LH = np.abs(np.sort(np.array(poptBcount_single_list_LH)[:,0]))
 xval_LH = np.linspace(min(poptBcount_single_all_LH)-0.1, max(poptBcount_single_all_LH)+0.1, 300)
 
 kde_LH = neighbors.KernelDensity(kernel='gaussian', bandwidth=0.05).fit(poptBcount_single_all_LH.reshape((len(poptBcount_single_all_LH),1)))
 
 log_dens_LH = kde_LH.score_samples(xval_LH.reshape((len(xval_LH),1)))
 
-fig = plt.figure(figsize=(12,8))
+fig = plt.figure(figsize=(8,6))
 plt.hist(poptBcount_single_all_LH, bins=int(len(hlist_single_count_LH)/5), density=True)
 plt.plot(xval_LH, np.exp(log_dens_LH), lw=3)
-plt.vlines(np.mean(poptBcount_single_all_LH), 0, 5, linestyle='--', 
-           label=str(round(np.mean(poptBcount_single_all_LH), 3)), 
-           color='tab:red')
-plt.ylim(0, 4.5)
-plt.legend(fontsize=15)
+plt.vlines(np.mean(poptBcount_single_all_LH), 0, 5, linestyle='--', label="Mean: " + str(round(np.mean(poptBcount_single_all_LH), 3)), color='tab:red', lw=3)
+plt.ylim(0, 4)
+plt.legend(fontsize=13)
+plt.xlabel("Fractal Dimension", fontsize=15)
+plt.ylabel("Frequency", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/fd_single_LH_dist.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
 
 #%% Single Neuron Dimnesion Calculation by AL
 
-binsize = np.logspace(-2, 3, 100)[20:85:2]
+binsize = np.logspace(-2, 3, 100)[20:90:2]
 
 hlist_single_count_AL = np.empty((len(MorphData.ALdist_neuron), len(binsize)))
 
@@ -2637,8 +2653,8 @@ pcovBcount_single_list_AL = []
 
 fig = plt.figure(figsize=(12,8))
 for i in range(len(MorphData.ALdist_neuron)):
-    farg = np.argwhere(hlist_single_count_AL[i] > 1)[-1][0] + 2
-    iarg = farg - 7
+    farg = np.where(np.abs(np.diff(np.log10(hlist_single_count_AL[i]))) > 0.15)[0][-1]#np.argwhere(hlist_single_count_AL[i] > 1)[-1][0] + 2
+    iarg = np.where(np.abs(np.diff(np.log10(hlist_single_count_AL[i]))) > 0.15)[0][0]
     if iarg < 0:
         iarg = 0
     poptBcount_single_AL, pcovBcount_single_AL = scipy.optimize.curve_fit(objFuncGL, 
@@ -2665,23 +2681,23 @@ plt.xlabel("Box Count", fontsize=15)
 plt.ylabel("Count", fontsize=15)
 plt.show()
 
-poptBcount_single_all_AL = np.sort(np.array(poptBcount_single_list_AL)[:,0])
+poptBcount_single_all_AL = np.abs(np.sort(np.array(poptBcount_single_list_AL)[:,0]))
 xval_AL = np.linspace(min(poptBcount_single_all_AL)-0.1, max(poptBcount_single_all_AL)+0.1, 300)
 
 kde_AL = neighbors.KernelDensity(kernel='gaussian', bandwidth=0.05).fit(poptBcount_single_all_AL.reshape((len(poptBcount_single_all_AL),1)))
 
 log_dens_AL = kde_AL.score_samples(xval_AL.reshape((len(xval_AL),1)))
 
-fig = plt.figure(figsize=(12,8))
+fig = plt.figure(figsize=(8,6))
 plt.hist(poptBcount_single_all_AL, bins=int(len(hlist_single_count_AL)/5), density=True)
 plt.plot(xval_AL, np.exp(log_dens_AL), lw=3)
-plt.vlines(np.mean(poptBcount_single_all_AL), 0, 5, linestyle='--', 
-           label=str(round(np.mean(poptBcount_single_all_AL), 3)), 
-           color='tab:red')
-plt.ylim(0, 4.5)
-plt.legend(fontsize=15)
+plt.vlines(np.mean(poptBcount_single_all_AL), 0, 5, linestyle='--', label="Mean: " + str(round(np.mean(poptBcount_single_all_AL), 3)), color='tab:red', lw=3)
+plt.ylim(0, 5)
+plt.legend(fontsize=13)
+plt.xlabel("Fractal Dimension", fontsize=15)
+plt.ylabel("Frequency", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/fd_single_AL_dist.pdf', dpi=300, bbox_inches='tight')
 plt.show()
-
 
 
 #%% Branching point and tip coordinate collection
@@ -3364,32 +3380,110 @@ plt.show()
 
 #%% Radius of Gyration for calyx, LH, and AL
 
-(rGy_calyx, cML_calyx) = utils.radiusOfGyration(MorphData.calyxdist)
-(rGy_LH, cML_LH) = utils.radiusOfGyration(MorphData.LHdist)
-(rGy_AL, cML_AL) = utils.radiusOfGyration(MorphData.ALdist)
+LengthData.length_calyx_total = []
+LengthData.length_LH_total = []
+LengthData.length_AL_total = []
 
-poptR, pcovR = scipy.optimize.curve_fit(objFuncGL, 
-                                        np.log10(LengthData.length_total), 
+calyxdist_per_n_flat = []
+LHdist_per_n_flat = []
+ALdist_per_n_flat = []
+
+for i in range(len(MorphData.calyxdist_per_n)):
+    calyxdist_per_n_flat_t = [item for sublist in MorphData.calyxdist_per_n[i] for item in sublist]
+    sumval = np.sum(LengthData.length_calyx[i])
+    if calyxdist_per_n_flat_t and sumval > 1 and sumval < 5000:
+        calyxdist_per_n_flat.append(calyxdist_per_n_flat_t)
+        LengthData.length_calyx_total.append(sumval)
+
+(rGy_calyx, cML_calyx) = utils.radiusOfGyration(calyxdist_per_n_flat)
+
+for i in range(len(MorphData.LHdist_per_n)):
+    LHdist_per_n_flat_t = [item for sublist in MorphData.LHdist_per_n[i] for item in sublist]
+    sumval = np.sum(LengthData.length_LH[i])
+    if LHdist_per_n_flat_t and sumval > 1 and sumval < 5000:
+        LHdist_per_n_flat.append(LHdist_per_n_flat_t)
+        LengthData.length_LH_total.append(sumval)
+
+(rGy_LH, cML_LH) = utils.radiusOfGyration(LHdist_per_n_flat)
+
+for i in range(len(MorphData.ALdist_per_n)):
+    ALdist_per_n_flat_t = [item for sublist in MorphData.ALdist_per_n[i] for item in sublist]
+    sumval = np.sum(LengthData.length_AL[i])
+    if ALdist_per_n_flat_t and sumval > 1 and sumval < 5000:
+        ALdist_per_n_flat.append(ALdist_per_n_flat_t)
+        LengthData.length_AL_total.append(sumval)
+
+(rGy_AL, cML_AL) = utils.radiusOfGyration(ALdist_per_n_flat)
+
+
+#%%
+
+poptR_calyx, pcovR_calyx = scipy.optimize.curve_fit(objFuncGL, 
+                                        np.log10(LengthData.length_calyx_total), 
                                         np.log10(rGy_calyx), 
                                         p0=[1., 0.], 
                                         maxfev=100000)
-perrR = np.sqrt(np.diag(pcovR))
-fitYR = objFuncPpow(LengthData.length_total, poptR[0], poptR[1])
+perrR_calyx = np.sqrt(np.diag(pcovR_calyx))
+fitYR_calyx = objFuncPpow(LengthData.length_calyx_total, poptR_calyx[0], poptR_calyx[1])
+
+poptR_LH, pcovR_LH = scipy.optimize.curve_fit(objFuncGL, 
+                                        np.log10(LengthData.length_LH_total), 
+                                        np.log10(rGy_LH), 
+                                        p0=[1., 0.], 
+                                        maxfev=100000)
+perrR_LH = np.sqrt(np.diag(pcovR_LH))
+fitYR_LH = objFuncPpow(LengthData.length_LH_total, poptR_LH[0], poptR_LH[1])
+
+poptR_AL, pcovR_AL = scipy.optimize.curve_fit(objFuncGL, 
+                                        np.log10(LengthData.length_AL_total), 
+                                        np.log10(rGy_AL), 
+                                        p0=[1., 0.], 
+                                        maxfev=100000)
+perrR_AL = np.sqrt(np.diag(pcovR_AL))
+fitYR_AL = objFuncPpow(LengthData.length_AL_total, poptR_AL[0], poptR_AL[1])
+
 
 fig = plt.figure(figsize=(8,6))
-plt.scatter(LengthData.length_total, rGy)
-plt.plot(LengthData.length_total, fitYR, color='tab:red')
+plt.scatter(LengthData.length_calyx_total, rGy_calyx)
+plt.plot(LengthData.length_calyx_total, fitYR_calyx, color='tab:red')
 plt.yscale('log')
 plt.xscale('log')
 #    plt.xlim(10, 10000)
 #    plt.ylim(7, 4000)
-plt.legend([str(round(poptR[0], 3)) + '$\pm$' + str(round(perrR[0], 3))], fontsize=15)
-plt.title(r"Scaling Behavior of $R_{g}$ to Length", fontsize=20)
-plt.xlabel(r"Length ($\lambda N$)", fontsize=15)
-plt.ylabel(r"Radius of Gyration ($R^{l}_{g}$)", fontsize=15)
+plt.legend([str(round(poptR_calyx[0], 3)) + '$\pm$' + str(round(perrR_calyx[0], 3))], fontsize=15)
+plt.title(r"MB calyx", fontsize=20)
+plt.xlabel(r"$\lambda N$", fontsize=15)
+plt.ylabel(r"$R^{l}_{g}$", fontsize=15)
 plt.tight_layout()
 plt.show()
 
+fig = plt.figure(figsize=(8,6))
+plt.scatter(LengthData.length_LH_total, rGy_LH)
+plt.plot(LengthData.length_LH_total, fitYR_LH, color='tab:red')
+plt.yscale('log')
+plt.xscale('log')
+#    plt.xlim(10, 10000)
+#    plt.ylim(7, 4000)
+plt.legend([str(round(poptR_LH[0], 3)) + '$\pm$' + str(round(perrR_LH[0], 3))], fontsize=15)
+plt.title(r"LH", fontsize=20)
+plt.xlabel(r"$\lambda N$", fontsize=15)
+plt.ylabel(r"$R^{l}_{g}$", fontsize=15)
+plt.tight_layout()
+plt.show()
+
+fig = plt.figure(figsize=(8,6))
+plt.scatter(LengthData.length_AL_total, rGy_AL)
+plt.plot(LengthData.length_AL_total, fitYR_AL, color='tab:red')
+plt.yscale('log')
+plt.xscale('log')
+#    plt.xlim(10, 10000)
+#    plt.ylim(7, 4000)
+plt.legend([str(round(poptR_AL[0], 3)) + '$\pm$' + str(round(perrR_AL[0], 3))], fontsize=15)
+plt.title(r"AL", fontsize=20)
+plt.xlabel(r"$\lambda N$", fontsize=15)
+plt.ylabel(r"$R^{l}_{g}$", fontsize=15)
+plt.tight_layout()
+plt.show()
 
 #%% Regional dist categorization
 
