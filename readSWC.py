@@ -81,7 +81,7 @@ class MorphData():
         ax = plt.axes(projection='3d')
         if scale:
             ax.set_xlim(400, 600)
-            ax.set_ylim(150, 400)
+            ax.set_ylim(400, 150)
             ax.set_zlim(50, 200)
         cmap = cm.get_cmap('viridis', len(listOfPoints))
         for f in range(len(listOfPoints)-1):
@@ -92,7 +92,10 @@ class MorphData():
             if showPoint:
                 ax.scatter3D(listOfPoints[f][0], listOfPoints[f][1], listOfPoints[f][2], color=cmap(f), marker='x')
     #        ax.scatter3D(tararr[somaIdx,0], tararr[somaIdx,1], tararr[somaIdx,2], color=cmap(f))
-        ax.invert_yaxis()
+        
+        maxval = np.max(np.array(listOfPoints)[:,1])
+        minval = np.min(np.array(listOfPoints)[:,1])
+        ax.set_ylim(maxval, minval)
         plt.show()
         
     
@@ -100,7 +103,7 @@ class MorphData():
         fig = plt.figure(figsize=(24, 16))
         ax = plt.axes(projection='3d')
         ax.set_xlim(400, 600)
-        ax.set_ylim(150, 400)
+        ax.set_ylim(400, 150)
         ax.set_zlim(50, 200)
         cmap = cm.get_cmap('viridis', len(self.morph_id))
         for f in range(len(self.morph_id)):
@@ -115,7 +118,6 @@ class MorphData():
                     if showPoint:
                         ax.scatter3D(self.morph_dist[f][p][0], self.morph_dist[f][p][1], self.morph_dist[f][p][2], color=cmap(f), marker='x')
             ax.scatter3D(tararr[somaIdx,0], tararr[somaIdx,1], tararr[somaIdx,2], color=cmap(f))
-        ax.invert_yaxis()
         plt.show()
         
 
@@ -127,11 +129,14 @@ class MorphData():
         :param showPoint: Flag to visualize points
         """
         
+        maxval = 0
+        minval = 0
+        
         fig = plt.figure(figsize=(24, 16))
         ax = plt.axes(projection='3d')
         if scale:
             ax.set_xlim(400, 600)
-            ax.set_ylim(150, 400)
+            ax.set_ylim(400, 150)
             ax.set_zlim(50, 200)
         cmap = cm.get_cmap('viridis', len(multListOfPoints))
         for i in range(len(multListOfPoints)):
@@ -144,23 +149,41 @@ class MorphData():
                 if showPoint:
                     ax.scatter3D(listOfPoints[f][0], listOfPoints[f][1], listOfPoints[f][2], color=cmap(i), marker='x')
         #        ax.scatter3D(tararr[somaIdx,0], tararr[somaIdx,1], tararr[somaIdx,2], color=cmap(f))
+            maxval_i = np.max(np.array(listOfPoints)[:,1])
+            minval_i = np.min(np.array(listOfPoints)[:,1])
+            if maxval_i > maxval:
+                maxval = maxval_i
+            if minval_i < minval:
+                minval = minval_i
         if not axisLabel:
             ax.grid(True)
             ax.set_xticklabels([])
             ax.set_yticklabels([])
             ax.set_zticklabels([])
-        ax.invert_yaxis()
+        
+        ax.set_ylim(maxval, minval)
+        
         if save != None:
             plt.savefig(os.path.join(Parameter.outputdir, save), dpi=300, bbox_inches='tight')
         plt.show()
         
         
     def plotNeuron(self, idx, scale=False, cmass=False, showPoint=False, lw=1, label=True, show=True, save=False):
+        """
+        plot 3-D neuron morphology of a single neuron.
+        
+        :param idx: an index of a list of indices of neurons in MorphData object
+        :param showPoint: Flag to visualize points
+        """
+        
+        maxval = 0
+        minval = 0
+        
         fig = plt.figure(figsize=(24, 16))
         ax = plt.axes(projection='3d')
         if scale:
             ax.set_xlim(400, 600)
-            ax.set_ylim(150, 400)
+            ax.set_ylim(400, 150)
             ax.set_zlim(50, 200)
         cmap = cm.get_cmap('viridis', len(self.morph_id))
         
@@ -181,7 +204,12 @@ class MorphData():
                         if showPoint:
                             ax.scatter3D(self.morph_dist[i][p][0], self.morph_dist[i][p][1], self.morph_dist[i][p][2], color=cmap(i), marker='x')
                 ax.scatter3D(tararr[somaIdx,0], tararr[somaIdx,1], tararr[somaIdx,2], color=cmap(i))
-                
+                maxval_i = np.max(np.array(self.morph_dist[i])[:,1])
+                minval_i = np.min(np.array(self.morph_dist[i])[:,1])
+                if maxval_i > maxval:
+                    maxval = maxval_i
+                if minval_i < minval:
+                    minval = minval_i
         else:
             tararr = np.array(self.morph_dist[idx])
             somaIdx = np.where(np.array(self.morph_parent[idx]) < 0)[0]
@@ -194,9 +222,11 @@ class MorphData():
                     if showPoint:
                         ax.scatter3D(self.morph_dist[idx][p][0], self.morph_dist[idx][p][1], self.morph_dist[idx][p][2], color=cmap(idx), marker='x')
             ax.scatter3D(tararr[somaIdx,0], tararr[somaIdx,1], tararr[somaIdx,2], color=cmap(idx))
+            maxval = np.max(np.array(self.morph_dist[idx])[:,1])
+            minval = np.min(np.array(self.morph_dist[idx])[:,1])
         if label:
             plt.title(np.array(self.neuron_id)[idx], fontsize=15)
-        ax.invert_yaxis()
+        ax.set_ylim(maxval, minval)
         if save:
             plt.savefig(Parameter.outputdir + '/neuron_' + str(idx) + '.png', dpi=300, bbox_inches='tight')
         if show:
