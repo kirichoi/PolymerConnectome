@@ -3948,6 +3948,98 @@ ax.set_zlim(40, 170)
 plt.show()
 
 
+#%% Plot calyx per glomerulus
+
+maxval = 0
+minval = 0
+
+fig = plt.figure(figsize=(24, 16))
+ax = plt.axes(projection='3d')
+cmap = cm.get_cmap('viridis', len(MorphData.calyxdist_per_n))
+for j in range(len(MorphData.calyxdist_per_n)):
+    for i in range(len(MorphData.calyxdist_per_n[j])):
+        listOfPoints = MorphData.calyxdist_per_n[j][i]
+        for f in range(len(listOfPoints)-1):
+            morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(j), lw=0.5)
+        maxval_i = np.max(np.array(listOfPoints)[:,1])
+        minval_i = np.min(np.array(listOfPoints)[:,1])
+        if maxval_i > maxval:
+            maxval = maxval_i
+        if minval_i < minval:
+            minval = minval_i
+ax.grid(True)
+ax.set_xticklabels([])
+ax.set_yticklabels([])
+ax.set_zticklabels([])
+
+ax.set_ylim(maxval+150, minval)
+
+# plt.savefig(os.path.join(Parameter.outputdir, save), dpi=300, bbox_inches='tight')
+plt.show()
+
+
+#%% Plot LH per glomerulus
+
+maxval = 0
+minval = 0
+
+fig = plt.figure(figsize=(24, 16))
+ax = plt.axes(projection='3d')
+cmap = cm.get_cmap('jet', len(MorphData.LHdist_per_n))
+for j in range(len(MorphData.LHdist_per_n)):
+    for i in range(len(MorphData.LHdist_per_n[j])):
+        listOfPoints = MorphData.LHdist_per_n[j][i]
+        for f in range(len(listOfPoints)-1):
+            morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(j), lw=0.5)
+        maxval_i = np.max(np.array(listOfPoints)[:,1])
+        minval_i = np.min(np.array(listOfPoints)[:,1])
+        if maxval_i > maxval:
+            maxval = maxval_i
+        if minval_i < minval:
+            minval = minval_i
+ax.grid(True)
+ax.set_xticklabels([])
+ax.set_yticklabels([])
+ax.set_zticklabels([])
+
+ax.set_ylim(maxval+150, minval)
+
+# plt.savefig(os.path.join(Parameter.outputdir, save), dpi=300, bbox_inches='tight')
+plt.show()
+
+#%% Plot AL per glomerulus
+
+maxval = 0
+minval = 0
+
+fig = plt.figure(figsize=(24, 16))
+ax = plt.axes(projection='3d')
+cmap = cm.get_cmap('jet', len(MorphData.ALdist_per_n))
+for j in range(len(MorphData.ALdist_per_n)):
+    for i in range(len(MorphData.ALdist_per_n[j])):
+        listOfPoints = MorphData.ALdist_per_n[j][i]
+        for f in range(len(listOfPoints)-1):
+            morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(j), lw=0.5)
+        maxval_i = np.max(np.array(listOfPoints)[:,1])
+        minval_i = np.min(np.array(listOfPoints)[:,1])
+        if maxval_i > maxval:
+            maxval = maxval_i
+        if minval_i < minval:
+            minval = minval_i
+ax.grid(True)
+ax.set_xticklabels([])
+ax.set_yticklabels([])
+ax.set_zticklabels([])
+
+ax.set_ylim(maxval+150, minval)
+
+# plt.savefig(os.path.join(Parameter.outputdir, save), dpi=300, bbox_inches='tight')
+plt.show()
+
+
 
 #%% Cluster quantification
 
