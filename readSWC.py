@@ -92,6 +92,7 @@ class MorphData():
             if showPoint:
                 ax.scatter3D(listOfPoints[f][0], listOfPoints[f][1], listOfPoints[f][2], color=cmap(f), marker='x')
     #        ax.scatter3D(tararr[somaIdx,0], tararr[somaIdx,1], tararr[somaIdx,2], color=cmap(f))
+        ax.invert_yaxis()
         plt.show()
         
     
@@ -114,6 +115,7 @@ class MorphData():
                     if showPoint:
                         ax.scatter3D(self.morph_dist[f][p][0], self.morph_dist[f][p][1], self.morph_dist[f][p][2], color=cmap(f), marker='x')
             ax.scatter3D(tararr[somaIdx,0], tararr[somaIdx,1], tararr[somaIdx,2], color=cmap(f))
+        ax.invert_yaxis()
         plt.show()
         
 
@@ -147,6 +149,7 @@ class MorphData():
             ax.set_xticklabels([])
             ax.set_yticklabels([])
             ax.set_zticklabels([])
+        ax.invert_yaxis()
         if save != None:
             plt.savefig(os.path.join(Parameter.outputdir, save), dpi=300, bbox_inches='tight')
         plt.show()
@@ -193,7 +196,7 @@ class MorphData():
             ax.scatter3D(tararr[somaIdx,0], tararr[somaIdx,1], tararr[somaIdx,2], color=cmap(idx))
         if label:
             plt.title(np.array(self.neuron_id)[idx], fontsize=15)
-        
+        ax.invert_yaxis()
         if save:
             plt.savefig(Parameter.outputdir + '/neuron_' + str(idx) + '.png', dpi=300, bbox_inches='tight')
         if show:
@@ -265,7 +268,7 @@ class MorphData():
                 plt.scatter(tararr[somaIdx,1], tararr[somaIdx,2], color=cmap(idx))
         if label:
             plt.title(np.array(self.neuron_id)[idx], fontsize=15)
-            
+        plt.gca().invert_yaxis()
         if save:
             plt.savefig(Parameter.outputdir + '/neuron_' + str(idx) + '.png', dpi=300, bbox_inches='tight')
         if show:
@@ -963,6 +966,11 @@ if Parameter.PLOT:
 #  
     
     
+#%%
+
+
+
+
 #%%
 t6 = time.time()
 
