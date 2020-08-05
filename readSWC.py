@@ -63,10 +63,13 @@ class MorphData():
         self.somaP = []
         self.indMorph_dist = []
         self.calyxdist = []
+        self.calyxdist_trk = []
         self.calyxdist_per_n = []
         self.LHdist = []
+        self.LHdist_trk = []
         self.LHdist_per_n = []
         self.ALdist = []
+        self.ALdist_trk = []
         self.ALdist_per_n = []
     
     def plotNeuronFromPoints(self, listOfPoints, scale=False, showPoint=False):
@@ -458,17 +461,20 @@ for f in range(len(fp)):
                 if ((np.array(branch_dist_temp2)[:,0] > 475).all() and (np.array(branch_dist_temp2)[:,0] < 550).all() and
                     (np.array(branch_dist_temp2)[:,1] < 260).all() and (np.array(branch_dist_temp2)[:,2] > 150).all()):
                     MorphData.calyxdist.append(branch_dist_temp2)
+                    MorphData.calyxdist_trk.append(f)
                     calyxdist_per_n_temp.append(branch_dist_temp2)
                     length_calyx_per_n.append(dist)
                 elif ((np.array(branch_dist_temp2)[:,0] < 475).all() and (np.array(branch_dist_temp2)[:,1] < 260).all() and
                     (np.array(branch_dist_temp2)[:,1] > 180).all() and (np.array(branch_dist_temp2)[:,2] > 125).all()):
                     MorphData.LHdist.append(branch_dist_temp2)
+                    MorphData.LHdist_trk.append(f)
                     LHdist_per_n_temp.append(branch_dist_temp2)
                     length_LH_per_n.append(dist)
                 elif ((np.array(branch_dist_temp2)[:,0] > 475).all() and (np.array(branch_dist_temp2)[:,0] < 600).all() and 
                       (np.array(branch_dist_temp2)[:,1] > 280).all() and (np.array(branch_dist_temp2)[:,1] < 400).all() and
                       (np.array(branch_dist_temp2)[:,2] < 90).all()):
                     MorphData.ALdist.append(branch_dist_temp2)
+                    MorphData.ALdist_trk.append(f)
                     ALdist_per_n_temp.append(branch_dist_temp2)
                     length_AL_per_n.append(dist)
                 
@@ -3950,95 +3956,101 @@ plt.show()
 
 #%% Plot calyx per glomerulus
 
-maxval = 0
-minval = 0
-
-fig = plt.figure(figsize=(24, 16))
+fig = plt.figure(figsize=(12, 8))
 ax = plt.axes(projection='3d')
-cmap = cm.get_cmap('viridis', len(MorphData.calyxdist_per_n))
-for j in range(len(MorphData.calyxdist_per_n)):
-    for i in range(len(MorphData.calyxdist_per_n[j])):
-        listOfPoints = MorphData.calyxdist_per_n[j][i]
+cmap = cm.get_cmap('jet', len(morph_dist_calyx))
+for i in range(len(MorphData.calyxdist)):
+    glo_n = MorphData.calyxdist_trk[i]
+    isglo = [i for i, idx in enumerate(glo_idx) if glo_n in idx]
+    listOfPoints = MorphData.calyxdist[i]
+    if len(isglo) > 0:
         for f in range(len(listOfPoints)-1):
             morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
-            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(j), lw=0.5)
-        maxval_i = np.max(np.array(listOfPoints)[:,1])
-        minval_i = np.min(np.array(listOfPoints)[:,1])
-        if maxval_i > maxval:
-            maxval = maxval_i
-        if minval_i < minval:
-            minval = minval_i
+            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(isglo[0]), lw=0.25)
+    else:
+        for f in range(len(listOfPoints)-1):
+            morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='gray', lw=0.25)
 ax.grid(True)
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
 ax.set_xticklabels([])
 ax.set_yticklabels([])
 ax.set_zticklabels([])
 
-ax.set_ylim(maxval+150, minval)
+ax.set_xlim(490, 550)
+ax.set_ylim(350, 150)
+ax.set_zlim(160, 190)
 
-# plt.savefig(os.path.join(Parameter.outputdir, save), dpi=300, bbox_inches='tight')
+# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_calyx_3'), dpi=300, bbox_inches='tight')
 plt.show()
 
 
 #%% Plot LH per glomerulus
 
-maxval = 0
-minval = 0
-
-fig = plt.figure(figsize=(24, 16))
+fig = plt.figure(figsize=(12, 8))
 ax = plt.axes(projection='3d')
-cmap = cm.get_cmap('jet', len(MorphData.LHdist_per_n))
-for j in range(len(MorphData.LHdist_per_n)):
-    for i in range(len(MorphData.LHdist_per_n[j])):
-        listOfPoints = MorphData.LHdist_per_n[j][i]
+cmap = cm.get_cmap('jet', len(morph_dist_LH))
+for i in range(len(MorphData.LHdist)):
+    glo_n = MorphData.LHdist_trk[i]
+    isglo = [i for i, idx in enumerate(glo_idx) if glo_n in idx]
+    listOfPoints = MorphData.LHdist[i]
+    if len(isglo) > 0:
         for f in range(len(listOfPoints)-1):
             morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
-            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(j), lw=0.5)
-        maxval_i = np.max(np.array(listOfPoints)[:,1])
-        minval_i = np.min(np.array(listOfPoints)[:,1])
-        if maxval_i > maxval:
-            maxval = maxval_i
-        if minval_i < minval:
-            minval = minval_i
+            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(isglo[0]), lw=0.25)
+    else:
+        for f in range(len(listOfPoints)-1):
+            morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='gray', lw=0.25)
 ax.grid(True)
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
 ax.set_xticklabels([])
 ax.set_yticklabels([])
 ax.set_zticklabels([])
 
-ax.set_ylim(maxval+150, minval)
+ax.set_xlim(410, 480)
+ax.set_ylim(350, 150)
+ax.set_zlim(135, 175)
 
-# plt.savefig(os.path.join(Parameter.outputdir, save), dpi=300, bbox_inches='tight')
+# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_LH_3'), dpi=300, bbox_inches='tight')
 plt.show()
+
 
 #%% Plot AL per glomerulus
 
-maxval = 0
-minval = 0
-
-fig = plt.figure(figsize=(24, 16))
+fig = plt.figure(figsize=(12, 8))
 ax = plt.axes(projection='3d')
-cmap = cm.get_cmap('jet', len(MorphData.ALdist_per_n))
-for j in range(len(MorphData.ALdist_per_n)):
-    for i in range(len(MorphData.ALdist_per_n[j])):
-        listOfPoints = MorphData.ALdist_per_n[j][i]
+cmap = cm.get_cmap('jet', len(morph_dist_AL))
+for i in range(len(MorphData.ALdist)):
+    glo_n = MorphData.ALdist_trk[i]
+    isglo = [i for i, idx in enumerate(glo_idx) if glo_n in idx]
+    listOfPoints = MorphData.ALdist[i]
+    if len(isglo) > 0:
         for f in range(len(listOfPoints)-1):
             morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
-            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(j), lw=0.5)
-        maxval_i = np.max(np.array(listOfPoints)[:,1])
-        minval_i = np.min(np.array(listOfPoints)[:,1])
-        if maxval_i > maxval:
-            maxval = maxval_i
-        if minval_i < minval:
-            minval = minval_i
+            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(isglo[0]), lw=0.25)
+    else:
+        for f in range(len(listOfPoints)-1):
+            morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='gray', lw=0.25)
 ax.grid(True)
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
 ax.set_xticklabels([])
 ax.set_yticklabels([])
 ax.set_zticklabels([])
 
-ax.set_ylim(maxval+150, minval)
+ax.set_xlim(485, 585)
+ax.set_ylim(430, 70)
+ax.set_zlim(25, 75)
 
-# plt.savefig(os.path.join(Parameter.outputdir, save), dpi=300, bbox_inches='tight')
+# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_AL_3'), dpi=300, bbox_inches='tight')
 plt.show()
-
 
 
 #%% Cluster quantification
