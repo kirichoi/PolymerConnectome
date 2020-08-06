@@ -384,7 +384,7 @@ indMorph_dist_p_us = []
 indMorph_dist_id = []
 
 for f in range(len(fp)):
-    print(f)
+    print(f, fp[f])
     morph_neu_id = []
     morph_neu_parent = []
     morph_neu_prox = []
@@ -442,6 +442,8 @@ for f in range(len(fp)):
                 rhs = branch_dist_temp2[-1]
                 lhs = MorphData.morph_dist[f][MorphData.morph_id[f].index(parentTrck)]
                 branch_dist_temp2.append(lhs)
+                if np.linalg.norm(np.subtract(rhs, lhs)) > 10:
+                    print(rhs, lhs, parentTrck)
                 dist += np.linalg.norm(np.subtract(rhs, lhs))
             while (parentTrck not in branchInd) and (parentTrck != -1):
                 parentTrck = MorphData.morph_parent[f][MorphData.morph_id[f].index(parentTrck)]
@@ -450,6 +452,8 @@ for f in range(len(fp)):
                     rhs = branch_dist_temp2[-1]
                     lhs = MorphData.morph_dist[f][MorphData.morph_id[f].index(parentTrck)]
                     branch_dist_temp2.append(lhs)
+                    if np.linalg.norm(np.subtract(rhs, lhs)) > 10:
+                        print(rhs, lhs, parentTrck)
                     dist += np.linalg.norm(np.subtract(rhs, lhs))
                     
             if len(neu_branchTrk_temp) > 1:
@@ -1870,7 +1874,7 @@ poptBcount_all, pcovBcount_all = scipy.optimize.curve_fit(objFuncGL,
 perrBcount_all = np.sqrt(np.diag(pcovBcount_all))
 
 fitYBcount_all = objFuncPpow(binsize, poptBcount_all[0], poptBcount_all[1])
-    
+
 fig = plt.figure(figsize=(8,6))
 plt.scatter(binsize, hlist_count)
 plt.plot(binsize, fitYBcount_all, lw=2, linestyle='--')
@@ -3443,8 +3447,10 @@ calyxdist_per_n_count = [] = []
 LHdist_per_n_count = []
 ALdist_per_n_count = []
 
-for i in range(len(MorphData.calyxdist_per_n)):
-    calyxdist_per_n_flat_t = [item for sublist in MorphData.calyxdist_per_n[i] for item in sublist]
+for i in np.unique(MorphData.calyxdist_trk):
+    idx = np.where(np.array(MorphData.calyxdist_trk) == i)
+    tarval = np.array(MorphData.calyxdist)[idx]
+    calyxdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
     sumval = np.sum(LengthData.length_calyx[i])
     if calyxdist_per_n_flat_t and sumval > 1:# and sumval < 5000:
         calyxdist_per_n_flat.append(calyxdist_per_n_flat_t)
@@ -3453,8 +3459,10 @@ for i in range(len(MorphData.calyxdist_per_n)):
 
 (rGy_calyx, cML_calyx) = utils.radiusOfGyration(calyxdist_per_n_flat)
 
-for i in range(len(MorphData.LHdist_per_n)):
-    LHdist_per_n_flat_t = [item for sublist in MorphData.LHdist_per_n[i] for item in sublist]
+for i in np.unique(MorphData.LHdist_trk):
+    idx = np.where(np.array(MorphData.LHdist_trk) == i)
+    tarval = np.array(MorphData.LHdist)[idx]
+    LHdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
     sumval = np.sum(LengthData.length_LH[i])
     if LHdist_per_n_flat_t and sumval > 1:# and sumval < 5000:
         LHdist_per_n_flat.append(LHdist_per_n_flat_t)
@@ -3463,8 +3471,10 @@ for i in range(len(MorphData.LHdist_per_n)):
 
 (rGy_LH, cML_LH) = utils.radiusOfGyration(LHdist_per_n_flat)
 
-for i in range(len(MorphData.ALdist_per_n)):
-    ALdist_per_n_flat_t = [item for sublist in MorphData.ALdist_per_n[i] for item in sublist]
+for i in np.unique(MorphData.ALdist_trk):
+    idx = np.where(np.array(MorphData.ALdist_trk) == i)
+    tarval = np.array(MorphData.ALdist)[idx]
+    ALdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
     sumval = np.sum(LengthData.length_AL[i])
     if ALdist_per_n_flat_t and sumval > 1:# and sumval < 5000:
         ALdist_per_n_flat.append(ALdist_per_n_flat_t)
@@ -3472,8 +3482,6 @@ for i in range(len(MorphData.ALdist_per_n)):
         LengthData.length_AL_total.append(sumval)
 
 (rGy_AL, cML_AL) = utils.radiusOfGyration(ALdist_per_n_flat)
-
-
 
 
 #%%
@@ -3571,7 +3579,6 @@ plt.legend(['AL: ' + str(round(poptR_AL[0], 3)) + '$\pm$' + str(round(perrR_AL[0
 plt.xlabel(r"$N$", fontsize=15)
 plt.ylabel(r"$R_{g}$", fontsize=15)
 plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/rgy_neuropil.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -3674,7 +3681,6 @@ plt.legend(['AL: ' + str(round(poptR_AL_per_seg[0], 3)) + '$\pm$' + str(round(pe
 plt.xlabel(r"$L$", fontsize=15)
 plt.ylabel(r"$R_{g}$", fontsize=15)
 plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/rgy_neuropil.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
