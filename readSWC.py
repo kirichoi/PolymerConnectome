@@ -29,7 +29,7 @@ import utils
 
 class Parameter:
 
-    PATH = r'./TEMCA2/Skels connectome'
+    PATH = r'./TEMCA2/Skels connectome_mod'
     
     RUN = True
     SAVE = False
@@ -442,8 +442,6 @@ for f in range(len(fp)):
                 rhs = branch_dist_temp2[-1]
                 lhs = MorphData.morph_dist[f][MorphData.morph_id[f].index(parentTrck)]
                 branch_dist_temp2.append(lhs)
-                if np.linalg.norm(np.subtract(rhs, lhs)) > 10:
-                    print(rhs, lhs, parentTrck)
                 dist += np.linalg.norm(np.subtract(rhs, lhs))
             while (parentTrck not in branchInd) and (parentTrck != -1):
                 parentTrck = MorphData.morph_parent[f][MorphData.morph_id[f].index(parentTrck)]
@@ -452,8 +450,6 @@ for f in range(len(fp)):
                     rhs = branch_dist_temp2[-1]
                     lhs = MorphData.morph_dist[f][MorphData.morph_id[f].index(parentTrck)]
                     branch_dist_temp2.append(lhs)
-                    if np.linalg.norm(np.subtract(rhs, lhs)) > 10:
-                        print(rhs, lhs, parentTrck)
                     dist += np.linalg.norm(np.subtract(rhs, lhs))
                     
             if len(neu_branchTrk_temp) > 1:
@@ -1348,15 +1344,15 @@ poptD_LH, pcovD_LH = scipy.optimize.curve_fit(objFuncGL,
 perrD_LH = np.sqrt(np.diag(pcovD_LH))
 
 poptD_AL1, pcovD_AL1 = scipy.optimize.curve_fit(objFuncGL, 
-                                              np.log10(radiussize_inv[14:40]), 
-                                              np.log10(spheredist_AL_sum[14:40]), 
+                                              np.log10(radiussize_inv[16:40]), 
+                                              np.log10(spheredist_AL_sum[16:40]), 
                                               p0=[-0.1, 0.1], 
                                               maxfev=10000)
 perrD_AL1 = np.sqrt(np.diag(pcovD_AL1))
 
 poptD_AL2, pcovD_AL2 = scipy.optimize.curve_fit(objFuncGL, 
-                                              np.log10(radiussize_inv[0:14]), 
-                                              np.log10(spheredist_AL_sum[0:14]), 
+                                              np.log10(radiussize_inv[0:16]), 
+                                              np.log10(spheredist_AL_sum[0:16]), 
                                               p0=[-0.1, 0.1], 
                                               maxfev=10000)
 perrD_AL2 = np.sqrt(np.diag(pcovD_AL2))
@@ -1369,10 +1365,10 @@ fitYD_AL2 = objFuncPpow(radiussize_inv, poptD_AL2[0], poptD_AL2[1])
 
 fig = plt.figure(figsize=(8,6))
 
-plt.scatter(radiussize_inv[:15], 
-                    spheredist_AL_sum[:15], color='tab:blue', facecolors='none', marker='s', alpha=0.5)
-plt.scatter(radiussize_inv[15:], 
-                    spheredist_AL_sum[15:], color='tab:blue', facecolors='none', alpha=0.5)
+plt.scatter(radiussize_inv[:16], 
+                    spheredist_AL_sum[:16], color='tab:blue', facecolors='none', marker='s', alpha=0.5)
+plt.scatter(radiussize_inv[16:], 
+                    spheredist_AL_sum[16:], color='tab:blue', facecolors='none', alpha=0.5)
 plt.scatter(radiussize_inv[:49], 
                     spheredist_calyx_sum[:49], color='tab:orange', facecolors='none', alpha=0.5)
 plt.scatter(radiussize_inv[:53], 
@@ -2447,10 +2443,10 @@ fig = plt.figure(figsize=(8,6))
 plt.hist(poptBcount_single_all, bins=int(len(hlist_single_count)/5), density=True)
 plt.plot(xval, np.exp(log_dens), lw=3)
 # plt.vlines(xval[np.argmax(np.exp(log_dens))], 0, 5, linestyle='--', label=str(round(xval[np.argmax(np.exp(log_dens))], 3)), color='tab:red')
-plt.vlines(np.mean(poptBcount_single_all), 0, 6, linestyle='--', label="Mean: " + str(round(np.mean(poptBcount_single_all), 3)), color='tab:red', lw=3)
+plt.vlines(np.mean(poptBcount_single_all), 0, 7.5, linestyle='--', label="Mean: " + str(round(np.mean(poptBcount_single_all), 3)), color='tab:red', lw=3)
 # plt.vlines(np.median(poptBcount_single_all), 0, 5, linestyle='--', label="Median: " + str(round(np.median(poptBcount_single_all), 3)), color='tab:green', lw=3)
 # plt.vlines(xval[np.argmax(np.exp(log_dens))], 0, 5, linestyle='--', label="Mode: " + str(round(xval[np.argmax(np.exp(log_dens))], 3)), color='tab:purple', lw=3)
-plt.ylim(0, 6)
+plt.ylim(0, 7.5)
 plt.legend(fontsize=13)
 #plt.tight_layout()
 plt.xlabel("Fractal Dimension", fontsize=15)
@@ -2746,8 +2742,8 @@ log_dens_AL = kde_AL.score_samples(xval_AL.reshape((len(xval_AL),1)))
 fig = plt.figure(figsize=(8,6))
 plt.hist(poptBcount_single_all_AL, bins=int(len(hlist_single_count_AL)/5), density=True)
 plt.plot(xval_AL, np.exp(log_dens_AL), lw=3)
-plt.vlines(np.mean(poptBcount_single_all_AL), 0, 5, linestyle='--', label="Mean: " + str(round(np.mean(poptBcount_single_all_AL), 3)), color='tab:red', lw=3)
-plt.ylim(0, 5)
+plt.vlines(np.mean(poptBcount_single_all_AL), 0, 4, linestyle='--', label="Mean: " + str(round(np.mean(poptBcount_single_all_AL), 3)), color='tab:red', lw=3)
+plt.ylim(0, 4)
 plt.legend(fontsize=13)
 plt.xlabel("Fractal Dimension", fontsize=15)
 plt.ylabel("Frequency", fontsize=15)
