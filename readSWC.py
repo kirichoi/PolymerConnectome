@@ -1002,10 +1002,6 @@ if Parameter.PLOT:
 #  
     
     
-#%%
-
-
-
 
 #%%
 t6 = time.time()
@@ -1389,7 +1385,7 @@ plt.legend(['AL1: ' + str(round(poptD_AL1[0], 3)) + '$\pm$' + str(round(perrD_AL
 #plt.ylim(3, 1500)
 #plt.tight_layout()
 plt.xlabel("Radius $r$", fontsize=15)
-plt.ylabel("Total Contour Length", fontsize=15)
+plt.ylabel("$L$", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/density_scale_neuropil.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
@@ -1481,7 +1477,7 @@ plt.legend(['AL: ' + str(round(poptD_AL[0], 3)) + '$\pm$' + str(round(perrD_AL[0
 #plt.ylim(3, 1500)
 #plt.tight_layout()
 plt.xlabel("Radius $r$", fontsize=15)
-plt.ylabel("Total Count", fontsize=15)
+plt.ylabel("Count", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/density_scale_neuropil_count.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
@@ -2460,7 +2456,7 @@ plt.show()
 
 # print('checkpoint 10: ' + str(t10-t9))
 
-#%% Single Neuron Dimnesion Calculation by calyx, LH, and AL using Binary Box-counting
+#%% Single Neuron Dimension Calculation by calyx, LH, and AL using Binary Box-counting
 
 MorphData.calyxdist_neuron = []
 MorphData.LHdist_neuron = []
@@ -2489,7 +2485,7 @@ for i in range(len(MorphData.morph_dist)):
         MorphData.ALdist_neuron.append(ALdist_neuron_t)
 
 
-#%% Single Neuron Dimnesion Calculation by calyx
+#%% Single Neuron Dimension Calculation by calyx
 
 binsize = np.logspace(-2, 3, 100)[15:90:2]
 
@@ -2576,7 +2572,7 @@ plt.show()
 
 
 
-#%% Single Neuron Dimnesion Calculation by LH
+#%% Single Neuron Dimension Calculation by LH
 
 binsize = np.logspace(-2, 3, 100)[15:90:2]
 
@@ -2664,7 +2660,7 @@ plt.show()
 
 
 
-#%% Single Neuron Dimnesion Calculation by AL
+#%% Single Neuron Dimension Calculation by AL
 
 binsize = np.logspace(-2, 3, 100)[20:90:2]
 
@@ -3985,7 +3981,7 @@ ax.set_xlim(490, 550)
 ax.set_ylim(350, 150)
 ax.set_zlim(160, 190)
 
-# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_calyx_3'), dpi=300, bbox_inches='tight')
+# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_calyx_5'), dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -4018,7 +4014,7 @@ ax.set_xlim(410, 480)
 ax.set_ylim(350, 150)
 ax.set_zlim(135, 175)
 
-# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_LH_3'), dpi=300, bbox_inches='tight')
+# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_LH_5'), dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -4051,7 +4047,7 @@ ax.set_xlim(485, 585)
 ax.set_ylim(430, 70)
 ax.set_zlim(25, 75)
 
-# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_AL_3'), dpi=300, bbox_inches='tight')
+# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_AL_5'), dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -4579,7 +4575,7 @@ morph_dist_AL_r_df = morph_dist_AL_r_df.reindex(glo_idx_cluster_flat, axis=1)
 fig = plt.figure(figsize=(6,6))
 ax1 = SubplotHost(fig, 111)
 fig.add_subplot(ax1)
-im = plt.imshow(morph_dist_calyx_r_df)#, vmax=np.max(morph_dist_calyx_r))
+im = plt.imshow(morph_dist_calyx_r_df, cmap='viridis_r')#, vmax=np.max(morph_dist_calyx_r))
 ax1.set_xticks([]) 
 ax1.set_yticks([]) 
 ax2 = ax1.twiny()
@@ -4613,7 +4609,7 @@ plt.show()
 fig = plt.figure(figsize=(6,6))
 ax1 = SubplotHost(fig, 111)
 fig.add_subplot(ax1)
-im = plt.imshow(morph_dist_LH_r_df)#, vmax=np.max(morph_dist_LH_r))
+im = plt.imshow(morph_dist_LH_r_df, cmap='viridis_r')#, vmax=np.max(morph_dist_LH_r))
 ax1.set_xticks([]) 
 ax1.set_yticks([]) 
 ax2 = ax1.twiny()
@@ -4647,7 +4643,7 @@ plt.show()
 fig = plt.figure(figsize=(6,6))
 ax1 = SubplotHost(fig, 111)
 fig.add_subplot(ax1)
-im = plt.imshow(morph_dist_AL_r_df)#, vmax=np.max(morph_dist_AL_r))
+im = plt.imshow(morph_dist_AL_r_df, cmap='viridis_r')#, vmax=np.max(morph_dist_AL_r))
 ax1.set_xticks([]) 
 ax1.set_yticks([]) 
 ax2 = ax1.twiny()
@@ -4897,7 +4893,7 @@ ax9.invert_yaxis()
 
 # fig.suptitle(str(glo_list[gi]), fontsize=30)
 plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-# plt.savefig(Parameter.outputdir + '/heatmap_glo_high_corr_LH.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/heatmap_glo_high_corr_LH', dpi=300, bbox_inches='tight')
 plt.show()
 
 #%% Plotting of AL glomeruli with high LH-AL correlations
@@ -5094,7 +5090,7 @@ ax9.invert_yaxis()
 
 # fig.suptitle(str(glo_list[gi]), fontsize=30)
 plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-# plt.savefig(Parameter.outputdir + '/heatmap_glo_high_corr_AL.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/heatmap_glo_high_corr_AL', dpi=300, bbox_inches='tight')
 plt.show()
 
 
