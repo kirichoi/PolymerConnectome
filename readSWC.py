@@ -1146,6 +1146,11 @@ t7 = time.time()
 print('checkpoint 7: ' + str(t7-t6))
 
 
+#%% Example of Branching Polymers
+
+
+
+
 
 #%% Cluster Center of Mass Calculation
 
@@ -3858,8 +3863,8 @@ for i in range(len(morph_dist_AL)):
 
 from scipy.spatial import ConvexHull
 
-morph_dist_calyx_flat = [item for sublist in morph_dist_calyx for item in sublist]
-morph_dist_calyx_flat = [item for sublist in morph_dist_calyx_flat for item in sublist]
+morph_dist_calyx_flt = [item for sublist in morph_dist_calyx for item in sublist]
+morph_dist_calyx_flat = [item for sublist in morph_dist_calyx_flt for item in sublist]
 
 mdcalyx_xmax = np.max(np.array(morph_dist_calyx_flat)[:,0])
 mdcalyx_xmin = np.min(np.array(morph_dist_calyx_flat)[:,0])
@@ -3868,8 +3873,8 @@ mdcalyx_ymin = np.min(np.array(morph_dist_calyx_flat)[:,1])
 mdcalyx_zmax = np.max(np.array(morph_dist_calyx_flat)[:,2])
 mdcalyx_zmin = np.min(np.array(morph_dist_calyx_flat)[:,2])
 
-morph_dist_LH_flat = [item for sublist in morph_dist_LH for item in sublist]
-morph_dist_LH_flat = [item for sublist in morph_dist_LH_flat for item in sublist]
+morph_dist_LH_flt = [item for sublist in morph_dist_LH for item in sublist]
+morph_dist_LH_flat = [item for sublist in morph_dist_LH_flt for item in sublist]
 
 mdLH_xmax = np.max(np.array(morph_dist_LH_flat)[:,0])
 mdLH_xmin = np.min(np.array(morph_dist_LH_flat)[:,0])
@@ -3878,8 +3883,8 @@ mdLH_ymin = np.min(np.array(morph_dist_LH_flat)[:,1])
 mdLH_zmax = np.max(np.array(morph_dist_LH_flat)[:,2])
 mdLH_zmin = np.min(np.array(morph_dist_LH_flat)[:,2])
 
-morph_dist_AL_flat = [item for sublist in morph_dist_AL for item in sublist]
-morph_dist_AL_flat = [item for sublist in morph_dist_AL_flat for item in sublist]
+morph_dist_AL_flt = [item for sublist in morph_dist_AL for item in sublist]
+morph_dist_AL_flat = [item for sublist in morph_dist_AL_flt for item in sublist]
 
 mdAL_xmax = np.max(np.array(morph_dist_AL_flat)[:,0])
 mdAL_xmin = np.min(np.array(morph_dist_AL_flat)[:,0])
@@ -4133,6 +4138,83 @@ print("AL cluster Mean: " + str(np.mean(ALdist_cluster_u_full_flat)) + ", STD: "
 print("AL noncluster Mean: " + str(np.mean(ALdist_noncluster_u_full_flat)) + ", STD: " + str(np.std(ALdist_noncluster_u_full_flat)))
 
 
+#%% Cluster quantification using new distance metric
+
+morph_dist_calyx_r_new = np.zeros((len(morph_dist_calyx_CM_flat), len(morph_dist_calyx_CM_flat)))
+morph_dist_LH_r_new = np.zeros((len(morph_dist_LH_CM_flat), len(morph_dist_LH_CM_flat)))
+morph_dist_AL_r_new = np.zeros((len(morph_dist_AL_CM_flat), len(morph_dist_AL_CM_flat)))
+
+for i in range(len(morph_dist_calyx_CM_flat)):
+    for j in range(len(morph_dist_calyx_CM_flat)):
+        morph_dist_calyx_ed = scipy.spatial.distance.cdist(morph_dist_calyx_flt[i], morph_dist_calyx_flt[j])
+        morph_dist_LH_ed = scipy.spatial.distance.cdist(morph_dist_LH_flt[i], morph_dist_LH_flt[j])
+        morph_dist_AL_ed = scipy.spatial.distance.cdist(morph_dist_AL_flt[i], morph_dist_AL_flt[j])
+        
+        morph_dist_calyx_r_new[i][j] = np.sqrt(np.divide(np.sum(np.divide(np.square(morph_dist_calyx_ed), 
+                                                                          np.shape(morph_dist_calyx_ed)[0])), 
+                                                         np.shape(morph_dist_calyx_ed)[1]))
+        morph_dist_LH_r_new[i][j] = np.sqrt(np.divide(np.sum(np.divide(np.square(morph_dist_LH_ed), 
+                                                                          np.shape(morph_dist_LH_ed)[0])), 
+                                                         np.shape(morph_dist_LH_ed)[1]))
+        morph_dist_AL_r_new[i][j] = np.sqrt(np.divide(np.sum(np.divide(np.square(morph_dist_AL_ed), 
+                                                                          np.shape(morph_dist_AL_ed)[0])), 
+                                                         np.shape(morph_dist_AL_ed)[1]))
+
+calyxdist_cluster_u_full_new = []
+calyxdist_noncluster_u_full_new = []
+
+for i in range(len(glo_list)):
+    calyx_sq = morph_dist_calyx_r_new[glo_lbs[i]:glo_lbs[i+1],glo_lbs[i]:glo_lbs[i+1]]
+    calyx_sq_tri = calyx_sq[np.triu_indices_from(calyx_sq, k=1)]
+    calyx_nc = morph_dist_calyx_r_new[glo_lbs[i]:glo_lbs[i+1],glo_lbs[i+1]:]
+        
+    if len(calyx_sq_tri) > 0:
+        calyxdist_cluster_u_full_new.append(calyx_sq_tri)
+    calyxdist_noncluster_u_full_new.append(calyx_nc.flatten())        
+
+calyxdist_cluster_u_full_flat_new = [item for sublist in calyxdist_cluster_u_full_new for item in sublist]
+calyxdist_noncluster_u_full_flat_new = [item for sublist in calyxdist_noncluster_u_full_new for item in sublist]
+
+LHdist_cluster_u_full_new = []
+LHdist_noncluster_u_full_new = []
+
+for i in range(len(glo_list)):
+    LH_sq = morph_dist_LH_r_new[glo_lbs[i]:glo_lbs[i+1],glo_lbs[i]:glo_lbs[i+1]]
+    LH_sq_tri = LH_sq[np.triu_indices_from(LH_sq, k=1)]
+    LH_nc = morph_dist_LH_r_new[glo_lbs[i]:glo_lbs[i+1],glo_lbs[i+1]:]
+        
+    if len(LH_sq_tri) > 0:
+        LHdist_cluster_u_full_new.append(LH_sq_tri)
+    LHdist_noncluster_u_full_new.append(LH_nc.flatten())        
+
+LHdist_cluster_u_full_flat_new = [item for sublist in LHdist_cluster_u_full_new for item in sublist]
+LHdist_noncluster_u_full_flat_new = [item for sublist in LHdist_noncluster_u_full_new for item in sublist]
+
+ALdist_cluster_u_full_new = []
+ALdist_noncluster_u_full_new = []
+
+for i in range(len(glo_list)):
+    AL_sq = morph_dist_AL_r_new[glo_lbs[i]:glo_lbs[i+1],glo_lbs[i]:glo_lbs[i+1]]
+    AL_sq_tri = AL_sq[np.triu_indices_from(AL_sq, k=1)]
+    AL_nc = morph_dist_AL_r_new[glo_lbs[i]:glo_lbs[i+1],glo_lbs[i+1]:]
+        
+    if len(AL_sq_tri) > 0:
+        ALdist_cluster_u_full_new.append(AL_sq_tri)
+    ALdist_noncluster_u_full_new.append(AL_nc.flatten())        
+
+ALdist_cluster_u_full_flat_new = [item for sublist in ALdist_cluster_u_full_new for item in sublist]
+ALdist_noncluster_u_full_flat_new = [item for sublist in ALdist_noncluster_u_full_new for item in sublist]
+
+
+print("Calyx cluster Mean: " + str(np.mean(calyxdist_cluster_u_full_flat_new)) + ", STD: " + str(np.std(calyxdist_cluster_u_full_flat_new)))
+print("Calyx noncluster Mean: " + str(np.mean(calyxdist_noncluster_u_full_flat_new)) + ", STD: " + str(np.std(calyxdist_noncluster_u_full_flat_new)))
+
+print("LH cluster Mean: " + str(np.mean(LHdist_cluster_u_full_flat_new)) + ", STD: " + str(np.std(LHdist_cluster_u_full_flat_new)))
+print("LH noncluster Mean: " + str(np.mean(LHdist_noncluster_u_full_flat_new)) + ", STD: " + str(np.std(LHdist_noncluster_u_full_flat_new)))
+
+print("AL cluster Mean: " + str(np.mean(ALdist_cluster_u_full_flat_new)) + ", STD: " + str(np.std(ALdist_cluster_u_full_flat_new)))
+print("AL noncluster Mean: " + str(np.mean(ALdist_noncluster_u_full_flat_new)) + ", STD: " + str(np.std(ALdist_noncluster_u_full_flat_new)))
+
 #%%
 
 import scipy.stats
@@ -4366,19 +4448,6 @@ for i in range(len(morph_dist_AL_r)):
     ALcalyx_corr.append(np.corrcoef(morph_dist_calyx_r[i], morph_dist_AL_r[i])[0][1])
     ALLH_corr.append(np.corrcoef(morph_dist_LH_r[i], morph_dist_AL_r[i])[0][1])
     LHcalyx_corr.append(np.corrcoef(morph_dist_calyx_r[i], morph_dist_LH_r[i])[0][1])
-
-##############################################################################
-# ALcalyx_corr = []
-# ALLH_corr = []
-# LHcalyx_corr = []
-
-# for i in range(len(morph_dist_AL_r)):
-#     sel = np.argsort(morph_dist_AL_r[i])[1:56]
-#     ALcalyx_corr.append(np.corrcoef(morph_dist_calyx_r[i][sel], morph_dist_AL_r[i][sel])[0][1])
-#     ALLH_corr.append(np.corrcoef(morph_dist_LH_r[i][sel], morph_dist_AL_r[i][sel])[0][1])
-#     LHcalyx_corr.append(np.corrcoef(morph_dist_calyx_r[i][sel], morph_dist_LH_r[i][sel])[0][1])
-##############################################################################
-
 
 ALcalyx_corr_glo = []
 ALLH_corr_glo = []
@@ -4696,6 +4765,295 @@ plt.tight_layout()
 plt.show()
 
 
+
+#%% Correlation matrix cluster with new metric
+
+fig, ax = plt.subplots(figsize=(8,6))
+labels = ['MB calyx', 'LH', 'AL']
+x = np.arange(len(labels))
+width = .3
+
+cmeans = [np.median(calyxdist_cluster_u_full_flat_new), np.median(LHdist_cluster_u_full_flat_new), np.median(ALdist_cluster_u_full_flat_new)]
+cerr = [scipy.stats.median_abs_deviation(calyxdist_cluster_u_full_flat_new, center=np.median), 
+        scipy.stats.median_abs_deviation(LHdist_cluster_u_full_flat_new, center=np.median), 
+        scipy.stats.median_abs_deviation(ALdist_cluster_u_full_flat_new, center=np.median)]
+ncmeans = [np.median(calyxdist_noncluster_u_full_flat_new), np.median(LHdist_noncluster_u_full_flat_new), np.median(ALdist_noncluster_u_full_flat_new)]
+ncerr = [scipy.stats.median_abs_deviation(calyxdist_noncluster_u_full_flat_new, center=np.median), 
+         scipy.stats.median_abs_deviation(LHdist_noncluster_u_full_flat_new, center=np.median), 
+         scipy.stats.median_abs_deviation(ALdist_noncluster_u_full_flat_new, center=np.median)]
+
+ax.bar(x - width/2, cmeans, width, yerr=cerr, capsize=5, label='Identical Glomerulus')
+ax.bar(x + width/2, ncmeans, width, yerr=ncerr, capsize=5, label='Different Glomeruli')
+ax.set_ylabel('Distance', fontsize=15)
+ax.set_xticks(x)
+ax.set_xticklabels(labels, fontsize=15)
+ax.legend(fontsize=13)
+#ax.set_title('Median distance within and outside cluster')
+plt.tight_layout()
+# plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_median_nmetric.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+ALcalyx_corr_new = []
+ALLH_corr_new = []
+LHcalyx_corr_new = []
+
+for i in range(len(morph_dist_AL_r_new)):
+    ALcalyx_corr_new.append(np.corrcoef(morph_dist_calyx_r_new[i], morph_dist_AL_r_new[i])[0][1])
+    ALLH_corr_new.append(np.corrcoef(morph_dist_LH_r_new[i], morph_dist_AL_r_new[i])[0][1])
+    LHcalyx_corr_new.append(np.corrcoef(morph_dist_calyx_r_new[i], morph_dist_LH_r_new[i])[0][1])
+
+ALcalyx_corr_new_glo = []
+ALLH_corr_new_glo = []
+
+for i in range(len(glo_lb)-1):
+    ALcalyx_corr_new_glo.append(np.array(ALcalyx_corr_new)[np.arange(glo_lb[i],glo_lb[i+1])])
+    ALLH_corr_new_glo.append(np.array(ALLH_corr_new)[np.arange(glo_lb[i],glo_lb[i+1])])
+
+ALcalyx_corr_new_glo_avg = []
+ALcalyx_corr_new_glo_std = []
+ALLH_corr_new_glo_avg = []
+ALLH_corr_new_glo_std = []
+
+for i in range(len(ALcalyx_corr_new_glo)):
+    ALcalyx_corr_new_glo_avg.append(np.average(ALcalyx_corr_new_glo[i]))
+    ALcalyx_corr_new_glo_std.append(np.std(ALcalyx_corr_new_glo[i]))
+    ALLH_corr_new_glo_avg.append(np.average(ALLH_corr_new_glo[i]))
+    ALLH_corr_new_glo_std.append(np.std(ALLH_corr_new_glo[i]))
+
+validx_new = np.argwhere(np.array(ALLH_corr_new_glo_avg) > 0.6).T[0]
+
+diffidx_new = np.argwhere(np.subtract(ALLH_corr_new_glo_avg, ALcalyx_corr_new_glo_avg) > 0.6).T[0]
+
+print(np.sort(np.array(glo_list)[validx_new]))
+print(np.sort(np.array(glo_list)[diffidx_new]))
+
+
+# morph_dist_calyx_CM_avg = []
+# morph_dist_LH_CM_avg = []
+# morph_dist_AL_CM_avg = []
+
+# for i in range(len(morph_dist_calyx_CM)):
+#     morph_dist_calyx_CM_avg.append(np.average(morph_dist_calyx_CM[i], axis=0))
+#     morph_dist_LH_CM_avg.append(np.average(morph_dist_LH_CM[i], axis=0))
+#     morph_dist_AL_CM_avg.append(np.average(morph_dist_AL_CM[i], axis=0))
+
+# morph_dist_calyx_r_new_avg = scipy.spatial.distance.cdist(morph_dist_calyx_CM_avg, morph_dist_calyx_CM_avg)
+# morph_dist_LH_r_new_avg = scipy.spatial.distance.cdist(morph_dist_LH_CM_avg, morph_dist_LH_CM_avg)
+# morph_dist_AL_r_new_avg = scipy.spatial.distance.cdist(morph_dist_AL_CM_avg, morph_dist_AL_CM_avg)
+
+morph_dist_calyx_r_new_df = pd.DataFrame(morph_dist_calyx_r_new)
+# morph_dist_calyx_r_new_avg_df = pd.DataFrame(morph_dist_calyx_r_new_avg)
+
+morph_dist_LH_r_new_df = pd.DataFrame(morph_dist_LH_r_new)
+# morph_dist_LH_r_new_avg_df = pd.DataFrame(morph_dist_LH_r_new_avg)
+
+morph_dist_AL_r_new_df = pd.DataFrame(morph_dist_AL_r_new)
+# morph_dist_AL_r_new_avg_df = pd.DataFrame(morph_dist_AL_r_new_avg)
+
+# L_AL_new = scipy.cluster.hierarchy.linkage(scipy.spatial.distance.squareform(morph_dist_AL_r_new_avg), method='complete', optimal_ordering=True)
+
+# fig, ax = plt.subplots(figsize=(12, 4))
+# R_AL_new = scipy.cluster.hierarchy.dendrogram(L_AL_new,
+#                                        orientation='top',
+#                                        labels=glo_list,
+#                                        distance_sort='descending',
+#                                        show_leaf_counts=False)
+# ax.set_yticks([])
+# ax.spines["top"].set_visible(False)
+# ax.spines["right"].set_visible(False)
+# ax.spines["bottom"].set_visible(False)
+# ax.spines["left"].set_visible(False)
+# # plt.savefig(Parameter.outputdir + '/hieR_AL_new_nmetric.pdf', dpi=300, bbox_inches='tight')
+# plt.show()
+
+# ind_AL_new = scipy.cluster.hierarchy.fcluster(L_AL_new, 0.5*morph_dist_AL_r_new_avg.max(), 'maxclust')
+# columns_AL_new = R_AL_new['leaves']#[morph_dist_AL_r_new_avg_df.columns.tolist()[i] for i in list((np.argsort(ind_AL_new)))]
+
+
+# L_calyx_new = scipy.cluster.hierarchy.linkage(scipy.spatial.distance.squareform(morph_dist_calyx_r_new_avg), method='complete', optimal_ordering=True)
+
+# fig, ax = plt.subplots(figsize=(12, 4))
+# R_calyx_new = scipy.cluster.hierarchy.dendrogram(L_calyx_new,
+#                                        orientation='top',
+#                                        labels=glo_list,
+#                                        distance_sort='descending',
+#                                        show_leaf_counts=False)
+# ax.set_yticks([])
+# ax.spines["top"].set_visible(False)
+# ax.spines["right"].set_visible(False)
+# ax.spines["bottom"].set_visible(False)
+# ax.spines["left"].set_visible(False)
+# # plt.savefig(Parameter.outputdir + '/hieR_calyx_new_nmetric.pdf', dpi=300, bbox_inches='tight')
+# plt.show()
+
+# ind_calyx_new = scipy.cluster.hierarchy.fcluster(L_calyx_new, 0.5*morph_dist_calyx_r_new_avg.max(), 'maxclust')
+# columns_calyx_new = R_calyx_new['leaves']#[morph_dist_calyx_r_new_avg_df.columns.tolist()[i] for i in list((np.argsort(ind_calyx_new)))]
+
+
+
+# L_LH_new = scipy.cluster.hierarchy.linkage(scipy.spatial.distance.squareform(morph_dist_LH_r_new_avg), method='complete', optimal_ordering=True)
+
+# fig, ax = plt.subplots(figsize=(12, 4))
+# R_LH_new = scipy.cluster.hierarchy.dendrogram(L_LH_new,
+#                                        orientation='top',
+#                                        labels=glo_list,
+#                                        distance_sort='descending',
+#                                        show_leaf_counts=False)
+# ax.set_yticks([])
+# ax.spines["top"].set_visible(False)
+# ax.spines["right"].set_visible(False)
+# ax.spines["bottom"].set_visible(False)
+# ax.spines["left"].set_visible(False)
+# # plt.savefig(Parameter.outputdir + '/hieR_LH_new_nmetric.pdf', dpi=300, bbox_inches='tight')
+# plt.show()
+
+# ind_LH_new = scipy.cluster.hierarchy.fcluster(L_LH_new, 0.5*morph_dist_LH_r_new_avg.max(), 'maxclust')
+# columns_LH = R_LH_new['leaves']#[morph_dist_LH_r_new_avg_df.columns.tolist()[i] for i in list((np.argsort(ind_LH_new)))]
+
+
+
+glo_list_cluster_new = np.array(glo_list)[columns_AL]
+
+glo_len_cluster_new = np.array(glo_len)[columns_AL]
+
+glo_idx_cluster_new = []
+for i in range(len(glo_list)):
+    glo_idx_cluster_new.append(glo_lb_idx[np.argwhere(np.array(glo_list)[columns_AL][i] == np.array(glo_list))[0][0]])
+
+glo_idx_cluster_new_flat = [item for sublist in glo_idx_cluster_new for item in sublist]
+
+glo_lb_cluster_new = [sum(glo_len_cluster_new[0:i]) for i in range(len(glo_len_cluster_new)+1)]
+glo_lb_cluster_new_s = np.subtract(glo_lb_cluster_new, glo_lb_cluster_new[0])
+glo_float_cluster_new = np.divide(glo_lb_cluster_new_s, glo_lb_cluster_new_s[-1])
+
+morph_dist_calyx_r_new_df = morph_dist_calyx_r_new_df.reindex(glo_idx_cluster_new_flat, axis=0)
+morph_dist_calyx_r_new_df = morph_dist_calyx_r_new_df.reindex(glo_idx_cluster_new_flat, axis=1)
+
+morph_dist_LH_r_new_df = morph_dist_LH_r_new_df.reindex(glo_idx_cluster_new_flat, axis=0)
+morph_dist_LH_r_new_df = morph_dist_LH_r_new_df.reindex(glo_idx_cluster_new_flat, axis=1)
+
+morph_dist_AL_r_new_df = morph_dist_AL_r_new_df.reindex(glo_idx_cluster_new_flat, axis=0)
+morph_dist_AL_r_new_df = morph_dist_AL_r_new_df.reindex(glo_idx_cluster_new_flat, axis=1)
+
+fig = plt.figure(figsize=(6,6))
+ax1 = SubplotHost(fig, 111)
+fig.add_subplot(ax1)
+im = plt.imshow(morph_dist_calyx_r_new_df, cmap='viridis_r')#, vmax=np.max(morph_dist_calyx_r_new))
+ax1.set_xticks([]) 
+ax1.set_yticks([]) 
+ax2 = ax1.twiny()
+ax3 = ax1.twinx()
+offset1 = 0, 10
+offset2 = -10, 0
+new_axisline1 = ax2.get_grid_helper().new_fixed_axis
+new_axisline2 = ax3.get_grid_helper().new_fixed_axis
+ax2.axis["top"] = new_axisline1(loc="top", axes=ax2, offset=offset1)
+ax3.axis["left"] = new_axisline2(loc="left", axes=ax3, offset=offset2)
+ax2.axis["top"].minor_ticks.set_ticksize(0)
+ax3.axis["left"].minor_ticks.set_ticksize(0)
+ax2.axis["bottom"].set_visible(False)
+ax3.axis["right"].set_visible(False)
+ax2.set_xticks(glo_float_cluster_new)
+ax3.set_yticks(glo_float_cluster_new)
+ax3.invert_yaxis()
+ax2.xaxis.set_major_formatter(ticker.NullFormatter())
+ax3.yaxis.set_major_formatter(ticker.NullFormatter())
+ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster_new[1:] + glo_float_cluster_new[:-1])/2))
+ax3.yaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster_new[1:] + glo_float_cluster_new[:-1])/2))
+ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
+ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
+ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=5, rotation_mode='default')
+ax3.axis["left"].minor_ticklabels.set(fontsize=5, rotation_mode='default')
+plt.colorbar(im, fraction=0.045)
+# plt.savefig(Parameter.outputdir + '/distance_grid_calyx_nmetric.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig = plt.figure(figsize=(6,6))
+ax1 = SubplotHost(fig, 111)
+fig.add_subplot(ax1)
+im = plt.imshow(morph_dist_LH_r_new_df, cmap='viridis_r')#, vmax=np.max(morph_dist_LH_r_new))
+ax1.set_xticks([]) 
+ax1.set_yticks([]) 
+ax2 = ax1.twiny()
+ax3 = ax1.twinx()
+offset1 = 0, 10
+offset2 = -10, 0
+new_axisline1 = ax2.get_grid_helper().new_fixed_axis
+new_axisline2 = ax3.get_grid_helper().new_fixed_axis
+ax2.axis["top"] = new_axisline1(loc="top", axes=ax2, offset=offset1)
+ax3.axis["left"] = new_axisline2(loc="left", axes=ax3, offset=offset2)
+ax2.axis["top"].minor_ticks.set_ticksize(0)
+ax3.axis["left"].minor_ticks.set_ticksize(0)
+ax2.axis["bottom"].set_visible(False)
+ax3.axis["right"].set_visible(False)
+ax2.set_xticks(glo_float_cluster_new)
+ax3.set_yticks(glo_float_cluster_new)
+ax3.invert_yaxis()
+ax2.xaxis.set_major_formatter(ticker.NullFormatter())
+ax3.yaxis.set_major_formatter(ticker.NullFormatter())
+ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster_new[1:] + glo_float_cluster_new[:-1])/2))
+ax3.yaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster_new[1:] + glo_float_cluster_new[:-1])/2))
+ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
+ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
+ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=5, rotation_mode='default')
+ax3.axis["left"].minor_ticklabels.set(fontsize=5, rotation_mode='default')
+plt.colorbar(im, fraction=0.045)
+# plt.savefig(Parameter.outputdir + '/distance_grid_LH_nmetric.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig = plt.figure(figsize=(6,6))
+ax1 = SubplotHost(fig, 111)
+fig.add_subplot(ax1)
+im = plt.imshow(morph_dist_AL_r_new_df, cmap='viridis_r')#, vmax=np.max(morph_dist_AL_r_new))
+ax1.set_xticks([]) 
+ax1.set_yticks([]) 
+ax2 = ax1.twiny()
+ax3 = ax1.twinx()
+offset1 = 0, 10
+offset2 = -10, 0
+new_axisline1 = ax2.get_grid_helper().new_fixed_axis
+new_axisline2 = ax3.get_grid_helper().new_fixed_axis
+ax2.axis["top"] = new_axisline1(loc="top", axes=ax2, offset=offset1)
+ax3.axis["left"] = new_axisline2(loc="left", axes=ax3, offset=offset2)
+ax2.axis["top"].minor_ticks.set_ticksize(0)
+ax3.axis["left"].minor_ticks.set_ticksize(0)
+ax2.axis["bottom"].set_visible(False)
+ax3.axis["right"].set_visible(False)
+ax2.set_xticks(glo_float_cluster_new)
+ax3.set_yticks(glo_float_cluster_new)
+ax3.invert_yaxis()
+ax2.xaxis.set_major_formatter(ticker.NullFormatter())
+ax3.yaxis.set_major_formatter(ticker.NullFormatter())
+ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster_new[1:] + glo_float_cluster_new[:-1])/2))
+ax3.yaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster_new[1:] + glo_float_cluster_new[:-1])/2))
+ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
+ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
+ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=5, rotation_mode='default')
+ax3.axis["left"].minor_ticklabels.set(fontsize=5, rotation_mode='default')
+plt.colorbar(im, fraction=0.045)
+# plt.savefig(Parameter.outputdir + '/distance_grid_AL_nmetric.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+
+fig, ax = plt.subplots(figsize=(8,6))
+x = np.arange(len(glo_list))
+width = 1.
+ax.bar(x, np.array(ALcalyx_corr_new_glo_avg)[columns_AL], width, 
+       yerr=np.array(ALcalyx_corr_new_glo_std)[columns_AL], label='Calyx-AL', alpha=0.5, 
+       error_kw=dict(ecolor='tab:blue', lw=1, capsize=2, capthick=1))
+ax.bar(x, np.array(ALLH_corr_new_glo_avg)[columns_AL], width, 
+       yerr=np.array(ALLH_corr_new_glo_std)[columns_AL], label='LH-AL', alpha=0.5, 
+       error_kw=dict(ecolor='tab:orange', lw=1, capsize=2, capthick=1))
+ax.set_ylabel('Correlation Coefficient', fontsize=15)
+ax.set_xticks(x)
+ax.set_xticklabels(glo_list_cluster_new, rotation=90, fontsize=10)
+ax.legend(fontsize=13)
+plt.xlim(0-0.5, len(glo_list)-0.5)
+plt.tight_layout()
+# plt.savefig(Parameter.outputdir + '/correlation_glomeruli_nmetric.pdf', dpi=300, bbox_inches='tight')
+plt.show()
 
 
 #%% Plotting of LH glomeruli with high LH-AL correlations
