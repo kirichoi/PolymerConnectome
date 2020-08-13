@@ -1001,7 +1001,6 @@ if Parameter.PLOT:
 #    plt.show()
 #  
     
-    
 
 #%%
 t6 = time.time()
@@ -1144,12 +1143,6 @@ plt.show()
 t7 = time.time()
 
 print('checkpoint 7: ' + str(t7-t6))
-
-
-#%% Example of Branching Polymers
-
-
-
 
 
 #%% Cluster Center of Mass Calculation
@@ -2150,22 +2143,22 @@ fitYBcount_LH_b = objFuncPpow(binsize, poptBcount_LH_b[0], poptBcount_LH_b[1])
 fitYBcount_AL_b = objFuncPpow(binsize, poptBcount_AL_b[0], poptBcount_AL_b[1])
     
 fig = plt.figure(figsize=(8,6))
-plt.scatter(binsize, hlist_AL_b_count)
-plt.scatter(binsize, hlist_calyx_b_count)
-plt.scatter(binsize, hlist_LH_b_count)
-plt.plot(binsize, fitYBcount_AL_b, lw=2, linestyle='--')
-plt.plot(binsize, fitYBcount_calyx_b, lw=2, linestyle='--')
-plt.plot(binsize, fitYBcount_LH_b, lw=2, linestyle='--')
+plt.scatter(1/binsize, hlist_AL_b_count)
+plt.scatter(1/binsize, hlist_calyx_b_count)
+plt.scatter(1/binsize, hlist_LH_b_count)
+plt.plot(1/binsize, fitYBcount_AL_b, lw=2, linestyle='--')
+plt.plot(1/binsize, fitYBcount_calyx_b, lw=2, linestyle='--')
+plt.plot(1/binsize, fitYBcount_LH_b, lw=2, linestyle='--')
 plt.yscale('log')
 plt.xscale('log')
-plt.legend(['AL: ' + str(round(poptBcount_AL_b[0], 3)) + '$\pm$' + str(round(perrBcount_AL_b[0], 3)),
-            'MB calyx: ' + str(round(poptBcount_calyx_b[0], 3)) + '$\pm$' + str(round(perrBcount_calyx_b[0], 3)),
-            'LH: ' + str(round(poptBcount_LH_b[0], 3)) + '$\pm$' + str(round(perrBcount_LH_b[0], 3))], fontsize=13)
-plt.xlim(0.2, 300)
+plt.legend(['AL: ' + str(round(-poptBcount_AL_b[0], 3)) + '$\pm$' + str(round(perrBcount_AL_b[0], 3)),
+            'MB calyx: ' + str(round(-poptBcount_calyx_b[0], 3)) + '$\pm$' + str(round(perrBcount_calyx_b[0], 3)),
+            'LH: ' + str(round(-poptBcount_LH_b[0], 3)) + '$\pm$' + str(round(perrBcount_LH_b[0], 3))], fontsize=13)
+plt.xlim(3e-3, 4)
 #plt.tight_layout()
-plt.xlabel("Box Size $l$", fontsize=15)
+plt.xlabel("$1/l$", fontsize=15)
 plt.ylabel("Count", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/fd_neuropil.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/fd_neuropil_fixed_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -3681,6 +3674,95 @@ plt.tight_layout()
 plt.show()
 
 
+#%% Length study
+
+fig = plt.figure(figsize=(8,6))
+plt.hist(LengthData.length_AL_total, 
+          bins=int((np.max(LengthData.length_AL_total) - np.min(LengthData.length_AL_total))/100),
+          density=True,
+          alpha=0.5)
+
+plt.hist(LengthData.length_calyx_total, 
+          bins=int((np.max(LengthData.length_calyx_total) - np.min(LengthData.length_calyx_total))/100),
+          density=True,
+          alpha=0.5)
+
+plt.hist(LengthData.length_LH_total, 
+          bins=int((np.max(LengthData.length_LH_total) - np.min(LengthData.length_LH_total))/100),
+          density=True,
+          alpha=0.5)
+
+plt.hist(LengthData.length_total, 
+          bins=int((np.max(LengthData.length_total) - np.min(LengthData.length_total))/100),
+          density=True,
+          alpha=0.5)
+
+plt.ylabel("Probability", fontsize=15)
+plt.xlabel("L", fontsize=15)
+plt.legend(['AL', 'MB calyx', 'LH', 'Total'], fontsize=13)
+plt.xlim(0, 4500)
+plt.tight_layout()
+# plt.savefig(Parameter.outputdir + '/total_length_hist_comb.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+fig, ax = plt.subplots(4, 1, figsize=(6,10))
+ax[0].hist(LengthData.length_AL_total, 
+          bins=int((np.max(LengthData.length_AL_total) - np.min(LengthData.length_AL_total))/100),
+          density=True,
+          color='tab:blue')
+
+ax[1].hist(LengthData.length_calyx_total, 
+          bins=int((np.max(LengthData.length_calyx_total) - np.min(LengthData.length_calyx_total))/100),
+          density=True,
+          color='tab:orange')
+
+ax[2].hist(LengthData.length_LH_total, 
+          bins=int((np.max(LengthData.length_LH_total) - np.min(LengthData.length_LH_total))/100),
+          density=True,
+          color='tab:green')
+
+ax[3].hist(LengthData.length_total, 
+          bins=int((np.max(LengthData.length_total) - np.min(LengthData.length_total))/100),
+          density=True,
+          color='tab:red')
+
+ax[0].set_ylabel("AL", fontsize=15)
+ax[1].set_ylabel("MB calyx", fontsize=15)
+ax[2].set_ylabel("LH", fontsize=15)
+ax[3].set_ylabel("Total", fontsize=15)
+ax[3].set_xlabel("L", fontsize=15)
+ax[0].set_xticklabels([])
+ax[1].set_xticklabels([])
+ax[2].set_xticklabels([])
+ax[0].set_xlim(0, 4500)
+ax[1].set_xlim(0, 4500)
+ax[2].set_xlim(0, 4500)
+ax[3].set_xlim(0, 4500)
+
+plt.tight_layout()
+# plt.savefig(Parameter.outputdir + '/total_length_hist_sep.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+fig, ax = plt.subplots(figsize=(8,6))
+lab = ['AL', 'MB calyx', 'LH', 'Total']
+medianprops = dict(linestyle='-', linewidth=1.5, color='k')
+bp = ax.boxplot([LengthData.length_AL_total, LengthData.length_calyx_total, 
+             LengthData.length_LH_total, LengthData.length_total], 
+            notch=False, vert=False, patch_artist=True, labels=lab,
+            medianprops=medianprops, positions=[4,3,2,1])
+colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red']
+for patch, color in zip(bp['boxes'], colors):
+    patch.set_facecolor(color)
+ax.tick_params(axis = 'y', which = 'major', labelsize = 15)
+ax.tick_params(axis = 'y', which = 'minor', labelsize = 15)
+ax.set_xlabel('L', fontsize=15)
+plt.tight_layout()
+# plt.savefig(Parameter.outputdir + '/total_length_box.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
 #%% Regional dist categorization
 
 glo_info = pd.read_excel(os.path.join(Parameter.PATH, '../all_skeletons_type_list_180919.xlsx'))
@@ -4150,9 +4232,7 @@ for i in range(len(morph_dist_calyx_CM_flat)):
         morph_dist_LH_ed = scipy.spatial.distance.cdist(morph_dist_LH_flt[i], morph_dist_LH_flt[j])
         morph_dist_AL_ed = scipy.spatial.distance.cdist(morph_dist_AL_flt[i], morph_dist_AL_flt[j])
         
-        morph_dist_calyx_r_new[i][j] = np.sqrt(np.divide(np.sum(np.divide(np.square(morph_dist_calyx_ed), 
-                                                                          np.shape(morph_dist_calyx_ed)[0])), 
-                                                         np.shape(morph_dist_calyx_ed)[1]))
+        morph_dist_calyx_r_new[i][j] = np.sqrt(np.divide(np.sum(np.divide(np.square(morph_dist_calyx_ed), np.shape(morph_dist_calyx_ed)[0])), np.shape(morph_dist_calyx_ed)[1]))
         morph_dist_LH_r_new[i][j] = np.sqrt(np.divide(np.sum(np.divide(np.square(morph_dist_LH_ed), 
                                                                           np.shape(morph_dist_LH_ed)[0])), 
                                                          np.shape(morph_dist_LH_ed)[1]))
@@ -4240,31 +4320,38 @@ plt.tight_layout()
 plt.show()
 
 
-fig = plt.figure(figsize=(6, 4))
-plt.hist(calyxdist_cluster_u_full_flat, alpha=0.5, density=True)
-plt.hist(calyxdist_noncluster_u_full_flat, alpha=0.5, density=True)
-plt.xlabel('Distance')
-plt.ylabel('Probability')
-plt.title('Distances between within and outside cluster distances of calyx')
-plt.legend(['Cluster', 'Non-Cluster'])
-plt.show()
-
-fig = plt.figure(figsize=(6, 4))
-plt.hist(LHdist_cluster_u_full_flat, alpha=0.5, density=True)
-plt.hist(LHdist_noncluster_u_full_flat, alpha=0.5, density=True)
-plt.xlabel('Distance')
-plt.ylabel('Probability')
-plt.title('Distances between within and outside cluster distances of LH')
-plt.legend(['Cluster', 'Non-Cluster'])
-plt.show()
-
-fig = plt.figure(figsize=(6, 4))
-plt.hist(ALdist_cluster_u_full_flat, alpha=0.5, density=True)
-plt.hist(ALdist_noncluster_u_full_flat, alpha=0.5, density=True)
-plt.xlabel('Distance')
-plt.ylabel('Probability')
-plt.title('Distances between within and outside cluster distances of AL')
-plt.legend(['Cluster', 'Non-Cluster'])
+fig = plt.figure(figsize=(5, 9))
+ax1 = fig.add_subplot(3,1,1)
+ax2 = fig.add_subplot(3,1,2)
+ax3 = fig.add_subplot(3,1,3)
+ax1.hist(ALdist_cluster_u_full_flat, bins=20, alpha=0.5, density=True)
+ax1.hist(ALdist_noncluster_u_full_flat, bins=20, alpha=0.5, density=True)
+# ax1.vlines(np.mean(ALdist_cluster_u_full_flat), 0, 0.12, color='tab:blue')
+# ax1.vlines(np.mean(ALdist_noncluster_u_full_flat), 0, 0.12, color='tab:orange')
+# ax1.vlines(np.median(ALdist_cluster_u_full_flat), 0, 0.12, ls='--', color='tab:blue')
+# ax1.vlines(np.median(ALdist_noncluster_u_full_flat), 0, 0.12, ls='--', color='tab:orange')
+ax1.set_ylim(0, 0.12)
+ax1.set_ylabel('AL', fontsize=15)
+ax1.legend(['Identical Glomerulus', 'Different Glomeruli'], fontsize=13)
+ax2.hist(calyxdist_cluster_u_full_flat, bins=20, alpha=0.5, density=True)
+ax2.hist(calyxdist_noncluster_u_full_flat, bins=20, alpha=0.5, density=True)
+# ax2.vlines(np.mean(calyxdist_cluster_u_full_flat), 0, 0.22, color='tab:blue')
+# ax2.vlines(np.mean(calyxdist_noncluster_u_full_flat), 0, 0.22, color='tab:orange')
+# ax2.vlines(np.median(calyxdist_cluster_u_full_flat), 0, 0.22, ls='--', color='tab:blue')
+# ax2.vlines(np.median(calyxdist_noncluster_u_full_flat), 0, 0.22, ls='--', color='tab:orange')
+ax2.set_ylim(0, 0.22)
+ax2.set_ylabel('MB calyx', fontsize=15)
+ax3.hist(LHdist_cluster_u_full_flat, bins=20, alpha=0.5, density=True)
+ax3.hist(LHdist_noncluster_u_full_flat, bins=20, alpha=0.5, density=True)
+# ax3.vlines(np.mean(LHdist_cluster_u_full_flat), 0, 0.2, color='tab:blue')
+# ax3.vlines(np.mean(LHdist_noncluster_u_full_flat), 0, 0.2, color='tab:orange')
+# ax3.vlines(np.median(LHdist_cluster_u_full_flat), 0, 0.2, ls='--', color='tab:blue')
+# ax3.vlines(np.median(LHdist_noncluster_u_full_flat), 0, 0.2, ls='--', color='tab:orange')
+ax3.set_ylim(0, 0.2)
+ax3.set_ylabel('LH', fontsize=15)
+ax3.set_xlabel('Distance', fontsize=15)
+plt.tight_layout()
+# plt.savefig(Parameter.outputdir + '/skewed_dist.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -4745,7 +4832,7 @@ plt.show()
 
 
 
-fig, ax = plt.subplots(figsize=(8,6))
+fig, ax = plt.subplots(figsize=(12,6))
 x = np.arange(len(glo_list))
 width = 1.
 ax.bar(x, np.array(ALcalyx_corr_glo_avg)[columns_AL], width, 
@@ -4761,7 +4848,7 @@ ax.legend(fontsize=13)
 # ax.set_title('Distance correlation between calyx/LH and AL by glomerulus')
 plt.xlim(0-0.5, len(glo_list)-0.5)
 plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/correlation_glomeruli.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/correlation_glomeruli_fix_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -5467,30 +5554,30 @@ fig = plt.figure(figsize=(5, 10))
 ax1 = fig.add_subplot(5,1,1)
 ax1.set_xticks([])
 ax1.set_yticks([])
-ax1.set_ylabel(np.array(glo_list)[validx[0]], fontsize=20)
+ax1.set_ylabel(np.array(glo_list)[validx[0]], fontsize=15)
 ax2 = fig.add_subplot(5,1,2)
 ax2.set_xticks([])
 ax2.set_yticks([])
-ax2.set_ylabel(np.array(glo_list)[validx[4]], fontsize=20)
+ax2.set_ylabel(np.array(glo_list)[validx[4]], fontsize=15)
 ax3 = fig.add_subplot(5,1,3)
 ax3.set_xticks([])
 ax3.set_yticks([])
-ax3.set_ylabel(np.array(glo_list)[validx[2]], fontsize=20)
+ax3.set_ylabel(np.array(glo_list)[validx[2]], fontsize=15)
 ax4 = fig.add_subplot(5,1,4)
 ax4.set_xticks([])
 ax4.set_yticks([])
-ax4.set_ylabel(np.array(glo_list)[validx[1]], fontsize=20)
+ax4.set_ylabel(np.array(glo_list)[validx[1]], fontsize=15)
 ax5 = fig.add_subplot(5,1,5)
 ax5.set_xticks([])
 ax5.set_yticks([])
-ax5.set_ylabel(np.array(glo_list)[validx[3]], fontsize=20)
+ax5.set_ylabel(np.array(glo_list)[validx[3]], fontsize=15)
 ax1.scatter(morph_dist_AL_r_sel_avg_list[0], morph_dist_LH_r_sel_avg_list[0])
 ax2.scatter(morph_dist_AL_r_sel_avg_list[1], morph_dist_LH_r_sel_avg_list[1])
 ax3.scatter(morph_dist_AL_r_sel_avg_list[2], morph_dist_LH_r_sel_avg_list[2])
 ax4.scatter(morph_dist_AL_r_sel_avg_list[3], morph_dist_LH_r_sel_avg_list[3])
 ax5.scatter(morph_dist_AL_r_sel_avg_list[4], morph_dist_LH_r_sel_avg_list[4])
 plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/high_corr_LH.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/high_corr_LH_fixed_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
