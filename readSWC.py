@@ -4232,13 +4232,42 @@ for i in range(len(morph_dist_calyx_CM_flat)):
         morph_dist_LH_ed = scipy.spatial.distance.cdist(morph_dist_LH_flt[i], morph_dist_LH_flt[j])
         morph_dist_AL_ed = scipy.spatial.distance.cdist(morph_dist_AL_flt[i], morph_dist_AL_flt[j])
         
-        morph_dist_calyx_r_new[i][j] = np.sqrt(np.divide(np.sum(np.divide(np.square(morph_dist_calyx_ed), np.shape(morph_dist_calyx_ed)[0])), np.shape(morph_dist_calyx_ed)[1]))
-        morph_dist_LH_r_new[i][j] = np.sqrt(np.divide(np.sum(np.divide(np.square(morph_dist_LH_ed), 
-                                                                          np.shape(morph_dist_LH_ed)[0])), 
-                                                         np.shape(morph_dist_LH_ed)[1]))
-        morph_dist_AL_r_new[i][j] = np.sqrt(np.divide(np.sum(np.divide(np.square(morph_dist_AL_ed), 
-                                                                          np.shape(morph_dist_AL_ed)[0])), 
-                                                         np.shape(morph_dist_AL_ed)[1]))
+        # NNmetric
+        if len(morph_dist_calyx_flt[i]) <= len(morph_dist_calyx_flt[j]):
+            N_calyx = len(morph_dist_calyx_flt[i])
+            dmin_calyx = np.min(morph_dist_calyx_ed, axis=1)
+        else:
+            N_calyx = len(morph_dist_calyx_flt[j])
+            dmin_calyx = np.min(morph_dist_calyx_ed, axis=0)
+        
+        if len(morph_dist_LH_flt[i]) <= len(morph_dist_LH_flt[j]):
+            N_LH = len(morph_dist_LH_flt[i])
+            dmin_LH = np.min(morph_dist_LH_ed, axis=1)
+        else:
+            N_LH = len(morph_dist_LH_flt[j])
+            dmin_LH = np.min(morph_dist_LH_ed, axis=0)
+        
+        if len(morph_dist_AL_flt[i]) <= len(morph_dist_AL_flt[j]):
+            N_AL = len(morph_dist_AL_flt[i])
+            dmin_AL = np.min(morph_dist_AL_ed, axis=1)
+        else:
+            N_AL = len(morph_dist_AL_flt[j])
+            dmin_AL = np.min(morph_dist_AL_ed, axis=0)
+        
+        morph_dist_calyx_r_new[i][j] = np.sqrt(np.divide(np.sum(np.square(dmin_calyx)), N_calyx))
+        morph_dist_LH_r_new[i][j] = np.sqrt(np.divide(np.sum(np.square(dmin_LH)), N_LH))
+        morph_dist_AL_r_new[i][j] = np.sqrt(np.divide(np.sum(np.square(dmin_AL)), N_AL))
+        
+        # Nmetric
+        # morph_dist_calyx_r_new[i][j] = np.sqrt(np.divide(np.sum(np.divide(np.square(morph_dist_calyx_ed), 
+        #                                                                   np.shape(morph_dist_calyx_ed)[0])), 
+        #                                                  np.shape(morph_dist_calyx_ed)[1]))
+        # morph_dist_LH_r_new[i][j] = np.sqrt(np.divide(np.sum(np.divide(np.square(morph_dist_LH_ed), 
+        #                                                                   np.shape(morph_dist_LH_ed)[0])), 
+        #                                                  np.shape(morph_dist_LH_ed)[1]))
+        # morph_dist_AL_r_new[i][j] = np.sqrt(np.divide(np.sum(np.divide(np.square(morph_dist_AL_ed), 
+        #                                                                   np.shape(morph_dist_AL_ed)[0])), 
+        #                                                  np.shape(morph_dist_AL_ed)[1]))
 
 calyxdist_cluster_u_full_new = []
 calyxdist_noncluster_u_full_new = []
@@ -4877,7 +4906,7 @@ ax.set_xticklabels(labels, fontsize=15)
 ax.legend(fontsize=13)
 #ax.set_title('Median distance within and outside cluster')
 plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_median_nmetric.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_median_nnmetric.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -5053,7 +5082,7 @@ ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
 ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=5, rotation_mode='default')
 ax3.axis["left"].minor_ticklabels.set(fontsize=5, rotation_mode='default')
 plt.colorbar(im, fraction=0.045)
-# plt.savefig(Parameter.outputdir + '/distance_grid_calyx_nmetric.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/distance_grid_calyx_nnmetric.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 fig = plt.figure(figsize=(6,6))
@@ -5086,7 +5115,7 @@ ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
 ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=5, rotation_mode='default')
 ax3.axis["left"].minor_ticklabels.set(fontsize=5, rotation_mode='default')
 plt.colorbar(im, fraction=0.045)
-# plt.savefig(Parameter.outputdir + '/distance_grid_LH_nmetric.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/distance_grid_LH_nnmetric.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 fig = plt.figure(figsize=(6,6))
@@ -5119,7 +5148,7 @@ ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
 ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=5, rotation_mode='default')
 ax3.axis["left"].minor_ticklabels.set(fontsize=5, rotation_mode='default')
 plt.colorbar(im, fraction=0.045)
-# plt.savefig(Parameter.outputdir + '/distance_grid_AL_nmetric.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/distance_grid_AL_nnmetric.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -5139,7 +5168,7 @@ ax.set_xticklabels(glo_list_cluster_new, rotation=90, fontsize=10)
 ax.legend(fontsize=13)
 plt.xlim(0-0.5, len(glo_list)-0.5)
 plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/correlation_glomeruli_nmetric.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/correlation_glomeruli_nnmetric.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
