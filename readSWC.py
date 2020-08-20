@@ -1157,7 +1157,7 @@ ALCM = (np.sum(np.array(ALdist_flat), axis=0)/len(np.array(ALdist_flat)))
 
 fullCM = cML#np.average(OutputData.cMLSeg, axis=0)
 
-#%% Cluster Spread Calculation
+#%% Cluster scaling exponent calculation
         
 def cons_check(val):
     val = sorted(set(val))
@@ -1309,7 +1309,7 @@ plt.ylabel("$L$", fontsize=15)
 plt.show()
 
 
-#%% The same plot but with count instead
+#%% #%% Cluster scaling exponent calculation but with count instead
 
 spheredist_calyx_sum = np.empty(len(radiussize))
 spheredist_LH_sum = np.empty(len(radiussize))
@@ -1400,6 +1400,7 @@ plt.ylabel("Count", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/density_scale_neuropil_count.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
+
 #%% Moving window
 
 Calyxmw = []
@@ -1456,6 +1457,89 @@ plt.legend(["Calyx", "LH", "AL"], fontsize=15)
 plt.xlabel("Radius", fontsize=15)
 plt.ylabel("Slope", fontsize=15)
 plt.show()
+
+
+#%% Cluster scaling exponent calculation per neuron
+
+def cons_check(val):
+    val = sorted(set(val))
+    gaps = [[s, e] for s, e in zip(val, val[1:]) if s+1 < e]
+    edges = iter(val[:1] + sum(gaps, []) + val[-1:])
+    return list(zip(edges, edges))
+
+radiussize = np.logspace(-1, 2, 100)[0:95:3]
+
+un_calyx = np.unique(MorphData.calyxdist_trk)
+un_LH = np.unique(MorphData.calyxdist_trk)
+un_AL = np.unique(MorphData.calyxdist_trk)
+
+spheredist_calyx_sum = np.empty((len(un_calyx),len(radiussize)))
+spheredist_LH_sum = np.empty((len(un_LH),len(radiussize)))
+spheredist_AL_sum = np.empty((len(un_AL), len(radiussize)))
+
+spheredist_calyx_count = np.empty((len(un_calyx),len(radiussize)))
+spheredist_LH_count = np.empty((len(un_LH),len(radiussize)))
+spheredist_AL_count = np.empty((len(un_AL), len(radiussize)))
+
+for b in range(len(radiussize)):
+    for n in range(len(un_calyx)):
+        spheredist_calyx_temp = []
+        spheredist_calyx_c_temp = []
+        
+        trkd = np.where(MorphData.calyxdist_trk == un_calyx[n])[0]
+        ncalyxdist_flat = np.array([item for sublist in np.array(MorphData.calyxdist)[trkd] for item in sublist])
+        ncalyx_CM = np.average(ncalyxdist_flat, axis=0)
+        
+        for ib in trkd:
+            inbound_calyx = np.where(np.sqrt(np.square(np.array(MorphData.calyxdist[ib])[:,0] - ncalyx_CM[0]) +
+                                             np.square(np.array(MorphData.calyxdist[ib])[:,1] - ncalyx_CM[1]) +
+                                             np.square(np.array(MorphData.calyxdist[ib])[:,2] - ncalyx_CM[2])) <= radiussize[b])[0]
+            dist_calyx = 0
+            if len(inbound_calyx) > 1:
+                valist = cons_check(inbound_calyx)
+                for ibx in range(len(valist)):
+                    val = np.array(MorphData.calyxdist[ib])[np.arange(valist[ibx][0], valist[ibx][1]+1)]
+                    x = val[:,0]
+                    y = val[:,1]
+                    z = val[:,2]
+                
+                    xd = [j-i for i, j in zip(x[:-1], x[1:])]
+                    yd = [j-i for i, j in zip(y[:-1], y[1:])]
+                    zd = [j-i for i, j in zip(z[:-1], z[1:])]
+                    dist_calyx += np.sum(np.sqrt(np.square(xd) + np.square(yd) + np.square(zd)))
+            spheredist_calyx_temp.append(dist_calyx)
+            spheredist_calyx_c_temp.append(len(valist))
+            
+        spheredist_calyx_sum[n][b] = np.sum(spheredist_calyx_temp)
+        spheredist_calyx_count[n][b] = np.sum(spheredist_calyx_c_temp)
+    
+
+    
+
+
+
+for b in range(len(radiussize)):
+    spheredist_calyx_temp = []
+    spheredist_LH_temp = []
+    spheredist_AL_temp = []
+    
+    for ib in range(len(MorphData.calyxdist)):
+        inbound_calyx = np.where(np.sqrt(np.square(np.array(MorphData.calyxdist[ib])[:,0] - calyxCM[0]) +
+                                    np.square(np.array(MorphData.calyxdist[ib])[:,1] - calyxCM[1]) +
+                                    np.square(np.array(MorphData.calyxdist[ib])[:,2] - calyxCM[2])) <= radiussize[b])[0]
+        spheredist_calyx_temp.append(len(inbound_calyx))
+        
+        
+    spheredist_calyx_sum[b] = np.sum(spheredist_calyx_temp)
+    spheredist_LH_sum[b] = np.sum(spheredist_LH_temp)
+    spheredist_AL_sum[b] = np.sum(spheredist_AL_temp)
+
+
+
+
+#%% Cluster scaling exponent calculation per neuron but with count instead
+
+
 
 
 
