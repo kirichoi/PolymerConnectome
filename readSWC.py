@@ -1399,7 +1399,7 @@ plt.legend(['AL: ' + str(round(poptD_AL[0], 3)) + '$\pm$' + str(round(perrD_AL[0
 #plt.tight_layout()
 plt.xlabel("Radius $r$", fontsize=15)
 plt.ylabel("Count", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/density_scale_neuropil_count1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/density_scale_neuropil_count1_fixed_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -1457,7 +1457,7 @@ plt.legend(['AL: ' + str(round(poptD_AL[0], 3)) + '$\pm$' + str(round(perrD_AL[0
 #plt.tight_layout()
 plt.xlabel("Radius $r$", fontsize=15)
 plt.ylabel("Count", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/density_scale_neuropil_count2.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/density_scale_neuropil_count2_fixed_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -1471,7 +1471,7 @@ LHmwerr = []
 ALmw = []
 ALmwerr = []
 mwx = []
-shiftN = 4
+shiftN = 10
 for i in range(len(radiussize) - shiftN):
     mwx.append(np.average(radiussize[i:i+shiftN]))
     
@@ -1528,7 +1528,7 @@ def cons_check(val):
     edges = iter(val[:1] + sum(gaps, []) + val[-1:])
     return list(zip(edges, edges))
 
-radiussize = np.logspace(-1, 2, 100)[25:95:2]
+radiussize = np.logspace(-1, 2, 100)[5:95:2]
 
 un_calyx = np.unique(MorphData.calyxdist_trk)
 un_LH = np.unique(MorphData.LHdist_trk)
@@ -1681,8 +1681,8 @@ spheredist_AL_count2_std = np.std(spheredist_AL_count2, axis=0)
 
 #%%
 
-farg = np.where(np.abs(np.diff(np.log10(spheredist_calyx_sum_avg))) > 0.2)[0][-1]
-iarg =  np.where(np.abs(np.diff(np.log10(spheredist_calyx_sum_avg))) > 0.2)[0][0]
+farg = np.where(np.abs(np.diff(np.log10(spheredist_calyx_sum_avg))) > 0.14)[0][-1]
+iarg =  np.where(np.abs(np.diff(np.log10(spheredist_calyx_sum_avg))) > 0.14)[0][0]
 
 poptD_calyx, pcovD_calyx = scipy.optimize.curve_fit(objFuncGL, 
                                                     np.log10(radiussize[iarg:farg]), 
@@ -1691,8 +1691,8 @@ poptD_calyx, pcovD_calyx = scipy.optimize.curve_fit(objFuncGL,
                                                     maxfev=10000)
 perrD_calyx = np.sqrt(np.diag(pcovD_calyx))
 
-farg = np.where(np.abs(np.diff(np.log10(spheredist_LH_sum_avg))) > 0.2)[0][-1]
-iarg =  np.where(np.abs(np.diff(np.log10(spheredist_LH_sum_avg))) > 0.2)[0][0]
+farg = np.where(np.abs(np.diff(np.log10(spheredist_LH_sum_avg))) > 0.14)[0][-1]
+iarg =  np.where(np.abs(np.diff(np.log10(spheredist_LH_sum_avg))) > 0.14)[0][0]
 
 poptD_LH, pcovD_LH = scipy.optimize.curve_fit(objFuncGL, 
                                               np.log10(radiussize[iarg:farg]), 
@@ -1701,8 +1701,8 @@ poptD_LH, pcovD_LH = scipy.optimize.curve_fit(objFuncGL,
                                               maxfev=10000)
 perrD_LH = np.sqrt(np.diag(pcovD_LH))
 
-farg = np.where(np.abs(np.diff(np.log10(spheredist_AL_sum_avg))) > 0.2)[0][-1]
-iarg =  np.where(np.abs(np.diff(np.log10(spheredist_AL_sum_avg))) > 0.2)[0][0]
+farg = np.where(np.abs(np.diff(np.log10(spheredist_AL_sum_avg))) > 0.14)[0][-1]
+iarg =  np.where(np.abs(np.diff(np.log10(spheredist_AL_sum_avg))) > 0.14)[0][0]
 
 poptD_AL, pcovD_AL = scipy.optimize.curve_fit(objFuncGL, 
                                               np.log10(radiussize[iarg:farg]), 
@@ -1717,12 +1717,12 @@ fitYD_AL = objFuncPpow(radiussize, poptD_AL[0], poptD_AL[1])
 
 fig = plt.figure(figsize=(8,6))
 
-plt.scatter(radiussize, 
-                    spheredist_AL_sum_avg, color='tab:blue', facecolors='none', alpha=0.5)
-plt.scatter(radiussize, 
-                    spheredist_calyx_sum_avg, color='tab:orange', facecolors='none', alpha=0.5)
-plt.scatter(radiussize, 
-                    spheredist_LH_sum_avg, color='tab:green', facecolors='none', alpha=0.5)
+plt.scatter(radiussize, spheredist_AL_sum_avg, color='tab:blue', facecolors='none', alpha=0.5)
+# plt.errorbar(radiussize, spheredist_AL_sum_avg, scipy.stats.sem(spheredist_AL_sum, axis=0), capsize=2)
+plt.scatter(radiussize, spheredist_calyx_sum_avg, color='tab:orange', facecolors='none', alpha=0.5)
+# plt.errorbar(radiussize, spheredist_calyx_sum_avg, scipy.stats.sem(spheredist_calyx_sum, axis=0), capsize=2)
+plt.scatter(radiussize, spheredist_LH_sum_avg, color='tab:green', facecolors='none', alpha=0.5)
+# plt.errorbar(radiussize, spheredist_LH_sum_avg, scipy.stats.sem(spheredist_LH_sum, axis=0), capsize=2)
 
 
 plt.plot(radiussize, fitYD_AL, lw=2, color='tab:blue')
@@ -1734,7 +1734,7 @@ plt.legend(['AL: ' + str(round(poptD_AL[0], 3)) + '$\pm$' + str(round(perrD_AL[0
             'MB calyx: ' + str(round(poptD_calyx[0], 3)) + '$\pm$' + str(round(perrD_calyx[0], 3)),
             'LH: ' + str(round(poptD_LH[0], 3)) + '$\pm$' + str(round(perrD_LH[0], 3))], fontsize=13)
 #plt.xlim(1, 75)
-#plt.ylim(3, 1500)
+plt.ylim(10e-3, 10e2)
 #plt.tight_layout()
 plt.xlabel("Radius $r$", fontsize=15)
 plt.ylabel("$L$", fontsize=15)
@@ -1742,8 +1742,8 @@ plt.ylabel("$L$", fontsize=15)
 plt.show()
 
 
-farg = np.where(np.abs(np.diff(np.log10(spheredist_calyx_count1_avg))) > 0.2)[0][-1]
-iarg =  np.where(np.abs(np.diff(np.log10(spheredist_calyx_count1_avg))) > 0.2)[0][0]
+farg = np.where(np.abs(np.diff(np.log10(spheredist_calyx_count1_avg))) > 0.14)[0][-1]
+iarg =  np.where(np.abs(np.diff(np.log10(spheredist_calyx_count1_avg))) > 0.14)[0][0]
 
 poptD_calyx, pcovD_calyx = scipy.optimize.curve_fit(objFuncGL, 
                                                     np.log10(radiussize[iarg:farg]), 
@@ -1752,8 +1752,8 @@ poptD_calyx, pcovD_calyx = scipy.optimize.curve_fit(objFuncGL,
                                                     maxfev=10000)
 perrD_calyx = np.sqrt(np.diag(pcovD_calyx))
 
-farg = np.where(np.abs(np.diff(np.log10(spheredist_LH_count1_avg))) > 0.2)[0][-1]
-iarg =  np.where(np.abs(np.diff(np.log10(spheredist_LH_count1_avg))) > 0.2)[0][0]
+farg = np.where(np.abs(np.diff(np.log10(spheredist_LH_count1_avg))) > 0.14)[0][-1]
+iarg =  np.where(np.abs(np.diff(np.log10(spheredist_LH_count1_avg))) > 0.14)[0][0]
 
 poptD_LH, pcovD_LH = scipy.optimize.curve_fit(objFuncGL, 
                                               np.log10(radiussize[iarg:farg]), 
@@ -1762,8 +1762,8 @@ poptD_LH, pcovD_LH = scipy.optimize.curve_fit(objFuncGL,
                                               maxfev=10000)
 perrD_LH = np.sqrt(np.diag(pcovD_LH))
 
-farg = np.where(np.abs(np.diff(np.log10(spheredist_AL_count1_avg))) > 0.2)[0][-1]
-iarg =  np.where(np.abs(np.diff(np.log10(spheredist_AL_count1_avg))) > 0.2)[0][0]
+farg = np.where(np.abs(np.diff(np.log10(spheredist_AL_count1_avg))) > 0.14)[0][-1]
+iarg =  np.where(np.abs(np.diff(np.log10(spheredist_AL_count1_avg))) > 0.14)[0][0]
 
 poptD_AL, pcovD_AL = scipy.optimize.curve_fit(objFuncGL, 
                                               np.log10(radiussize[iarg:farg]), 
@@ -1804,8 +1804,8 @@ plt.show()
 
 
 
-farg = np.where(np.abs(np.diff(np.log10(spheredist_calyx_count2_avg))) > 0.2)[0][-1]
-iarg =  np.where(np.abs(np.diff(np.log10(spheredist_calyx_count2_avg))) > 0.2)[0][0]
+farg = np.where(np.abs(np.diff(np.log10(spheredist_calyx_count2_avg))) > 0.14)[0][-1]
+iarg =  np.where(np.abs(np.diff(np.log10(spheredist_calyx_count2_avg))) > 0.14)[0][0]
 
 
 poptD_calyx, pcovD_calyx = scipy.optimize.curve_fit(objFuncGL, 
@@ -1815,8 +1815,8 @@ poptD_calyx, pcovD_calyx = scipy.optimize.curve_fit(objFuncGL,
                                                     maxfev=10000)
 perrD_calyx = np.sqrt(np.diag(pcovD_calyx))
 
-farg = np.where(np.abs(np.diff(np.log10(spheredist_LH_count2_avg))) > 0.2)[0][-1]
-iarg =  np.where(np.abs(np.diff(np.log10(spheredist_LH_count2_avg))) > 0.2)[0][0]
+farg = np.where(np.abs(np.diff(np.log10(spheredist_LH_count2_avg))) > 0.14)[0][-1]
+iarg =  np.where(np.abs(np.diff(np.log10(spheredist_LH_count2_avg))) > 0.14)[0][0]
 
 poptD_LH, pcovD_LH = scipy.optimize.curve_fit(objFuncGL, 
                                               np.log10(radiussize[iarg:farg]), 
@@ -1825,8 +1825,8 @@ poptD_LH, pcovD_LH = scipy.optimize.curve_fit(objFuncGL,
                                               maxfev=10000)
 perrD_LH = np.sqrt(np.diag(pcovD_LH))
 
-farg = np.where(np.abs(np.diff(np.log10(spheredist_AL_count2_avg))) > 0.2)[0][-1]
-iarg =  np.where(np.abs(np.diff(np.log10(spheredist_AL_count2_avg))) > 0.2)[0][0]
+farg = np.where(np.abs(np.diff(np.log10(spheredist_AL_count2_avg))) > 0.14)[0][-1]
+iarg =  np.where(np.abs(np.diff(np.log10(spheredist_AL_count2_avg))) > 0.14)[0][0]
 
 poptD_AL, pcovD_AL = scipy.optimize.curve_fit(objFuncGL, 
                                               np.log10(radiussize[iarg:farg]), 
@@ -1865,6 +1865,63 @@ plt.ylabel("Count", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/density_scale_neuropil_per_n_count2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
+
+#%% Moving window
+
+Calyxmw = []
+Calyxmwerr = []
+LHmw = []
+LHmwerr = []
+ALmw = []
+ALmwerr = []
+mwx = []
+shiftN = 10
+for i in range(len(radiussize) - shiftN):
+    mwx.append(np.average(radiussize[i:i+shiftN]))
+    
+    poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
+                                                np.log10(radiussize[i:i+shiftN]), 
+                                                np.log10(spheredist_calyx_sum_avg[i:i+shiftN]), 
+                                                p0=[1., 0.], 
+                                                maxfev=100000)
+    Calyxmw.append(poptmxc[0])
+    Calyxmwerr.append(np.sqrt(np.diag(pcovmxc))[0])
+    
+    poptmxl, pcovmxl = scipy.optimize.curve_fit(objFuncGL, 
+                                                np.log10(radiussize[i:i+shiftN]), 
+                                                np.log10(spheredist_LH_sum_avg[i:i+shiftN]), 
+                                                p0=[1., 0.], 
+                                                maxfev=100000)
+    LHmw.append(poptmxl[0])
+    LHmwerr.append(np.sqrt(np.diag(pcovmxl))[0])
+    
+    poptmxa, pcovmxa = scipy.optimize.curve_fit(objFuncGL, 
+                                                np.log10(radiussize[i:i+shiftN]), 
+                                                np.log10(spheredist_AL_sum_avg[i:i+shiftN]), 
+                                                p0=[1., 0.], 
+                                                maxfev=100000)
+    ALmw.append(poptmxa[0])
+    ALmwerr.append(np.sqrt(np.diag(pcovmxa))[0])
+    
+
+fig = plt.figure(figsize=(12,8))
+plt.plot(mwx[:49-shiftN], Calyxmw[:49-shiftN], lw=2)
+plt.plot(mwx[:53-shiftN], LHmw[:53-shiftN], lw=2)
+plt.plot(mwx, ALmw, lw=2)
+plt.fill_between(mwx[:49-shiftN], np.array(Calyxmw[:49-shiftN])-np.array(Calyxmwerr[:49-shiftN]), 
+                 np.array(Calyxmw[:49-shiftN])+np.array(Calyxmwerr[:49-shiftN]), alpha=0.3)
+plt.fill_between(mwx[:53-shiftN], np.array(LHmw[:53-shiftN])-np.array(LHmwerr[:53-shiftN]),
+                 np.array(LHmw[:53-shiftN])+np.array(LHmwerr[:53-shiftN]), alpha=0.3)
+plt.fill_between(mwx, np.array(ALmw)-np.array(ALmwerr), np.array(ALmw)+np.array(ALmwerr), alpha=0.3)
+plt.xscale('log')
+plt.legend(["Calyx", "LH", "AL"], fontsize=15)
+# plt.yscale('log')
+#plt.xlim(1, 75)
+#plt.ylim(3, 1500)
+#plt.tight_layout()
+plt.xlabel("Radius", fontsize=15)
+plt.ylabel("Slope", fontsize=15)
+plt.show()
 
 
 
