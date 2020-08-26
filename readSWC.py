@@ -548,6 +548,7 @@ for lb in range(len(LengthData.length_branch)):
     LengthData.length_average[lb] = np.average(LengthData.length_branch[lb])
 
 MorphData.morph_dist_len = np.array([len(arr) for arr in MorphData.morph_dist])
+MorphData.morph_dist_flat = np.array([item for sublist in MorphData.morph_dist for item in sublist])
 #MorphData.morph_dist_len_EP = np.empty((len(MorphData.morph_dist_len)))
 
 
@@ -2437,14 +2438,12 @@ print('checkpoint 8: ' + str(t8-t7))
 
 binsize = np.logspace(-1, 3, 100)[13:99:3]
 
-morph_dist_flat = np.array([item for sublist in MorphData.morph_dist for item in sublist])
-
-xmax_all = np.max(morph_dist_flat[:,0])
-xmin_all = np.min(morph_dist_flat[:,0])
-ymax_all = np.max(morph_dist_flat[:,1])
-ymin_all = np.min(morph_dist_flat[:,1])
-zmax_all = np.max(morph_dist_flat[:,2])
-zmin_all = np.min(morph_dist_flat[:,2])
+xmax_all = np.max(MorphData.morph_dist_flat[:,0])
+xmin_all = np.min(MorphData.morph_dist_flat[:,0])
+ymax_all = np.max(MorphData.morph_dist_flat[:,1])
+ymin_all = np.min(MorphData.morph_dist_flat[:,1])
+zmax_all = np.max(MorphData.morph_dist_flat[:,2])
+zmin_all = np.min(MorphData.morph_dist_flat[:,2])
 
 hlist = []
 hlist_count = []
@@ -2461,7 +2460,7 @@ for b in range(len(binsize)):
     if len(zbin) == 1:
         zbin = [-1000, 1000]
         
-    h, e = np.histogramdd(morph_dist_flat, 
+    h, e = np.histogramdd(MorphData.morph_dist_flat, 
                           bins=[xbin, 
                                 ybin,
                                 zbin])
@@ -4900,7 +4899,9 @@ for i in range(len(glo_list)):
         
     if len(calyx_sq_tri) > 0:
         calyxdist_cluster_u_full_new.append(calyx_sq_tri)
-    calyxdist_noncluster_u_full_new.append(calyx_nc.flatten())        
+    else:
+        calyxdist_cluster_u_full_new.append([])
+    calyxdist_noncluster_u_full_new.append(calyx_nc.flatten())
 
 calyxdist_cluster_u_full_flat_new = [item for sublist in calyxdist_cluster_u_full_new for item in sublist]
 calyxdist_noncluster_u_full_flat_new = [item for sublist in calyxdist_noncluster_u_full_new for item in sublist]
@@ -4915,7 +4916,9 @@ for i in range(len(glo_list)):
         
     if len(LH_sq_tri) > 0:
         LHdist_cluster_u_full_new.append(LH_sq_tri)
-    LHdist_noncluster_u_full_new.append(LH_nc.flatten())        
+    else:
+        LHdist_cluster_u_full_new.append([])
+    LHdist_noncluster_u_full_new.append(LH_nc.flatten())
 
 LHdist_cluster_u_full_flat_new = [item for sublist in LHdist_cluster_u_full_new for item in sublist]
 LHdist_noncluster_u_full_flat_new = [item for sublist in LHdist_noncluster_u_full_new for item in sublist]
@@ -4930,7 +4933,9 @@ for i in range(len(glo_list)):
         
     if len(AL_sq_tri) > 0:
         ALdist_cluster_u_full_new.append(AL_sq_tri)
-    ALdist_noncluster_u_full_new.append(AL_nc.flatten())        
+    else:
+        ALdist_cluster_u_full_new.append([])
+    ALdist_noncluster_u_full_new.append(AL_nc.flatten())
 
 ALdist_cluster_u_full_flat_new = [item for sublist in ALdist_cluster_u_full_new for item in sublist]
 ALdist_noncluster_u_full_flat_new = [item for sublist in ALdist_noncluster_u_full_new for item in sublist]
@@ -5531,9 +5536,32 @@ plt.tight_layout()
 plt.show()
 
 
+calyxdist_cluster_u_p_n = np.empty(len(glo_idx))
+calyxdist_noncluster_u_p_n = np.empty(len(glo_idx))
+
+for i in range(len(glo_idx)):
+    if len(calyxdist_cluster_u_full_new[i]) > 0:
+        calyxdist_cluster_u_p_n[i] = np.average(calyxdist_cluster_u_full_new[i])
+    else:
+        calyxdist_cluster_u_p_n[i] = None
+    
+    if len(calyxdist_noncluster_u_full_new[i]) > 0:
+        calyxdist_noncluster_u_p_n[i] = np.average(calyxdist_noncluster_u_full_new[i])
+    else:
+        calyxdist_noncluster_u_p_n[i] = None
+        
+        
+        
+
 ALcalyx_corr_new = []
 ALLH_corr_new = []
 LHcalyx_corr_new = []
+
+# for i in range(len(glo_lb)-1):
+#     if len(np.arange(glo_lb[i],glo_lb[i+1])) > 1:
+#         ALcalyx_corr_new.append(np.corrcoef(morph_dist_calyx_r_new[np.arange(glo_lb[i],glo_lb[i+1])], morph_dist_AL_r_new[np.arange(glo_lb[i],glo_lb[i+1])])[0][1])
+#         ALLH_corr_new.append(np.corrcoef(morph_dist_LH_r_new[np.arange(glo_lb[i],glo_lb[i+1])], morph_dist_AL_r_new[np.arange(glo_lb[i],glo_lb[i+1])])[0][1])
+#         LHcalyx_corr_new.append(np.corrcoef(morph_dist_calyx_r_new[np.arange(glo_lb[i],glo_lb[i+1])], morph_dist_LH_r_new[np.arange(glo_lb[i],glo_lb[i+1])])[0][1])
 
 for i in range(len(morph_dist_AL_r_new)):
     ALcalyx_corr_new.append(np.corrcoef(morph_dist_calyx_r_new[i], morph_dist_AL_r_new[i])[0][1])
@@ -5542,25 +5570,31 @@ for i in range(len(morph_dist_AL_r_new)):
 
 ALcalyx_corr_new_glo = []
 ALLH_corr_new_glo = []
+LHcalyx_corr_new_glo = []
 
 for i in range(len(glo_lb)-1):
     ALcalyx_corr_new_glo.append(np.array(ALcalyx_corr_new)[np.arange(glo_lb[i],glo_lb[i+1])])
     ALLH_corr_new_glo.append(np.array(ALLH_corr_new)[np.arange(glo_lb[i],glo_lb[i+1])])
+    LHcalyx_corr_new_glo.append(np.array(LHcalyx_corr_new)[np.arange(glo_lb[i],glo_lb[i+1])])
 
 ALcalyx_corr_new_glo_avg = []
 ALcalyx_corr_new_glo_std = []
 ALLH_corr_new_glo_avg = []
 ALLH_corr_new_glo_std = []
+LHcalyx_corr_new_glo_avg = []
+LHcalyx_corr_new_glo_std = []
 
 for i in range(len(ALcalyx_corr_new_glo)):
     ALcalyx_corr_new_glo_avg.append(np.average(ALcalyx_corr_new_glo[i]))
     ALcalyx_corr_new_glo_std.append(np.std(ALcalyx_corr_new_glo[i]))
     ALLH_corr_new_glo_avg.append(np.average(ALLH_corr_new_glo[i]))
     ALLH_corr_new_glo_std.append(np.std(ALLH_corr_new_glo[i]))
+    LHcalyx_corr_new_glo_avg.append(np.average(LHcalyx_corr_new_glo[i]))
+    LHcalyx_corr_new_glo_std.append(np.std(LHcalyx_corr_new_glo[i]))
 
-validx_new = np.argwhere(np.array(ALLH_corr_new_glo_avg) > 0.6).T[0]
+validx_new = np.argwhere(np.array(ALLH_corr_new_glo_avg) > 0.5).T[0]
 
-diffidx_new = np.argwhere(np.subtract(ALLH_corr_new_glo_avg, ALcalyx_corr_new_glo_avg) > 0.6).T[0]
+diffidx_new = np.argwhere(np.subtract(ALLH_corr_new_glo_avg, ALcalyx_corr_new_glo_avg) > 0.5).T[0]
 
 print(np.sort(np.array(glo_list)[validx_new]))
 print(np.sort(np.array(glo_list)[diffidx_new]))
