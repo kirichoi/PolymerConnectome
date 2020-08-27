@@ -4504,6 +4504,17 @@ for f in range(len(MorphData.neuron_id)):
                 glo_list.append(glo_name)
                 glo_idx.append([f])
 
+glo_len = [len(arr) for arr in glo_idx]
+glo_lb = [sum(glo_len[0:i]) for i in range(len(glo_len)+1)]
+glo_lbs = np.subtract(glo_lb, glo_lb[0])
+glo_float = np.divide(glo_lbs, glo_lbs[-1])
+
+glo_list_neuron = np.repeat(glo_list, glo_len)
+glo_lb_idx = []
+
+for i in range(len(glo_lb)-1):
+    glo_lb_idx.append(np.arange(glo_lb[i],glo_lb[i+1]))
+
 morph_dist_calyx = []
 morph_dist_LH = []
 morph_dist_AL = []
@@ -4895,11 +4906,6 @@ morph_dist_calyx_r = scipy.spatial.distance.cdist(morph_dist_calyx_CM_flat, morp
 morph_dist_LH_r = scipy.spatial.distance.cdist(morph_dist_LH_CM_flat, morph_dist_LH_CM_flat)
 morph_dist_AL_r = scipy.spatial.distance.cdist(morph_dist_AL_CM_flat, morph_dist_AL_CM_flat)
 
-glo_len = [len(arr) for arr in glo_idx]
-glo_lb = [sum(glo_len[0:i]) for i in range(len(glo_len)+1)]
-glo_lbs = np.subtract(glo_lb, glo_lb[0])
-glo_float = np.divide(glo_lbs, glo_lbs[-1])
-
 calyxdist_cluster_u_full = []
 calyxdist_noncluster_u_full = []
 
@@ -4980,26 +4986,50 @@ for i in range(len(morph_dist_calyx_CM_flat)):
         morph_dist_AL_ed = scipy.spatial.distance.cdist(morph_dist_AL_flt[i], morph_dist_AL_flt[j])
         
         # NNmetric
-        if len(morph_dist_calyx_flt[i]) <= len(morph_dist_calyx_flt[j]):
+        if len(morph_dist_calyx_flt[i]) < len(morph_dist_calyx_flt[j]):
             N_calyx = len(morph_dist_calyx_flt[i])
             dmin_calyx = np.min(morph_dist_calyx_ed, axis=1)
-        else:
+        elif len(morph_dist_calyx_flt[i]) > len(morph_dist_calyx_flt[j]):
             N_calyx = len(morph_dist_calyx_flt[j])
             dmin_calyx = np.min(morph_dist_calyx_ed, axis=0)
+        else:
+            N_calyx = len(morph_dist_calyx_flt[i])
+            r1 = np.min(morph_dist_calyx_ed, axis=0)
+            r2 = np.min(morph_dist_calyx_ed, axis=1)
+            if np.sum(r1) < np.sum(r2):
+                dmin_calyx = r1
+            else:
+                dmin_calyx = r2
         
-        if len(morph_dist_LH_flt[i]) <= len(morph_dist_LH_flt[j]):
+        if len(morph_dist_LH_flt[i]) < len(morph_dist_LH_flt[j]):
             N_LH = len(morph_dist_LH_flt[i])
             dmin_LH = np.min(morph_dist_LH_ed, axis=1)
-        else:
+        elif len(morph_dist_LH_flt[i]) > len(morph_dist_LH_flt[j]):
             N_LH = len(morph_dist_LH_flt[j])
             dmin_LH = np.min(morph_dist_LH_ed, axis=0)
+        else:
+            N_LH = len(morph_dist_LH_flt[i])
+            r1 = np.min(morph_dist_LH_ed, axis=0)
+            r2 = np.min(morph_dist_LH_ed, axis=1)
+            if np.sum(r1) < np.sum(r2):
+                dmin_LH = r1
+            else:
+                dmin_LH = r2
         
-        if len(morph_dist_AL_flt[i]) <= len(morph_dist_AL_flt[j]):
+        if len(morph_dist_AL_flt[i]) < len(morph_dist_AL_flt[j]):
             N_AL = len(morph_dist_AL_flt[i])
             dmin_AL = np.min(morph_dist_AL_ed, axis=1)
-        else:
+        elif len(morph_dist_AL_flt[i]) > len(morph_dist_AL_flt[j]):
             N_AL = len(morph_dist_AL_flt[j])
             dmin_AL = np.min(morph_dist_AL_ed, axis=0)
+        else:
+            N_AL = len(morph_dist_AL_flt[i])
+            r1 = np.min(morph_dist_AL_ed, axis=0)
+            r2 = np.min(morph_dist_AL_ed, axis=1)
+            if np.sum(r1) < np.sum(r2):
+                dmin_AL = r1
+            else:
+                dmin_AL = r2
         
         morph_dist_calyx_r_new[i][j] = np.sqrt(np.divide(np.sum(np.square(dmin_calyx)), N_calyx))
         morph_dist_LH_r_new[i][j] = np.sqrt(np.divide(np.sum(np.square(dmin_LH)), N_LH))
@@ -5388,12 +5418,6 @@ print(np.sort(np.array(glo_list)[diffidx]))
 
 #%% Correlation matrix cluster
 
-glo_list_neuron = np.repeat(glo_list, glo_len)
-glo_lb_idx = []
-
-for i in range(len(glo_lb)-1):
-    glo_lb_idx.append(np.arange(glo_lb[i],glo_lb[i+1]))
-
 morph_dist_calyx_CM_avg = []
 morph_dist_LH_CM_avg = []
 morph_dist_AL_CM_avg = []
@@ -5703,10 +5727,7 @@ calyxdist_cluster_u_p_n = np.empty(len(glo_idx))
 calyxdist_noncluster_u_p_n = np.empty(len(glo_idx))
 
 for i in range(len(glo_idx)):
-    if len(calyxdist_cluster_u_full_new[i]) > 0:
-        calyxdist_cluster_u_p_n[i] = np.average(calyxdist_cluster_u_full_new[i])
-    else:
-        calyxdist_cluster_u_p_n[i] = None
+    calyxdist_cluster_u_p_n[i] = np.average(morph_dist_calyx_r_new[glo_lbs[i]:glo_lbs[i+1],glo_lbs[i]:glo_lbs[i+1]])
     
     if len(calyxdist_noncluster_u_full_new[i]) > 0:
         calyxdist_noncluster_u_p_n[i] = np.average(calyxdist_noncluster_u_full_new[i])
