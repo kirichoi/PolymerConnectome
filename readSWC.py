@@ -458,21 +458,29 @@ for f in range(len(fp)):
                 endid.append(neu_branchTrk_temp[-1])
                 branch_dist_temp1.append(branch_dist_temp2)
                 length_branch_temp.append(dist)
-                if ((np.array(branch_dist_temp2)[:,0] > 475).all() and (np.array(branch_dist_temp2)[:,0] < 550).all() and
-                    (np.array(branch_dist_temp2)[:,1] < 260).all() and (np.array(branch_dist_temp2)[:,2] > 150).all()):
+                # if ((np.array(branch_dist_temp2)[:,0] > 475).all() and (np.array(branch_dist_temp2)[:,0] < 550).all() and
+                #     (np.array(branch_dist_temp2)[:,1] < 260).all() and (np.array(branch_dist_temp2)[:,2] > 150).all()):
+                if ((np.array(branch_dist_temp2)[:,0] > 477).all() and (np.array(branch_dist_temp2)[:,0] < 545).all() and
+                    (np.array(branch_dist_temp2)[:,1] < 273).all() and (np.array(branch_dist_temp2)[:,1] > 190).all() and
+                    (np.array(branch_dist_temp2)[:,2] > 149).all()):
                     MorphData.calyxdist.append(branch_dist_temp2)
                     MorphData.calyxdist_trk.append(f)
                     calyxdist_per_n_temp.append(branch_dist_temp2)
                     length_calyx_per_n.append(dist)
-                elif ((np.array(branch_dist_temp2)[:,0] < 475).all() and (np.array(branch_dist_temp2)[:,1] < 260).all() and
-                    (np.array(branch_dist_temp2)[:,1] > 180).all() and (np.array(branch_dist_temp2)[:,2] > 125).all()):
+                # elif ((np.array(branch_dist_temp2)[:,0] < 475).all() and (np.array(branch_dist_temp2)[:,1] < 260).all() and
+                #     (np.array(branch_dist_temp2)[:,1] > 180).all() and (np.array(branch_dist_temp2)[:,2] > 125).all()):
+                elif ((np.array(branch_dist_temp2)[:,0] < 477).all() and (np.array(branch_dist_temp2)[:,1] < 273).all() and
+                    (np.array(branch_dist_temp2)[:,1] > 190).all() and (np.array(branch_dist_temp2)[:,2] > 117).all()):
                     MorphData.LHdist.append(branch_dist_temp2)
                     MorphData.LHdist_trk.append(f)
                     LHdist_per_n_temp.append(branch_dist_temp2)
                     length_LH_per_n.append(dist)
-                elif ((np.array(branch_dist_temp2)[:,0] > 475).all() and (np.array(branch_dist_temp2)[:,0] < 600).all() and 
-                      (np.array(branch_dist_temp2)[:,1] > 280).all() and (np.array(branch_dist_temp2)[:,1] < 400).all() and
-                      (np.array(branch_dist_temp2)[:,2] < 90).all()):
+                # elif ((np.array(branch_dist_temp2)[:,0] > 475).all() and (np.array(branch_dist_temp2)[:,0] < 600).all() and 
+                #       (np.array(branch_dist_temp2)[:,1] > 280).all() and (np.array(branch_dist_temp2)[:,1] < 400).all() and
+                #       (np.array(branch_dist_temp2)[:,2] < 90).all()):
+                elif ((np.array(branch_dist_temp2)[:,0] > 477).all() and (np.array(branch_dist_temp2)[:,0] < 597).all() and 
+                      (np.array(branch_dist_temp2)[:,1] > 273).all() and (np.array(branch_dist_temp2)[:,1] < 371).all() and
+                      (np.array(branch_dist_temp2)[:,2] < 84).all()):
                     MorphData.ALdist.append(branch_dist_temp2)
                     MorphData.ALdist_trk.append(f)
                     ALdist_per_n_temp.append(branch_dist_temp2)
@@ -588,12 +596,69 @@ if Parameter.RUN:
     if Parameter.SAVE:
         utils.exportMorph(Parameter, t4-t0, MorphData, BranchData, LengthData)
 
+calyxdist_flat = [item for sublist in MorphData.calyxdist for item in sublist]
+LHdist_flat = [item for sublist in MorphData.LHdist for item in sublist]
+ALdist_flat = [item for sublist in MorphData.ALdist for item in sublist]
+
+calyxCM = (np.sum(np.array(calyxdist_flat), axis=0)/len(np.array(calyxdist_flat)))
+LHCM = (np.sum(np.array(LHdist_flat), axis=0)/len(np.array(LHdist_flat)))
+ALCM = (np.sum(np.array(ALdist_flat), axis=0)/len(np.array(ALdist_flat)))
+
+fullCM = cML#np.average(OutputData.cMLSeg, axis=0)
+
+
 t5 = time.time()
 
 print('checkpoint 5: ' + str(t5-t4))
 
 
+#%% Neuropil Segmentation
 
+from scipy.signal import argrelextrema
+
+x = np.histogram(MorphData.morph_dist_flat[:,0], bins=int((np.max(MorphData.morph_dist_flat[:,0]) - np.min(MorphData.morph_dist_flat[:,0]))/4))
+y = np.histogram(MorphData.morph_dist_flat[:,1], bins=int((np.max(MorphData.morph_dist_flat[:,1]) - np.min(MorphData.morph_dist_flat[:,1]))/2))
+z = np.histogram(MorphData.morph_dist_flat[:,2], bins=int((np.max(MorphData.morph_dist_flat[:,2]) - np.min(MorphData.morph_dist_flat[:,2]))/2))
+
+xex = argrelextrema(x[0], np.less)[0]
+yex = argrelextrema(y[0], np.less)[0]
+zex = argrelextrema(z[0], np.less)[0]
+
+fig = plt.figure(figsize=(8,6))
+plt.hist(MorphData.morph_dist_flat[:,0], bins=int((np.max(MorphData.morph_dist_flat[:,0]) - np.min(MorphData.morph_dist_flat[:,0]))/4), color='tab:purple', alpha=0.5)
+plt.hist(np.array(ALdist_flat)[:,0], bins=int((np.max(np.array(ALdist_flat)[:,0]) - np.min(np.array(ALdist_flat)[:,0]))/4), color='tab:blue', alpha=0.5)
+plt.hist(np.array(calyxdist_flat)[:,0], bins=int((np.max(np.array(calyxdist_flat)[:,0]) - np.min(np.array(calyxdist_flat)[:,0]))/4), color='tab:orange', alpha=0.5)
+plt.hist(np.array(LHdist_flat)[:,0], bins=int((np.max(np.array(LHdist_flat)[:,0]) - np.min(np.array(LHdist_flat)[:,0]))/4), color='tab:green', alpha=0.5)
+plt.xlabel('x Coordinates', fontsize=15)
+plt.ylabel('Count', fontsize=15)
+plt.legend(['All', 'AL', 'MB calyx', 'LH'], fontsize=13)
+plt.scatter(x[1][xex[[2,3,4]]], x[0][xex[[2,3,4]]], color='tab:red')
+# plt.savefig(Parameter.outputdir + '/x_segment_hist_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig = plt.figure(figsize=(8,6))
+plt.hist(MorphData.morph_dist_flat[:,1], bins=int((np.max(MorphData.morph_dist_flat[:,1]) - np.min(MorphData.morph_dist_flat[:,1]))/2), color='tab:purple', alpha=0.5)
+plt.hist(np.array(ALdist_flat)[:,1], bins=int((np.max(np.array(ALdist_flat)[:,1]) - np.min(np.array(ALdist_flat)[:,1]))/2), color='tab:blue', alpha=0.5)
+plt.hist(np.array(calyxdist_flat)[:,1], bins=int((np.max(np.array(calyxdist_flat)[:,1]) - np.min(np.array(calyxdist_flat)[:,1]))/2), color='tab:orange', alpha=0.5)
+plt.hist(np.array(LHdist_flat)[:,1], bins=int((np.max(np.array(LHdist_flat)[:,1]) - np.min(np.array(LHdist_flat)[:,1]))/2), color='tab:green', alpha=0.5)
+plt.xlabel('y Coordinates', fontsize=15)
+plt.ylabel('Count', fontsize=15)
+plt.legend(['All', 'AL', 'MB calyx', 'LH'], fontsize=13)
+plt.scatter(y[1][yex[[3,4,12]]], y[0][yex[[3,4,12]]], color='tab:red')
+# plt.savefig(Parameter.outputdir + '/y_segment_hist_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig = plt.figure(figsize=(8,6))
+plt.hist(MorphData.morph_dist_flat[:,2], bins=int((np.max(MorphData.morph_dist_flat[:,2]) - np.min(MorphData.morph_dist_flat[:,2]))/2), color='tab:purple', alpha=0.5)
+plt.hist(np.array(ALdist_flat)[:,2], bins=int((np.max(np.array(ALdist_flat)[:,2]) - np.min(np.array(ALdist_flat)[:,2]))/2), color='tab:blue', alpha=0.5)
+plt.hist(np.array(calyxdist_flat)[:,2], bins=int((np.max(np.array(calyxdist_flat)[:,2]) - np.min(np.array(calyxdist_flat)[:,2]))/2), color='tab:orange', alpha=0.5)
+plt.hist(np.array(LHdist_flat)[:,2], bins=int((np.max(np.array(LHdist_flat)[:,2]) - np.min(np.array(LHdist_flat)[:,2]))/2), color='tab:green', alpha=0.5)
+plt.xlabel('z Coordinates', fontsize=15)
+plt.ylabel('Count', fontsize=15)
+plt.legend(['All', 'AL', 'MB calyx', 'LH'], fontsize=13)
+plt.scatter(z[1][zex[[6,9,12]]], z[0][zex[[6,9,12]]], color='tab:red')
+# plt.savefig(Parameter.outputdir + '/z_segment_hist_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
 
 
 #%%
@@ -1146,19 +1211,6 @@ t7 = time.time()
 print('checkpoint 7: ' + str(t7-t6))
 
 
-#%% Cluster Center of Mass Calculation
-
-calyxdist_flat = [item for sublist in MorphData.calyxdist for item in sublist]
-LHdist_flat = [item for sublist in MorphData.LHdist for item in sublist]
-ALdist_flat = [item for sublist in MorphData.ALdist for item in sublist]
-
-calyxCM = (np.sum(np.array(calyxdist_flat), axis=0)/len(np.array(calyxdist_flat)))
-LHCM = (np.sum(np.array(LHdist_flat), axis=0)/len(np.array(LHdist_flat)))
-ALCM = (np.sum(np.array(ALdist_flat), axis=0)/len(np.array(ALdist_flat)))
-
-fullCM = cML#np.average(OutputData.cMLSeg, axis=0)
-
-
 #%% Cluster scaling exponent calculation ver 1
         
 def cons_check(val):
@@ -1301,8 +1353,8 @@ poptD_AL1, pcovD_AL1 = scipy.optimize.curve_fit(objFuncGL,
 perrD_AL1 = np.sqrt(np.diag(pcovD_AL1))
 
 poptD_AL2, pcovD_AL2 = scipy.optimize.curve_fit(objFuncGL, 
-                                              np.log10(radiussize[0:19]), 
-                                              np.log10(spheredist_AL_sum[0:19]), 
+                                              np.log10(radiussize[4:19]), 
+                                              np.log10(spheredist_AL_sum[4:19]), 
                                               p0=[-0.1, 0.1], 
                                               maxfev=10000)
 perrD_AL2 = np.sqrt(np.diag(pcovD_AL2))
@@ -4684,6 +4736,9 @@ ax.set_xticklabels([])
 ax.set_yticklabels([])
 ax.set_zticklabels([])
 
+# ax.set_xlim(490, 550)
+# ax.set_ylim(350, 150)
+# ax.set_zlim(160, 190)
 ax.set_xlim(490, 550)
 ax.set_ylim(350, 150)
 ax.set_zlim(160, 190)
@@ -5532,7 +5587,7 @@ ax.set_xticklabels(labels, fontsize=15)
 ax.legend(fontsize=13)
 #ax.set_title('Median distance within and outside cluster')
 plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_median_nnmetric.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_median_nnmetric_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -5640,7 +5695,7 @@ ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
 ax.spines["bottom"].set_visible(False)
 ax.spines["left"].set_visible(False)
-# plt.savefig(Parameter.outputdir + '/hier_AL_fixed_nnmetric.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/hier_AL_fixed_nnmetric_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 ind_AL_new = scipy.cluster.hierarchy.fcluster(L_AL_new, 0.5*morph_dist_AL_r_new_avg.max(), 'maxclust')
@@ -5660,7 +5715,7 @@ ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
 ax.spines["bottom"].set_visible(False)
 ax.spines["left"].set_visible(False)
-# plt.savefig(Parameter.outputdir + '/hier_calyx_fixed_nnmetric.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/hier_calyx_fixed_nnmetric_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 ind_calyx_new = scipy.cluster.hierarchy.fcluster(L_calyx_new, 0.5*morph_dist_calyx_r_new_avg.max(), 'maxclust')
@@ -5681,7 +5736,7 @@ ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
 ax.spines["bottom"].set_visible(False)
 ax.spines["left"].set_visible(False)
-# plt.savefig(Parameter.outputdir + '/hier_LH_fixed_nnmetric.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/hier_LH_fixed_nnmetric_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 ind_LH_new = scipy.cluster.hierarchy.fcluster(L_LH_new, 0.5*morph_dist_LH_r_new_avg.max(), 'maxclust')
@@ -5742,7 +5797,7 @@ ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
 ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=5, rotation_mode='default')
 ax3.axis["left"].minor_ticklabels.set(fontsize=5, rotation_mode='default')
 plt.colorbar(im, fraction=0.045)
-# plt.savefig(Parameter.outputdir + '/distance_grid_calyx_fixed_nnmetric_clst.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/distance_grid_calyx_fixed_nnmetric_clst_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 fig = plt.figure(figsize=(6,6))
@@ -5775,7 +5830,7 @@ ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
 ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=5, rotation_mode='default')
 ax3.axis["left"].minor_ticklabels.set(fontsize=5, rotation_mode='default')
 plt.colorbar(im, fraction=0.045)
-# plt.savefig(Parameter.outputdir + '/distance_grid_LH_fixed_nnmetric_clst.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/distance_grid_LH_fixed_nnmetric_clst_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 fig = plt.figure(figsize=(6,6))
@@ -5808,7 +5863,7 @@ ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
 ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=5, rotation_mode='default')
 ax3.axis["left"].minor_ticklabels.set(fontsize=5, rotation_mode='default')
 plt.colorbar(im, fraction=0.045)
-# plt.savefig(Parameter.outputdir + '/distance_grid_AL_fixed_nnmetric_clst.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/distance_grid_AL_fixed_nnmetric_clst_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -5828,7 +5883,7 @@ ax.set_xticklabels(glo_list_cluster_new, rotation=90, fontsize=10)
 ax.legend(fontsize=13)
 plt.xlim(0-0.5, len(glo_list)-0.5)
 plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/correlation_glomeruli_nnmetric_clst.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/correlation_glomeruli_nnmetric_clst_.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
