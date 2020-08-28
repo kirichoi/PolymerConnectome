@@ -4243,52 +4243,9 @@ plt.tight_layout()
 # plt.savefig(Parameter.outputdir + '/rgy_neuropil_fixed_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
-# xvallog2 = np.logspace(0, 5)
-
-# poptR_calyx, pcovR_calyx = scipy.optimize.curve_fit(objFuncGL, 
-#                                         np.log10(calyxdist_per_n_count), 
-#                                         np.log10(rGy_calyx), 
-#                                         p0=[1., 0.], 
-#                                         maxfev=100000)
-# perrR_calyx = np.sqrt(np.diag(pcovR_calyx))
-# fitYR_calyx = objFuncPpow(xvallog2, poptR_calyx[0], poptR_calyx[1])
-
-# poptR_LH, pcovR_LH = scipy.optimize.curve_fit(objFuncGL, 
-#                                         np.log10(LHdist_per_n_count), 
-#                                         np.log10(rGy_LH), 
-#                                         p0=[1., 0.], 
-#                                         maxfev=100000)
-# perrR_LH = np.sqrt(np.diag(pcovR_LH))
-# fitYR_LH = objFuncPpow(xvallog2, poptR_LH[0], poptR_LH[1])
-
-# poptR_AL, pcovR_AL = scipy.optimize.curve_fit(objFuncGL, 
-#                                         np.log10(ALdist_per_n_count), 
-#                                         np.log10(rGy_AL), 
-#                                         p0=[1., 0.], 
-#                                         maxfev=100000)
-# perrR_AL = np.sqrt(np.diag(pcovR_AL))
-# fitYR_AL = objFuncPpow(xvallog2, poptR_AL[0], poptR_AL[1])
-
-
-# fig = plt.figure(figsize=(8,6))
-# plt.scatter(ALdist_per_n_count, rGy_AL, color='tab:blue', facecolors='none')
-# plt.scatter(calyxdist_per_n_count, rGy_calyx, color='tab:orange', facecolors='none')
-# plt.scatter(LHdist_per_n_count, rGy_LH, color='tab:green', facecolors='none')
-# plt.plot(xvallog2, fitYR_AL, ls='dashed', lw=3)
-# plt.plot(xvallog2, fitYR_calyx, ls='dashed', lw=3)
-# plt.plot(xvallog2, fitYR_LH, ls='dashed', lw=3)
-# plt.yscale('log')
-# plt.xscale('log')
-# plt.xlim(1, 1e5)
-# # plt.ylim(7, 4000)
-# plt.legend(['AL: ' + str(round(poptR_AL[0], 3)) + '$\pm$' + str(round(perrR_AL[0], 3)),
-#             'MB calyx: ' + str(round(poptR_calyx[0], 3)) + '$\pm$' + str(round(perrR_calyx[0], 3)),
-#             'LH: ' + str(round(poptR_LH[0], 3)) + '$\pm$' + str(round(perrR_LH[0], 3))], fontsize=15)
-# # plt.title(r"MB calyx", fontsize=20)
-# plt.xlabel(r"$N$", fontsize=15)
-# plt.ylabel(r"$R_{g}$", fontsize=15)
-# plt.tight_layout()
-# plt.show()
+print('MB Calyx: ' + str(np.corrcoef(np.log10(LengthData.length_calyx_total), np.log10(rGy_calyx))[0][1]))
+print('LH: ' + str(np.corrcoef(np.log10(LengthData.length_LH_total), np.log10(rGy_LH))[0][1]))
+print('AL: ' + str(np.corrcoef(np.log10(LengthData.length_AL_total), np.log10(rGy_AL))[0][1]))
 
 
 #%% Radius of Gyration for calyx, LH, and AL per segment
@@ -4401,7 +4358,7 @@ plt.legend(['AL: ' + str(round(poptR_AL_per_seg[0], 3)) + '$\pm$' + str(round(pe
 plt.xlabel(r"$L$", fontsize=15)
 plt.ylabel(r"$R_{g}$", fontsize=15)
 plt.tight_layout()
-plt.savefig(Parameter.outputdir + '/rgy_neuropil_segment_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/rgy_neuropil_segment_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -4745,14 +4702,20 @@ mdAL_zmin = np.min(np.array(morph_dist_AL_flat)[:,2])
 hull_calyx = ConvexHull(np.array(morph_dist_calyx_flat))
 calyx_vol = hull_calyx.volume
 calyx_area = hull_calyx.area
+calyx_density_l = np.sum(LengthData.length_calyx_total)/calyx_vol
+calyx_density_c = len(calyx_dist_flat)/calyx_vol
 
 hull_LH = ConvexHull(np.array(morph_dist_LH_flat))
 LH_vol = hull_LH.volume
 LH_area = hull_LH.area
+LH_density_l = np.sum(LengthData.length_LH_total)/LH_vol
+LH_density_c = len(LH_dist_flat)/LH_vol
 
 hull_AL = ConvexHull(np.array(morph_dist_AL_flat))
 AL_vol = hull_AL.volume
 AL_area = hull_AL.area
+AL_density_l = np.sum(LengthData.length_AL_total)/AL_vol
+AL_density_c = len(AL_dist_flat)/AL_vol
 
     
 #%% Scatterplot of CM based on glomeruli ID
