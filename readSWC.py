@@ -4347,6 +4347,14 @@ length_AL_seg_total = length_AL_seg_total[length_AL_seg_total != 0]
 
 xvallog1 = np.logspace(-3, 3)
 
+length_calyx_seg_total = np.append(length_calyx_seg_total, LengthData.length_calyx_total)
+length_LH_seg_total = np.append(length_LH_seg_total, LengthData.length_LH_total)
+length_AL_seg_total = np.append(length_AL_seg_total, LengthData.length_AL_total)
+
+rGy_calyx_per_seg = np.append(rGy_calyx_per_seg, rGy_calyx)
+rGy_LH_per_seg = np.append(rGy_LH_per_seg, rGy_LH)
+rGy_AL_per_seg = np.append(rGy_AL_per_seg, rGy_AL)
+
 poptR_calyx_per_seg, pcovR_calyx_per_seg = scipy.optimize.curve_fit(objFuncGL, 
                                         np.log10(length_calyx_seg_total), 
                                         np.log10(rGy_calyx_per_seg), 
@@ -4373,12 +4381,15 @@ fitYR_AL_per_seg = objFuncPpow(xvallog1, poptR_AL_per_seg[0], poptR_AL_per_seg[1
 
 
 fig = plt.figure(figsize=(8,6))
-plt.scatter(length_AL_seg_total, rGy_AL_per_seg, color='tab:blue', facecolors='none')
-plt.scatter(length_calyx_seg_total, rGy_calyx_per_seg, color='tab:orange', facecolors='none')
-plt.scatter(length_LH_seg_total, rGy_LH_per_seg, color='tab:green', facecolors='none')
-plt.plot(xvallog1, fitYR_AL_per_seg, ls='dashed', lw=3)
-plt.plot(xvallog1, fitYR_calyx_per_seg, ls='dashed', lw=3)
-plt.plot(xvallog1, fitYR_LH_per_seg, ls='dashed', lw=3)
+plt.scatter(length_AL_seg_total, rGy_AL_per_seg, marker='.', s=1, color='tab:blue')
+plt.scatter(length_calyx_seg_total, rGy_calyx_per_seg, marker='.', s=1, color='tab:orange')
+plt.scatter(length_LH_seg_total, rGy_LH_per_seg, marker='.', s=1, color='tab:green')
+# plt.scatter(LengthData.length_AL_total, rGy_AL, color='tab:blue', facecolors='none')
+# plt.scatter(LengthData.length_calyx_total, rGy_calyx, color='tab:orange', facecolors='none')
+# plt.scatter(LengthData.length_LH_total, rGy_LH, color='tab:green', facecolors='none')
+# plt.plot(xvallog1, fitYR_AL_per_seg, ls='dashed', lw=3)
+# plt.plot(xvallog1, fitYR_calyx_per_seg, ls='dashed', lw=3)
+# plt.plot(xvallog1, fitYR_LH_per_seg, ls='dashed', lw=3)
 plt.yscale('log')
 plt.xscale('log')
 # plt.xlim(1, 10000)
@@ -4390,6 +4401,7 @@ plt.legend(['AL: ' + str(round(poptR_AL_per_seg[0], 3)) + '$\pm$' + str(round(pe
 plt.xlabel(r"$L$", fontsize=15)
 plt.ylabel(r"$R_{g}$", fontsize=15)
 plt.tight_layout()
+plt.savefig(Parameter.outputdir + '/rgy_neuropil_segment_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -5722,19 +5734,112 @@ plt.tight_layout()
 plt.show()
 
 
-
-calyxdist_cluster_u_p_n = np.empty(len(glo_idx))
-calyxdist_noncluster_u_p_n = np.empty(len(glo_idx))
+calyxdist_cluster_u_p_n_avg = np.empty(len(glo_idx))
+calyxdist_cluster_u_p_n_std = np.empty(len(glo_idx))
+calyxdist_noncluster_u_p_n_avg = np.empty(len(glo_idx))
+calyxdist_noncluster_u_p_n_std = np.empty(len(glo_idx))
 
 for i in range(len(glo_idx)):
-    calyxdist_cluster_u_p_n[i] = np.average(morph_dist_calyx_r_new[glo_lbs[i]:glo_lbs[i+1],glo_lbs[i]:glo_lbs[i+1]])
+    clst = morph_dist_calyx_r_new[glo_lbs[i]:glo_lbs[i+1],glo_lbs[i]:glo_lbs[i+1]]
+    clstval = clst[np.triu_indices_from(clst, k=1)]
+    calyxdist_cluster_u_p_n_avg[i] = np.median(clstval)
+    calyxdist_cluster_u_p_n_std[i] = scipy.stats.median_abs_deviation(clstval, center=np.median)
     
-    if len(calyxdist_noncluster_u_full_new[i]) > 0:
-        calyxdist_noncluster_u_p_n[i] = np.average(calyxdist_noncluster_u_full_new[i])
-    else:
-        calyxdist_noncluster_u_p_n[i] = None
-        
-        
+    tar = morph_dist_calyx_r_new[glo_lbs[i]:glo_lbs[i+1]]
+    nclst = np.delete(tar, np.arange(glo_lbs[i],glo_lbs[i+1]), axis=1)
+    calyxdist_noncluster_u_p_n_avg[i] = np.average(nclst)
+    calyxdist_noncluster_u_p_n_std[i] = scipy.stats.median_abs_deviation(nclst[0], center=np.median)
+
+LHdist_cluster_u_p_n_avg = np.empty(len(glo_idx))
+LHdist_cluster_u_p_n_std = np.empty(len(glo_idx))
+LHdist_noncluster_u_p_n_avg = np.empty(len(glo_idx))
+LHdist_noncluster_u_p_n_std = np.empty(len(glo_idx))
+
+for i in range(len(glo_idx)):
+    clst = morph_dist_LH_r_new[glo_lbs[i]:glo_lbs[i+1],glo_lbs[i]:glo_lbs[i+1]]
+    clstval = clst[np.triu_indices_from(clst, k=1)]
+    LHdist_cluster_u_p_n_avg[i] = np.median(clstval)
+    LHdist_cluster_u_p_n_std[i] = scipy.stats.median_abs_deviation(clstval, center=np.median)
+    
+    tar = morph_dist_LH_r_new[glo_lbs[i]:glo_lbs[i+1]]
+    nclst = np.delete(tar, np.arange(glo_lbs[i],glo_lbs[i+1]), axis=1)
+    LHdist_noncluster_u_p_n_avg[i] = np.average(nclst)
+    LHdist_noncluster_u_p_n_std[i] = scipy.stats.median_abs_deviation(nclst[0], center=np.median)
+
+ALdist_cluster_u_p_n_avg = np.empty(len(glo_idx))
+ALdist_cluster_u_p_n_std = np.empty(len(glo_idx))
+ALdist_noncluster_u_p_n_avg = np.empty(len(glo_idx))
+ALdist_noncluster_u_p_n_std = np.empty(len(glo_idx))
+
+for i in range(len(glo_idx)):
+    clst = morph_dist_AL_r_new[glo_lbs[i]:glo_lbs[i+1],glo_lbs[i]:glo_lbs[i+1]]
+    clstval = clst[np.triu_indices_from(clst, k=1)]
+    ALdist_cluster_u_p_n_avg[i] = np.median(clstval)
+    ALdist_cluster_u_p_n_std[i] = scipy.stats.median_abs_deviation(clstval, center=np.median)
+    
+    tar = morph_dist_AL_r_new[glo_lbs[i]:glo_lbs[i+1]]
+    nclst = np.delete(tar, np.arange(glo_lbs[i],glo_lbs[i+1]), axis=1)
+    ALdist_noncluster_u_p_n_avg[i] = np.average(nclst)
+    ALdist_noncluster_u_p_n_std[i] = scipy.stats.median_abs_deviation(nclst[0], center=np.median)
+
+
+fig, ax = plt.subplots(figsize=(8,6))
+x = np.arange(len(glo_list))
+width = 1.
+ax.bar(x, calyxdist_cluster_u_p_n_avg, width, 
+       yerr=calyxdist_cluster_u_p_n_std, label='Identical Glomerulus', alpha=0.5, 
+       error_kw=dict(ecolor='tab:blue', lw=1, capsize=2, capthick=1))
+ax.bar(x, calyxdist_noncluster_u_p_n_avg, width, 
+        yerr=calyxdist_noncluster_u_p_n_std, label='Different Glomeruli', alpha=0.5, 
+        error_kw=dict(ecolor='tab:orange', lw=1, capsize=2, capthick=1))
+ax.set_ylabel('Distance', fontsize=15)
+ax.set_xticks(x)
+ax.set_xticklabels(glo_list, rotation=90, fontsize=10)
+ax.legend(fontsize=13)
+plt.xlim(0-0.5, len(glo_list)-0.5)
+plt.tight_layout()
+# plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_p_glo_calyx_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig, ax = plt.subplots(figsize=(8,6))
+x = np.arange(len(glo_list))
+width = 1.
+ax.bar(x, LHdist_cluster_u_p_n_avg, width, 
+       yerr=LHdist_cluster_u_p_n_std, label='Identical Glomerulus', alpha=0.5, 
+       error_kw=dict(ecolor='tab:blue', lw=1, capsize=2, capthick=1))
+ax.bar(x, LHdist_noncluster_u_p_n_avg, width, 
+        yerr=LHdist_noncluster_u_p_n_std, label='Different Glomeruli', alpha=0.5, 
+        error_kw=dict(ecolor='tab:orange', lw=1, capsize=2, capthick=1))
+ax.set_ylabel('Distance', fontsize=15)
+ax.set_xticks(x)
+ax.set_xticklabels(glo_list, rotation=90, fontsize=10)
+ax.legend(fontsize=13)
+plt.xlim(0-0.5, len(glo_list)-0.5)
+plt.tight_layout()
+# plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_p_glo_LH_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig, ax = plt.subplots(figsize=(8,6))
+x = np.arange(len(glo_list))
+width = 1.
+ax.bar(x, ALdist_cluster_u_p_n_avg, width, 
+       yerr=ALdist_cluster_u_p_n_std, label='Identical Glomerulus', alpha=0.5, 
+       error_kw=dict(ecolor='tab:blue', lw=1, capsize=2, capthick=1))
+ax.bar(x, ALdist_noncluster_u_p_n_avg, width, 
+        yerr=ALdist_noncluster_u_p_n_std, label='Different Glomeruli', alpha=0.5, 
+        error_kw=dict(ecolor='tab:orange', lw=1, capsize=2, capthick=1))
+ax.set_ylabel('Distance', fontsize=15)
+ax.set_xticks(x)
+ax.set_xticklabels(glo_list, rotation=90, fontsize=10)
+ax.legend(fontsize=13)
+plt.xlim(0-0.5, len(glo_list)-0.5)
+plt.tight_layout()
+# plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_p_glo_AL_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+# for i in range(len(glo_idx)):
+#     for j in range(len(glo_idx[i])):
+#         scipy.spatial.distance.cdist(morph_dist_calyx[i], morph_dist_calyx[j])
         
 
 ALcalyx_corr_new = []
