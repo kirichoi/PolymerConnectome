@@ -15,6 +15,7 @@ from matplotlib import cm
 import matplotlib.ticker as ticker
 from mpl_toolkits.axisartist.parasite_axes import SubplotHost
 import matplotlib.patches as mpatches
+from scipy.spatial.transform import Rotation
 import seaborn
 import pandas as pd
 import scipy.optimize
@@ -383,6 +384,21 @@ t0 = time.time()
 indMorph_dist_p_us = []
 indMorph_dist_id = []
 
+r_d_y = -25
+r_rad_y = np.radians(r_d_y)
+r_y = np.array([0, 1, 0])
+
+r_vec_y = r_rad_y * r_y
+roty = Rotation.from_rotvec(r_vec_y)
+
+r_d_x = -35
+r_rad_x = np.radians(r_d_x)
+r_x = np.array([1, 0, 0])
+
+r_vec_x = r_rad_x * r_x
+rotx = Rotation.from_rotvec(r_vec_x)
+
+
 for f in range(len(fp)):
     print(f, fp[f])
     morph_neu_id = []
@@ -458,19 +474,38 @@ for f in range(len(fp)):
                 endid.append(neu_branchTrk_temp[-1])
                 branch_dist_temp1.append(branch_dist_temp2)
                 length_branch_temp.append(dist)
+                
+                # rotate -25 degrees on y-axis
+                branch_dist_temp2_rot = roty.apply(branch_dist_temp2)
+                
+                # rotate -35 degrees on x-axis
+                branch_dist_temp2_rot2 = rotx.apply(branch_dist_temp2)
+                
                 # if ((np.array(branch_dist_temp2)[:,0] > 475).all() and (np.array(branch_dist_temp2)[:,0] < 550).all() and
                 #     (np.array(branch_dist_temp2)[:,1] < 260).all() and (np.array(branch_dist_temp2)[:,2] > 150).all()):
-                if ((np.array(branch_dist_temp2)[:,0] > 477).all() and (np.array(branch_dist_temp2)[:,0] < 545).all() and
-                    (np.array(branch_dist_temp2)[:,1] < 273).all() and (np.array(branch_dist_temp2)[:,1] > 190).all() and
-                    (np.array(branch_dist_temp2)[:,2] > 149).all()):
+                # if ((np.array(branch_dist_temp2)[:,0] > 480).all() and (np.array(branch_dist_temp2)[:,0] < 591).all() and
+                #     (np.array(branch_dist_temp2)[:,1] < 273).all() and (np.array(branch_dist_temp2)[:,1] > 191).all() and
+                #     (np.array(branch_dist_temp2)[:,2] > 117).all()):
+                if ((np.array(branch_dist_temp2_rot)[:,0] > 353.95).all() and (np.array(branch_dist_temp2_rot)[:,0] < 426.14).all() and
+                    (np.array(branch_dist_temp2_rot)[:,1] > 190.71).all() and (np.array(branch_dist_temp2_rot)[:,1] < 272.91).all() and
+                    (np.array(branch_dist_temp2_rot)[:,2] > 354.95).all() and (np.array(branch_dist_temp2_rot)[:,2] < 399.06).all()):
+                # if ((np.array(branch_dist_temp2_rot)[:,0] > 324).all() and (np.array(branch_dist_temp2_rot)[:,0] < 393.12).all() and
+                #     (np.array(branch_dist_temp2_rot)[:,1] > 190.71).all() and (np.array(branch_dist_temp2_rot)[:,1] < 272.91).all() and 
+                #     (np.array(branch_dist_temp2_rot)[:,2] > 380.31).all() and (np.array(branch_dist_temp2_rot)[:,2] < 428.35).all()):
                     MorphData.calyxdist.append(branch_dist_temp2)
                     MorphData.calyxdist_trk.append(f)
                     calyxdist_per_n_temp.append(branch_dist_temp2)
                     length_calyx_per_n.append(dist)
                 # elif ((np.array(branch_dist_temp2)[:,0] < 475).all() and (np.array(branch_dist_temp2)[:,1] < 260).all() and
                 #     (np.array(branch_dist_temp2)[:,1] > 180).all() and (np.array(branch_dist_temp2)[:,2] > 125).all()):
-                elif ((np.array(branch_dist_temp2)[:,0] < 477).all() and (np.array(branch_dist_temp2)[:,1] < 273).all() and
-                    (np.array(branch_dist_temp2)[:,1] > 190).all() and (np.array(branch_dist_temp2)[:,2] > 117).all()):
+                # elif ((np.array(branch_dist_temp2)[:,0] < 473).all() and (np.array(branch_dist_temp2)[:,1] < 273).all() and
+                #     (np.array(branch_dist_temp2)[:,1] > 191).all() and (np.array(branch_dist_temp2)[:,2] > 117).all()):
+                elif ((np.array(branch_dist_temp2_rot)[:,0] < 353.95).all() and (np.array(branch_dist_temp2_rot)[:,1] > 190.71).all() and
+                      (np.array(branch_dist_temp2_rot)[:,1] < 272.91).all() and (np.array(branch_dist_temp2_rot)[:,2] > 278.76).all() and
+                      (np.array(branch_dist_temp2_rot)[:,2] < 345.93).all()):
+                # elif ((np.array(branch_dist_temp2_rot)[:,0] < 324).all() and (np.array(branch_dist_temp2_rot)[:,1] > 190.71).all() and
+                #      (np.array(branch_dist_temp2_rot)[:,1] < 272.91).all() and (np.array(branch_dist_temp2_rot)[:,2] > 319.25).all() and
+                #     (np.array(branch_dist_temp2_rot)[:,2] < 380.31).all()):
                     MorphData.LHdist.append(branch_dist_temp2)
                     MorphData.LHdist_trk.append(f)
                     LHdist_per_n_temp.append(branch_dist_temp2)
@@ -478,9 +513,16 @@ for f in range(len(fp)):
                 # elif ((np.array(branch_dist_temp2)[:,0] > 475).all() and (np.array(branch_dist_temp2)[:,0] < 600).all() and 
                 #       (np.array(branch_dist_temp2)[:,1] > 280).all() and (np.array(branch_dist_temp2)[:,1] < 400).all() and
                 #       (np.array(branch_dist_temp2)[:,2] < 90).all()):
-                elif ((np.array(branch_dist_temp2)[:,0] > 477).all() and (np.array(branch_dist_temp2)[:,0] < 597).all() and 
-                      (np.array(branch_dist_temp2)[:,1] > 273).all() and (np.array(branch_dist_temp2)[:,1] < 371).all() and
-                      (np.array(branch_dist_temp2)[:,2] < 84).all()):
+                # elif ((np.array(branch_dist_temp2)[:,0] > 480).all() and (np.array(branch_dist_temp2)[:,0] < 591).all() and 
+                #       (np.array(branch_dist_temp2)[:,1] > 273).all() and (np.array(branch_dist_temp2)[:,1] < 361).all() and
+                #       (np.array(branch_dist_temp2)[:,2] < 84).all()):
+                elif ((np.array(branch_dist_temp2_rot)[:,0] > 426.14).all() and (np.array(branch_dist_temp2_rot)[:,0] < 516.38).all() and 
+                      (np.array(branch_dist_temp2_rot)[:,1] > 272.91).all() and (np.array(branch_dist_temp2_rot)[:,1] < 361.12).all() and
+                      (np.array(branch_dist_temp2_rot2)[:,2] < -114.65).all()):
+                      # (np.array(branch_dist_temp2_rot)[:,2] < 296.8).all()):
+                # elif ((np.array(branch_dist_temp2_rot)[:,0] > 393.12).all() and (np.array(branch_dist_temp2_rot)[:,0] < 494.3).all() and 
+                #       (np.array(branch_dist_temp2_rot)[:,1] > 272.91).all() and (np.array(branch_dist_temp2_rot)[:,1] < 361.12).all() and
+                #       (np.array(branch_dist_temp2_rot)[:,2] < 319.25).all()):
                     MorphData.ALdist.append(branch_dist_temp2)
                     MorphData.ALdist_trk.append(f)
                     ALdist_per_n_temp.append(branch_dist_temp2)
@@ -641,48 +683,79 @@ print('checkpoint 5: ' + str(t5-t4))
 
 from scipy.signal import argrelextrema
 
-x = np.histogram(MorphData.morph_dist_flat[:,0], bins=int((np.max(MorphData.morph_dist_flat[:,0]) - np.min(MorphData.morph_dist_flat[:,0]))/4))
-y = np.histogram(MorphData.morph_dist_flat[:,1], bins=int((np.max(MorphData.morph_dist_flat[:,1]) - np.min(MorphData.morph_dist_flat[:,1]))/2))
-z = np.histogram(MorphData.morph_dist_flat[:,2], bins=int((np.max(MorphData.morph_dist_flat[:,2]) - np.min(MorphData.morph_dist_flat[:,2]))/2))
+r_d_x = -35
+r_rad_x = np.radians(r_d_x)
+r_x = np.array([1, 0, 0])
+
+r_d_y = 0#-25
+r_rad_y = np.radians(r_d_y)
+r_y = np.array([0, 1, 0])
+
+r_d_z = 0
+r_rad_z = np.radians(r_d_z)
+r_z = np.array([0, 0, 1])
+
+r_vec_x = r_rad_x * r_x
+rotx = Rotation.from_rotvec(r_vec_x)
+morph_dist_flat_rot = rotx.apply(MorphData.morph_dist_flat)
+calyxdist_flat_rot = rotx.apply(calyxdist_flat)
+LHdist_flat_rot = rotx.apply(LHdist_flat)
+ALdist_flat_rot = rotx.apply(ALdist_flat)
+
+r_vec_y = r_rad_y * r_y
+roty = Rotation.from_rotvec(r_vec_y)
+morph_dist_flat_rot = roty.apply(morph_dist_flat_rot)
+# calyxdist_flat_rot = roty.apply(calyxdist_flat)
+# LHdist_flat_rot = roty.apply(LHdist_flat)
+# ALdist_flat_rot = roty.apply(ALdist_flat)
+
+r_vec_z = r_rad_z * r_z
+rotz = Rotation.from_rotvec(r_vec_z)
+morph_dist_flat_rot = rotz.apply(morph_dist_flat_rot)
+
+x = np.histogram(morph_dist_flat_rot[:,0], bins=int((np.max(morph_dist_flat_rot[:,0]) - np.min(morph_dist_flat_rot[:,0]))/1))
+y = np.histogram(morph_dist_flat_rot[:,1], bins=int((np.max(morph_dist_flat_rot[:,1]) - np.min(morph_dist_flat_rot[:,1]))/1))
+z = np.histogram(morph_dist_flat_rot[:,2], bins=int((np.max(morph_dist_flat_rot[:,2]) - np.min(morph_dist_flat_rot[:,2]))/1))
 
 xex = argrelextrema(x[0], np.less)[0]
 yex = argrelextrema(y[0], np.less)[0]
 zex = argrelextrema(z[0], np.less)[0]
 
 fig = plt.figure(figsize=(8,6))
-plt.hist(MorphData.morph_dist_flat[:,0], bins=int((np.max(MorphData.morph_dist_flat[:,0]) - np.min(MorphData.morph_dist_flat[:,0]))/4), color='tab:purple', alpha=0.5)
-plt.hist(np.array(ALdist_flat)[:,0], bins=int((np.max(np.array(ALdist_flat)[:,0]) - np.min(np.array(ALdist_flat)[:,0]))/4), color='tab:blue', alpha=0.5)
-plt.hist(np.array(calyxdist_flat)[:,0], bins=int((np.max(np.array(calyxdist_flat)[:,0]) - np.min(np.array(calyxdist_flat)[:,0]))/4), color='tab:orange', alpha=0.5)
-plt.hist(np.array(LHdist_flat)[:,0], bins=int((np.max(np.array(LHdist_flat)[:,0]) - np.min(np.array(LHdist_flat)[:,0]))/4), color='tab:green', alpha=0.5)
+plt.hist(morph_dist_flat_rot[:,0], bins=int((np.max(morph_dist_flat_rot[:,0]) - np.min(morph_dist_flat_rot[:,0]))/1), color='tab:purple', alpha=0.5)
+plt.hist(np.array(ALdist_flat_rot)[:,0], bins=int((np.max(np.array(ALdist_flat_rot)[:,0]) - np.min(np.array(ALdist_flat_rot)[:,0]))/1), color='tab:blue', alpha=0.5)
+plt.hist(np.array(calyxdist_flat_rot)[:,0], bins=int((np.max(np.array(calyxdist_flat_rot)[:,0]) - np.min(np.array(calyxdist_flat_rot)[:,0]))/1), color='tab:orange', alpha=0.5)
+plt.hist(np.array(LHdist_flat_rot)[:,0], bins=int((np.max(np.array(LHdist_flat_rot)[:,0]) - np.min(np.array(LHdist_flat_rot)[:,0]))/1), color='tab:green', alpha=0.5)
 plt.xlabel('x Coordinates', fontsize=15)
 plt.ylabel('Count', fontsize=15)
 plt.legend(['All', 'AL', 'MB calyx', 'LH'], fontsize=13)
-plt.scatter(x[1][xex[[2,3,4]]], x[0][xex[[2,3,4]]], color='tab:red')
-# plt.savefig(Parameter.outputdir + '/x_segment_hist_1.pdf', dpi=300, bbox_inches='tight')
+plt.scatter(x[1][xex[[13,27,40]]], x[0][xex[[13,27,40]]], color='tab:red')
+# plt.savefig(Parameter.outputdir + '/x_segment_hist_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 fig = plt.figure(figsize=(8,6))
-plt.hist(MorphData.morph_dist_flat[:,1], bins=int((np.max(MorphData.morph_dist_flat[:,1]) - np.min(MorphData.morph_dist_flat[:,1]))/2), color='tab:purple', alpha=0.5)
-plt.hist(np.array(ALdist_flat)[:,1], bins=int((np.max(np.array(ALdist_flat)[:,1]) - np.min(np.array(ALdist_flat)[:,1]))/2), color='tab:blue', alpha=0.5)
-plt.hist(np.array(calyxdist_flat)[:,1], bins=int((np.max(np.array(calyxdist_flat)[:,1]) - np.min(np.array(calyxdist_flat)[:,1]))/2), color='tab:orange', alpha=0.5)
-plt.hist(np.array(LHdist_flat)[:,1], bins=int((np.max(np.array(LHdist_flat)[:,1]) - np.min(np.array(LHdist_flat)[:,1]))/2), color='tab:green', alpha=0.5)
+plt.hist(morph_dist_flat_rot[:,1], bins=int((np.max(morph_dist_flat_rot[:,1]) - np.min(morph_dist_flat_rot[:,1]))/1), color='tab:purple', alpha=0.5)
+plt.hist(np.array(ALdist_flat_rot)[:,1], bins=int((np.max(np.array(ALdist_flat_rot)[:,1]) - np.min(np.array(ALdist_flat_rot)[:,1]))/1), color='tab:blue', alpha=0.5)
+plt.hist(np.array(calyxdist_flat_rot)[:,1], bins=int((np.max(np.array(calyxdist_flat_rot)[:,1]) - np.min(np.array(calyxdist_flat_rot)[:,1]))/1), color='tab:orange', alpha=0.5)
+plt.hist(np.array(LHdist_flat_rot)[:,1], bins=int((np.max(np.array(LHdist_flat_rot)[:,1]) - np.min(np.array(LHdist_flat_rot)[:,1]))/1), color='tab:green', alpha=0.5)
 plt.xlabel('y Coordinates', fontsize=15)
 plt.ylabel('Count', fontsize=15)
 plt.legend(['All', 'AL', 'MB calyx', 'LH'], fontsize=13)
-plt.scatter(y[1][yex[[3,4,12]]], y[0][yex[[3,4,12]]], color='tab:red')
-# plt.savefig(Parameter.outputdir + '/y_segment_hist_1.pdf', dpi=300, bbox_inches='tight')
+plt.scatter(y[1][yex[[9,26,46]]], y[0][yex[[9,26,46]]], color='tab:red')
+# plt.savefig(Parameter.outputdir + '/y_segment_hist_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 fig = plt.figure(figsize=(8,6))
-plt.hist(MorphData.morph_dist_flat[:,2], bins=int((np.max(MorphData.morph_dist_flat[:,2]) - np.min(MorphData.morph_dist_flat[:,2]))/2), color='tab:purple', alpha=0.5)
-plt.hist(np.array(ALdist_flat)[:,2], bins=int((np.max(np.array(ALdist_flat)[:,2]) - np.min(np.array(ALdist_flat)[:,2]))/2), color='tab:blue', alpha=0.5)
-plt.hist(np.array(calyxdist_flat)[:,2], bins=int((np.max(np.array(calyxdist_flat)[:,2]) - np.min(np.array(calyxdist_flat)[:,2]))/2), color='tab:orange', alpha=0.5)
-plt.hist(np.array(LHdist_flat)[:,2], bins=int((np.max(np.array(LHdist_flat)[:,2]) - np.min(np.array(LHdist_flat)[:,2]))/2), color='tab:green', alpha=0.5)
+plt.hist(morph_dist_flat_rot[:,2], bins=int((np.max(morph_dist_flat_rot[:,2]) - np.min(morph_dist_flat_rot[:,2]))/1), color='tab:purple', alpha=0.5)
+plt.hist(np.array(ALdist_flat_rot)[:,2], bins=int((np.max(np.array(ALdist_flat_rot)[:,2]) - np.min(np.array(ALdist_flat_rot)[:,2]))/1), color='tab:blue', alpha=0.5)
+plt.hist(np.array(calyxdist_flat_rot)[:,2], bins=int((np.max(np.array(calyxdist_flat_rot)[:,2]) - np.min(np.array(calyxdist_flat_rot)[:,2]))/1), color='tab:orange', alpha=0.5)
+plt.hist(np.array(LHdist_flat_rot)[:,2], bins=int((np.max(np.array(LHdist_flat_rot)[:,2]) - np.min(np.array(LHdist_flat_rot)[:,2]))/1), color='tab:green', alpha=0.5)
 plt.xlabel('z Coordinates', fontsize=15)
 plt.ylabel('Count', fontsize=15)
 plt.legend(['All', 'AL', 'MB calyx', 'LH'], fontsize=13)
-plt.scatter(z[1][zex[[6,9,12]]], z[0][zex[[6,9,12]]], color='tab:red')
-# plt.savefig(Parameter.outputdir + '/z_segment_hist_1.pdf', dpi=300, bbox_inches='tight')
+# plt.scatter(z[1][zex[[7,12,22,24,28]]], z[0][zex[[7,12,22,24,28]]], color='tab:red')
+plt.scatter(z[1][zex[[14]]], z[0][zex[[14]]], color='tab:red')
+# plt.savefig(Parameter.outputdir + '/z_segment_hist_2_xrot.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -1438,7 +1511,7 @@ def cons_check(val):
     edges = iter(val[:1] + sum(gaps, []) + val[-1:])
     return list(zip(edges, edges))
 
-radiussize = np.logspace(0, 2, 100)[:95]
+radiussize = np.logspace(-1, 2, 100)[25:97]
 
 spheredist_calyx_sum = np.empty(len(radiussize))
 spheredist_LH_sum = np.empty(len(radiussize))
@@ -1551,7 +1624,7 @@ poptD_LH_all = []
 poptD_AL_all = []
 
 farg_calyx = np.where(np.abs(np.diff(np.log10(spheredist_calyx_sum[np.nonzero(spheredist_calyx_sum)]))) > 0.03)[0][-5]
-iarg_calyx = np.where(np.abs(np.diff(np.log10(spheredist_calyx_sum[np.nonzero(spheredist_calyx_sum)]))) < 0.1)[0][12]
+iarg_calyx = np.where(np.abs(np.diff(np.log10(spheredist_calyx_sum[np.nonzero(spheredist_calyx_sum)]))) < 0.1)[0][15]
 
 poptD_calyx, pcovD_calyx = scipy.optimize.curve_fit(objFuncGL, 
                                                     np.log10(radiussize[np.nonzero(spheredist_calyx_sum)][iarg_calyx:farg_calyx]), 
@@ -1561,7 +1634,7 @@ poptD_calyx, pcovD_calyx = scipy.optimize.curve_fit(objFuncGL,
 perrD_calyx = np.sqrt(np.diag(pcovD_calyx))
 
 farg_LH = np.where(np.abs(np.diff(np.log10(spheredist_LH_sum[np.nonzero(spheredist_LH_sum)]))) > 0.03)[0][-1]
-iarg_LH = np.where(np.abs(np.diff(np.log10(spheredist_LH_sum[np.nonzero(spheredist_LH_sum)]))) < 0.1)[0][6]
+iarg_LH = np.where(np.abs(np.diff(np.log10(spheredist_LH_sum[np.nonzero(spheredist_LH_sum)]))) < 0.1)[0][5]
 
 poptD_LH, pcovD_LH = scipy.optimize.curve_fit(objFuncGL, 
                                               np.log10(radiussize[np.nonzero(spheredist_LH_sum)][iarg_LH:farg_LH]), 
@@ -1571,7 +1644,7 @@ poptD_LH, pcovD_LH = scipy.optimize.curve_fit(objFuncGL,
 perrD_LH = np.sqrt(np.diag(pcovD_LH))
 
 farg_AL1 = np.where(np.abs(np.diff(np.log10(spheredist_AL_sum[np.nonzero(spheredist_AL_sum)]))) > 0.03)[0][-1]
-iarg_AL1 = np.where(np.abs(np.diff(np.log10(spheredist_AL_sum[np.nonzero(spheredist_AL_sum)]))) < 0.1)[0][42]
+iarg_AL1 = np.where(np.abs(np.diff(np.log10(spheredist_AL_sum[np.nonzero(spheredist_AL_sum)]))) < 0.1)[0][26]
 
 poptD_AL1, pcovD_AL1 = scipy.optimize.curve_fit(objFuncGL, 
                                               np.log10(radiussize[np.nonzero(spheredist_AL_sum)][iarg_AL1:farg_AL1]), 
@@ -1590,8 +1663,8 @@ poptD_AL2, pcovD_AL2 = scipy.optimize.curve_fit(objFuncGL,
                                               maxfev=10000)
 perrD_AL2 = np.sqrt(np.diag(pcovD_AL2))
 
-farg_AL3 = np.where(np.abs(np.diff(np.log10(spheredist_AL_sum[np.nonzero(spheredist_AL_sum)]))) > 0.03)[0][-55]
-iarg_AL3 = np.where(np.abs(np.diff(np.log10(spheredist_AL_sum[np.nonzero(spheredist_AL_sum)]))) < 0.1)[0][8]
+farg_AL3 = np.where(np.abs(np.diff(np.log10(spheredist_AL_sum[np.nonzero(spheredist_AL_sum)]))) > 0.03)[0][-25]
+iarg_AL3 = np.where(np.abs(np.diff(np.log10(spheredist_AL_sum[np.nonzero(spheredist_AL_sum)]))) < 0.1)[0][0]
 
 poptD_AL3, pcovD_AL3 = scipy.optimize.curve_fit(objFuncGL, 
                                               np.log10(radiussize[np.nonzero(spheredist_AL_sum)][iarg_AL3:farg_AL3]), 
@@ -1609,8 +1682,8 @@ fitYD_AL3 = objFuncPpow(radiussize, poptD_AL3[0], poptD_AL3[1])
 
 fig = plt.figure(figsize=(8,6))
 
-plt.scatter(radiussize[np.nonzero(spheredist_AL_sum)][iarg_AL3:], 
-            spheredist_AL_sum[np.nonzero(spheredist_AL_sum)][iarg_AL3:], 
+plt.scatter(radiussize[np.nonzero(spheredist_AL_sum)][iarg_AL1:], 
+            spheredist_AL_sum[np.nonzero(spheredist_AL_sum)][iarg_AL1:], 
             color='tab:blue', facecolors='none')
 plt.scatter(radiussize[np.nonzero(spheredist_calyx_sum)][iarg_calyx:], 
             spheredist_calyx_sum[np.nonzero(spheredist_calyx_sum)][iarg_calyx:], 
@@ -1623,12 +1696,12 @@ plt.scatter(radiussize[np.nonzero(spheredist_LH_sum)][iarg_LH:],
 plt.plot(radiussize[np.nonzero(spheredist_AL_sum)][iarg_AL2+15:],
          fitYD_AL1[np.nonzero(spheredist_AL_sum)][iarg_AL2+15:],
          lw=2, color='tab:blue', alpha=0.5)
-plt.plot(radiussize[np.nonzero(spheredist_AL_sum)][iarg_AL2-10:-27], 
-         fitYD_AL2[np.nonzero(spheredist_AL_sum)][iarg_AL2-10:-27],
-         lw=2, linestyle='--', color='tab:blue', alpha=0.5)
-plt.plot(radiussize[np.nonzero(spheredist_AL_sum)][iarg_AL3:-57], 
-         fitYD_AL3[np.nonzero(spheredist_AL_sum)][iarg_AL3:-57],
-         lw=2, linestyle='dotted', color='tab:blue', alpha=0.5)
+# plt.plot(radiussize[np.nonzero(spheredist_AL_sum)][iarg_AL2-10:-27], 
+#          fitYD_AL2[np.nonzero(spheredist_AL_sum)][iarg_AL2-10:-27],
+#          lw=2, linestyle='--', color='tab:blue', alpha=0.5)
+# plt.plot(radiussize[np.nonzero(spheredist_AL_sum)][iarg_AL3:-57], 
+#          fitYD_AL3[np.nonzero(spheredist_AL_sum)][iarg_AL3:-57],
+#          lw=2, linestyle='dotted', color='tab:blue', alpha=0.5)
 plt.plot(radiussize[np.nonzero(spheredist_calyx_sum)][iarg_calyx:],
          fitYD_calyx[np.nonzero(spheredist_calyx_sum)][iarg_calyx:],
          lw=2, color='tab:orange', alpha=0.5)
@@ -1732,7 +1805,7 @@ poptD_LH_all = []
 poptD_AL_all = []
 
 farg_calyx = np.where(np.abs(np.diff(np.log10(spheredist_calyx_count1[np.nonzero(spheredist_calyx_count1)]))) > 0.05)[0][-1]
-iarg_calyx = 30#np.where(np.abs(np.diff(np.log10(spheredist_calyx_count1[np.nonzero(spheredist_calyx_count1)]))) < 0.1)[0][19]
+iarg_calyx = np.where(np.abs(np.diff(np.log10(spheredist_calyx_count1[np.nonzero(spheredist_calyx_count1)]))) < 0.1)[0][10]
 
 poptD_calyx, pcovD_calyx = scipy.optimize.curve_fit(objFuncGL, 
                                                     np.log10(radiussize[np.nonzero(spheredist_calyx_count1)][iarg_calyx:farg_calyx]), 
@@ -1742,7 +1815,7 @@ poptD_calyx, pcovD_calyx = scipy.optimize.curve_fit(objFuncGL,
 perrD_calyx = np.sqrt(np.diag(pcovD_calyx))
 
 farg_LH = np.where(np.abs(np.diff(np.log10(spheredist_LH_count1[np.nonzero(spheredist_LH_count1)]))) > 0.05)[0][-1]
-iarg_LH = 20#np.where(np.abs(np.diff(np.log10(spheredist_LH_count1[np.nonzero(spheredist_LH_count1)]))) < 0.1)[0][8]
+iarg_LH = np.where(np.abs(np.diff(np.log10(spheredist_LH_count1[np.nonzero(spheredist_LH_count1)]))) < 0.1)[0][5]
 
 poptD_LH, pcovD_LH = scipy.optimize.curve_fit(objFuncGL, 
                                               np.log10(radiussize[np.nonzero(spheredist_LH_count1)][iarg_LH:farg_LH]), 
@@ -1752,7 +1825,7 @@ poptD_LH, pcovD_LH = scipy.optimize.curve_fit(objFuncGL,
 perrD_LH = np.sqrt(np.diag(pcovD_LH))
 
 farg_AL = np.where(np.abs(np.diff(np.log10(spheredist_AL_count1[np.nonzero(spheredist_AL_count1)]))) > 0.05)[0][-1]
-iarg_AL = 18#np.where(np.abs(np.diff(np.log10(spheredist_AL_count1[np.nonzero(spheredist_AL_count1)]))) < 0.1)[0][9]
+iarg_AL = np.where(np.abs(np.diff(np.log10(spheredist_AL_count1[np.nonzero(spheredist_AL_count1)]))) < 0.1)[0][30]
 
 poptD_AL, pcovD_AL = scipy.optimize.curve_fit(objFuncGL, 
                                               np.log10(radiussize[np.nonzero(spheredist_AL_count1)][iarg_AL:farg_AL]), 
@@ -2597,7 +2670,7 @@ plt.legend(['FD: ' + str(round(-poptBcount_all[0], 3)) + '$\pm$' + str(round(-pe
 #plt.tight_layout()
 plt.xlabel("Box Size $l$", fontsize=15)
 plt.ylabel("Count", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/fd_whole_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/fd_whole_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -2853,7 +2926,7 @@ plt.xlim(3e-3, 4)
 #plt.tight_layout()
 plt.xlabel("$1/l$", fontsize=15)
 plt.ylabel("Count", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/fd_neuropil_fixed_3.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/fd_neuropil_fixed_4.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -3140,7 +3213,7 @@ plt.legend(fontsize=13)
 #plt.tight_layout()
 plt.xlabel("Fractal Dimension", fontsize=15)
 plt.ylabel("Frequency", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/fd_single_whole_dist.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/fd_single_whole_dist_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -3160,23 +3233,37 @@ for i in range(len(MorphData.morph_dist)):
     LHdist_neuron_t = []
     ALdist_neuron_t = []
     for j in range(len(MorphData.morph_dist[i])):
+        
+        branch_dist_temp2_rot = roty.apply(MorphData.morph_dist[i][j])
+        branch_dist_temp2_rot2 = rotx.apply(MorphData.morph_dist[i][j])
+        
         # if ((np.array(MorphData.morph_dist[i][j])[0] > 475).all() and (np.array(MorphData.morph_dist[i][j])[0] < 550).all() and
         #     (np.array(MorphData.morph_dist[i][j])[1] < 260).all() and (np.array(MorphData.morph_dist[i][j])[2] > 150).all()):
-        if ((np.array(MorphData.morph_dist[i][j])[0] > 477).all() and (np.array(MorphData.morph_dist[i][j])[0] < 545).all() and
-            (np.array(MorphData.morph_dist[i][j])[1] < 273).all() and (np.array(MorphData.morph_dist[i][j])[1] > 190).all() and
-            (np.array(MorphData.morph_dist[i][j])[2] > 149).all()):
+        # if ((np.array(MorphData.morph_dist[i][j])[0] > 477).all() and (np.array(MorphData.morph_dist[i][j])[0] < 545).all() and
+        #     (np.array(MorphData.morph_dist[i][j])[1] < 273).all() and (np.array(MorphData.morph_dist[i][j])[1] > 190).all() and
+        #     (np.array(MorphData.morph_dist[i][j])[2] > 149).all()):
+        if ((np.array(branch_dist_temp2_rot)[0] > 353.95).all() and (np.array(branch_dist_temp2_rot)[0] < 426.14).all() and
+            (np.array(branch_dist_temp2_rot)[1] > 190.71).all() and (np.array(branch_dist_temp2_rot)[1] < 272.91).all() and
+            (np.array(branch_dist_temp2_rot)[2] > 354.95).all() and (np.array(branch_dist_temp2_rot)[2] < 399.06).all()):
             calyxdist_neuron_t.append(MorphData.morph_dist[i][j])
         # elif ((np.array(MorphData.morph_dist[i][j])[0] < 475).all() and (np.array(MorphData.morph_dist[i][j])[1] < 260).all() and
         #       (np.array(MorphData.morph_dist[i][j])[1] > 180).all() and (np.array(MorphData.morph_dist[i][j])[2] > 125).all()):
-        elif ((np.array(MorphData.morph_dist[i][j])[0] < 477).all() and (np.array(MorphData.morph_dist[i][j])[1] < 273).all() and
-              (np.array(MorphData.morph_dist[i][j])[1] > 190).all() and (np.array(MorphData.morph_dist[i][j])[2] > 117).all()):
+        # elif ((np.array(MorphData.morph_dist[i][j])[0] < 477).all() and (np.array(MorphData.morph_dist[i][j])[1] < 273).all() and
+        #       (np.array(MorphData.morph_dist[i][j])[1] > 190).all() and (np.array(MorphData.morph_dist[i][j])[2] > 117).all()):
+        elif ((np.array(branch_dist_temp2_rot)[0] < 353.95).all() and (np.array(branch_dist_temp2_rot)[1] > 190.71).all() and
+              (np.array(branch_dist_temp2_rot)[1] < 272.91).all() and (np.array(branch_dist_temp2_rot)[2] > 278.76).all() and
+              (np.array(branch_dist_temp2_rot)[2] < 345.93).all()):
             LHdist_neuron_t.append(MorphData.morph_dist[i][j])
         # elif ((np.array(MorphData.morph_dist[i][j])[0] > 475).all() and (np.array(MorphData.morph_dist[i][j])[0] < 600).all() and 
         #       (np.array(MorphData.morph_dist[i][j])[1] > 280).all() and (np.array(MorphData.morph_dist[i][j])[1] < 400).all() and
         #       (np.array(MorphData.morph_dist[i][j])[2] < 90).all()):
-        elif ((np.array(MorphData.morph_dist[i][j])[0] > 477).all() and (np.array(MorphData.morph_dist[i][j])[0] < 597).all() and 
-              (np.array(MorphData.morph_dist[i][j])[1] > 273).all() and (np.array(MorphData.morph_dist[i][j])[1] < 371).all() and
-              (np.array(MorphData.morph_dist[i][j])[2] < 84).all()):
+        # elif ((np.array(MorphData.morph_dist[i][j])[0] > 477).all() and (np.array(MorphData.morph_dist[i][j])[0] < 597).all() and 
+        #       (np.array(MorphData.morph_dist[i][j])[1] > 273).all() and (np.array(MorphData.morph_dist[i][j])[1] < 371).all() and
+        #       (np.array(MorphData.morph_dist[i][j])[2] < 84).all()):
+        elif ((np.array(branch_dist_temp2_rot)[0] > 426.14).all() and (np.array(branch_dist_temp2_rot)[0] < 516.38).all() and 
+              (np.array(branch_dist_temp2_rot)[1] > 272.91).all() and (np.array(branch_dist_temp2_rot)[1] < 361.12).all() and
+              # (np.array(branch_dist_temp2_rot)[2] < 296.8).all()):
+              (np.array(branch_dist_temp2_rot2)[2] < -114.65).all()):
             ALdist_neuron_t.append(MorphData.morph_dist[i][j])
     if len(calyxdist_neuron_t) > 700:
         MorphData.calyxdist_neuron.append(calyxdist_neuron_t)
@@ -3268,7 +3355,7 @@ plt.ylim(0, 4.5)
 plt.legend(fontsize=13)
 plt.xlabel("Fractal Dimension", fontsize=15)
 plt.ylabel("Frequency", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/fd_single_calyx_dist_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/fd_single_calyx_dist_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -3356,7 +3443,7 @@ plt.ylim(0, 4)
 plt.legend(fontsize=13)
 plt.xlabel("Fractal Dimension", fontsize=15)
 plt.ylabel("Frequency", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/fd_single_LH_dist_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/fd_single_LH_dist_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -3444,7 +3531,7 @@ plt.ylim(0, 4.5)
 plt.legend(fontsize=13)
 plt.xlabel("Fractal Dimension", fontsize=15)
 plt.ylabel("Frequency", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/fd_single_AL_dist_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/fd_single_AL_dist_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -3618,23 +3705,37 @@ branchP_LH_dist = []
 branchP_AL_dist = []
 
 for i in range(len(branchP_dist_flat)):
+    
+    branch_dist_temp2_rot = roty.apply(branchP_dist_flat[i])
+    branch_dist_temp2_rot2 = rotx.apply(branchP_dist_flat[i])
+    
     # if ((branchP_dist_flat[i][0] > 475).all() and (branchP_dist_flat[i][0] < 550).all() and
     #     (branchP_dist_flat[i][1] < 260).all() and (branchP_dist_flat[i][2] > 150).all()):
-    if ((branchP_dist_flat[i][0] > 477).all() and (branchP_dist_flat[i][0] < 545).all() and
-        (branchP_dist_flat[i][1] < 273).all() and (branchP_dist_flat[i][1] > 190).all() and
-        (branchP_dist_flat[i][2] > 149).all()):
+    # if ((branchP_dist_flat[i][0] > 477).all() and (branchP_dist_flat[i][0] < 545).all() and
+    #     (branchP_dist_flat[i][1] < 273).all() and (branchP_dist_flat[i][1] > 190).all() and
+    #     (branchP_dist_flat[i][2] > 149).all()):
+    if ((np.array(branch_dist_temp2_rot)[0] > 353.95).all() and (np.array(branch_dist_temp2_rot)[0] < 426.14).all() and
+        (np.array(branch_dist_temp2_rot)[1] > 190.71).all() and (np.array(branch_dist_temp2_rot)[1] < 272.91).all() and
+        (np.array(branch_dist_temp2_rot)[2] > 354.95).all() and (np.array(branch_dist_temp2_rot)[2] < 399.06).all()):
         branchP_calyx_dist.append(branchP_dist_flat[i])
     # elif ((branchP_dist_flat[i][0] < 475).all() and (branchP_dist_flat[i][1] < 260).all() and
     #       (branchP_dist_flat[i][1] > 180).all() and (branchP_dist_flat[i][2] > 125).all()):
-    elif ((branchP_dist_flat[i][0] < 477).all() and (branchP_dist_flat[i][1] < 273).all() and
-          (branchP_dist_flat[i][1] > 190).all() and (branchP_dist_flat[i][2] > 117).all()):
+    # elif ((branchP_dist_flat[i][0] < 477).all() and (branchP_dist_flat[i][1] < 273).all() and
+    #       (branchP_dist_flat[i][1] > 190).all() and (branchP_dist_flat[i][2] > 117).all()):
+    elif ((np.array(branch_dist_temp2_rot)[0] < 353.95).all() and (np.array(branch_dist_temp2_rot)[1] > 190.71).all() and
+          (np.array(branch_dist_temp2_rot)[1] < 272.91).all() and (np.array(branch_dist_temp2_rot)[2] > 278.76).all() and
+          (np.array(branch_dist_temp2_rot)[2] < 345.93).all()):
         branchP_LH_dist.append(branchP_dist_flat[i])
     # elif ((branchP_dist_flat[i][0] > 475).all() and (branchP_dist_flat[i][0] < 600).all() and 
     #       (branchP_dist_flat[i][1] > 280).all() and (branchP_dist_flat[i][1] < 400).all() and
     #       (branchP_dist_flat[i][2] < 90).all()):
-    elif ((branchP_dist_flat[i][0] > 477).all() and (branchP_dist_flat[i][0] < 597).all() and 
-          (branchP_dist_flat[i][1] > 273).all() and (branchP_dist_flat[i][1] < 371).all() and
-          (branchP_dist_flat[i][2] < 84).all()):
+    # elif ((branchP_dist_flat[i][0] > 477).all() and (branchP_dist_flat[i][0] < 597).all() and 
+    #       (branchP_dist_flat[i][1] > 273).all() and (branchP_dist_flat[i][1] < 371).all() and
+    #       (branchP_dist_flat[i][2] < 84).all()):
+    elif ((np.array(branch_dist_temp2_rot)[0] > 426.14).all() and (np.array(branch_dist_temp2_rot)[0] < 516.38).all() and 
+          (np.array(branch_dist_temp2_rot)[1] > 272.91).all() and (np.array(branch_dist_temp2_rot)[1] < 361.12).all() and
+          # (np.array(branch_dist_temp2_rot)[2] < 296.8).all()):
+          (np.array(branch_dist_temp2_rot2)[2] < -114.65).all()):
         branchP_AL_dist.append(branchP_dist_flat[i])
 
 
@@ -3643,23 +3744,37 @@ endP_LH_dist = []
 endP_AL_dist = []
 
 for i in range(len(endP_dist_flat)):
+    
+    branch_dist_temp2_rot = roty.apply(branchP_dist_flat[i])
+    branch_dist_temp2_rot2 = rotx.apply(branchP_dist_flat[i])
+    
     # if ((endP_dist_flat[i][0] > 475).all() and (endP_dist_flat[i][0] < 550).all() and
     #     (endP_dist_flat[i][1] < 260).all() and (endP_dist_flat[i][2] > 150).all()):
-    if ((endP_dist_flat[i][0] > 477).all() and (endP_dist_flat[i][0] < 545).all() and
-        (endP_dist_flat[i][1] < 273).all() and (endP_dist_flat[i][1] > 190).all() and
-        (endP_dist_flat[i][2] > 149).all()):
+    # if ((endP_dist_flat[i][0] > 477).all() and (endP_dist_flat[i][0] < 545).all() and
+    #     (endP_dist_flat[i][1] < 273).all() and (endP_dist_flat[i][1] > 190).all() and
+    #     (endP_dist_flat[i][2] > 149).all()):
+    if ((np.array(branch_dist_temp2_rot)[0] > 353.95).all() and (np.array(branch_dist_temp2_rot)[0] < 426.14).all() and
+        (np.array(branch_dist_temp2_rot)[1] > 190.71).all() and (np.array(branch_dist_temp2_rot)[1] < 272.91).all() and
+        (np.array(branch_dist_temp2_rot)[2] > 354.95).all() and (np.array(branch_dist_temp2_rot)[2] < 399.06).all()):
         endP_calyx_dist.append(endP_dist_flat[i])
     # elif ((endP_dist_flat[i][0] < 475).all() and (endP_dist_flat[i][1] < 260).all() and
     #       (endP_dist_flat[i][1] > 180).all() and (endP_dist_flat[i][2] > 125).all()):
-    elif ((endP_dist_flat[i][0] < 477).all() and (endP_dist_flat[i][1] < 273).all() and
-          (endP_dist_flat[i][1] > 190).all() and (endP_dist_flat[i][2] > 117).all()):
+    # elif ((endP_dist_flat[i][0] < 477).all() and (endP_dist_flat[i][1] < 273).all() and
+    #       (endP_dist_flat[i][1] > 190).all() and (endP_dist_flat[i][2] > 117).all()):
+    elif ((np.array(branch_dist_temp2_rot)[0] < 353.95).all() and (np.array(branch_dist_temp2_rot)[1] > 190.71).all() and
+          (np.array(branch_dist_temp2_rot)[1] < 272.91).all() and (np.array(branch_dist_temp2_rot)[2] > 278.76).all() and
+          (np.array(branch_dist_temp2_rot)[2] < 345.93).all()):
         endP_LH_dist.append(endP_dist_flat[i])
     # elif ((endP_dist_flat[i][0] > 475).all() and (endP_dist_flat[i][0] < 600).all() and 
     #       (endP_dist_flat[i][1] > 280).all() and (endP_dist_flat[i][1] < 400).all() and
     #       (endP_dist_flat[i][2] < 90).all()):
-    elif ((endP_dist_flat[i][0] > 477).all() and (endP_dist_flat[i][0] < 597).all() and 
-          (endP_dist_flat[i][1] > 273).all() and (endP_dist_flat[i][1] < 371).all() and
-          (endP_dist_flat[i][2] < 84).all()):
+    # elif ((endP_dist_flat[i][0] > 477).all() and (endP_dist_flat[i][0] < 597).all() and 
+    #       (endP_dist_flat[i][1] > 273).all() and (endP_dist_flat[i][1] < 371).all() and
+    #       (endP_dist_flat[i][2] < 84).all()):
+    elif ((np.array(branch_dist_temp2_rot)[0] > 426.14).all() and (np.array(branch_dist_temp2_rot)[0] < 516.38).all() and 
+          (np.array(branch_dist_temp2_rot)[1] > 272.91).all() and (np.array(branch_dist_temp2_rot)[1] < 361.12).all() and
+          # (np.array(branch_dist_temp2_rot)[2] < 296.8).all()):
+          (np.array(branch_dist_temp2_rot2)[2] < -114.65).all()):
         endP_AL_dist.append(endP_dist_flat[i])
 
 
@@ -4152,15 +4267,19 @@ calyxdist_per_n_flat = []
 LHdist_per_n_flat = []
 ALdist_per_n_flat = []
 
-calyxdist_per_n_count = [] = []
+calyxdist_per_n_count = []
 LHdist_per_n_count = []
 ALdist_per_n_count = []
 
-for i in np.unique(MorphData.calyxdist_trk):
-    idx = np.where(np.array(MorphData.calyxdist_trk) == i)
+un_calyx = np.unique(MorphData.calyxdist_trk)
+un_LH = np.unique(MorphData.LHdist_trk)
+un_AL = np.unique(MorphData.ALdist_trk)
+
+for i in range(len(un_calyx)):
+    idx = np.where(MorphData.calyxdist_trk == un_calyx[i])[0]
     tarval = np.array(MorphData.calyxdist)[idx]
     calyxdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
-    sumval = np.sum(LengthData.length_calyx[i])
+    sumval = np.sum(LengthData.length_calyx[un_calyx[i]])
     if calyxdist_per_n_flat_t and sumval > 1:# and sumval < 5000:
         calyxdist_per_n_flat.append(calyxdist_per_n_flat_t)
         calyxdist_per_n_count.append(len(calyxdist_per_n_flat_t))
@@ -4168,11 +4287,11 @@ for i in np.unique(MorphData.calyxdist_trk):
 
 (rGy_calyx, cML_calyx) = utils.radiusOfGyration(calyxdist_per_n_flat)
 
-for i in np.unique(MorphData.LHdist_trk):
-    idx = np.where(np.array(MorphData.LHdist_trk) == i)
+for i in range(len(un_LH)):
+    idx = np.where(MorphData.LHdist_trk == un_LH[i])[0]
     tarval = np.array(MorphData.LHdist)[idx]
     LHdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
-    sumval = np.sum(LengthData.length_LH[i])
+    sumval = np.sum(LengthData.length_LH[un_LH[i]])
     if LHdist_per_n_flat_t and sumval > 1:# and sumval < 5000:
         LHdist_per_n_flat.append(LHdist_per_n_flat_t)
         LHdist_per_n_count.append(len(LHdist_per_n_flat_t))
@@ -4180,18 +4299,17 @@ for i in np.unique(MorphData.LHdist_trk):
 
 (rGy_LH, cML_LH) = utils.radiusOfGyration(LHdist_per_n_flat)
 
-for i in np.unique(MorphData.ALdist_trk):
-    idx = np.where(np.array(MorphData.ALdist_trk) == i)
+for i in range(len(un_AL)):
+    idx = np.where(MorphData.ALdist_trk == un_AL[i])[0]
     tarval = np.array(MorphData.ALdist)[idx]
     ALdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
-    sumval = np.sum(LengthData.length_AL[i])
+    sumval = np.sum(LengthData.length_AL[un_AL[i]])
     if ALdist_per_n_flat_t and sumval > 1:# and sumval < 5000:
         ALdist_per_n_flat.append(ALdist_per_n_flat_t)
         ALdist_per_n_count.append(len(ALdist_per_n_flat_t))
         LengthData.length_AL_total.append(sumval)
 
 (rGy_AL, cML_AL) = utils.radiusOfGyration(ALdist_per_n_flat)
-
 
 #%%
 
@@ -4250,9 +4368,12 @@ print('AL: ' + str(np.corrcoef(np.log10(LengthData.length_AL_total), np.log10(rG
 
 #%% Radius of Gyration for calyx, LH, and AL per segment
 
-length_calyx_seg_total = np.array([item for sublist in LengthData.length_calyx for item in sublist])
-length_LH_seg_total = np.array([item for sublist in LengthData.length_LH for item in sublist])
-length_AL_seg_total = np.array([item for sublist in LengthData.length_AL for item in sublist])
+from itertools import combinations
+import copy
+
+length_calyx_nempty = copy.deepcopy([x for x in LengthData.length_calyx if x != []])
+length_LH_nempty = copy.deepcopy([x for x in LengthData.length_LH if x != []])
+length_AL_nempty = copy.deepcopy([x for x in LengthData.length_AL if x != []])
 
 calyxdist_per_seg_count = []
 LHdist_per_seg_count = []
@@ -4262,85 +4383,72 @@ rGy_calyx_per_seg = []
 rGy_LH_per_seg = []
 rGy_AL_per_seg = []
 
-for i in range(len(MorphData.calyxdist_per_n)):
-    calyxdist_per_n_flat_t = [item for sublist in MorphData.calyxdist_per_n[i] for item in sublist]
-    if calyxdist_per_n_flat_t:
-        calyxdist_per_seg_count.append([len(arr) for arr in MorphData.calyxdist_per_n[i]])
-        (rGy_t, cML_t) = utils.radiusOfGyration(MorphData.calyxdist_per_n[i])
-        rGy_calyx_per_seg.append(rGy_t)
+un_calyx = np.unique(MorphData.calyxdist_trk)
+un_LH = np.unique(MorphData.LHdist_trk)
+un_AL = np.unique(MorphData.ALdist_trk)
 
-for i in range(len(MorphData.LHdist_per_n)):
-    LHdist_per_n_flat_t = [item for sublist in MorphData.LHdist_per_n[i] for item in sublist]
-    if LHdist_per_n_flat_t:
-        LHdist_per_seg_count.append([len(arr) for arr in MorphData.LHdist_per_n[i]])
-        (rGy_t, cML_t) = utils.radiusOfGyration(MorphData.LHdist_per_n[i])
-        rGy_LH_per_seg.append(rGy_t)
+test = 0
 
-for i in range(len(MorphData.ALdist_per_n)):
-    ALdist_per_n_flat_t = [item for sublist in MorphData.ALdist_per_n[i] for item in sublist]
-    if ALdist_per_n_flat_t:
-        ALdist_per_seg_count.append([len(arr) for arr in MorphData.ALdist_per_n[i]])
-        (rGy_t, cML_t) = utils.radiusOfGyration(MorphData.ALdist_per_n[i])
-        rGy_AL_per_seg.append(rGy_t)
+for i in range(len(un_calyx)):
+    idx = np.where(MorphData.calyxdist_trk == un_calyx[i])[0]
+    tarval = np.array(MorphData.calyxdist)[idx]
+    (rGy_t, cML_t) = utils.radiusOfGyration(tarval)
+    rGy_calyx_per_seg.append(rGy_t)
+    comb1 = combinations(np.arange(len(tarval)), 2)
+    for j in list(comb1):
+        if tarval[j[0]][0] == tarval[j[1]][-1] or tarval[j[0]][-1] == tarval[j[1]][0]:
+            (rGy_t, cML_t) = utils.radiusOfGyration([tarval[j[0]] + tarval[j[1]]])
+            rGy_calyx_per_seg[i] = np.append(rGy_calyx_per_seg[i], rGy_t)
+            length_calyx_nempty[i].append(length_calyx_nempty[i][j[0]]+length_calyx_nempty[i][j[1]])
+    
+    # comb2 = combinations(np.arange(len(tarval)), 3)
+    # for j in list(comb2):
+    #     if (tarval[j[0]][0] == tarval[j[1]][-1] and tarval[j[1]][-1] == tarval[j[1]][0]):
+    #         (rGy_t, cML_t) = utils.radiusOfGyration([tarval[j[0]] + tarval[j[1]]])
+    #         rGy_calyx_per_seg[i] = np.append(rGy_calyx_per_seg[i], rGy_t)
+    #         length_calyx_nempty[i].append(length_calyx_nempty[i][j[0]]+length_calyx_nempty[i][j[1]])
 
-calyxdist_per_seg_count = np.array([item for sublist in calyxdist_per_seg_count for item in sublist])
-LHdist_per_seg_count = np.array([item for sublist in LHdist_per_seg_count for item in sublist])
-ALdist_per_seg_count = np.array([item for sublist in ALdist_per_seg_count for item in sublist])
 
-LHdist_per_seg_count = np.delete(LHdist_per_seg_count, np.where(length_LH_seg_total == 0)[0][0])
-ALdist_per_seg_count = np.delete(ALdist_per_seg_count, np.where(length_AL_seg_total == 0)[0][0])
-
-rGy_calyx_per_seg = np.array([item for sublist in rGy_calyx_per_seg for item in sublist])
-rGy_LH_per_seg = np.array([item for sublist in rGy_LH_per_seg for item in sublist])
-rGy_AL_per_seg = np.array([item for sublist in rGy_AL_per_seg for item in sublist])
-
-rGy_LH_per_seg = rGy_LH_per_seg[rGy_LH_per_seg != 0]
-length_LH_seg_total = length_LH_seg_total[length_LH_seg_total != 0]
-rGy_AL_per_seg = rGy_AL_per_seg[rGy_AL_per_seg != 0]
-length_AL_seg_total = length_AL_seg_total[length_AL_seg_total != 0]
+for i in range(len(un_LH)):
+    idx = np.where(MorphData.LHdist_trk == un_LH[i])[0]
+    tarval = np.array(MorphData.LHdist)[idx]
+    (rGy_t, cML_t) = utils.radiusOfGyration(tarval)
+    rGy_LH_per_seg.append(rGy_t)
+    
+for i in range(len(un_AL)):
+    idx = np.where(MorphData.ALdist_trk == un_AL[i])[0]
+    tarval = np.array(MorphData.ALdist)[idx]
+    (rGy_t, cML_t) = utils.radiusOfGyration(tarval)
+    rGy_AL_per_seg.append(rGy_t)
 
 
 #%%
 
 xvallog1 = np.logspace(-3, 3)
 
-length_calyx_seg_total = np.append(length_calyx_seg_total, LengthData.length_calyx_total)
-length_LH_seg_total = np.append(length_LH_seg_total, LengthData.length_LH_total)
-length_AL_seg_total = np.append(length_AL_seg_total, LengthData.length_AL_total)
+poptR_calyx_per_seg = []
+perrR_calyx_per_seg = []
+fitYR_calyx_per_seg = []
 
-rGy_calyx_per_seg = np.append(rGy_calyx_per_seg, rGy_calyx)
-rGy_LH_per_seg = np.append(rGy_LH_per_seg, rGy_LH)
-rGy_AL_per_seg = np.append(rGy_AL_per_seg, rGy_AL)
+for i in range(len(length_calyx_nempty)):
+    if len(length_calyx_nempty[i]) > 1:
+        popt, pcov = scipy.optimize.curve_fit(objFuncGL, 
+                                                np.log10(length_calyx_nempty[i]), 
+                                                np.log10(rGy_calyx_per_seg[i]), 
+                                                p0=[1., 0.], 
+                                                maxfev=100000)
+        poptR_calyx_per_seg.append(popt)
+        perrR_calyx_per_seg.append(np.sqrt(np.diag(pcov)))
+        fitYR_calyx_per_seg.append(objFuncPpow(xvallog1, popt[0], popt[1]))
 
-poptR_calyx_per_seg, pcovR_calyx_per_seg = scipy.optimize.curve_fit(objFuncGL, 
-                                        np.log10(length_calyx_seg_total), 
-                                        np.log10(rGy_calyx_per_seg), 
-                                        p0=[1., 0.], 
-                                        maxfev=100000)
-perrR_calyx_per_seg = np.sqrt(np.diag(pcovR_calyx_per_seg))
-fitYR_calyx_per_seg = objFuncPpow(xvallog1, poptR_calyx_per_seg[0], poptR_calyx_per_seg[1])
-
-poptR_LH_per_seg, pcovR_LH_per_seg = scipy.optimize.curve_fit(objFuncGL, 
-                                        np.log10(length_LH_seg_total), 
-                                        np.log10(rGy_LH_per_seg), 
-                                        p0=[1., 0.], 
-                                        maxfev=100000)
-perrR_LH_per_seg = np.sqrt(np.diag(pcovR_LH_per_seg))
-fitYR_LH_per_seg = objFuncPpow(xvallog1, poptR_LH_per_seg[0], poptR_LH_per_seg[1])
-
-poptR_AL_per_seg, pcovR_AL_per_seg = scipy.optimize.curve_fit(objFuncGL, 
-                                        np.log10(length_AL_seg_total), 
-                                        np.log10(rGy_AL_per_seg), 
-                                        p0=[1., 0.], 
-                                        maxfev=100000)
-perrR_AL_per_seg = np.sqrt(np.diag(pcovR_AL_per_seg))
-fitYR_AL_per_seg = objFuncPpow(xvallog1, poptR_AL_per_seg[0], poptR_AL_per_seg[1])
 
 
 fig = plt.figure(figsize=(8,6))
-plt.scatter(length_AL_seg_total, rGy_AL_per_seg, marker='.', s=1, color='tab:blue')
-plt.scatter(length_calyx_seg_total, rGy_calyx_per_seg, marker='.', s=1, color='tab:orange')
-plt.scatter(length_LH_seg_total, rGy_LH_per_seg, marker='.', s=1, color='tab:green')
+for i in range(len(length_calyx_nempty)):
+    plt.scatter(length_calyx_nempty[i], rGy_calyx_per_seg[i])
+# plt.scatter(length_AL_seg_total, rGy_AL_per_seg, marker='.', s=1, color='tab:blue')
+# plt.scatter(length_calyx_seg_total, rGy_calyx_per_seg, marker='.', s=1, color='tab:orange')
+# plt.scatter(length_LH_seg_total, rGy_LH_per_seg, marker='.', s=1, color='tab:green')
 # plt.scatter(LengthData.length_AL_total, rGy_AL, color='tab:blue', facecolors='none')
 # plt.scatter(LengthData.length_calyx_total, rGy_calyx, color='tab:orange', facecolors='none')
 # plt.scatter(LengthData.length_LH_total, rGy_LH, color='tab:green', facecolors='none')
@@ -4351,9 +4459,9 @@ plt.yscale('log')
 plt.xscale('log')
 # plt.xlim(1, 10000)
 # plt.ylim(7, 4000)
-plt.legend(['AL: ' + str(round(poptR_AL_per_seg[0], 3)) + '$\pm$' + str(round(perrR_AL_per_seg[0], 3)),
-            'MB calyx: ' + str(round(poptR_calyx_per_seg[0], 3)) + '$\pm$' + str(round(perrR_calyx_per_seg[0], 3)),
-            'LH: ' + str(round(poptR_LH_per_seg[0], 3)) + '$\pm$' + str(round(perrR_LH_per_seg[0], 3))], fontsize=15)
+# plt.legend(['AL: ' + str(round(poptR_AL_per_seg[0], 3)) + '$\pm$' + str(round(perrR_AL_per_seg[0], 3)),
+#             'MB calyx: ' + str(round(poptR_calyx_per_seg[0], 3)) + '$\pm$' + str(round(perrR_calyx_per_seg[0], 3)),
+#             'LH: ' + str(round(poptR_LH_per_seg[0], 3)) + '$\pm$' + str(round(perrR_LH_per_seg[0], 3))], fontsize=15)
 # plt.title(r"MB calyx", fontsize=20)
 plt.xlabel(r"$L$", fontsize=15)
 plt.ylabel(r"$R_{g}$", fontsize=15)
@@ -4447,7 +4555,7 @@ ax.tick_params(axis = 'y', which = 'major', labelsize = 15)
 ax.tick_params(axis = 'y', which = 'minor', labelsize = 15)
 ax.set_xlabel('L', fontsize=15)
 plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/total_length_box_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/total_length_box_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -4518,63 +4626,105 @@ for i in range(len(glo_list)):
         morph_dist_AL_ep_temp2 = []
         
         for p in range(len(MorphData.morph_dist[glo_idx[i][j]])):
+            
+            branch_dist_temp2_rot = roty.apply(np.array(MorphData.morph_dist[glo_idx[i][j]][p]))
+            branch_dist_temp2_rot2 = rotx.apply(np.array(MorphData.morph_dist[glo_idx[i][j]][p]))
+            
             # if ((np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] > 475).all() and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] < 550).all() and
             #     (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] < 260).all() and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[2] > 150).all()):
-            if ((np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] > 477).all() and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] < 545).all() and
-                (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] < 273).all() and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] > 190).all() and
-                (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[2] > 149).all()):
+            # if ((np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] > 477).all() and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] < 545).all() and
+            #     (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] < 273).all() and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] > 190).all() and
+            #     (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[2] > 149).all()):
+            if ((np.array(branch_dist_temp2_rot)[0] > 353.95).all() and (np.array(branch_dist_temp2_rot)[0] < 426.14).all() and
+                (np.array(branch_dist_temp2_rot)[1] > 190.71).all() and (np.array(branch_dist_temp2_rot)[1] < 272.91).all() and
+                (np.array(branch_dist_temp2_rot)[2] > 354.95).all() and (np.array(branch_dist_temp2_rot)[2] < 399.06).all()):
                 morph_dist_calyx_temp2.append(MorphData.morph_dist[glo_idx[i][j]][p])
             # elif ((np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] < 475).all() and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] < 260).all() and
             #       (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] > 180).all() and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[2] > 125).all()):
-            elif ((np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] < 477).all() and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] < 273).all() and
-                  (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] > 190).all() and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[2] > 117).all()):
+            # elif ((np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] < 477).all() and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] < 273).all() and
+            #       (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] > 190).all() and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[2] > 117).all()):
+            elif ((np.array(branch_dist_temp2_rot)[0] < 353.95).all() and (np.array(branch_dist_temp2_rot)[1] > 190.71).all() and
+                  (np.array(branch_dist_temp2_rot)[1] < 272.91).all() and (np.array(branch_dist_temp2_rot)[2] > 278.76).all() and
+                  (np.array(branch_dist_temp2_rot)[2] < 345.93).all()):
                 morph_dist_LH_temp2.append(MorphData.morph_dist[glo_idx[i][j]][p])
             # elif ((np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] > 475).all() and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] < 600).all() and 
             #     (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] > 280).all() and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] < 400).all() and
             #     (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[2] < 90).all()):
-            elif ((np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] > 477).all() and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] < 597).all() and 
-                  (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] > 273).all() and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] < 371).all() and
-                  (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[2] < 84).all()):
+            # elif ((np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] > 477).all() and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[0] < 597).all() and 
+            #       (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] > 273).all() and (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[1] < 371).all() and
+            #       (np.array(MorphData.morph_dist[glo_idx[i][j]][p])[2] < 84).all()):
+            elif ((np.array(branch_dist_temp2_rot)[0] > 426.14).all() and (np.array(branch_dist_temp2_rot)[0] < 516.38).all() and 
+                  (np.array(branch_dist_temp2_rot)[1] > 272.91).all() and (np.array(branch_dist_temp2_rot)[1] < 361.12).all() and
+                  # (np.array(branch_dist_temp2_rot)[2] < 296.8).all()):
+                  (np.array(branch_dist_temp2_rot2)[2] < -114.65).all()):
                 morph_dist_AL_temp2.append(MorphData.morph_dist[glo_idx[i][j]][p])
         
         for q in range(len(BranchData.branchP_dist[glo_idx[i][j]])):
+            
+            branch_dist_temp2_rot = roty.apply(np.array(BranchData.branchP_dist[glo_idx[i][j]][q]))
+            branch_dist_temp2_rot2 = rotx.apply(np.array(BranchData.branchP_dist[glo_idx[i][j]][q]))
+            
             # if ((np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[0] > 475).all() and (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[0] < 550).all() and
             #     (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[1] < 260).all() and (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[2] > 150).all()):
-            if ((np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[0] > 477).all() and (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[0] < 545).all() and
-                (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[1] < 273).all() and (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[1] > 190).all() and
-                (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[2] > 149).all()):
+            # if ((np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[0] > 477).all() and (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[0] < 545).all() and
+            #     (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[1] < 273).all() and (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[1] > 190).all() and
+            #     (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[2] > 149).all()):
+            if ((np.array(branch_dist_temp2_rot)[0] > 353.95).all() and (np.array(branch_dist_temp2_rot)[0] < 426.14).all() and
+                (np.array(branch_dist_temp2_rot)[1] > 190.71).all() and (np.array(branch_dist_temp2_rot)[1] < 272.91).all() and
+                (np.array(branch_dist_temp2_rot)[2] > 354.95).all() and (np.array(branch_dist_temp2_rot)[2] < 399.06).all()):
                 morph_dist_calyx_bp_temp2.append(np.array(BranchData.branchP_dist[glo_idx[i][j]][q]))
             # elif ((np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[0] < 475).all() and (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[1] < 260).all() and
             #       (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[1] > 180).all() and (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[2] > 125).all()):
-            elif ((np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[0] < 477).all() and (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[1] < 273).all() and
-                  (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[1] > 190).all() and (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[2] > 117).all()):
+            # elif ((np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[0] < 477).all() and (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[1] < 273).all() and
+            #       (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[1] > 190).all() and (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[2] > 117).all()):
+            elif ((np.array(branch_dist_temp2_rot)[0] < 353.95).all() and (np.array(branch_dist_temp2_rot)[1] > 190.71).all() and
+                  (np.array(branch_dist_temp2_rot)[1] < 272.91).all() and (np.array(branch_dist_temp2_rot)[2] > 278.76).all() and
+                  (np.array(branch_dist_temp2_rot)[2] < 345.93).all()):
                 morph_dist_LH_bp_temp2.append(np.array(BranchData.branchP_dist[glo_idx[i][j]][q]))
             # elif ((np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[0] > 475).all() and (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[0] < 600).all() and 
             #       (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[1] > 280).all() and (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[1] < 400).all() and
             #       (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[2] < 90).all()):
-            elif ((np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[0] > 477).all() and (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[0] < 597).all() and 
-                  (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[1] > 273).all() and (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[1] < 371).all() and
-                  (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[2] < 84).all()):
+            # elif ((np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[0] > 477).all() and (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[0] < 597).all() and 
+            #       (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[1] > 273).all() and (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[1] < 371).all() and
+            #       (np.array(BranchData.branchP_dist[glo_idx[i][j]][q])[2] < 84).all()):
+            elif ((np.array(branch_dist_temp2_rot)[0] > 426.14).all() and (np.array(branch_dist_temp2_rot)[0] < 516.38).all() and 
+                  (np.array(branch_dist_temp2_rot)[1] > 272.91).all() and (np.array(branch_dist_temp2_rot)[1] < 361.12).all() and
+                  # (np.array(branch_dist_temp2_rot)[2] < 296.8).all()):
+                  (np.array(branch_dist_temp2_rot2)[2] < -114.65).all()):
                 morph_dist_AL_bp_temp2.append(np.array(BranchData.branchP_dist[glo_idx[i][j]][q]))
         
         for r in range(len(MorphData.endP_dist[glo_idx[i][j]])):
+            
+            branch_dist_temp2_rot = roty.apply(np.array(MorphData.endP_dist[glo_idx[i][j]][r]))
+            branch_dist_temp2_rot2 = rotx.apply(np.array(MorphData.endP_dist[glo_idx[i][j]][r]))
+            
             # if ((np.array(MorphData.endP_dist[glo_idx[i][j]][r])[0] > 475).all() and (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[0] < 550).all() and
             #     (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[1] < 260).all() and (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[2] > 150).all()):
-            if ((np.array(MorphData.endP_dist[glo_idx[i][j]][r])[0] > 477).all() and (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[0] < 545).all() and
-                (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[1] < 273).all() and (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[1] > 190).all() and
-                (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[2] > 149).all()):
+            # if ((np.array(MorphData.endP_dist[glo_idx[i][j]][r])[0] > 477).all() and (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[0] < 545).all() and
+            #     (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[1] < 273).all() and (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[1] > 190).all() and
+            #     (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[2] > 149).all()):
+            if ((np.array(branch_dist_temp2_rot)[0] > 353.95).all() and (np.array(branch_dist_temp2_rot)[0] < 426.14).all() and
+                (np.array(branch_dist_temp2_rot)[1] > 190.71).all() and (np.array(branch_dist_temp2_rot)[1] < 272.91).all() and
+                (np.array(branch_dist_temp2_rot)[2] > 354.95).all() and (np.array(branch_dist_temp2_rot)[2] < 399.06).all()):
                 morph_dist_calyx_ep_temp2.append(np.array(MorphData.endP_dist[glo_idx[i][j]][r]))
             # elif ((np.array(MorphData.endP_dist[glo_idx[i][j]][r])[0] < 475).all() and (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[1] < 260).all() and
             #       (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[1] > 180).all() and (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[2] > 125).all()):
-            elif ((np.array(MorphData.endP_dist[glo_idx[i][j]][r])[0] < 477).all() and (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[1] < 273).all() and
-                  (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[1] > 190).all() and (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[2] > 117).all()):
+            # elif ((np.array(MorphData.endP_dist[glo_idx[i][j]][r])[0] < 477).all() and (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[1] < 273).all() and
+            #       (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[1] > 190).all() and (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[2] > 117).all()):
+            elif ((np.array(branch_dist_temp2_rot)[0] < 353.95).all() and (np.array(branch_dist_temp2_rot)[1] > 190.71).all() and
+                  (np.array(branch_dist_temp2_rot)[1] < 272.91).all() and (np.array(branch_dist_temp2_rot)[2] > 278.76).all() and
+                  (np.array(branch_dist_temp2_rot)[2] < 345.93).all()):
                 morph_dist_LH_ep_temp2.append(np.array(MorphData.endP_dist[glo_idx[i][j]][r]))
             # elif ((np.array(MorphData.endP_dist[glo_idx[i][j]][r])[0] > 475).all() and (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[0] < 600).all() and 
             #       (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[1] > 280).all() and (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[1] < 400).all() and
             #       (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[2] < 90).all()):
-            elif ((np.array(MorphData.endP_dist[glo_idx[i][j]][r])[0] > 477).all() and (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[0] < 597).all() and 
-                  (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[1] > 273).all() and (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[1] < 371).all() and
-                  (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[2] < 84).all()):
+            # elif ((np.array(MorphData.endP_dist[glo_idx[i][j]][r])[0] > 477).all() and (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[0] < 597).all() and 
+            #       (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[1] > 273).all() and (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[1] < 371).all() and
+            #       (np.array(MorphData.endP_dist[glo_idx[i][j]][r])[2] < 84).all()):
+            elif ((np.array(branch_dist_temp2_rot)[0] > 426.14).all() and (np.array(branch_dist_temp2_rot)[0] < 516.38).all() and 
+                  (np.array(branch_dist_temp2_rot)[1] > 272.91).all() and (np.array(branch_dist_temp2_rot)[1] < 361.12).all() and
+                  # (np.array(branch_dist_temp2_rot)[2] < 296.8).all()):
+                  (np.array(branch_dist_temp2_rot2)[2] < -114.65).all()):
                 morph_dist_AL_ep_temp2.append(np.array(MorphData.endP_dist[glo_idx[i][j]][r]))
         
         morph_dist_calyx_temp.append(morph_dist_calyx_temp2)
@@ -4596,7 +4746,7 @@ for i in range(len(glo_list)):
     morph_dist_calyx_ep.append(morph_dist_calyx_ep_temp)
     morph_dist_LH_ep.append(morph_dist_LH_ep_temp)
     morph_dist_AL_ep.append(morph_dist_AL_ep_temp)
-            
+    
 
 #%% Radius of Gyration on neurons spanning AL, MB calyx, and LH
 
@@ -4801,7 +4951,7 @@ ax.set_xlim(490, 550)
 ax.set_ylim(350, 150)
 ax.set_zlim(160, 190)
 
-# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_calyx_5'), dpi=300, bbox_inches='tight')
+# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_calyx_6'), dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -4834,7 +4984,7 @@ ax.set_xlim(410, 480)
 ax.set_ylim(350, 150)
 ax.set_zlim(135, 175)
 
-# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_LH_5'), dpi=300, bbox_inches='tight')
+# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_LH_6'), dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -4867,7 +5017,7 @@ ax.set_xlim(485, 585)
 ax.set_ylim(430, 70)
 ax.set_zlim(25, 75)
 
-# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_AL_5'), dpi=300, bbox_inches='tight')
+# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_AL_6'), dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -5658,7 +5808,7 @@ ax.set_xticklabels(labels, fontsize=15)
 ax.legend(fontsize=13)
 #ax.set_title('Median distance within and outside cluster')
 plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_median_nnmetric_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_median_nnmetric_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -5693,7 +5843,7 @@ ax3.set_ylim(0, 0.4)
 ax3.set_ylabel('LH', fontsize=15)
 ax3.set_xlabel('Distance', fontsize=15)
 plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/skewed_dist_new_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/skewed_dist_new_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -5761,7 +5911,7 @@ ax.set_xticklabels(glo_list, rotation=90, fontsize=10)
 ax.legend(fontsize=13)
 plt.xlim(0-0.5, len(glo_list)-0.5)
 plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_p_glo_calyx_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_p_glo_calyx_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 fig, ax = plt.subplots(figsize=(8,6))
@@ -5779,7 +5929,7 @@ ax.set_xticklabels(glo_list, rotation=90, fontsize=10)
 ax.legend(fontsize=13)
 plt.xlim(0-0.5, len(glo_list)-0.5)
 plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_p_glo_LH_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_p_glo_LH_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 fig, ax = plt.subplots(figsize=(8,6))
@@ -5797,7 +5947,7 @@ ax.set_xticklabels(glo_list, rotation=90, fontsize=10)
 ax.legend(fontsize=13)
 plt.xlim(0-0.5, len(glo_list)-0.5)
 plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_p_glo_AL_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_p_glo_AL_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 # for i in range(len(glo_idx)):
@@ -5892,7 +6042,7 @@ ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
 ax.spines["bottom"].set_visible(False)
 ax.spines["left"].set_visible(False)
-# plt.savefig(Parameter.outputdir + '/hier_AL_fixed_nnmetric_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/hier_AL_fixed_nnmetric_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 ind_AL_new = scipy.cluster.hierarchy.fcluster(L_AL_new, 0.5*morph_dist_AL_r_new_avg.max(), 'maxclust')
@@ -5912,7 +6062,7 @@ ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
 ax.spines["bottom"].set_visible(False)
 ax.spines["left"].set_visible(False)
-# plt.savefig(Parameter.outputdir + '/hier_calyx_fixed_nnmetric_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/hier_calyx_fixed_nnmetric_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 ind_calyx_new = scipy.cluster.hierarchy.fcluster(L_calyx_new, 0.5*morph_dist_calyx_r_new_avg.max(), 'maxclust')
@@ -5933,7 +6083,7 @@ ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
 ax.spines["bottom"].set_visible(False)
 ax.spines["left"].set_visible(False)
-# plt.savefig(Parameter.outputdir + '/hier_LH_fixed_nnmetric_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/hier_LH_fixed_nnmetric_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 ind_LH_new = scipy.cluster.hierarchy.fcluster(L_LH_new, 0.5*morph_dist_LH_r_new_avg.max(), 'maxclust')
@@ -5994,7 +6144,7 @@ ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
 ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=5, rotation_mode='default')
 ax3.axis["left"].minor_ticklabels.set(fontsize=5, rotation_mode='default')
 plt.colorbar(im, fraction=0.045)
-# plt.savefig(Parameter.outputdir + '/distance_grid_calyx_fixed_nnmetric_clst_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/distance_grid_calyx_fixed_nnmetric_clst_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 fig = plt.figure(figsize=(6,6))
@@ -6027,7 +6177,7 @@ ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
 ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=5, rotation_mode='default')
 ax3.axis["left"].minor_ticklabels.set(fontsize=5, rotation_mode='default')
 plt.colorbar(im, fraction=0.045)
-# plt.savefig(Parameter.outputdir + '/distance_grid_LH_fixed_nnmetric_clst_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/distance_grid_LH_fixed_nnmetric_clst_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 fig = plt.figure(figsize=(6,6))
@@ -6060,7 +6210,7 @@ ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
 ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=5, rotation_mode='default')
 ax3.axis["left"].minor_ticklabels.set(fontsize=5, rotation_mode='default')
 plt.colorbar(im, fraction=0.045)
-# plt.savefig(Parameter.outputdir + '/distance_grid_AL_fixed_nnmetric_clst_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/distance_grid_AL_fixed_nnmetric_clst_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -6080,7 +6230,7 @@ ax.set_xticklabels(glo_list_cluster_new, rotation=90, fontsize=10)
 ax.legend(fontsize=13)
 plt.xlim(0-0.5, len(glo_list)-0.5)
 plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/correlation_glomeruli_nnmetric_clst_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/correlation_glomeruli_nnmetric_clst_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
