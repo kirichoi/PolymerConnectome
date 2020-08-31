@@ -366,6 +366,7 @@ class BranchData:
     branch_dist = []
     indBranchTrk = []
     branchP = []
+    calyx_branchTrk = []
     branchNum = np.empty(len(fp))
 
 class OutputData:
@@ -442,6 +443,7 @@ for f in range(len(fp)):
     length_calyx_per_n = []
     length_LH_per_n = []
     length_AL_per_n = []
+    calyx_branchTrk_temp = []
     
     for bp in range(len(bPoint)):
         if bPoint[bp] != scall:
@@ -496,6 +498,7 @@ for f in range(len(fp)):
                     MorphData.calyxdist_trk.append(f)
                     calyxdist_per_n_temp.append(branch_dist_temp2)
                     length_calyx_per_n.append(dist)
+                    calyx_branchTrk_temp.append(neu_branchTrk_temp)
                 # elif ((np.array(branch_dist_temp2)[:,0] < 475).all() and (np.array(branch_dist_temp2)[:,1] < 260).all() and
                 #     (np.array(branch_dist_temp2)[:,1] > 180).all() and (np.array(branch_dist_temp2)[:,2] > 125).all()):
                 # elif ((np.array(branch_dist_temp2)[:,0] < 473).all() and (np.array(branch_dist_temp2)[:,1] < 273).all() and
@@ -538,6 +541,7 @@ for f in range(len(fp)):
     LengthData.length_calyx.append(length_calyx_per_n)
     LengthData.length_LH.append(length_LH_per_n)
     LengthData.length_AL.append(length_AL_per_n)
+    BranchData.calyx_branchTrk.append(calyx_branchTrk_temp)
 
     for ep in range(len(list_end)):
         neu_indBranchTrk_temp = []
@@ -4401,12 +4405,12 @@ for i in range(len(un_calyx)):
             rGy_calyx_per_seg[i] = np.append(rGy_calyx_per_seg[i], rGy_t)
             length_calyx_nempty[i].append(length_calyx_nempty[i][j[0]]+length_calyx_nempty[i][j[1]])
     
-    # comb2 = combinations(np.arange(len(tarval)), 3)
-    # for j in list(comb2):
-    #     if (tarval[j[0]][0] == tarval[j[1]][-1] and tarval[j[1]][-1] == tarval[j[1]][0]):
-    #         (rGy_t, cML_t) = utils.radiusOfGyration([tarval[j[0]] + tarval[j[1]]])
-    #         rGy_calyx_per_seg[i] = np.append(rGy_calyx_per_seg[i], rGy_t)
-    #         length_calyx_nempty[i].append(length_calyx_nempty[i][j[0]]+length_calyx_nempty[i][j[1]])
+    comb2 = combinations(np.arange(len(tarval)), 3)
+    for j in list(comb2):
+        if (tarval[j[0]][0] == tarval[j[1]][-1] and tarval[j[1]][-1] == tarval[j[1]][0]):
+            (rGy_t, cML_t) = utils.radiusOfGyration([tarval[j[0]] + tarval[j[1]]])
+            rGy_calyx_per_seg[i] = np.append(rGy_calyx_per_seg[i], rGy_t)
+            length_calyx_nempty[i].append(length_calyx_nempty[i][j[0]]+length_calyx_nempty[i][j[1]])
 
 
 for i in range(len(un_LH)):
