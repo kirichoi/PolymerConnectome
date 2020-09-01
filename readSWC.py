@@ -1536,7 +1536,7 @@ def cons_check(val):
     edges = iter(val[:1] + sum(gaps, []) + val[-1:])
     return list(zip(edges, edges))
 
-radiussize = np.logspace(-1, 2, 100)[25:97]
+radiussize = np.logspace(-1, 2, 100)[25:99]
 
 spheredist_calyx_sum = np.empty(len(radiussize))
 spheredist_LH_sum = np.empty(len(radiussize))
@@ -1757,6 +1757,33 @@ plt.xlabel("Radius $r$", fontsize=15)
 plt.ylabel("$L$", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/density_scale_neuropil_fixed_6.pdf', dpi=300, bbox_inches='tight')
 plt.show()
+
+#%% Form factor
+
+spheredist_calyx_sum_dens = np.divide(spheredist_calyx_sum, 4/3*np.pi*np.power(radiussize,3))
+spheredist_calyx_sum_dens_fft = np.fft.fft(spheredist_calyx_sum_dens)
+
+fig = plt.figure(figsize=(8,6))
+plt.plot(np.logspace(-1, 2, 100)[25:99:2], np.abs(spheredist_calyx_sum_dens_fft[int(len(radiussize)/2):]))
+plt.xscale('log')
+plt.show()
+
+spheredist_LH_sum_dens = np.divide(spheredist_LH_sum, 4/3*np.pi*np.power(radiussize,3))
+spheredist_LH_sum_dens_fft = np.fft.fft(spheredist_LH_sum_dens)
+
+fig = plt.figure(figsize=(8,6))
+plt.plot(np.logspace(-1, 2, 100)[25:99:2], np.abs(spheredist_LH_sum_dens_fft[int(len(radiussize)/2):]))
+plt.xscale('log')
+plt.show()
+
+spheredist_AL_sum_dens = np.divide(spheredist_AL_sum, 4/3*np.pi*np.power(radiussize,3))
+spheredist_AL_sum_dens_fft = np.fft.fft(spheredist_AL_sum_dens)
+
+fig = plt.figure(figsize=(8,6))
+plt.plot(np.logspace(-1, 2, 100)[25:99:2], np.abs(spheredist_AL_sum_dens_fft[int(len(radiussize)/2):]))
+plt.xscale('log')
+plt.show()
+
 
 #%% Moving window
 
