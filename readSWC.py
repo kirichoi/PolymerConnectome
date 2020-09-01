@@ -22,6 +22,7 @@ import scipy.optimize
 from sklearn import neighbors
 from collections import Counter
 import multiprocessing as mp
+import copy
 import time
 
 os.chdir(os.path.dirname(__file__))
@@ -367,6 +368,11 @@ class BranchData:
     indBranchTrk = []
     branchP = []
     calyx_branchTrk = []
+    calyx_branchP = []
+    LH_branchTrk = []
+    LH_branchP = []
+    AL_branchTrk = []
+    AL_branchP = []
     branchNum = np.empty(len(fp))
 
 class OutputData:
@@ -444,6 +450,11 @@ for f in range(len(fp)):
     length_LH_per_n = []
     length_AL_per_n = []
     calyx_branchTrk_temp = []
+    calyx_branchP_temp = []
+    LH_branchTrk_temp = []
+    LH_branchP_temp = []
+    AL_branchTrk_temp = []
+    AL_branchP_temp = []
     
     for bp in range(len(bPoint)):
         if bPoint[bp] != scall:
@@ -499,6 +510,7 @@ for f in range(len(fp)):
                     calyxdist_per_n_temp.append(branch_dist_temp2)
                     length_calyx_per_n.append(dist)
                     calyx_branchTrk_temp.append(neu_branchTrk_temp)
+                    calyx_branchP_temp.append(list(set(neu_branchTrk_temp) & set(branchInd)))
                 # elif ((np.array(branch_dist_temp2)[:,0] < 475).all() and (np.array(branch_dist_temp2)[:,1] < 260).all() and
                 #     (np.array(branch_dist_temp2)[:,1] > 180).all() and (np.array(branch_dist_temp2)[:,2] > 125).all()):
                 # elif ((np.array(branch_dist_temp2)[:,0] < 473).all() and (np.array(branch_dist_temp2)[:,1] < 273).all() and
@@ -513,6 +525,8 @@ for f in range(len(fp)):
                     MorphData.LHdist_trk.append(f)
                     LHdist_per_n_temp.append(branch_dist_temp2)
                     length_LH_per_n.append(dist)
+                    LH_branchTrk_temp.append(neu_branchTrk_temp)
+                    LH_branchP_temp.append(list(set(neu_branchTrk_temp) & set(branchInd)))
                 # elif ((np.array(branch_dist_temp2)[:,0] > 475).all() and (np.array(branch_dist_temp2)[:,0] < 600).all() and 
                 #       (np.array(branch_dist_temp2)[:,1] > 280).all() and (np.array(branch_dist_temp2)[:,1] < 400).all() and
                 #       (np.array(branch_dist_temp2)[:,2] < 90).all()):
@@ -530,6 +544,8 @@ for f in range(len(fp)):
                     MorphData.ALdist_trk.append(f)
                     ALdist_per_n_temp.append(branch_dist_temp2)
                     length_AL_per_n.append(dist)
+                    AL_branchTrk_temp.append(neu_branchTrk_temp)
+                    AL_branchP_temp.append(list(set(neu_branchTrk_temp) & set(branchInd)))
                 
     BranchData.branchTrk.append(neu_branchTrk)
     BranchData.branch_dist.append(branch_dist_temp1)
@@ -542,6 +558,11 @@ for f in range(len(fp)):
     LengthData.length_LH.append(length_LH_per_n)
     LengthData.length_AL.append(length_AL_per_n)
     BranchData.calyx_branchTrk.append(calyx_branchTrk_temp)
+    BranchData.calyx_branchP.append(np.unique([item for sublist in calyx_branchP_temp for item in sublist]).tolist())
+    BranchData.LH_branchTrk.append(LH_branchTrk_temp)
+    BranchData.LH_branchP.append(np.unique([item for sublist in LH_branchP_temp for item in sublist]).tolist())
+    BranchData.AL_branchTrk.append(AL_branchTrk_temp)
+    BranchData.AL_branchP.append(np.unique([item for sublist in AL_branchP_temp for item in sublist]).tolist())
 
     for ep in range(len(list_end)):
         neu_indBranchTrk_temp = []
@@ -4372,12 +4393,21 @@ print('AL: ' + str(np.corrcoef(np.log10(LengthData.length_AL_total), np.log10(rG
 
 #%% Radius of Gyration for calyx, LH, and AL per segment
 
-from itertools import combinations
-import copy
-
 length_calyx_nempty = copy.deepcopy([x for x in LengthData.length_calyx if x != []])
 length_LH_nempty = copy.deepcopy([x for x in LengthData.length_LH if x != []])
 length_AL_nempty = copy.deepcopy([x for x in LengthData.length_AL if x != []])
+
+calyx_btrk = copy.deepcopy([x for x in BranchData.calyx_branchTrk if x != []])
+calyx_toex = [i for i,x in enumerate(LengthData.length_calyx) if not x]
+calyx_bP = copy.deepcopy([element for i, element in enumerate(BranchData.calyx_branchP) if i not in calyx_toex])
+
+LH_btrk = copy.deepcopy([x for x in BranchData.LH_branchTrk if x != []])
+LH_toex = [i for i,x in enumerate(LengthData.length_LH) if not x]
+LH_bP = copy.deepcopy([element for i, element in enumerate(BranchData.LH_branchP) if i not in LH_toex])
+
+AL_btrk = copy.deepcopy([x for x in BranchData.AL_branchTrk if x != []])
+AL_toex = [i for i,x in enumerate(LengthData.length_AL) if not x]
+AL_bP = copy.deepcopy([element for i, element in enumerate(BranchData.AL_branchP) if i not in AL_toex])
 
 calyxdist_per_seg_count = []
 LHdist_per_seg_count = []
@@ -4387,31 +4417,22 @@ rGy_calyx_per_seg = []
 rGy_LH_per_seg = []
 rGy_AL_per_seg = []
 
+rGy_calyx_per_bP = []
+length_calyx_bP = []
+rGy_LH_per_bP = []
+length_LH_bP = []
+rGy_AL_per_bP = []
+length_AL_bP = []
+
 un_calyx = np.unique(MorphData.calyxdist_trk)
 un_LH = np.unique(MorphData.LHdist_trk)
 un_AL = np.unique(MorphData.ALdist_trk)
-
-test = 0
 
 for i in range(len(un_calyx)):
     idx = np.where(MorphData.calyxdist_trk == un_calyx[i])[0]
     tarval = np.array(MorphData.calyxdist)[idx]
     (rGy_t, cML_t) = utils.radiusOfGyration(tarval)
     rGy_calyx_per_seg.append(rGy_t)
-    comb1 = combinations(np.arange(len(tarval)), 2)
-    for j in list(comb1):
-        if tarval[j[0]][0] == tarval[j[1]][-1] or tarval[j[0]][-1] == tarval[j[1]][0]:
-            (rGy_t, cML_t) = utils.radiusOfGyration([tarval[j[0]] + tarval[j[1]]])
-            rGy_calyx_per_seg[i] = np.append(rGy_calyx_per_seg[i], rGy_t)
-            length_calyx_nempty[i].append(length_calyx_nempty[i][j[0]]+length_calyx_nempty[i][j[1]])
-    
-    comb2 = combinations(np.arange(len(tarval)), 3)
-    for j in list(comb2):
-        if (tarval[j[0]][0] == tarval[j[1]][-1] and tarval[j[1]][-1] == tarval[j[1]][0]):
-            (rGy_t, cML_t) = utils.radiusOfGyration([tarval[j[0]] + tarval[j[1]]])
-            rGy_calyx_per_seg[i] = np.append(rGy_calyx_per_seg[i], rGy_t)
-            length_calyx_nempty[i].append(length_calyx_nempty[i][j[0]]+length_calyx_nempty[i][j[1]])
-
 
 for i in range(len(un_LH)):
     idx = np.where(MorphData.LHdist_trk == un_LH[i])[0]
@@ -4424,6 +4445,64 @@ for i in range(len(un_AL)):
     tarval = np.array(MorphData.ALdist)[idx]
     (rGy_t, cML_t) = utils.radiusOfGyration(tarval)
     rGy_AL_per_seg.append(rGy_t)
+
+for i in range(len(calyx_bP)):
+    rGy_calyx_per_bP_temp = []
+    length_calyx_bP_temp = []
+    idx = np.where(np.array(MorphData.calyxdist_trk) == un_calyx[i])[0]
+    tarval = np.array(MorphData.calyxdist)[idx]
+    for j in range(len(calyx_bP[i])):
+        temp_tar = []
+        temp_len = 0
+        for k in range(len(calyx_btrk[i])):
+            if calyx_btrk[i][k][0] == calyx_bP[i][j] or calyx_btrk[i][k][-1] == calyx_bP[i][j]:
+                temp_tar.append(tarval[k])
+                temp_len += length_calyx_nempty[i][k]
+                
+        (rGy_t, cML_t) = utils.radiusOfGyration([[item for sublist in temp_tar for item in sublist]])
+        rGy_calyx_per_bP_temp.append(rGy_t)
+        length_calyx_bP_temp.append(temp_len)
+    
+    rGy_calyx_per_bP.append(np.squeeze(rGy_calyx_per_bP_temp))
+    length_calyx_bP.append(length_calyx_bP_temp)
+
+for i in range(len(LH_bP)):
+    rGy_LH_per_bP_temp = []
+    length_LH_bP_temp = []
+    idx = np.where(np.array(MorphData.LHdist_trk) == un_LH[i])[0]
+    tarval = np.array(MorphData.LHdist)[idx]
+    for j in range(len(LH_bP[i])):
+        temp_tar = []
+        temp_len = 0
+        for k in range(len(LH_btrk[i])):
+            if LH_btrk[i][k][0] == LH_bP[i][j] or LH_btrk[i][k][-1] == LH_bP[i][j]:
+                temp_tar.append(tarval[k])
+                temp_len += length_LH_nempty[i][k]
+                
+        (rGy_t, cML_t) = utils.radiusOfGyration([[item for sublist in temp_tar for item in sublist]])
+        rGy_LH_per_bP_temp.append(rGy_t)
+        length_LH_bP_temp.append(temp_len)
+    rGy_LH_per_bP.append(np.squeeze(rGy_LH_per_bP_temp))
+    length_LH_bP.append(length_LH_bP_temp)
+
+for i in range(len(AL_bP)):
+    rGy_AL_per_bP_temp = []
+    length_AL_bP_temp = []
+    idx = np.where(np.array(MorphData.ALdist_trk) == un_AL[i])[0]
+    tarval = np.array(MorphData.ALdist)[idx]
+    for j in range(len(AL_bP[i])):
+        temp_tar = []
+        temp_len = 0
+        for k in range(len(AL_btrk[i])):
+            if AL_btrk[i][k][0] == AL_bP[i][j] or AL_btrk[i][k][-1] == AL_bP[i][j]:
+                temp_tar.append(tarval[k])
+                temp_len += length_AL_nempty[i][k]
+                
+        (rGy_t, cML_t) = utils.radiusOfGyration([[item for sublist in temp_tar for item in sublist]])
+        rGy_AL_per_bP_temp.append(rGy_t)
+        length_AL_bP_temp.append(temp_len)
+    rGy_AL_per_bP.append(np.squeeze(rGy_AL_per_bP_temp))
+    length_AL_bP.append(length_AL_bP_temp)
 
 
 #%%
