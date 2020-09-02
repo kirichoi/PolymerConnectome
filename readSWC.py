@@ -783,6 +783,80 @@ plt.scatter(z[1][zex[[14]]], z[0][zex[[14]]], color='tab:red')
 # plt.savefig(Parameter.outputdir + '/z_segment_hist_2_xrot.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
+#%% Neuropil Segmentation Rotation
+
+xex_list = []
+for i in np.linspace(-45, 0, 10):
+    r_d_y = i
+    r_rad_y = np.radians(r_d_y)
+    r_y = np.array([0, 1, 0])
+    r_vec_y = r_rad_y * r_y
+    roty = Rotation.from_rotvec(r_vec_y)
+    morph_dist_flat_rot = roty.apply(MorphData.morph_dist_flat)
+        
+    x = np.histogram(morph_dist_flat_rot[:,0], bins=int((np.max(morph_dist_flat_rot[:,0]) - np.min(morph_dist_flat_rot[:,0]))/1))
+       
+    xex = argrelextrema(x[0], np.less, order=15)[0]
+    xidx = np.intersect1d(np.where(x[0] > 500)[0], xex)
+    xex_list.append([i, x[1][xidx], np.average(x[0][xidx[[0,1]]]), np.std(x[0][xidx[[0,1]]])])
+    
+    # fig = plt.figure(figsize=(8,6))
+    # plt.hist(morph_dist_flat_rot[:,0], bins=int((np.max(morph_dist_flat_rot[:,0]) - np.min(morph_dist_flat_rot[:,0]))/1), color='tab:purple', alpha=0.5)
+    # plt.xlabel('x Coordinates', fontsize=15)
+    # plt.ylabel('Count', fontsize=15)
+    # plt.legend(['All', 'AL', 'MB calyx', 'LH'], fontsize=13)
+    # plt.title(str(i))
+    # plt.scatter(x[1][xidx], x[0][xidx], color='tab:red')
+    # plt.show()
+
+yex_list = []
+for i in np.linspace(0, 90, 19):
+    r_d_z = i
+    r_rad_z = np.radians(r_d_z)
+    r_z = np.array([0, 0, 1])
+    r_vec_z = r_rad_z * r_z
+    rotz = Rotation.from_rotvec(r_vec_z)
+    morph_dist_flat_rot = rotz.apply(MorphData.morph_dist_flat)
+        
+    y = np.histogram(morph_dist_flat_rot[:,1], bins=int((np.max(morph_dist_flat_rot[:,1]) - np.min(morph_dist_flat_rot[:,1]))/1))
+       
+    yex = argrelextrema(y[0], np.less, order=15)[0]
+    yidx = np.intersect1d(np.where(y[0] > 500)[0], yex)
+    yex_list.append([i, y[1][yidx], np.average(y[0][yidx]), np.std(y[0][yidx])])
+    
+    fig = plt.figure(figsize=(8,6))
+    plt.hist(morph_dist_flat_rot[:,1], bins=int((np.max(morph_dist_flat_rot[:,1]) - np.min(morph_dist_flat_rot[:,1]))/1), color='tab:purple', alpha=0.5)
+    plt.xlabel('y Coordinates', fontsize=15)
+    plt.ylabel('Count', fontsize=15)
+    plt.legend(['All', 'AL', 'MB calyx', 'LH'], fontsize=13)
+    plt.title(str(i))
+    plt.scatter(y[1][yidx], y[0][yidx], color='tab:red')
+    plt.show()
+
+zex_list = []
+for i in np.linspace(-45, 0, 10):
+    r_d_x = i
+    r_rad_x = np.radians(r_d_x)
+    r_x = np.array([1, 0, 0])
+    r_vec_x = r_rad_x * r_x
+    rotx = Rotation.from_rotvec(r_vec_x)
+    morph_dist_flat_rot = rotx.apply(MorphData.morph_dist_flat)
+        
+    z = np.histogram(morph_dist_flat_rot[:,2], bins=int((np.max(morph_dist_flat_rot[:,2]) - np.min(morph_dist_flat_rot[:,2]))/1))
+       
+    zex = argrelextrema(z[0], np.less, order=15)[0]
+    zidx = np.intersect1d(np.where(z[0] > 500)[0], zex)
+    zex_list.append([i, z[1][zidx], np.average(z[0][zidx]), np.std(z[0][zidx])])
+    
+    fig = plt.figure(figsize=(8,6))
+    plt.hist(morph_dist_flat_rot[:,2], bins=int((np.max(morph_dist_flat_rot[:,2]) - np.min(morph_dist_flat_rot[:,2]))/1), color='tab:purple', alpha=0.5)
+    plt.xlabel('z Coordinates', fontsize=15)
+    plt.ylabel('Count', fontsize=15)
+    plt.legend(['All', 'AL', 'MB calyx', 'LH'], fontsize=13)
+    plt.title(str(i))
+    plt.scatter(z[1][zidx], z[0][zidx], color='tab:red')
+    plt.show()
+
 
 #%%
 
@@ -1537,6 +1611,7 @@ def cons_check(val):
     return list(zip(edges, edges))
 
 radiussize = np.logspace(-1, 2, 100)[25:99]
+# radiussize = np.linspace(1, 100, 100)[0:99:3]
 
 spheredist_calyx_sum = np.empty(len(radiussize))
 spheredist_LH_sum = np.empty(len(radiussize))
@@ -1764,24 +1839,27 @@ spheredist_calyx_sum_dens = np.divide(spheredist_calyx_sum, 4/3*np.pi*np.power(r
 spheredist_calyx_sum_dens_fft = np.fft.fft(spheredist_calyx_sum_dens)
 
 fig = plt.figure(figsize=(8,6))
-plt.plot(np.logspace(-1, 2, 100)[25:99:2], np.abs(spheredist_calyx_sum_dens_fft[int(len(radiussize)/2):]))
+plt.plot(1/np.logspace(-1, 2, 100)[25:99:2], np.abs(spheredist_calyx_sum_dens_fft[int(len(radiussize)/2):]), lw=3)
 plt.xscale('log')
+# plt.savefig(Parameter.outputdir + '/form_factor_calyx_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 spheredist_LH_sum_dens = np.divide(spheredist_LH_sum, 4/3*np.pi*np.power(radiussize,3))
 spheredist_LH_sum_dens_fft = np.fft.fft(spheredist_LH_sum_dens)
 
 fig = plt.figure(figsize=(8,6))
-plt.plot(np.logspace(-1, 2, 100)[25:99:2], np.abs(spheredist_LH_sum_dens_fft[int(len(radiussize)/2):]))
+plt.plot(1/np.logspace(-1, 2, 100)[25:99:2], np.abs(spheredist_LH_sum_dens_fft[int(len(radiussize)/2):]), lw=3)
 plt.xscale('log')
+# plt.savefig(Parameter.outputdir + '/form_factor_LH_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 spheredist_AL_sum_dens = np.divide(spheredist_AL_sum, 4/3*np.pi*np.power(radiussize,3))
 spheredist_AL_sum_dens_fft = np.fft.fft(spheredist_AL_sum_dens)
 
 fig = plt.figure(figsize=(8,6))
-plt.plot(np.logspace(-1, 2, 100)[25:99:2], np.abs(spheredist_AL_sum_dens_fft[int(len(radiussize)/2):]))
+plt.plot(1/np.logspace(-1, 2, 100)[25:99:2], np.abs(spheredist_AL_sum_dens_fft[int(len(radiussize)/2):]), lw=3)
 plt.xscale('log')
+# plt.savefig(Parameter.outputdir + '/form_factor_AL_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -4332,7 +4410,7 @@ for i in range(len(un_calyx)):
     tarval = np.array(MorphData.calyxdist)[idx]
     calyxdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
     sumval = np.sum(LengthData.length_calyx[un_calyx[i]])
-    if calyxdist_per_n_flat_t and sumval > 1:# and sumval < 5000:
+    if calyxdist_per_n_flat_t:# and sumval > 1:# and sumval < 5000:
         calyxdist_per_n_flat.append(calyxdist_per_n_flat_t)
         calyxdist_per_n_count.append(len(calyxdist_per_n_flat_t))
         LengthData.length_calyx_total.append(sumval)
@@ -4344,7 +4422,7 @@ for i in range(len(un_LH)):
     tarval = np.array(MorphData.LHdist)[idx]
     LHdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
     sumval = np.sum(LengthData.length_LH[un_LH[i]])
-    if LHdist_per_n_flat_t and sumval > 1:# and sumval < 5000:
+    if LHdist_per_n_flat_t:# and sumval > 1:# and sumval < 5000:
         LHdist_per_n_flat.append(LHdist_per_n_flat_t)
         LHdist_per_n_count.append(len(LHdist_per_n_flat_t))
         LengthData.length_LH_total.append(sumval)
@@ -4356,7 +4434,7 @@ for i in range(len(un_AL)):
     tarval = np.array(MorphData.ALdist)[idx]
     ALdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
     sumval = np.sum(LengthData.length_AL[un_AL[i]])
-    if ALdist_per_n_flat_t and sumval > 1:# and sumval < 5000:
+    if ALdist_per_n_flat_t:# and sumval > 1:# and sumval < 5000:
         ALdist_per_n_flat.append(ALdist_per_n_flat_t)
         ALdist_per_n_count.append(len(ALdist_per_n_flat_t))
         LengthData.length_AL_total.append(sumval)
@@ -4473,6 +4551,119 @@ for i in range(len(un_AL)):
     (rGy_t, cML_t) = utils.radiusOfGyration(tarval)
     rGy_AL_per_seg.append(rGy_t)
 
+#%%
+
+xvallog1 = np.logspace(-3, 3)
+
+poptR_calyx_per_seg = []
+perrR_calyx_per_seg = []
+fitYR_calyx_per_seg = []
+
+poptR_LH_per_seg = []
+perrR_LH_per_seg = []
+fitYR_LH_per_seg = []
+
+poptR_AL_per_seg = []
+perrR_AL_per_seg = []
+fitYR_AL_per_seg = []
+
+for i in range(len(length_calyx_nempty)):
+    if len(length_calyx_nempty[i]) > 1:
+        popt, pcov = scipy.optimize.curve_fit(objFuncGL, 
+                                                np.log10(length_calyx_nempty[i]), 
+                                                np.log10(rGy_calyx_per_seg[i]), 
+                                                p0=[1., 0.], 
+                                                maxfev=100000)
+        poptR_calyx_per_seg.append(popt)
+        perrR_calyx_per_seg.append(np.sqrt(np.diag(pcov)))
+        fitYR_calyx_per_seg.append(objFuncPpow(xvallog1, popt[0], popt[1]))
+
+for i in range(len(length_LH_nempty)):
+    if len(length_LH_nempty[i]) > 1:
+        if 0 in rGy_LH_per_seg[i]:
+            pass
+        else:
+            popt, pcov = scipy.optimize.curve_fit(objFuncGL, 
+                                                    np.log10(length_LH_nempty[i]), 
+                                                    np.log10(rGy_LH_per_seg[i]), 
+                                                    p0=[1., 0.], 
+                                                    maxfev=100000)
+            poptR_LH_per_seg.append(popt)
+            perrR_LH_per_seg.append(np.sqrt(np.diag(pcov)))
+            fitYR_LH_per_seg.append(objFuncPpow(xvallog1, popt[0], popt[1]))
+
+for i in range(len(length_AL_nempty)):
+    if len(length_AL_nempty[i]) > 1:
+        if 0 in rGy_AL_per_seg[i]:
+            pass
+        else:
+            popt, pcov = scipy.optimize.curve_fit(objFuncGL, 
+                                                    np.log10(length_AL_nempty[i]), 
+                                                    np.log10(rGy_AL_per_seg[i]), 
+                                                    p0=[1., 0.], 
+                                                    maxfev=100000)
+            poptR_AL_per_seg.append(popt)
+            perrR_AL_per_seg.append(np.sqrt(np.diag(pcov)))
+            fitYR_AL_per_seg.append(objFuncPpow(xvallog1, popt[0], popt[1]))
+
+fig = plt.figure(figsize=(8,6))
+for i in range(len(length_calyx_nempty)):
+    plt.scatter(length_calyx_nempty[i], rGy_calyx_per_seg[i], s=0.5, color='tab:orange')
+for i in range(len(length_LH_nempty)):
+    plt.scatter(length_LH_nempty[i], rGy_LH_per_seg[i], s=0.5, color='tab:green')
+for i in range(len(length_AL_nempty)):
+    plt.scatter(length_AL_nempty[i], rGy_AL_per_seg[i], s=0.5, color='tab:blue')
+plt.scatter(LengthData.length_AL_total, rGy_AL, color='tab:blue', facecolors='none')
+plt.scatter(LengthData.length_calyx_total, rGy_calyx, color='tab:orange', facecolors='none')
+plt.scatter(LengthData.length_LH_total, rGy_LH, color='tab:green', facecolors='none')
+plt.scatter(LengthData.length_total, rGy, color='tab:red')
+
+plt.yscale('log')
+plt.xscale('log')
+plt.xlabel(r"$L$", fontsize=15)
+plt.ylabel(r"$R_{g}$", fontsize=15)
+plt.tight_layout()
+# plt.savefig(Parameter.outputdir + '/rgy_neuropil_segment_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+s1 = set(un_calyx) 
+s2 = set(un_LH) 
+s3 = set(un_AL) 
+
+set1 = s1.intersection(s2)
+result_set = set1.intersection(s3) 
+all_list = list(result_set)
+
+poptlist = []
+
+for i in np.array(all_list):
+    cidx = np.where(un_calyx == i)[0][0]
+    lidx = np.where(un_LH == i)[0][0]
+    aidx = np.where(un_AL == i)[0][0]
+    lenall = length_calyx_nempty[cidx] + length_LH_nempty[lidx] + length_AL_nempty[aidx]
+    lenall.append(LengthData.length_AL_total[aidx])
+    lenall.append(LengthData.length_calyx_total[cidx])
+    lenall.append(LengthData.length_LH_total[lidx])
+    lenall.append(LengthData.length_total[i])
+    lenall = np.array(lenall)
+    rall = rGy_calyx_per_seg[cidx].tolist() + rGy_LH_per_seg[lidx].tolist() + rGy_AL_per_seg[aidx].tolist()
+    rall.append(rGy_AL[aidx])
+    rall.append(rGy_calyx[cidx])
+    rall.append(rGy_LH[lidx])
+    rall.append(rGy[i])
+    rall = np.array(rall)
+    taridx = np.where(lenall > 40)
+    popt, pcov = scipy.optimize.curve_fit(objFuncGL, 
+                                                    np.log10(lenall[taridx[0]]), 
+                                                    np.log10(rall[taridx[0]]), 
+                                                    p0=[1., 0.], 
+                                                    maxfev=100000)
+    poptlist.append(popt)
+
+
+#%% Radius of Gyration for calyx, LH, and AL per branching point
+
 for i in range(len(calyx_bP)):
     rGy_calyx_per_bP_temp = []
     length_calyx_bP_temp = []
@@ -4532,52 +4723,10 @@ for i in range(len(AL_bP)):
     length_AL_bP.append(length_AL_bP_temp)
 
 
-#%%
-
-xvallog1 = np.logspace(-3, 3)
-
-poptR_calyx_per_seg = []
-perrR_calyx_per_seg = []
-fitYR_calyx_per_seg = []
-
-for i in range(len(length_calyx_nempty)):
-    if len(length_calyx_nempty[i]) > 1:
-        popt, pcov = scipy.optimize.curve_fit(objFuncGL, 
-                                                np.log10(length_calyx_nempty[i]), 
-                                                np.log10(rGy_calyx_per_seg[i]), 
-                                                p0=[1., 0.], 
-                                                maxfev=100000)
-        poptR_calyx_per_seg.append(popt)
-        perrR_calyx_per_seg.append(np.sqrt(np.diag(pcov)))
-        fitYR_calyx_per_seg.append(objFuncPpow(xvallog1, popt[0], popt[1]))
+#%% Radius of Gyration for calyx, LH, and AL per branching point with sphere
 
 
 
-fig = plt.figure(figsize=(8,6))
-for i in range(len(length_calyx_nempty)):
-    plt.scatter(length_calyx_nempty[i], rGy_calyx_per_seg[i])
-# plt.scatter(length_AL_seg_total, rGy_AL_per_seg, marker='.', s=1, color='tab:blue')
-# plt.scatter(length_calyx_seg_total, rGy_calyx_per_seg, marker='.', s=1, color='tab:orange')
-# plt.scatter(length_LH_seg_total, rGy_LH_per_seg, marker='.', s=1, color='tab:green')
-# plt.scatter(LengthData.length_AL_total, rGy_AL, color='tab:blue', facecolors='none')
-# plt.scatter(LengthData.length_calyx_total, rGy_calyx, color='tab:orange', facecolors='none')
-# plt.scatter(LengthData.length_LH_total, rGy_LH, color='tab:green', facecolors='none')
-# plt.plot(xvallog1, fitYR_AL_per_seg, ls='dashed', lw=3)
-# plt.plot(xvallog1, fitYR_calyx_per_seg, ls='dashed', lw=3)
-# plt.plot(xvallog1, fitYR_LH_per_seg, ls='dashed', lw=3)
-plt.yscale('log')
-plt.xscale('log')
-# plt.xlim(1, 10000)
-# plt.ylim(7, 4000)
-# plt.legend(['AL: ' + str(round(poptR_AL_per_seg[0], 3)) + '$\pm$' + str(round(perrR_AL_per_seg[0], 3)),
-#             'MB calyx: ' + str(round(poptR_calyx_per_seg[0], 3)) + '$\pm$' + str(round(perrR_calyx_per_seg[0], 3)),
-#             'LH: ' + str(round(poptR_LH_per_seg[0], 3)) + '$\pm$' + str(round(perrR_LH_per_seg[0], 3))], fontsize=15)
-# plt.title(r"MB calyx", fontsize=20)
-plt.xlabel(r"$L$", fontsize=15)
-plt.ylabel(r"$R_{g}$", fontsize=15)
-plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/rgy_neuropil_segment_1.pdf', dpi=300, bbox_inches='tight')
-plt.show()
 
 
 #%% Length study
