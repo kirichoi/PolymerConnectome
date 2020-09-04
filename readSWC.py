@@ -1883,13 +1883,13 @@ plt.show()
 
 #%% Form factor
 
-q_range = np.logspace(-3,2,100)
+q_range = np.logspace(-2,3,100)
 Pq = np.zeros((len(q_range)))
 
 for q in range(len(q_range)):
-    for i in range(len(MorphData.calyxdist[1])):
-        calyx_dist_distvec = np.subtract(MorphData.calyxdist[1][i], MorphData.calyxdist[1])[1:]
-        Pq[q] += np.divide(np.sum(np.exp(np.dot(-q_range[q]*r_x, calyx_dist_distvec.T))), len(MorphData.calyxdist[1]))
+    for i in range(len(calyx_dist_flat)):
+        calyx_dist_distvec = np.subtract(calyx_dist_flat[i], calyx_dist_flat)
+        Pq[q] += np.divide(np.sum(np.exp(np.dot(-1j*q_range[q]*r_x, calyx_dist_distvec.T))), len(calyx_dist_flat))
 
 
 
