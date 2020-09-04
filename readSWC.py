@@ -653,19 +653,15 @@ if Parameter.RUN:
     if Parameter.SAVE:
         utils.exportMorph(Parameter, t4-t0, MorphData, BranchData, LengthData)
 
-calyxdist_flat = [item for sublist in MorphData.calyxdist for item in sublist]
-LHdist_flat = [item for sublist in MorphData.LHdist for item in sublist]
-ALdist_flat = [item for sublist in MorphData.ALdist for item in sublist]
-
-calyxCM = (np.sum(np.array(calyxdist_flat), axis=0)/len(np.array(calyxdist_flat)))
-LHCM = (np.sum(np.array(LHdist_flat), axis=0)/len(np.array(LHdist_flat)))
-ALCM = (np.sum(np.array(ALdist_flat), axis=0)/len(np.array(ALdist_flat)))
-
-fullCM = cML#np.average(OutputData.cMLSeg, axis=0)
-
 calyx_dist_flat = np.array([item for sublist in MorphData.calyxdist for item in sublist])
 LH_dist_flat = np.array([item for sublist in MorphData.LHdist for item in sublist])
 AL_dist_flat = np.array([item for sublist in MorphData.ALdist for item in sublist])
+
+calyxCM = (np.sum(calyx_dist_flat, axis=0)/len(calyx_dist_flat))
+LHCM = (np.sum(LH_dist_flat, axis=0)/len(LH_dist_flat))
+ALCM = (np.sum(AL_dist_flat, axis=0)/len(AL_dist_flat))
+
+fullCM = cML#np.average(OutputData.cMLSeg, axis=0)
 
 xmax_calyx = np.max(calyx_dist_flat[:,0])
 xmin_calyx = np.min(calyx_dist_flat[:,0])
@@ -687,7 +683,6 @@ ymax_AL = np.max(AL_dist_flat[:,1])
 ymin_AL = np.min(AL_dist_flat[:,1])
 zmax_AL = np.max(AL_dist_flat[:,2])
 zmin_AL = np.min(AL_dist_flat[:,2])
-
 
 t5 = time.time()
 
@@ -713,9 +708,9 @@ r_z = np.array([0, 0, 1])
 r_vec_x = r_rad_x * r_x
 rotx = Rotation.from_rotvec(r_vec_x)
 morph_dist_flat_rot = rotx.apply(MorphData.morph_dist_flat)
-calyxdist_flat_rot = rotx.apply(calyxdist_flat)
-LHdist_flat_rot = rotx.apply(LHdist_flat)
-ALdist_flat_rot = rotx.apply(ALdist_flat)
+calyxdist_flat_rot = rotx.apply(calyx_dist_flat)
+LHdist_flat_rot = rotx.apply(LH_dist_flat)
+ALdist_flat_rot = rotx.apply(AL_dist_flat)
 
 r_vec_y = r_rad_y * r_y
 roty = Rotation.from_rotvec(r_vec_y)
@@ -1888,32 +1883,17 @@ plt.show()
 
 #%% Form factor
 
-spheredist_calyx_sum_dens = np.divide(spheredist_calyx_sum, 4/3*np.pi*np.power(radiussize,3))
-spheredist_calyx_sum_dens_fft = np.fft.fft(spheredist_calyx_sum_dens)
+q_range = np.logspace(-3,2,100)
+Pq = np.zeros((len(q_range)))
 
-fig = plt.figure(figsize=(8,6))
-plt.plot(1/np.logspace(-1, 2, 100)[25:99:2], np.abs(spheredist_calyx_sum_dens_fft[int(len(radiussize)/2):]), lw=3)
-plt.xscale('log')
-# plt.savefig(Parameter.outputdir + '/form_factor_calyx_1.pdf', dpi=300, bbox_inches='tight')
-plt.show()
+for q in range(len(q_range)):
+    for i in range(len(MorphData.calyxdist[1])):
+        calyx_dist_distvec = np.subtract(MorphData.calyxdist[1][i], MorphData.calyxdist[1])[1:]
+        Pq[q] += np.divide(np.sum(np.exp(np.dot(-q_range[q]*r_x, calyx_dist_distvec.T))), len(MorphData.calyxdist[1]))
 
-spheredist_LH_sum_dens = np.divide(spheredist_LH_sum, 4/3*np.pi*np.power(radiussize,3))
-spheredist_LH_sum_dens_fft = np.fft.fft(spheredist_LH_sum_dens)
 
-fig = plt.figure(figsize=(8,6))
-plt.plot(1/np.logspace(-1, 2, 100)[25:99:2], np.abs(spheredist_LH_sum_dens_fft[int(len(radiussize)/2):]), lw=3)
-plt.xscale('log')
-# plt.savefig(Parameter.outputdir + '/form_factor_LH_1.pdf', dpi=300, bbox_inches='tight')
-plt.show()
 
-spheredist_AL_sum_dens = np.divide(spheredist_AL_sum, 4/3*np.pi*np.power(radiussize,3))
-spheredist_AL_sum_dens_fft = np.fft.fft(spheredist_AL_sum_dens)
 
-fig = plt.figure(figsize=(8,6))
-plt.plot(1/np.logspace(-1, 2, 100)[25:99:2], np.abs(spheredist_AL_sum_dens_fft[int(len(radiussize)/2):]), lw=3)
-plt.xscale('log')
-# plt.savefig(Parameter.outputdir + '/form_factor_AL_1.pdf', dpi=300, bbox_inches='tight')
-plt.show()
 
 
 #%% Moving window
