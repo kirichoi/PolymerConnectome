@@ -1883,13 +1883,47 @@ plt.show()
 
 #%% Form factor
 
-q_range = np.logspace(-2,3,100)
-Pq = np.zeros((len(q_range)))
+import itertools
+import ctypes
 
-for q in range(len(q_range)):
-    for i in range(len(calyx_dist_flat)):
-        calyx_dist_distvec = np.subtract(calyx_dist_flat[i], calyx_dist_flat)
-        Pq[q] += np.divide(np.sum(np.exp(np.dot(-1j*q_range[q]*r_x, calyx_dist_distvec.T))), len(calyx_dist_flat))
+n = np.shape(calyx_dist_flat)[0]
+m = np.shape(calyx_dist_flat)[1]
+q_range = np.logspace(-2,3,10)
+r_x = np.array([1, 0, 0])
+
+# q_range_glo = mp.Array(ctypes.c_double, q_range)
+calyx_dist_flat_glo =  mp.Array(ctypes.c_double, calyx_dist_flat.flatten())
+n_glo = mp.Value(ctypes.c_int, n)
+m_glo = mp.Value(ctypes.c_int, m)
+# r_x_glo = mp.Array(ctypes.c_double, r_x)
+
+# Pq_real = np.zeros((len(q_range)))
+# Pq_imag = np.zeros((len(q_range)))
+
+def formfactor(q, i):
+    # with calyx_dist_flat_glo.get_lock:
+    calyx_dist_flat_glo_r = np.frombuffer(calyx_dist_flat_glo.get_obj())
+    calyx_dist_flat_glo_s = calyx_dist_flat_glo_r.reshape((n_glo.value,m_glo.value))
+    ffq = np.divide(np.sum(np.exp(np.dot(-1j*np.logspace(-2,3,10)[q]*np.array([1,0,0]), np.subtract(calyx_dist_flat_glo_s[i], calyx_dist_flat_glo_s).T))), len(calyx_dist_flat_glo_s))
+    return ffq
+
+def parallelinit(calyx_dist_flat_glo_, n_glo_, m_glo_):
+    global calyx_dist_flat_glo, n_glo, m_glo
+    calyx_dist_flat_glo = calyx_dist_flat_glo_
+    n_glo = n_glo_
+    m_glo = m_glo_
+
+paramlist = list(itertools.product(range(len(q_range)), range(100)))
+
+pool = mp.Pool(4, initializer=parallelinit, initargs=(calyx_dist_flat_glo, n_glo, m_glo))
+
+results = pool.map(formfactor, paramlist)
+
+# for q in range(len(q_range)):
+#     for i in range(len(calyx_dist_flat[:100])):
+#         ffq = formfactor(q, i)
+#         Pq_real[q] += ffq.real
+#         Pq_imag[q] += ffq.imag
 
 
 
