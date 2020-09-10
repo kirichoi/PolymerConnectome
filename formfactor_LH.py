@@ -16,8 +16,8 @@ def formfactor(args):
     # with LH_dist_flat_glo.get_lock:
     LH_dist_flat_glo_r = np.frombuffer(LH_dist_flat_glo.get_obj())
     LH_dist_flat_glo_s = LH_dist_flat_glo_r.reshape((n_glo.value,m_glo.value))
-    ffq = np.sum(np.exp(np.dot(-1j*np.logspace(-2,3,100)[args[0]]*np.array([1,0,0]), 
-                               np.subtract(LH_dist_flat_glo_s[args[1]], LH_dist_flat_glo_s).T)))
+    ffq = np.sum(np.cos(np.dot(np.logspace(-2,3,100)[args[0]]*np.array([1,0,0]), 
+                               np.subtract(LH_dist_flat_glo_s[args[1]], LH_dist_flat_glo_s[1+args[1]:]).T)))
     return ffq
 
 def parallelinit(LH_dist_flat_glo_, n_glo_, m_glo_):
@@ -32,15 +32,13 @@ if __name__ == '__main__':
     n = np.shape(LH_dist_flat)[0]
     m = np.shape(LH_dist_flat)[1]
     q_range = np.logspace(-2,3,100)
-    r_x = np.array([1, 0, 0])
+    # r_x = np.array([1, 0, 0])
     
     # q_range_glo = mp.Array(ctypes.c_double, q_range)
     LH_dist_flat_glo =  mp.Array(ctypes.c_double, LH_dist_flat.flatten())
     n_glo = mp.Value(ctypes.c_int, n)
     m_glo = mp.Value(ctypes.c_int, m)
     # r_x_glo = mp.Array(ctypes.c_double, r_x)
-    
-    Pq = np.zeros((len(q_range)),dtype=complex)
     
     paramlist = list(itertools.product(range(100), range(n)))
     
@@ -57,11 +55,10 @@ if __name__ == '__main__':
     
     np.save(r'./LH_results.npy', results)
     
-    results_r = np.divide(np.sum(np.array(results).reshape(100, n), axis=1), n)
+    Pq = 2*np.divide(np.sum(np.array(results).reshape(100, n), axis=1), n)
     
     fig = plt.figure(figsize=(8,6))
-    plt.plot(q_range, results_r.real, lw=3, color='tab:orange')
-    # plt.plot(q_range, results_r.imag, lw=3, color='tab:orange', linestyle='--')
+    plt.plot(q_range, Pq, lw=3, color='tab:orange')
     plt.xscale('log')
     plt.xlabel('$q$', fontsize=15)
     plt.ylabel('$P(q)$', fontsize=15)
@@ -70,8 +67,7 @@ if __name__ == '__main__':
     plt.show()
     
     fig = plt.figure(figsize=(8,6))
-    plt.plot(q_range, results_r.real, lw=3, color='tab:orange')
-    # plt.plot(q_range, results_r.imag, lw=3, color='tab:orange', linestyle='--')
+    plt.plot(q_range, Pq, lw=3, color='tab:orange')
     plt.xscale('log')
     plt.yscale('log')
     plt.xlabel('$q$', fontsize=15)
