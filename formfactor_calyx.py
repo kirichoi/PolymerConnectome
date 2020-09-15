@@ -57,14 +57,14 @@ if __name__ == '__main__':
     
     Pq = 2*np.divide(np.sum(np.array(results).reshape(100, n), axis=1), n)
     
-    fig = plt.figure(figsize=(8,6))
-    plt.plot(q_range, Pq, lw=3, color='tab:orange')
-    plt.xscale('log')
-    plt.xlabel('$q$', fontsize=15)
-    plt.ylabel('$P(q)$', fontsize=15)
-    plt.tight_layout()
-    plt.savefig(r'./calyx_form_factor.pdf', dpi=300, bbox_inches='tight')
-    plt.show()
+    # fig = plt.figure(figsize=(8,6))
+    # plt.plot(q_range, Pq, lw=3, color='tab:orange')
+    # plt.xscale('log')
+    # plt.xlabel('$q$', fontsize=15)
+    # plt.ylabel('$P(q)$', fontsize=15)
+    # plt.tight_layout()
+    # plt.savefig(r'./calyx_form_factor.pdf', dpi=300, bbox_inches='tight')
+    # plt.show()
     
     fig = plt.figure(figsize=(8,6))
     plt.plot(q_range, Pq, lw=3, color='tab:orange')
