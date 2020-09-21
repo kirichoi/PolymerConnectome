@@ -17,7 +17,7 @@ def formfactor(args):
     calyx_dist_flat_glo_r = np.frombuffer(calyx_dist_flat_glo.get_obj())
     calyx_dist_flat_glo_s = calyx_dist_flat_glo_r.reshape((n_glo.value,m_glo.value))
     qrvec = np.logspace(-2,3,100)[args[0]]*spatial.distance.cdist(np.array([calyx_dist_flat_glo_s[args[1]]]), calyx_dist_flat_glo_s)[0]
-    qrvec = qrvec[np.nonzero(qrvec)[0]]
+    qrvec = qrvec[np.nonzero(qrvec)]
     ffq = np.sum(np.sin(qrvec)/qrvec)
     return ffq
 

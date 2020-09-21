@@ -17,7 +17,7 @@ def formfactor(args):
     AL_dist_flat_glo_r = np.frombuffer(AL_dist_flat_glo.get_obj())
     AL_dist_flat_glo_s = AL_dist_flat_glo_r.reshape((n_glo.value,m_glo.value))
     qrvec = np.logspace(-2,3,100)[args[0]]*spatial.distance.cdist(np.array([AL_dist_flat_glo_s[args[1]]]), AL_dist_flat_glo_s)[0]
-    qrvec = qrvec[np.nonzero(qrvec)[0]]
+    qrvec = qrvec[np.nonzero(qrvec)]
     ffq = np.sum(np.sin(qrvec)/qrvec)
     return ffq
 
