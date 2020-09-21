@@ -8054,8 +8054,9 @@ for q in range(len(q_range)):
         idx = np.where(MorphData.calyxdist_trk == un_calyx[i])[0]
         tarval = np.array(MorphData.calyxdist)[idx]
         calyxdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
-        qrvec = q_range[q]*scipy.spatial.distance.cdist(calyxdist_per_n_flat_t, calyxdist_per_n_flat_t)[0]
-        qrvec = qrvec[np.nonzero(qrvec)[0]]
+        calyxdist_per_n_flat_t = np.unique(calyxdist_per_n_flat_t, axis=0)
+        qrvec = q_range[q]*scipy.spatial.distance.cdist(calyxdist_per_n_flat_t, calyxdist_per_n_flat_t)
+        qrvec = qrvec[np.nonzero(qrvec)]
         Pq_calyx[q][i] = np.divide(np.divide(np.sum(np.sin(qrvec)/qrvec), len(calyxdist_per_n_flat_t)), len(calyxdist_per_n_flat_t))
 
 for q in range(len(q_range)):
@@ -8063,8 +8064,9 @@ for q in range(len(q_range)):
         idx = np.where(MorphData.LHdist_trk == un_LH[i])[0]
         tarval = np.array(MorphData.LHdist)[idx]
         LHdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
-        qrvec = q_range[q]*scipy.spatial.distance.cdist(LHdist_per_n_flat_t, LHdist_per_n_flat_t)[0]
-        qrvec = qrvec[np.nonzero(qrvec)[0]]
+        LHdist_per_n_flat_t = np.unique(LHdist_per_n_flat_t, axis=0)
+        qrvec = q_range[q]*scipy.spatial.distance.cdist(LHdist_per_n_flat_t, LHdist_per_n_flat_t)
+        qrvec = qrvec[np.nonzero(qrvec)]
         Pq_LH[q][i] = np.divide(np.divide(np.sum(np.sin(qrvec)/qrvec), len(LHdist_per_n_flat_t)), len(LHdist_per_n_flat_t))
 
 for q in range(len(q_range)):
@@ -8072,8 +8074,9 @@ for q in range(len(q_range)):
         idx = np.where(MorphData.ALdist_trk == un_AL[i])[0]
         tarval = np.array(MorphData.ALdist)[idx]
         ALdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
-        qrvec = q_range[q]*scipy.spatial.distance.cdist(ALdist_per_n_flat_t, ALdist_per_n_flat_t)[0]
-        qrvec = qrvec[np.nonzero(qrvec)[0]]
+        ALdist_per_n_flat_t = np.unique(ALdist_per_n_flat_t, axis=0)
+        qrvec = q_range[q]*scipy.spatial.distance.cdist(ALdist_per_n_flat_t, ALdist_per_n_flat_t)
+        qrvec = qrvec[np.nonzero(qrvec)]
         Pq_AL[q][i] = np.divide(np.divide(np.sum(np.sin(qrvec)/qrvec), len(ALdist_per_n_flat_t)), len(ALdist_per_n_flat_t))
 
 print(time.time() - t13)
@@ -8111,23 +8114,26 @@ t13 = time.time()
 for q in range(len(q_range)):
     for i in range(len(glo_idx)):
         morph_dist_calyx_flat = np.array([item for sublist in morph_dist_calyx[i] for item in sublist])
-        qrvec = q_range[q]*scipy.spatial.distance.cdist(morph_dist_calyx_flat, morph_dist_calyx_flat)[0]
-        qrvec = qrvec[np.nonzero(qrvec)[0]]
-        Pq_calyx_glo[q][i] = np.divide(np.divide(np.sum(np.sin(qrvec)/qrvec), len(morph_dist_calyx[i])), len(morph_dist_calyx[i]))
+        morph_dist_calyx_flat = np.unique(morph_dist_calyx_flat, axis=0)
+        qrvec = q_range[q]*scipy.spatial.distance.cdist(morph_dist_calyx_flat, morph_dist_calyx_flat)
+        qrvec = qrvec[np.nonzero(qrvec)]
+        Pq_calyx_glo[q][i] = np.divide(np.divide(np.sum(np.sin(qrvec)/qrvec), len(morph_dist_calyx_flat)), len(morph_dist_calyx_flat))
 
 for q in range(len(q_range)):
     for i in range(len(glo_idx)):
         morph_dist_LH_flat = np.array([item for sublist in morph_dist_LH[i] for item in sublist])
-        qrvec = q_range[q]*scipy.spatial.distance.cdist(morph_dist_LH_flat, morph_dist_LH_flat)[0]
-        qrvec = qrvec[np.nonzero(qrvec)[0]]
-        Pq_LH_glo[q][i] = np.divide(np.divide(np.sum(np.sin(qrvec)/qrvec), len(morph_dist_LH[i])), len(morph_dist_LH[i]))
+        morph_dist_LH_flat = np.unique(morph_dist_LH_flat, axis=0)
+        qrvec = q_range[q]*scipy.spatial.distance.cdist(morph_dist_LH_flat, morph_dist_LH_flat)
+        qrvec = qrvec[np.nonzero(qrvec)]
+        Pq_LH_glo[q][i] = np.divide(np.divide(np.sum(np.sin(qrvec)/qrvec), len(morph_dist_LH_flat)), len(morph_dist_LH_flat))
 
 for q in range(len(q_range)):
     for i in range(len(glo_idx)):
         morph_dist_AL_flat = np.array([item for sublist in morph_dist_AL[i] for item in sublist])
-        qrvec = q_range[q]*scipy.spatial.distance.cdist(morph_dist_AL_flat, morph_dist_AL_flat)[0]
-        qrvec = qrvec[np.nonzero(qrvec)[0]]
-        Pq_AL_glo[q][i] = np.divide(np.divide(np.sum(np.sin(qrvec)/qrvec), len(morph_dist_AL[i])), len(morph_dist_AL[i]))
+        morph_dist_AL_flat = np.unique(morph_dist_AL_flat, axis=0)
+        qrvec = q_range[q]*scipy.spatial.distance.cdist(morph_dist_AL_flat, morph_dist_AL_flat)
+        qrvec = qrvec[np.nonzero(qrvec)]
+        Pq_AL_glo[q][i] = np.divide(np.divide(np.sum(np.sin(qrvec)/qrvec), len(morph_dist_AL_flat)), len(morph_dist_AL_flat))
 
 print(time.time() - t13)
 
@@ -8158,7 +8164,7 @@ def cons_check(val):
     edges = iter(val[:1] + sum(gaps, []) + val[-1:])
     return list(zip(edges, edges))
 
-radiussize = np.logspace(-2, 1, 10)
+radiussize = np.logspace(-1, 1, 10)
 # radiussize = np.linspace(1, 100, 100)[0:99:3]
 
 un_calyx = np.unique(MorphData.calyxdist_trk)
@@ -8168,7 +8174,6 @@ un_AL = np.unique(MorphData.ALdist_trk)
 rGy_calyx_bp = []
 contour_calyx_bp = []
 count_calyx_bp = []
-
 
 for ib in range(len(un_calyx)):
     rGy_calyx_bp_temp1 = []
@@ -8198,7 +8203,7 @@ for ib in range(len(un_calyx)):
             inbound_calyx = np.where(np.sqrt(np.square(calyxdist_bp_flat[:,0] - calyx_CM_temp[0]) +
                                              np.square(calyxdist_bp_flat[:,1] - calyx_CM_temp[1]) +
                                              np.square(calyxdist_bp_flat[:,2] - calyx_CM_temp[2])) <= radiussize[b])[0]
-            (rGy_temp, cML_temp) = utils.radiusOfGyration(np.array(calyxdist_bp_flat[inbound_calyx]))
+            (rGy_temp, cML_temp) = utils.radiusOfGyration(calyxdist_bp_flat[inbound_calyx])
             
             dist_calyx = 0
             lenc = 0
