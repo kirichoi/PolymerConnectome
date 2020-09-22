@@ -4724,11 +4724,6 @@ for i in range(len(AL_bP)):
     length_AL_bP.append(length_AL_bP_temp)
 
 
-#%% Radius of Gyration for calyx, LH, and AL per branching point with sphere
-
-
-
-
 
 #%% Length study
 
@@ -8056,8 +8051,10 @@ for q in range(len(q_range)):
         calyxdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
         calyxdist_per_n_flat_t = np.unique(calyxdist_per_n_flat_t, axis=0)
         qrvec = q_range[q]*scipy.spatial.distance.cdist(calyxdist_per_n_flat_t, calyxdist_per_n_flat_t)
-        qrvec = qrvec[np.nonzero(qrvec)]
-        Pq_calyx[q][i] = np.divide(np.divide(np.sum(np.sin(qrvec)/qrvec), len(calyxdist_per_n_flat_t)), len(calyxdist_per_n_flat_t))
+        qrvec = qrvec[np.triu_indices_from(qrvec, k=1)]
+        Pq_calyx[q][i] = np.divide(np.divide(2*np.sum(np.sin(qrvec)/qrvec), len(calyxdist_per_n_flat_t)), len(calyxdist_per_n_flat_t))
+
+np.save(r'./Pq_calyx.npy', Pq_calyx)
 
 for q in range(len(q_range)):
     for i in range(len(un_LH)):
@@ -8066,8 +8063,10 @@ for q in range(len(q_range)):
         LHdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
         LHdist_per_n_flat_t = np.unique(LHdist_per_n_flat_t, axis=0)
         qrvec = q_range[q]*scipy.spatial.distance.cdist(LHdist_per_n_flat_t, LHdist_per_n_flat_t)
-        qrvec = qrvec[np.nonzero(qrvec)]
-        Pq_LH[q][i] = np.divide(np.divide(np.sum(np.sin(qrvec)/qrvec), len(LHdist_per_n_flat_t)), len(LHdist_per_n_flat_t))
+        qrvec = qrvec[np.triu_indices_from(qrvec, k=1)]
+        Pq_LH[q][i] = np.divide(np.divide(2*np.sum(np.sin(qrvec)/qrvec), len(LHdist_per_n_flat_t)), len(LHdist_per_n_flat_t))
+
+np.save(r'./Pq_LH.npy', Pq_LH)
 
 for q in range(len(q_range)):
     for i in range(len(un_AL)):
@@ -8076,14 +8075,12 @@ for q in range(len(q_range)):
         ALdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
         ALdist_per_n_flat_t = np.unique(ALdist_per_n_flat_t, axis=0)
         qrvec = q_range[q]*scipy.spatial.distance.cdist(ALdist_per_n_flat_t, ALdist_per_n_flat_t)
-        qrvec = qrvec[np.nonzero(qrvec)]
-        Pq_AL[q][i] = np.divide(np.divide(np.sum(np.sin(qrvec)/qrvec), len(ALdist_per_n_flat_t)), len(ALdist_per_n_flat_t))
+        qrvec = qrvec[np.triu_indices_from(qrvec, k=1)]
+        Pq_AL[q][i] = np.divide(np.divide(2*np.sum(np.sin(qrvec)/qrvec), len(ALdist_per_n_flat_t)), len(ALdist_per_n_flat_t))
+
+np.save(r'./Pq_AL.npy', Pq_AL)
 
 print(time.time() - t13)
-
-np.save(r'./Pq_calyx.npy', Pq_calyx)
-np.save(r'./Pq_LH.npy', Pq_LH)
-np.save(r'./Pq_AL.npy', Pq_AL)
 
 plt.plot(q_range, np.average(Pq_calyx, axis=1))
 plt.xscale('log')
@@ -8116,30 +8113,32 @@ for q in range(len(q_range)):
         morph_dist_calyx_flat = np.array([item for sublist in morph_dist_calyx[i] for item in sublist])
         morph_dist_calyx_flat = np.unique(morph_dist_calyx_flat, axis=0)
         qrvec = q_range[q]*scipy.spatial.distance.cdist(morph_dist_calyx_flat, morph_dist_calyx_flat)
-        qrvec = qrvec[np.nonzero(qrvec)]
-        Pq_calyx_glo[q][i] = np.divide(np.divide(np.sum(np.sin(qrvec)/qrvec), len(morph_dist_calyx_flat)), len(morph_dist_calyx_flat))
+        qrvec = qrvec[np.triu_indices_from(qrvec, k=1)]
+        Pq_calyx_glo[q][i] = np.divide(np.divide(2*np.sum(np.sin(qrvec)/qrvec), len(morph_dist_calyx_flat)), len(morph_dist_calyx_flat))
+
+np.save(r'./Pq_calyx_glo.npy', Pq_calyx_glo)
 
 for q in range(len(q_range)):
     for i in range(len(glo_idx)):
         morph_dist_LH_flat = np.array([item for sublist in morph_dist_LH[i] for item in sublist])
         morph_dist_LH_flat = np.unique(morph_dist_LH_flat, axis=0)
         qrvec = q_range[q]*scipy.spatial.distance.cdist(morph_dist_LH_flat, morph_dist_LH_flat)
-        qrvec = qrvec[np.nonzero(qrvec)]
-        Pq_LH_glo[q][i] = np.divide(np.divide(np.sum(np.sin(qrvec)/qrvec), len(morph_dist_LH_flat)), len(morph_dist_LH_flat))
+        qrvec = qrvec[np.triu_indices_from(qrvec, k=1)]
+        Pq_LH_glo[q][i] = np.divide(np.divide(2*np.sum(np.sin(qrvec)/qrvec), len(morph_dist_LH_flat)), len(morph_dist_LH_flat))
+
+np.save(r'./Pq_LH_glo.npy', Pq_LH_glo)
 
 for q in range(len(q_range)):
     for i in range(len(glo_idx)):
         morph_dist_AL_flat = np.array([item for sublist in morph_dist_AL[i] for item in sublist])
         morph_dist_AL_flat = np.unique(morph_dist_AL_flat, axis=0)
         qrvec = q_range[q]*scipy.spatial.distance.cdist(morph_dist_AL_flat, morph_dist_AL_flat)
-        qrvec = qrvec[np.nonzero(qrvec)]
-        Pq_AL_glo[q][i] = np.divide(np.divide(np.sum(np.sin(qrvec)/qrvec), len(morph_dist_AL_flat)), len(morph_dist_AL_flat))
+        qrvec = qrvec[np.triu_indices_from(qrvec, k=1)]
+        Pq_AL_glo[q][i] = np.divide(np.divide(2*np.sum(np.sin(qrvec)/qrvec), len(morph_dist_AL_flat)), len(morph_dist_AL_flat))
+
+np.save(r'./Pq_AL_glo.npy', Pq_AL_glo)
 
 print(time.time() - t13)
-
-np.save(r'./Pq_calyx_glo.npy', Pq_calyx_glo)
-np.save(r'./Pq_LH_glo.npy', Pq_LH_glo)
-np.save(r'./Pq_AL_glo.npy', Pq_AL_glo)
 
 plt.plot(q_range, np.average(Pq_calyx_glo, axis=1))
 plt.xscale('log')
@@ -8156,6 +8155,72 @@ plt.xscale('log')
 # plt.yscale('log')
 plt.show()
 
+
+#%% form factor per neuropil plotting
+
+q_range = np.logspace(-2,3,100)
+
+calyx_results = np.load(r'./calyx_results_debye.npy')
+LH_results = np.load(r'./LH_results_debye.npy')
+AL_results = np.load(r'./AL_results_debye.npy')
+
+Pq_calyx = np.divide(np.sum(np.divide(np.array(calyx_results).reshape(100, len(calyx_dist_flat)), len(calyx_dist_flat)), axis=1), len(calyx_dist_flat))
+Pq_LH = np.divide(np.sum(np.divide(np.array(LH_results).reshape(100, len(LH_dist_flat)), len(LH_dist_flat)), axis=1), len(LH_dist_flat))
+Pq_AL = np.divide(np.sum(np.divide(np.array(AL_results).reshape(100, len(AL_dist_flat)), len(AL_dist_flat)), axis=1), len(AL_dist_flat))
+
+fig = plt.figure(figsize=(8,6))
+plt.plot(q_range[:65], Pq_calyx[:65])
+plt.plot(q_range[:65], Pq_LH[:65])
+plt.plot(q_range[:65], Pq_AL[:65])
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q", fontsize=15)
+plt.ylabel("S(q)", fontsize=15)
+plt.legend(['MB calyx', 'LH', 'AL'], fontsize=13)
+# plt.savefig(Parameter.outputdir + '/Pq_neuropil_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+#%% form factor per glomerulus plotting
+
+q_range = np.logspace(-2,3,100)
+
+Pq_calyx_glo = np.load(r'./Pq_calyx_glo.npy')
+Pq_LH_glo = np.load(r'./Pq_LH_glo.npy')
+Pq_AL_glo = np.load(r'./Pq_AL_glo.npy')
+
+fig = plt.figure(figsize=(8,6))
+plt.plot(np.tile(q_range[:60], (len(glo_idx),1)).T, Pq_calyx_glo[:60])
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q", fontsize=15)
+plt.ylabel("S(q)", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/Pq_calyx_glo_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig = plt.figure(figsize=(8,6))
+plt.plot(np.tile(q_range[:60], (len(glo_idx),1)).T, Pq_LH_glo[:60])
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q", fontsize=15)
+plt.ylabel("S(q)", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/Pq_LH_glo_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig = plt.figure(figsize=(8,6))
+plt.plot(np.tile(q_range[:60], (len(glo_idx),1)).T, Pq_AL_glo[:60])
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q", fontsize=15)
+plt.ylabel("S(q)", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/Pq_AL_glo_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
 #%% Rgy centered at BP
 
 def cons_check(val):
@@ -8164,8 +8229,7 @@ def cons_check(val):
     edges = iter(val[:1] + sum(gaps, []) + val[-1:])
     return list(zip(edges, edges))
 
-radiussize = np.logspace(-1, 1, 10)
-# radiussize = np.linspace(1, 100, 100)[0:99:3]
+radiussize = np.logspace(-2, 2, 40)
 
 un_calyx = np.unique(MorphData.calyxdist_trk)
 un_LH = np.unique(MorphData.LHdist_trk)
@@ -8187,7 +8251,7 @@ for ib in range(len(un_calyx)):
     branchPidx = BranchData.calyx_branchP[un_calyx[ib]]
     branchPTrkidx = BranchData.calyx_branchTrk[un_calyx[ib]]
     branchPTrkidx_flat = np.array([item for sublist in branchPTrkidx for item in sublist])
-
+    
     for ibp in branchPidx:
         rGy_calyx_bp_temp2 = []
         count_calyx_bp_temp2 = []
@@ -8196,14 +8260,10 @@ for ib in range(len(un_calyx)):
         calyx_CM_temp = calyxdist_bp_flat[np.where(branchPTrkidx_flat == ibp)[0][0]]
         
         for b in range(len(radiussize)):
-            rGy_calyx_bp_temp3 = []
-            count_calyx_bp_temp3 = []
-            contour_calyx_bp_temp3 = []
-            
             inbound_calyx = np.where(np.sqrt(np.square(calyxdist_bp_flat[:,0] - calyx_CM_temp[0]) +
                                              np.square(calyxdist_bp_flat[:,1] - calyx_CM_temp[1]) +
                                              np.square(calyxdist_bp_flat[:,2] - calyx_CM_temp[2])) <= radiussize[b])[0]
-            (rGy_temp, cML_temp) = utils.radiusOfGyration(calyxdist_bp_flat[inbound_calyx])
+            (rGy_temp, cML_temp) = utils.radiusOfGyration(np.array([calyxdist_bp_flat[inbound_calyx]]))
             
             dist_calyx = 0
             lenc = 0
@@ -8221,12 +8281,19 @@ for ib in range(len(un_calyx)):
                     dist_calyx += np.sum(np.sqrt(np.square(xd) + np.square(yd) + np.square(zd)))
                     if len(val) > 1:
                         lenc += len(val)
-            spheredist_calyx_temp.append(dist_calyx)
-            spheredist_calyx_c_temp1.append(lenc)
-            
-        spheredist_calyx_sum[b] = np.sum(spheredist_calyx_temp)
-        spheredist_calyx_count1[b] = np.sum(spheredist_calyx_c_temp1)
+            rGy_calyx_bp_temp2.append(rGy_temp[0])
+            contour_calyx_bp_temp2.append(dist_calyx)
+            count_calyx_bp_temp2.append(lenc)
+        
+        rGy_calyx_bp_temp1.append(rGy_calyx_bp_temp2)
+        contour_calyx_bp_temp1.append(contour_calyx_bp_temp2)
+        count_calyx_bp_temp1.append(count_calyx_bp_temp2)
+    
+    rGy_calyx_bp.append(rGy_calyx_bp_temp1)
+    contour_calyx_bp.append(contour_calyx_bp_temp1)
+    count_calyx_bp.append(count_calyx_bp_temp1)
 
     
 
+#%% Rgy centered at BP plotting
 
