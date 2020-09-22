@@ -8293,7 +8293,22 @@ for ib in range(len(un_calyx)):
     contour_calyx_bp.append(contour_calyx_bp_temp1)
     count_calyx_bp.append(count_calyx_bp_temp1)
 
-    
+
+rGy_calyx_bp_avg = []
+contour_calyx_bp_avg = []
+count_calyx_bp_avg = []
+
+for i in range(len(un_calyx)):
+    rGy_calyx_bp_avg.append(np.average(rGy_calyx_bp[i], axis=0))
+    contour_calyx_bp_avg.append(np.average(contour_calyx_bp[i], axis=0))
+    count_calyx_bp_avg.append(np.average(count_calyx_bp[i], axis=0))
 
 #%% Rgy centered at BP plotting
+
+i = 1
+
+plt.scatter(radiussize[np.nonzero(contour_calyx_bp_avg[i])], rGy_calyx_bp_avg[i][np.nonzero(contour_calyx_bp_avg[i])])
+plt.xscale('log')
+plt.yscale('log')
+plt.show()
 
