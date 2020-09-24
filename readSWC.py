@@ -8168,18 +8168,49 @@ Pq_calyx = np.divide(np.sum(np.divide(np.array(calyx_results).reshape(100, len(c
 Pq_LH = np.divide(np.sum(np.divide(np.array(LH_results).reshape(100, len(LH_dist_flat)), len(LH_dist_flat)), axis=1), len(LH_dist_flat))
 Pq_AL = np.divide(np.sum(np.divide(np.array(AL_results).reshape(100, len(AL_dist_flat)), len(AL_dist_flat)), axis=1), len(AL_dist_flat))
 
+d_Pq_calyx = np.gradient(np.log10(Pq_calyx[:60]), np.log10(q_range[:60]))
+d_Pq_LH = np.gradient(np.log10(Pq_LH[:60]), np.log10(q_range[:60]))
+d_Pq_AL = np.gradient(np.log10(Pq_AL[:60]), np.log10(q_range[:60]))
+
+calyx_length_temp = np.array([item for sublist in LengthData.length_calyx for item in sublist])
+LH_length_temp = np.array([item for sublist in LengthData.length_LH for item in sublist])
+AL_length_temp = np.array([item for sublist in LengthData.length_AL for item in sublist])
+
+rgy_calyx_full = utils.radiusOfGyration(np.array([calyx_dist_flat]))
+rgy_LH_full = utils.radiusOfGyration(np.array([LH_dist_flat]))
+rgy_AL_full = utils.radiusOfGyration(np.array([AL_dist_flat]))
+
 fig = plt.figure(figsize=(8,6))
-plt.plot(q_range[:65], Pq_calyx[:65])
-plt.plot(q_range[:65], Pq_LH[:65])
-plt.plot(q_range[:65], Pq_AL[:65])
+plt.plot(q_range[:60], Pq_calyx[:60], marker='.')
+plt.plot(q_range[:60], Pq_LH[:60], marker='.')
+plt.plot(q_range[:60], Pq_AL[:60], marker='.')
+
+plt.vlines(1/np.mean(calyx_length_temp), 1e-6, 10, color='tab:blue')
+plt.vlines(1/np.mean(LH_length_temp), 1e-6, 10, color='tab:orange')
+plt.vlines(1/np.mean(AL_length_temp), 1e-6, 10, color='tab:green')
+
+plt.vlines(1/np.median(calyx_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+plt.vlines(1/np.median(LH_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
+plt.vlines(1/np.median(AL_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
+
+plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:blue', ls='--')
+plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:orange', ls='--')
+plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:green', ls='--')
 
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q", fontsize=15)
 plt.ylabel("S(q)", fontsize=15)
+plt.ylim(5e-6, 5)
 plt.legend(['MB calyx', 'LH', 'AL'], fontsize=13)
 # plt.savefig(Parameter.outputdir + '/Pq_neuropil_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
+
+
+fig = plt.figure(figsize=(8,6))
+plt.plot(q_range, np.multiply(np.square(q_range), Pq_calyx), marker='.')
+plt.plot(q_range, np.multiply(np.square(q_range), Pq_LH), marker='.')
+plt.plot(q_range, np.multiply(np.square(q_range), Pq_AL), marker='.')
 
 
 #%% form factor per glomerulus plotting
