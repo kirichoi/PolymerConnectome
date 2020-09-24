@@ -8180,6 +8180,42 @@ rgy_calyx_full = utils.radiusOfGyration(np.array([calyx_dist_flat]))
 rgy_LH_full = utils.radiusOfGyration(np.array([LH_dist_flat]))
 rgy_AL_full = utils.radiusOfGyration(np.array([AL_dist_flat]))
 
+q_range_fit_calyx = np.where(q_range > 1/np.mean(calyx_length_temp))[0]
+q_range_fit_calyx = q_range_fit_calyx[q_range_fit_calyx <= 60]
+
+poptD_Pq_calyx, pcovD_Pq_calyx = scipy.optimize.curve_fit(objFuncGL, 
+                                                          np.log10(q_range[q_range_fit_calyx]), 
+                                                          np.log10(Pq_calyx[q_range_fit_calyx]), 
+                                                          p0=[-0.1, 0.1], 
+                                                          maxfev=10000)
+perrD_Pq_calyx = np.sqrt(np.diag(poptD_Pq_calyx))
+
+fitYD_Pq_calyx = objFuncPpow(q_range[q_range_fit_calyx], poptD_Pq_calyx[0], poptD_Pq_calyx[1])
+
+q_range_fit_LH = np.where(q_range > 1/np.mean(LH_length_temp))[0]
+q_range_fit_LH = q_range_fit_LH[q_range_fit_LH <= 60]
+
+poptD_Pq_LH, pcovD_Pq_LH = scipy.optimize.curve_fit(objFuncGL, 
+                                                    np.log10(q_range[q_range_fit_LH]), 
+                                                    np.log10(Pq_LH[q_range_fit_LH]), 
+                                                    p0=[-0.1, 0.1], 
+                                                    maxfev=10000)
+perrD_Pq_LH = np.sqrt(np.diag(poptD_Pq_LH))
+
+fitYD_Pq_LH = objFuncPpow(q_range[q_range_fit_LH], poptD_Pq_LH[0], poptD_Pq_LH[1])
+
+q_range_fit_AL = np.where(q_range > 1/np.mean(AL_length_temp))[0]
+q_range_fit_AL = q_range_fit_AL[q_range_fit_AL <= 60]
+
+poptD_Pq_AL, pcovD_Pq_AL = scipy.optimize.curve_fit(objFuncGL, 
+                                                    np.log10(q_range[q_range_fit_AL]), 
+                                                    np.log10(Pq_AL[q_range_fit_AL]), 
+                                                    p0=[-0.1, 0.1], 
+                                                    maxfev=10000)
+perrD_Pq_AL = np.sqrt(np.diag(poptD_Pq_AL))
+
+fitYD_Pq_AL = objFuncPpow(q_range[q_range_fit_AL], poptD_Pq_AL[0], poptD_Pq_AL[1])
+
 fig = plt.figure(figsize=(8,6))
 plt.plot(q_range[:60], Pq_calyx[:60], marker='.')
 plt.plot(q_range[:60], Pq_LH[:60], marker='.')
@@ -8201,7 +8237,7 @@ plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q", fontsize=15)
 plt.ylabel("S(q)", fontsize=15)
-plt.ylim(5e-6, 5)
+plt.ylim(1e-6, 5)
 plt.legend(['MB calyx', 'LH', 'AL'], fontsize=13)
 # plt.savefig(Parameter.outputdir + '/Pq_neuropil_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
