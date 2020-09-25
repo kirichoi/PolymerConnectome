@@ -8216,37 +8216,43 @@ perrD_Pq_AL = np.sqrt(np.diag(poptD_Pq_AL))
 
 fitYD_Pq_AL = objFuncPpow(q_range[q_range_fit_AL], poptD_Pq_AL[0], poptD_Pq_AL[1])
 
+
+
 fig = plt.figure(figsize=(8,6))
-plt.plot(q_range[:60], Pq_calyx[:60], marker='.')
-plt.plot(q_range[:60], Pq_LH[:60], marker='.')
-plt.plot(q_range[:60], Pq_AL[:60], marker='.')
+plt.plot(q_range[:60], Pq_AL[:60], marker='.', color='tab:blue')
+plt.plot(q_range[:60], Pq_calyx[:60], marker='.', color='tab:orange')
+plt.plot(q_range[:60], Pq_LH[:60], marker='.', color='tab:green')
 
-plt.vlines(1/np.mean(calyx_length_temp), 1e-6, 10, color='tab:blue')
-plt.vlines(1/np.mean(LH_length_temp), 1e-6, 10, color='tab:orange')
-plt.vlines(1/np.mean(AL_length_temp), 1e-6, 10, color='tab:green')
+plt.vlines(1/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
+plt.vlines(1/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
+plt.vlines(1/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
 
-plt.vlines(1/np.median(calyx_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
-plt.vlines(1/np.median(LH_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
-plt.vlines(1/np.median(AL_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
+plt.vlines(1/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+plt.vlines(1/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
+plt.vlines(1/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
 
-plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:blue', ls='--')
-plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:orange', ls='--')
-plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:green', ls='--')
+plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
+plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
+plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q", fontsize=15)
 plt.ylabel("S(q)", fontsize=15)
 plt.ylim(1e-6, 5)
-plt.legend(['MB calyx', 'LH', 'AL'], fontsize=13)
+plt.legend(['AL', 'MB calyx', 'LH'], fontsize=13)
 # plt.savefig(Parameter.outputdir + '/Pq_neuropil_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
+
 fig = plt.figure(figsize=(8,6))
-plt.plot(q_range, np.multiply(np.square(q_range), Pq_calyx), marker='.')
-plt.plot(q_range, np.multiply(np.square(q_range), Pq_LH), marker='.')
-plt.plot(q_range, np.multiply(np.square(q_range), Pq_AL), marker='.')
+plt.plot(q_range[:60], np.multiply(np.square(q_range[:60]), Pq_calyx[:60]), marker='.')
+plt.plot(q_range[:60], np.multiply(np.square(q_range[:60]), Pq_LH[:60]), marker='.')
+plt.plot(q_range[:60], np.multiply(np.square(q_range[:60]), Pq_AL[:60]), marker='.')
+plt.xscale('log')
+plt.yscale('log')
+plt.show()
 
 
 #%% form factor per glomerulus plotting
@@ -8286,6 +8292,136 @@ plt.xlabel("q", fontsize=15)
 plt.ylabel("S(q)", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/Pq_AL_glo_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
+
+#%% form factor per neuron plotting
+
+q_range = np.logspace(-2,3,100)
+
+Pq_calyx_pn = np.load(r'./Pq_calyx.npy')
+Pq_LH_pn = np.load(r'./Pq_LH.npy')
+Pq_AL_pn = np.load(r'./Pq_AL.npy')
+
+Pq_calyx_pn = np.delete(Pq_calyx_pn, [40, 41], 1)
+Pq_AL_pn = np.delete(Pq_AL_pn, 73, 1)
+
+fig = plt.figure(figsize=(8,6))
+plt.plot(np.tile(q_range[:60], (len(glo_idx)-2,1)).T, Pq_calyx_pn[:60])
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q", fontsize=15)
+plt.ylabel("S(q)", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/Pq_calyx_pn_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig = plt.figure(figsize=(8,6))
+plt.plot(np.tile(q_range[:60], (len(glo_idx),1)).T, Pq_LH_pn[:60])
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q", fontsize=15)
+plt.ylabel("S(q)", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/Pq_LH_pn_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig = plt.figure(figsize=(8,6))
+plt.plot(np.tile(q_range[:60], (len(glo_idx),1)).T, Pq_AL_pn[:60])
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q", fontsize=15)
+plt.ylabel("S(q)", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/Pq_AL_pn_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+
+fig = plt.figure(figsize=(8,6))
+plt.plot(q_range[:60], np.average(Pq_calyx_pn, axis=1)[:60], color='tab:orange')
+plt.plot(q_range[:60], Pq_calyx[:60], color='tab:orange')
+plt.fill_between(q_range[:60], 
+                 np.average(Pq_calyx_pn, axis=1)[:60]+np.std(Pq_calyx_pn, axis=1)[:60],
+                 np.average(Pq_calyx_pn, axis=1)[:60]-np.std(Pq_calyx_pn, axis=1)[:60],
+                 alpha=0.3, 
+                 color='tab:orange')
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q", fontsize=15)
+plt.ylabel("S(q)", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/Pq_calyx_pn_avg_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+
+fig = plt.figure(figsize=(8,6))
+plt.plot(q_range[:60], np.average(Pq_LH_pn, axis=1)[:60], color='tab:green')
+plt.plot(q_range[:60], Pq_LH[:60], color='tab:green')
+plt.fill_between(q_range[:60], 
+                 np.average(Pq_LH_pn, axis=1)[:60]+np.std(Pq_LH_pn, axis=1)[:60],
+                 np.average(Pq_LH_pn, axis=1)[:60]-np.std(Pq_LH_pn, axis=1)[:60],
+                 alpha=0.3,
+                 color='tab:green')
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q", fontsize=15)
+plt.ylabel("S(q)", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/Pq_LH_pn_avg_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+fig = plt.figure(figsize=(8,6))
+plt.plot(q_range[:60], np.average(Pq_AL_pn, axis=1)[:60], color='tab:blue')
+plt.plot(q_range[:60], Pq_AL[:60], color='tab:blue')
+plt.fill_between(q_range[:60], 
+                 np.average(Pq_AL_pn, axis=1)[:60]+np.std(Pq_AL_pn, axis=1)[:60],
+                 np.average(Pq_AL_pn, axis=1)[:60]-np.std(Pq_AL_pn, axis=1)[:60],
+                 alpha=0.3, 
+                 color='tab:blue')
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q", fontsize=15)
+plt.ylabel("S(q)", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/Pq_AL_pn_avg_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+#%% Form factor moving window
+
+mw_Pq_calyx = []
+mw_Pq_calyx_err = []
+mwx_calyx = []
+shiftN = 3
+
+for i in range(len(q_range[:60]) - shiftN):
+    mwx_calyx.append(np.average(q_range[:60][i:i+shiftN]))
+    
+    poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
+                                                np.log10(q_range[:60][i:i+shiftN]), 
+                                                np.log10(np.average(Pq_AL_pn, axis=1)[:60][i:i+shiftN]), 
+                                                p0=[1., 0.], 
+                                                maxfev=100000)
+    mw_Pq_calyx.append(poptmxc[0])
+    mw_Pq_calyx_err.append(np.sqrt(np.diag(pcovmxc))[0])
+
+    
+
+fig = plt.figure(figsize=(8,6))
+plt.plot(mwx_calyx, np.divide(1, mw_Pq_calyx), lw=2)
+# plt.fill_between(mwx_AL, np.array(ALmw)-np.array(ALmwerr), np.array(ALmw)+np.array(ALmwerr), alpha=0.3)
+# plt.fill_between(mwx_calyx, np.array(Calyxmw)-np.array(Calyxmwerr), np.array(Calyxmw)+np.array(Calyxmwerr), alpha=0.3)
+# plt.fill_between(mwx_LH, np.array(LHmw)-np.array(LHmwerr), np.array(LHmw)+np.array(LHmwerr), alpha=0.3)
+
+plt.xscale('log')
+plt.legend(["AL", "MB calyx", "LH"], fontsize=13)
+# plt.yscale('log')
+plt.xlabel("q", fontsize=15)
+plt.ylabel("$1/\nu$", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/Pq_calyx_pn_mv_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
 
 
 #%% Rgy centered at BP
