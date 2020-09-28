@@ -8582,7 +8582,7 @@ def cons_check(val):
     edges = iter(val[:1] + sum(gaps, []) + val[-1:])
     return list(zip(edges, edges))
 
-radiussize = np.logspace(-2, 2, 40)
+radiussize = np.logspace(-1, 2, 30)
 
 un_calyx = np.unique(MorphData.calyxdist_trk)
 un_LH = np.unique(MorphData.LHdist_trk)
@@ -8646,22 +8646,202 @@ for ib in range(len(un_calyx)):
     contour_calyx_bp.append(contour_calyx_bp_temp1)
     count_calyx_bp.append(count_calyx_bp_temp1)
 
+rGy_LH_bp = []
+contour_LH_bp = []
+count_LH_bp = []
+
+for ib in range(len(un_LH)):
+    rGy_LH_bp_temp1 = []
+    count_LH_bp_temp1 = []
+    contour_LH_bp_temp1 = []
+    
+    idx = np.where(MorphData.LHdist_trk == un_LH[ib])[0]
+    tarval = list(np.array(MorphData.LHdist)[idx])
+    LHdist_bp_flat = np.array([item for sublist in tarval for item in sublist])
+    
+    branchPidx = BranchData.LH_branchP[un_LH[ib]]
+    branchPTrkidx = BranchData.LH_branchTrk[un_LH[ib]]
+    branchPTrkidx_flat = np.array([item for sublist in branchPTrkidx for item in sublist])
+    
+    for ibp in branchPidx:
+        rGy_LH_bp_temp2 = []
+        count_LH_bp_temp2 = []
+        contour_LH_bp_temp2 = []
+        
+        LH_CM_temp = LHdist_bp_flat[np.where(branchPTrkidx_flat == ibp)[0][0]]
+        
+        for b in range(len(radiussize)):
+            inbound_LH = np.where(np.sqrt(np.square(LHdist_bp_flat[:,0] - LH_CM_temp[0]) +
+                                             np.square(LHdist_bp_flat[:,1] - LH_CM_temp[1]) +
+                                             np.square(LHdist_bp_flat[:,2] - LH_CM_temp[2])) <= radiussize[b])[0]
+            (rGy_temp, cML_temp) = utils.radiusOfGyration(np.array([LHdist_bp_flat[inbound_LH]]))
+            
+            dist_LH = 0
+            lenc = 0
+            if len(inbound_LH) > 1:
+                valist = cons_check(inbound_LH)
+                for ibx in range(len(valist)):
+                    val = LHdist_bp_flat[np.arange(valist[ibx][0], valist[ibx][1]+1)]
+                    x = val[:,0]
+                    y = val[:,1]
+                    z = val[:,2]
+                
+                    xd = [j-i for i, j in zip(x[:-1], x[1:])]
+                    yd = [j-i for i, j in zip(y[:-1], y[1:])]
+                    zd = [j-i for i, j in zip(z[:-1], z[1:])]
+                    dist_LH += np.sum(np.sqrt(np.square(xd) + np.square(yd) + np.square(zd)))
+                    if len(val) > 1:
+                        lenc += len(val)
+            rGy_LH_bp_temp2.append(rGy_temp[0])
+            contour_LH_bp_temp2.append(dist_LH)
+            count_LH_bp_temp2.append(lenc)
+        
+        rGy_LH_bp_temp1.append(rGy_LH_bp_temp2)
+        contour_LH_bp_temp1.append(contour_LH_bp_temp2)
+        count_LH_bp_temp1.append(count_LH_bp_temp2)
+    
+    rGy_LH_bp.append(rGy_LH_bp_temp1)
+    contour_LH_bp.append(contour_LH_bp_temp1)
+    count_LH_bp.append(count_LH_bp_temp1)
+
+rGy_AL_bp = []
+contour_AL_bp = []
+count_AL_bp = []
+
+for ib in range(len(un_AL)):
+    rGy_AL_bp_temp1 = []
+    count_AL_bp_temp1 = []
+    contour_AL_bp_temp1 = []
+    
+    idx = np.where(MorphData.ALdist_trk == un_AL[ib])[0]
+    tarval = list(np.array(MorphData.ALdist)[idx])
+    ALdist_bp_flat = np.array([item for sublist in tarval for item in sublist])
+    
+    branchPidx = BranchData.AL_branchP[un_AL[ib]]
+    branchPTrkidx = BranchData.AL_branchTrk[un_AL[ib]]
+    branchPTrkidx_flat = np.array([item for sublist in branchPTrkidx for item in sublist])
+    
+    for ibp in branchPidx:
+        rGy_AL_bp_temp2 = []
+        count_AL_bp_temp2 = []
+        contour_AL_bp_temp2 = []
+        
+        AL_CM_temp = ALdist_bp_flat[np.where(branchPTrkidx_flat == ibp)[0][0]]
+        
+        for b in range(len(radiussize)):
+            inbound_AL = np.where(np.sqrt(np.square(ALdist_bp_flat[:,0] - AL_CM_temp[0]) +
+                                             np.square(ALdist_bp_flat[:,1] - AL_CM_temp[1]) +
+                                             np.square(ALdist_bp_flat[:,2] - AL_CM_temp[2])) <= radiussize[b])[0]
+            (rGy_temp, cML_temp) = utils.radiusOfGyration(np.array([ALdist_bp_flat[inbound_AL]]))
+            
+            dist_AL = 0
+            lenc = 0
+            if len(inbound_AL) > 1:
+                valist = cons_check(inbound_AL)
+                for ibx in range(len(valist)):
+                    val = ALdist_bp_flat[np.arange(valist[ibx][0], valist[ibx][1]+1)]
+                    x = val[:,0]
+                    y = val[:,1]
+                    z = val[:,2]
+                
+                    xd = [j-i for i, j in zip(x[:-1], x[1:])]
+                    yd = [j-i for i, j in zip(y[:-1], y[1:])]
+                    zd = [j-i for i, j in zip(z[:-1], z[1:])]
+                    dist_AL += np.sum(np.sqrt(np.square(xd) + np.square(yd) + np.square(zd)))
+                    if len(val) > 1:
+                        lenc += len(val)
+            rGy_AL_bp_temp2.append(rGy_temp[0])
+            contour_AL_bp_temp2.append(dist_AL)
+            count_AL_bp_temp2.append(lenc)
+        
+        rGy_AL_bp_temp1.append(rGy_AL_bp_temp2)
+        contour_AL_bp_temp1.append(contour_AL_bp_temp2)
+        count_AL_bp_temp1.append(count_AL_bp_temp2)
+    
+    rGy_AL_bp.append(rGy_AL_bp_temp1)
+    contour_AL_bp.append(contour_AL_bp_temp1)
+    count_AL_bp.append(count_AL_bp_temp1)
 
 rGy_calyx_bp_avg = []
 contour_calyx_bp_avg = []
 count_calyx_bp_avg = []
 
 for i in range(len(un_calyx)):
-    rGy_calyx_bp_avg.append(np.average(rGy_calyx_bp[i], axis=0))
-    contour_calyx_bp_avg.append(np.average(contour_calyx_bp[i], axis=0))
-    count_calyx_bp_avg.append(np.average(count_calyx_bp[i], axis=0))
+    if len(rGy_calyx_bp[i]) > 0:
+        rGy_calyx_bp_avg.append(np.average(rGy_calyx_bp[i], axis=0))
+        contour_calyx_bp_avg.append(np.average(contour_calyx_bp[i], axis=0))
+        count_calyx_bp_avg.append(np.average(count_calyx_bp[i], axis=0))
+
+rGy_LH_bp_avg = []
+contour_LH_bp_avg = []
+count_LH_bp_avg = []
+
+for i in range(len(un_LH)):
+    if len(rGy_LH_bp[i]) > 0:
+        rGy_LH_bp_avg.append(np.average(rGy_LH_bp[i], axis=0))
+        contour_LH_bp_avg.append(np.average(contour_LH_bp[i], axis=0))
+        count_LH_bp_avg.append(np.average(count_LH_bp[i], axis=0))
+
+rGy_AL_bp_avg = []
+contour_AL_bp_avg = []
+count_AL_bp_avg = []
+
+for i in range(len(un_AL)):
+    if len(rGy_AL_bp[i]) > 0:
+        rGy_AL_bp_avg.append(np.average(rGy_AL_bp[i], axis=0))
+        contour_AL_bp_avg.append(np.average(contour_AL_bp[i], axis=0))
+        count_AL_bp_avg.append(np.average(count_AL_bp[i], axis=0))
 
 #%% Rgy centered at BP plotting
 
-i = 1
-
-plt.scatter(radiussize[np.nonzero(contour_calyx_bp_avg[i])], rGy_calyx_bp_avg[i][np.nonzero(contour_calyx_bp_avg[i])], marker='.')
+fig = plt.figure(figsize=(8,6))
+for i in range(len(rGy_calyx_bp_avg)):
+    plt.scatter(radiussize[np.nonzero(contour_calyx_bp_avg[i])], rGy_calyx_bp_avg[i][np.nonzero(contour_calyx_bp_avg[i])], marker='.')
 plt.xscale('log')
 plt.yscale('log')
 plt.show()
 
+fig = plt.figure(figsize=(8,6))
+for i in range(len(rGy_LH_bp_avg)):
+    plt.scatter(radiussize[np.nonzero(contour_LH_bp_avg[i])], rGy_LH_bp_avg[i][np.nonzero(contour_LH_bp_avg[i])], marker='.')
+plt.xscale('log')
+plt.yscale('log')
+plt.show()
+
+fig = plt.figure(figsize=(8,6))
+for i in range(len(rGy_AL_bp_avg)):
+    plt.scatter(radiussize[np.nonzero(contour_AL_bp_avg[i])], rGy_AL_bp_avg[i][np.nonzero(contour_AL_bp_avg[i])], marker='.')
+plt.xscale('log')
+plt.yscale('log')
+plt.show()
+
+
+
+#%% Rgy centered at BP average
+
+fig = plt.figure(figsize=(8,6))
+plt.plot(radiussize, np.average(rGy_AL_bp_avg, axis=0), marker='.', color='tab:blue')
+plt.fill_between(radiussize, 
+                 np.average(rGy_AL_bp_avg, axis=0)+np.std(rGy_AL_bp_avg, axis=0),
+                 np.average(rGy_AL_bp_avg, axis=0)-np.std(rGy_AL_bp_avg, axis=0),
+                 alpha=0.3,
+                 color='tab:orange')
+plt.plot(radiussize, np.average(rGy_calyx_bp_avg, axis=0), marker='.', color='tab:blue')
+plt.fill_between(radiussize, 
+                 np.average(rGy_calyx_bp_avg, axis=0)+np.std(rGy_calyx_bp_avg, axis=0),
+                 np.average(rGy_calyx_bp_avg, axis=0)-np.std(rGy_calyx_bp_avg, axis=0),
+                 alpha=0.3,
+                 color='tab:orange')
+plt.plot(radiussize, np.average(rGy_LH_bp_avg, axis=0), marker='.', color='tab:green')
+plt.fill_between(radiussize, 
+                 np.average(rGy_LH_bp_avg, axis=0)+np.std(rGy_LH_bp_avg, axis=0),
+                 np.average(rGy_LH_bp_avg, axis=0)-np.std(rGy_LH_bp_avg, axis=0),
+                 alpha=0.3,
+                 color='tab:green')
+plt.xscale('log')
+plt.yscale('log')
+plt.legend(["AL", "MB calyx", "LH"], fontsize=13)
+plt.xlabel("r", fontsize=15)
+plt.ylabel(r"$R_{g}$", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/Rgy_BP_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
