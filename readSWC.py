@@ -8335,14 +8335,14 @@ plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 
 plt.xscale('log')
-plt.yscale('log')
-plt.ylim(0.1, 5)
+# plt.yscale('log')
+plt.ylim(0.1, 1.5)
 plt.xlim(0.01, 10)
 
 plt.legend(["AL", "MB calyx", "LH"], fontsize=13)
 plt.xlabel("q", fontsize=15)
 plt.ylabel(r"$-1/\lambda$", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/Pq_calyx_mv_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -8560,13 +8560,13 @@ plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 
 plt.xscale('log')
-plt.yscale('log')
-plt.ylim(0.1, 5)
+# plt.yscale('log')
+plt.ylim(0.1, 1.5)
 plt.xlim(0.01, 10)
 plt.legend(["AL", "MB calyx", "LH"], fontsize=13)
 plt.xlabel("q", fontsize=15)
 plt.ylabel(r"$-1/\lambda$", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/Pq_calyx_pn_mv_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -8825,8 +8825,8 @@ plt.fill_between(radiussize,
                  np.average(rGy_AL_bp_avg, axis=0)+np.std(rGy_AL_bp_avg, axis=0),
                  np.average(rGy_AL_bp_avg, axis=0)-np.std(rGy_AL_bp_avg, axis=0),
                  alpha=0.3,
-                 color='tab:orange')
-plt.plot(radiussize, np.average(rGy_calyx_bp_avg, axis=0), marker='.', color='tab:blue')
+                 color='tab:blue')
+plt.plot(radiussize, np.average(rGy_calyx_bp_avg, axis=0), marker='.', color='tab:orange')
 plt.fill_between(radiussize, 
                  np.average(rGy_calyx_bp_avg, axis=0)+np.std(rGy_calyx_bp_avg, axis=0),
                  np.average(rGy_calyx_bp_avg, axis=0)-np.std(rGy_calyx_bp_avg, axis=0),
