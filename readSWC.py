@@ -8493,30 +8493,27 @@ plt.show()
 
 
 fig = plt.figure(figsize=(8,6))
-plt.plot(mwx_AL, -1/np.array(mw_Pq_AL), lw=2)
-plt.plot(mwx_calyx, -1/np.array(mw_Pq_calyx), lw=2)
-plt.plot(mwx_LH, -1/np.array(mw_Pq_LH), lw=2)
-plt.fill_between(mwx_AL, 
-                 -1/(np.array(mw_Pq_AL)-np.array(mw_Pq_AL_err)), 
-                 -1/(np.array(mw_Pq_AL)+np.array(mw_Pq_AL_err)), 
-                 alpha=0.3)
-plt.fill_between(mwx_calyx, 
-                 -1/(np.array(mw_Pq_calyx)-np.array(mw_Pq_calyx_err)),
-                 -1/(np.array(mw_Pq_calyx)+np.array(mw_Pq_calyx_err)), 
-                 alpha=0.3)
-plt.fill_between(mwx_LH,
-                 -1/(np.array(mw_Pq_LH)-np.array(mw_Pq_LH_err)),
-                 -1/(np.array(mw_Pq_LH)+np.array(mw_Pq_LH_err)), 
-                 alpha=0.3)
+plt.plot(q_range[:AL_q_idx], np.average(Pq_AL_pn, axis=1)[:AL_q_idx], marker='.', color='tab:blue')
+plt.plot(q_range[:calyx_q_idx], np.average(Pq_calyx_pn, axis=1)[:calyx_q_idx], marker='.', color='tab:orange')
+plt.plot(q_range[:LH_q_idx], np.average(Pq_LH_pn, axis=1)[:LH_q_idx], marker='.', color='tab:green')
 
-plt.hlines(1/4, 0.01, 100, ls='dashed')
-plt.hlines(7/16, 0.01, 100, ls='dashed')
-plt.hlines(1/2, 0.01, 100, ls='dashed')
-plt.hlines(1, 0.01, 100, ls='dashed')
-plt.text(10.3, 1/4-0.01, 'Ideal')
-plt.text(10.3, 7/16-0.01, '$\Theta-Solvent$')
-plt.text(10.3, 1/2-0.01, 'Random')
-plt.text(10.3, 1-0.01,' Rigid')
+plt.fill_between(q_range[:LH_q_idx], 
+                 np.average(Pq_LH_pn, axis=1)[:LH_q_idx]+np.std(Pq_LH_pn, axis=1)[:LH_q_idx],
+                 np.average(Pq_LH_pn, axis=1)[:LH_q_idx]-np.std(Pq_LH_pn, axis=1)[:LH_q_idx],
+                 alpha=0.3,
+                 color='tab:green')
+
+plt.fill_between(q_range[:AL_q_idx], 
+                 np.average(Pq_AL_pn, axis=1)[:AL_q_idx]+np.std(Pq_AL_pn, axis=1)[:AL_q_idx],
+                 np.average(Pq_AL_pn, axis=1)[:AL_q_idx]-np.std(Pq_AL_pn, axis=1)[:AL_q_idx],
+                 alpha=0.3, 
+                 color='tab:blue')
+
+plt.fill_between(q_range[:calyx_q_idx], 
+                 np.average(Pq_calyx_pn, axis=1)[:calyx_q_idx]+np.std(Pq_calyx_pn, axis=1)[:calyx_q_idx],
+                 np.average(Pq_calyx_pn, axis=1)[:calyx_q_idx]-np.std(Pq_calyx_pn, axis=1)[:calyx_q_idx],
+                 alpha=0.3, 
+                 color='tab:orange')
 
 plt.vlines(1/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
 plt.vlines(1/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
@@ -8531,15 +8528,14 @@ plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 
 plt.xscale('log')
-# plt.yscale('log')
-plt.ylim(0.1, 1.5)
-plt.xlim(0.01, 10)
-
-plt.legend(["AL", "MB calyx", "LH"], fontsize=13)
+plt.yscale('log')
 plt.xlabel("q", fontsize=15)
-plt.ylabel(r"$-1/\lambda$", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/Pq_all_mv_1.pdf', dpi=300, bbox_inches='tight')
+plt.ylabel("S(q)", fontsize=15)
+plt.ylim(1e-4, 10)
+plt.legend(['AL', 'MB calyx', 'LH'], fontsize=13)
+# plt.savefig(Parameter.outputdir + '/Pq_neuropil_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
+
 
 
 #%% Form factor per neuron moving window
@@ -8868,6 +8864,7 @@ rGy_AL_bp_avg_avg = np.average(rGy_AL_bp_avg, axis=0)
 contour_calyx_bp_avg_avg = np.average(contour_calyx_bp_avg, axis=0)
 contour_LH_bp_avg_avg = np.average(contour_LH_bp_avg, axis=0)
 contour_AL_bp_avg_avg = np.average(contour_AL_bp_avg, axis=0)
+
 
 #%% Rgy centered at BP plotting
 
