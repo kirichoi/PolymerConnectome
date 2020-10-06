@@ -8217,11 +8217,14 @@ perrD_Pq_AL = np.sqrt(np.diag(pcovD_Pq_AL))
 fitYD_Pq_AL = objFuncPpow(q_range[q_range_fit_AL], poptD_Pq_AL[0], poptD_Pq_AL[1])
 
 
+calyx_q_idx = np.where(q_range < 1/np.percentile(calyx_length_temp, 1))[0][-1]
+LH_q_idx = np.where(q_range < 1/np.percentile(LH_length_temp, 1))[0][-1]
+AL_q_idx = np.where(q_range < 1/np.percentile(AL_length_temp, 1))[0][-1]
 
 fig = plt.figure(figsize=(8,6))
-plt.plot(q_range[:60], Pq_AL[:60], marker='.', color='tab:blue')
-plt.plot(q_range[:60], Pq_calyx[:60], marker='.', color='tab:orange')
-plt.plot(q_range[:60], Pq_LH[:60], marker='.', color='tab:green')
+plt.plot(q_range[:AL_q_idx], Pq_AL[:AL_q_idx], marker='.', color='tab:blue')
+plt.plot(q_range[:calyx_q_idx], Pq_calyx[:calyx_q_idx], marker='.', color='tab:orange')
+plt.plot(q_range[:LH_q_idx], Pq_LH[:LH_q_idx], marker='.', color='tab:green')
 
 plt.vlines(1/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
 plt.vlines(1/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
@@ -8239,7 +8242,7 @@ plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q", fontsize=15)
 plt.ylabel("S(q)", fontsize=15)
-plt.ylim(1e-6, 5)
+# plt.ylim(1e-6, 5)
 plt.legend(['AL', 'MB calyx', 'LH'], fontsize=13)
 # plt.savefig(Parameter.outputdir + '/Pq_neuropil_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
@@ -8262,12 +8265,12 @@ mw_Pq_calyx_err = []
 mwx_calyx = []
 shiftN = 7
 
-for i in range(len(q_range[:60]) - shiftN):
-    mwx_calyx.append(np.average(q_range[:60][i:i+shiftN]))
+for i in range(len(q_range[:calyx_q_idx]) - shiftN):
+    mwx_calyx.append(np.average(q_range[:calyx_q_idx][i:i+shiftN]))
     
     poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                np.log10(q_range[:60][i:i+shiftN]), 
-                                                np.log10(Pq_calyx[:60][i:i+shiftN]), 
+                                                np.log10(q_range[:calyx_q_idx][i:i+shiftN]), 
+                                                np.log10(Pq_calyx[:calyx_q_idx][i:i+shiftN]), 
                                                 p0=[1., 0.], 
                                                 maxfev=100000)
     mw_Pq_calyx.append(poptmxc[0])
@@ -8277,12 +8280,12 @@ mw_Pq_LH = []
 mw_Pq_LH_err = []
 mwx_LH = []
 
-for i in range(len(q_range[:60]) - shiftN):
-    mwx_LH.append(np.average(q_range[:60][i:i+shiftN]))
+for i in range(len(q_range[:LH_q_idx]) - shiftN):
+    mwx_LH.append(np.average(q_range[:LH_q_idx][i:i+shiftN]))
     
     poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                np.log10(q_range[:60][i:i+shiftN]), 
-                                                np.log10(Pq_LH[:60][i:i+shiftN]), 
+                                                np.log10(q_range[:LH_q_idx][i:i+shiftN]), 
+                                                np.log10(Pq_LH[:LH_q_idx][i:i+shiftN]), 
                                                 p0=[1., 0.], 
                                                 maxfev=100000)
     mw_Pq_LH.append(poptmxc[0])
@@ -8292,12 +8295,12 @@ mw_Pq_AL = []
 mw_Pq_AL_err = []
 mwx_AL = []
 
-for i in range(len(q_range[:60]) - shiftN):
-    mwx_AL.append(np.average(q_range[:60][i:i+shiftN]))
+for i in range(len(q_range[:AL_q_idx]) - shiftN):
+    mwx_AL.append(np.average(q_range[:AL_q_idx][i:i+shiftN]))
     
     poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                np.log10(q_range[:60][i:i+shiftN]), 
-                                                np.log10(Pq_AL[:60][i:i+shiftN]), 
+                                                np.log10(q_range[:AL_q_idx][i:i+shiftN]), 
+                                                np.log10(Pq_AL[:AL_q_idx][i:i+shiftN]), 
                                                 p0=[1., 0.], 
                                                 maxfev=100000)
     mw_Pq_AL.append(poptmxc[0])
@@ -8346,7 +8349,7 @@ plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 plt.xscale('log')
 # plt.yscale('log')
 plt.ylim(0.1, 1.5)
-plt.xlim(0.01, 10)
+# plt.xlim(0.01, 10)
 
 plt.legend(["AL", "MB calyx", "LH"], fontsize=13)
 plt.xlabel("q", fontsize=15)
@@ -8438,7 +8441,7 @@ plt.show()
 
 
 fig = plt.figure(figsize=(8,6))
-plt.plot(q_range[:60], np.average(Pq_calyx_pn, axis=1)[:60], color='tab:orange')
+plt.plot(q_range[:], np.average(Pq_calyx_pn, axis=1)[:], color='tab:orange')
 plt.plot(q_range[:60], Pq_calyx[:60], color='tab:orange')
 plt.fill_between(q_range[:60], 
                  np.average(Pq_calyx_pn, axis=1)[:60]+np.std(Pq_calyx_pn, axis=1)[:60],
@@ -8456,7 +8459,7 @@ plt.show()
 
 
 fig = plt.figure(figsize=(8,6))
-plt.plot(q_range[:60], np.average(Pq_LH_pn, axis=1)[:60], color='tab:green')
+plt.plot(q_range[:], np.average(Pq_LH_pn, axis=1)[:], color='tab:green')
 plt.plot(q_range[:60], Pq_LH[:60], color='tab:green')
 plt.fill_between(q_range[:60], 
                  np.average(Pq_LH_pn, axis=1)[:60]+np.std(Pq_LH_pn, axis=1)[:60],
@@ -8473,7 +8476,7 @@ plt.show()
 
 
 fig = plt.figure(figsize=(8,6))
-plt.plot(q_range[:60], np.average(Pq_AL_pn, axis=1)[:60], color='tab:blue')
+plt.plot(q_range[:], np.average(Pq_AL_pn, axis=1)[:], color='tab:blue')
 plt.plot(q_range[:60], Pq_AL[:60], color='tab:blue')
 plt.fill_between(q_range[:60], 
                  np.average(Pq_AL_pn, axis=1)[:60]+np.std(Pq_AL_pn, axis=1)[:60],
@@ -8586,9 +8589,6 @@ plt.xlabel("q", fontsize=15)
 plt.ylabel(r"$-1/\lambda$", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/Pq_all_pn_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
-
-
-
 
 
 
@@ -8815,25 +8815,31 @@ rGy_calyx_bp_avg_avg = np.average(rGy_calyx_bp_avg, axis=0)
 rGy_LH_bp_avg_avg = np.average(rGy_LH_bp_avg, axis=0)
 rGy_AL_bp_avg_avg = np.average(rGy_AL_bp_avg, axis=0)
 
+contour_calyx_bp_avg_avg = np.average(contour_calyx_bp_avg, axis=0)
+contour_LH_bp_avg_avg = np.average(contour_LH_bp_avg, axis=0)
+contour_AL_bp_avg_avg = np.average(contour_AL_bp_avg, axis=0)
+
 #%% Rgy centered at BP plotting
+
+radiussize_q = radiussize
 
 fig = plt.figure(figsize=(8,6))
 for i in range(len(rGy_calyx_bp_avg)):
-    plt.scatter(radiussize[np.nonzero(contour_calyx_bp_avg[i])], rGy_calyx_bp_avg[i][np.nonzero(contour_calyx_bp_avg[i])], marker='.')
+    plt.scatter(radiussize_q[np.nonzero(contour_calyx_bp_avg[i])], rGy_calyx_bp_avg[i][np.nonzero(contour_calyx_bp_avg[i])], marker='.')
 plt.xscale('log')
 plt.yscale('log')
 plt.show()
 
 fig = plt.figure(figsize=(8,6))
 for i in range(len(rGy_LH_bp_avg)):
-    plt.scatter(radiussize[np.nonzero(contour_LH_bp_avg[i])], rGy_LH_bp_avg[i][np.nonzero(contour_LH_bp_avg[i])], marker='.')
+    plt.scatter(radiussize_q[np.nonzero(contour_LH_bp_avg[i])], rGy_LH_bp_avg[i][np.nonzero(contour_LH_bp_avg[i])], marker='.')
 plt.xscale('log')
 plt.yscale('log')
 plt.show()
 
 fig = plt.figure(figsize=(8,6))
 for i in range(len(rGy_AL_bp_avg)):
-    plt.scatter(radiussize[np.nonzero(contour_AL_bp_avg[i])], rGy_AL_bp_avg[i][np.nonzero(contour_AL_bp_avg[i])], marker='.')
+    plt.scatter(radiussize_q[np.nonzero(contour_AL_bp_avg[i])], rGy_AL_bp_avg[i][np.nonzero(contour_AL_bp_avg[i])], marker='.')
 plt.xscale('log')
 plt.yscale('log')
 plt.show()
@@ -8843,20 +8849,20 @@ plt.show()
 #%% Rgy centered at BP average
 
 fig = plt.figure(figsize=(8,6))
-plt.plot(radiussize, np.average(rGy_AL_bp_avg, axis=0), marker='.', color='tab:blue')
-plt.fill_between(radiussize, 
+plt.plot(np.average(contour_AL_bp_avg, axis=0), np.average(rGy_AL_bp_avg, axis=0), marker='.', color='tab:blue')
+plt.fill_between(np.average(contour_AL_bp_avg, axis=0), 
                  np.average(rGy_AL_bp_avg, axis=0)+np.std(rGy_AL_bp_avg, axis=0),
                  np.average(rGy_AL_bp_avg, axis=0)-np.std(rGy_AL_bp_avg, axis=0),
                  alpha=0.3,
                  color='tab:blue')
-plt.plot(radiussize, np.average(rGy_calyx_bp_avg, axis=0), marker='.', color='tab:orange')
-plt.fill_between(radiussize, 
+plt.plot(np.average(contour_calyx_bp_avg, axis=0), np.average(rGy_calyx_bp_avg, axis=0), marker='.', color='tab:orange')
+plt.fill_between(np.average(contour_calyx_bp_avg, axis=0), 
                  np.average(rGy_calyx_bp_avg, axis=0)+np.std(rGy_calyx_bp_avg, axis=0),
                  np.average(rGy_calyx_bp_avg, axis=0)-np.std(rGy_calyx_bp_avg, axis=0),
                  alpha=0.3,
                  color='tab:orange')
-plt.plot(radiussize, np.average(rGy_LH_bp_avg, axis=0), marker='.', color='tab:green')
-plt.fill_between(radiussize, 
+plt.plot(np.average(contour_LH_bp_avg, axis=0), np.average(rGy_LH_bp_avg, axis=0), marker='.', color='tab:green')
+plt.fill_between(np.average(contour_LH_bp_avg, axis=0), 
                  np.average(rGy_LH_bp_avg, axis=0)+np.std(rGy_LH_bp_avg, axis=0),
                  np.average(rGy_LH_bp_avg, axis=0)-np.std(rGy_LH_bp_avg, axis=0),
                  alpha=0.3,
@@ -8864,7 +8870,7 @@ plt.fill_between(radiussize,
 plt.xscale('log')
 plt.yscale('log')
 plt.legend(["AL", "MB calyx", "LH"], fontsize=13)
-plt.xlabel("r", fontsize=15)
+plt.xlabel("L", fontsize=15)
 plt.ylabel(r"$R_{g}$", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/Rgy_BP_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
@@ -8877,11 +8883,11 @@ mw_rGy_calyx_bp_avg_err = []
 mwx_calyx = []
 shiftN = 7
 
-for i in range(len(radiussize) - shiftN):
-    mwx_calyx.append(np.average(radiussize[i:i+shiftN]))
+for i in range(len(contour_calyx_bp_avg_avg) - shiftN):
+    mwx_calyx.append(np.average(contour_calyx_bp_avg_avg[i:i+shiftN]))
     
     poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                np.log10(radiussize[i:i+shiftN]), 
+                                                np.log10(contour_calyx_bp_avg_avg[i:i+shiftN]), 
                                                 np.log10(rGy_calyx_bp_avg_avg[i:i+shiftN]), 
                                                 p0=[1., 0.], 
                                                 maxfev=100000)
@@ -8892,11 +8898,11 @@ mw_rGy_LH_bp_avg = []
 mw_rGy_LH_bp_avg_err = []
 mwx_LH = []
 
-for i in range(len(radiussize) - shiftN):
-    mwx_LH.append(np.average(radiussize[i:i+shiftN]))
+for i in range(len(contour_LH_bp_avg_avg) - shiftN):
+    mwx_LH.append(np.average(contour_LH_bp_avg_avg[i:i+shiftN]))
     
     poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                np.log10(radiussize[i:i+shiftN]), 
+                                                np.log10(contour_LH_bp_avg_avg[i:i+shiftN]), 
                                                 np.log10(rGy_LH_bp_avg_avg[i:i+shiftN]), 
                                                 p0=[1., 0.], 
                                                 maxfev=100000)
@@ -8907,11 +8913,11 @@ mw_rGy_AL_bp_avg = []
 mw_rGy_AL_bp_avg_err = []
 mwx_AL = []
 
-for i in range(len(radiussize) - shiftN):
-    mwx_AL.append(np.average(radiussize[i:i+shiftN]))
+for i in range(len(contour_AL_bp_avg_avg) - shiftN):
+    mwx_AL.append(np.average(contour_AL_bp_avg_avg[i:i+shiftN]))
     
     poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                np.log10(radiussize[i:i+shiftN]), 
+                                                np.log10(contour_AL_bp_avg_avg[i:i+shiftN]), 
                                                 np.log10(rGy_AL_bp_avg_avg[i:i+shiftN]), 
                                                 p0=[1., 0.], 
                                                 maxfev=100000)
@@ -8921,50 +8927,51 @@ for i in range(len(radiussize) - shiftN):
     
 
 fig = plt.figure(figsize=(8,6))
-plt.plot(mwx_AL, np.array(mw_rGy_AL_bp_avg), lw=2)
-plt.plot(mwx_calyx, np.array(mw_rGy_calyx_bp_avg), lw=2)
-plt.plot(mwx_LH, np.array(mw_rGy_LH_bp_avg), lw=2)
-plt.fill_between(mwx_AL, 
+plt.plot(np.array(mwx_AL), np.array(mw_rGy_AL_bp_avg), lw=2)
+plt.plot(np.array(mwx_calyx), np.array(mw_rGy_calyx_bp_avg), lw=2)
+plt.plot(np.array(mwx_LH), np.array(mw_rGy_LH_bp_avg), lw=2)
+plt.fill_between(np.array(mwx_AL), 
                  (np.array(mw_rGy_AL_bp_avg)-np.array(mw_rGy_AL_bp_avg_err)), 
                  (np.array(mw_rGy_AL_bp_avg)+np.array(mw_rGy_AL_bp_avg_err)), 
                  alpha=0.3)
-plt.fill_between(mwx_calyx, 
+plt.fill_between(np.array(mwx_calyx), 
                  (np.array(mw_rGy_calyx_bp_avg)-np.array(mw_rGy_calyx_bp_avg_err)),
                  (np.array(mw_rGy_calyx_bp_avg)+np.array(mw_rGy_calyx_bp_avg_err)), 
                  alpha=0.3)
-plt.fill_between(mwx_LH,
+plt.fill_between(np.array(mwx_LH),
                  (np.array(mw_rGy_LH_bp_avg)-np.array(mw_rGy_LH_bp_avg_err)),
                  (np.array(mw_rGy_LH_bp_avg)+np.array(mw_rGy_LH_bp_avg_err)), 
                  alpha=0.3)
 
-plt.hlines(1/4, 0.01, 100, ls='dashed')
-plt.hlines(7/16, 0.01, 100, ls='dashed')
-plt.hlines(1/2, 0.01, 100, ls='dashed')
-plt.hlines(1, 0.01, 100, ls='dashed')
-plt.text(105.5, 1/4-0.01, 'Ideal')
-plt.text(105.5, 7/16-0.01, '$\Theta-Solvent$')
-plt.text(105.5, 1/2-0.01, 'Random')
-plt.text(105.5, 1-0.01,' Rigid')
+plt.hlines(1/4, 0.01, 10, ls='dashed')
+plt.hlines(7/16, 0.01, 10, ls='dashed')
+plt.hlines(1/2, 0.01, 10, ls='dashed')
+plt.hlines(1, 0.01, 10, ls='dashed')
+plt.text(10.5, 1/4-0.01, 'Ideal')
+plt.text(10.5, 7/16-0.01, '$\Theta-Solvent$')
+plt.text(10.5, 1/2-0.01, 'Random')
+plt.text(10.5, 1-0.01,' Rigid')
 
-plt.vlines(np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
-plt.vlines(np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
-plt.vlines(np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
+# plt.vlines(np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
+# plt.vlines(np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
+# plt.vlines(np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
 
-plt.vlines(np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
-plt.vlines(np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
-plt.vlines(np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
+# plt.vlines(np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+# plt.vlines(np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
+# plt.vlines(np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
 
-plt.vlines(rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
-plt.vlines(rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
-plt.vlines(rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
+# plt.vlines(rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
+# plt.vlines(rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
+# plt.vlines(rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 
 plt.xscale('log')
 # plt.yscale('log')
 plt.ylim(0.1, 1.5)
-plt.xlim(0.1, 100)
+# plt.xlim(0.0001, 10)
 
 plt.legend(["AL", "MB calyx", "LH"], fontsize=13)
-plt.xlabel("r", fontsize=15)
+plt.xlabel("q", fontsize=15)
 plt.ylabel(r"$\nu$", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/Rg_all_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
+
