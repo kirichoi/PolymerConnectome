@@ -8263,7 +8263,7 @@ plt.show()
 mw_Pq_calyx = []
 mw_Pq_calyx_err = []
 mwx_calyx = []
-shiftN = 7
+shiftN = 20
 
 for i in range(len(q_range[:calyx_q_idx]) - shiftN):
     mwx_calyx.append(np.average(q_range[:calyx_q_idx][i:i+shiftN]))
@@ -8438,6 +8438,9 @@ plt.ylabel("S(q)", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/Pq_AL_pn_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
+# calyx_q_idx = len(q_range)
+# LH_q_idx = len(q_range)
+# AL_q_idx = len(q_range)
 
 
 fig = plt.figure(figsize=(8,6))
@@ -8543,7 +8546,7 @@ plt.show()
 mw_Pq_calyx_pn = []
 mw_Pq_calyx_pn_err = []
 mwx_calyx_pn = []
-shiftN = 7
+shiftN = 20
 
 for j in range(np.shape(Pq_calyx_pn)[1]):
     mw_Pq_calyx_pn_temp = []
@@ -9044,7 +9047,7 @@ plt.ylim(0.1, 1.5)
 # plt.xlim(0.0001, 10)
 
 plt.legend(["AL", "MB calyx", "LH"], fontsize=13)
-plt.xlabel("q", fontsize=15)
+plt.xlabel("1/L", fontsize=15)
 plt.ylabel(r"$\nu$", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/Rg_all_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
