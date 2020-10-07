@@ -8545,65 +8545,89 @@ mw_Pq_calyx_pn_err = []
 mwx_calyx_pn = []
 shiftN = 7
 
-for i in range(len(q_range[:calyx_q_idx]) - shiftN):
-    mwx_calyx_pn.append(np.average(q_range[:calyx_q_idx][i:i+shiftN]))
-    
-    poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                np.log10(q_range[:calyx_q_idx][i:i+shiftN]), 
-                                                np.log10(np.average(Pq_calyx_pn, axis=1)[:calyx_q_idx][i:i+shiftN]), 
-                                                p0=[1., 0.], 
-                                                maxfev=100000)
-    mw_Pq_calyx_pn.append(poptmxc[0])
-    mw_Pq_calyx_pn_err.append(np.sqrt(np.diag(pcovmxc))[0])
+for j in range(np.shape(Pq_calyx_pn)[1]):
+    mw_Pq_calyx_pn_temp = []
+    mw_Pq_calyx_pn_err_temp = []
+    mwx_calyx_pn_temp = []
+    for i in range(len(q_range[:calyx_q_idx]) - shiftN):
+        mwx_calyx_pn_temp.append(np.average(q_range[:calyx_q_idx][i:i+shiftN]))
+        
+        poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
+                                                    np.log10(q_range[:calyx_q_idx][i:i+shiftN]), 
+                                                    np.log10(Pq_calyx_pn[:calyx_q_idx,j][i:i+shiftN]), 
+                                                    p0=[1., 0.], 
+                                                    maxfev=100000)
+        mw_Pq_calyx_pn_temp.append(poptmxc[0])
+        mw_Pq_calyx_pn_err_temp.append(np.sqrt(np.diag(pcovmxc))[0])
+        
+    mwx_calyx_pn.append(mwx_calyx_pn_temp)
+    mw_Pq_calyx_pn.append(mw_Pq_calyx_pn_temp)
+    mw_Pq_calyx_pn_err.append(mw_Pq_calyx_pn_err_temp)
 
 mw_Pq_LH_pn = []
 mw_Pq_LH_pn_err = []
 mwx_LH_pn = []
 
-for i in range(len(q_range[:LH_q_idx]) - shiftN):
-    mwx_LH_pn.append(np.average(q_range[:LH_q_idx][i:i+shiftN]))
-    
-    poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                np.log10(q_range[:LH_q_idx][i:i+shiftN]), 
-                                                np.log10(np.average(Pq_LH_pn, axis=1)[:LH_q_idx][i:i+shiftN]), 
-                                                p0=[1., 0.], 
-                                                maxfev=100000)
-    mw_Pq_LH_pn.append(poptmxc[0])
-    mw_Pq_LH_pn_err.append(np.sqrt(np.diag(pcovmxc))[0])
+for j in range(np.shape(Pq_LH_pn)[1]):
+    mw_Pq_LH_pn_temp = []
+    mw_Pq_LH_pn_err_temp = []
+    mwx_LH_pn_temp = []
+    for i in range(len(q_range[:LH_q_idx]) - shiftN):
+        mwx_LH_pn_temp.append(np.average(q_range[:LH_q_idx][i:i+shiftN]))
+        
+        poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
+                                                    np.log10(q_range[:LH_q_idx][i:i+shiftN]), 
+                                                    np.log10(Pq_LH_pn[:LH_q_idx,j][i:i+shiftN]), 
+                                                    p0=[1., 0.], 
+                                                    maxfev=100000)
+        mw_Pq_LH_pn_temp.append(poptmxc[0])
+        mw_Pq_LH_pn_err_temp.append(np.sqrt(np.diag(pcovmxc))[0])
+        
+    mwx_LH_pn.append(mwx_LH_pn_temp)
+    mw_Pq_LH_pn.append(mw_Pq_LH_pn_temp)
+    mw_Pq_LH_pn_err.append(mw_Pq_LH_pn_err_temp)
 
 mw_Pq_AL_pn = []
 mw_Pq_AL_pn_err = []
 mwx_AL_pn = []
 
-for i in range(len(q_range[:AL_q_idx]) - shiftN):
-    mwx_AL_pn.append(np.average(q_range[:AL_q_idx][i:i+shiftN]))
-    
-    poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                np.log10(q_range[:AL_q_idx][i:i+shiftN]), 
-                                                np.log10(np.average(Pq_AL_pn, axis=1)[:AL_q_idx][i:i+shiftN]), 
-                                                p0=[1., 0.], 
-                                                maxfev=100000)
-    mw_Pq_AL_pn.append(poptmxc[0])
-    mw_Pq_AL_pn_err.append(np.sqrt(np.diag(pcovmxc))[0])
+for j in range(np.shape(Pq_AL_pn)[1]):
+    mw_Pq_AL_pn_temp = []
+    mw_Pq_AL_pn_err_temp = []
+    mwx_AL_pn_temp = []
+    for i in range(len(q_range[:AL_q_idx]) - shiftN):
+        mwx_AL_pn_temp.append(np.average(q_range[:AL_q_idx][i:i+shiftN]))
+        
+        poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
+                                                    np.log10(q_range[:AL_q_idx][i:i+shiftN]), 
+                                                    np.log10(Pq_AL_pn[:AL_q_idx,j][i:i+shiftN]), 
+                                                    p0=[1., 0.], 
+                                                    maxfev=100000)
+        mw_Pq_AL_pn_temp.append(poptmxc[0])
+        mw_Pq_AL_pn_err_temp.append(np.sqrt(np.diag(pcovmxc))[0])
+        
+    mwx_AL_pn.append(mwx_AL_pn_temp)
+    mw_Pq_AL_pn.append(mw_Pq_AL_pn_temp)
+    mw_Pq_AL_pn_err.append(mw_Pq_AL_pn_err_temp)
 
     
 
 fig = plt.figure(figsize=(8,6))
-plt.plot(mwx_AL_pn, -1/np.array(mw_Pq_AL_pn), lw=2)
-plt.plot(mwx_calyx_pn, -1/np.array(mw_Pq_calyx_pn), lw=2)
-plt.plot(mwx_LH_pn, -1/np.array(mw_Pq_LH_pn), lw=2)
-plt.fill_between(mwx_AL_pn, 
-                 -1/(np.array(mw_Pq_AL_pn)-np.array(mw_Pq_AL_pn_err)), 
-                 -1/(np.array(mw_Pq_AL_pn)+np.array(mw_Pq_AL_pn_err)), 
-                 alpha=0.3)
-plt.fill_between(mwx_calyx_pn, 
-                 -1/(np.array(mw_Pq_calyx_pn)-np.array(mw_Pq_calyx_pn_err)),
-                 -1/(np.array(mw_Pq_calyx_pn)+np.array(mw_Pq_calyx_pn_err)), 
-                 alpha=0.3)
-plt.fill_between(mwx_LH_pn,
-                 -1/(np.array(mw_Pq_LH_pn)-np.array(mw_Pq_LH_pn_err)),
-                 -1/(np.array(mw_Pq_LH_pn)+np.array(mw_Pq_LH_pn_err)), 
-                 alpha=0.3)
+plt.plot(np.average(mwx_AL_pn, axis=0), -1/np.average(mw_Pq_AL_pn, axis=0), lw=2)
+plt.plot(np.average(mwx_calyx_pn, axis=0), -1/np.average(mw_Pq_calyx_pn, axis=0), lw=2)
+plt.plot(np.average(mwx_LH_pn, axis=0), -1/np.average(mw_Pq_LH_pn, axis=0), lw=2)
+plt.fill_between(np.average(mwx_AL_pn, axis=0), 
+                  -1/(np.average(mw_Pq_AL_pn, axis=0)-np.std(mw_Pq_AL_pn, axis=0)), 
+                  -1/(np.average(mw_Pq_AL_pn, axis=0)+np.std(mw_Pq_AL_pn, axis=0)), 
+                  alpha=0.3)
+plt.fill_between(np.average(mwx_calyx_pn, axis=0), 
+                  -1/(np.average(mw_Pq_calyx_pn, axis=0)-np.std(mw_Pq_calyx_pn, axis=0)), 
+                  -1/(np.average(mw_Pq_calyx_pn, axis=0)+np.std(mw_Pq_calyx_pn, axis=0)), 
+                  alpha=0.3)
+plt.fill_between(np.average(mwx_LH_pn, axis=0), 
+                  -1/(np.average(mw_Pq_LH_pn, axis=0)-np.std(mw_Pq_LH_pn, axis=0)), 
+                  -1/(np.average(mw_Pq_LH_pn, axis=0)+np.std(mw_Pq_LH_pn, axis=0)), 
+                  alpha=0.3)
 
 plt.hlines(1/4, 0.01, 100, ls='dashed')
 plt.hlines(7/16, 0.01, 100, ls='dashed')
@@ -8646,7 +8670,7 @@ def cons_check(val):
     edges = iter(val[:1] + sum(gaps, []) + val[-1:])
     return list(zip(edges, edges))
 
-radiussize = np.logspace(-1, 2, 30)
+radiussize = np.logspace(-1, 2, 100)[::3]
 
 un_calyx = np.unique(MorphData.calyxdist_trk)
 un_LH = np.unique(MorphData.LHdist_trk)
@@ -8662,7 +8686,7 @@ for ib in range(len(un_calyx)):
     contour_calyx_bp_temp1 = []
     
     idx = np.where(MorphData.calyxdist_trk == un_calyx[ib])[0]
-    tarval = list(np.array(MorphData.calyxdist)[idx])
+    tarval = list(np.array(MorphData.calyxdist, dtype=object)[idx])
     calyxdist_bp_flat = np.array([item for sublist in tarval for item in sublist])
     
     branchPidx = BranchData.calyx_branchP[un_calyx[ib]]
@@ -8720,7 +8744,7 @@ for ib in range(len(un_LH)):
     contour_LH_bp_temp1 = []
     
     idx = np.where(MorphData.LHdist_trk == un_LH[ib])[0]
-    tarval = list(np.array(MorphData.LHdist)[idx])
+    tarval = list(np.array(MorphData.LHdist, dtype=object)[idx])
     LHdist_bp_flat = np.array([item for sublist in tarval for item in sublist])
     
     branchPidx = BranchData.LH_branchP[un_LH[ib]]
@@ -8736,8 +8760,8 @@ for ib in range(len(un_LH)):
         
         for b in range(len(radiussize)):
             inbound_LH = np.where(np.sqrt(np.square(LHdist_bp_flat[:,0] - LH_CM_temp[0]) +
-                                             np.square(LHdist_bp_flat[:,1] - LH_CM_temp[1]) +
-                                             np.square(LHdist_bp_flat[:,2] - LH_CM_temp[2])) <= radiussize[b])[0]
+                                          np.square(LHdist_bp_flat[:,1] - LH_CM_temp[1]) +
+                                          np.square(LHdist_bp_flat[:,2] - LH_CM_temp[2])) <= radiussize[b])[0]
             (rGy_temp, cML_temp) = utils.radiusOfGyration(np.array([LHdist_bp_flat[inbound_LH]]))
             
             dist_LH = 0
@@ -8778,7 +8802,7 @@ for ib in range(len(un_AL)):
     contour_AL_bp_temp1 = []
     
     idx = np.where(MorphData.ALdist_trk == un_AL[ib])[0]
-    tarval = list(np.array(MorphData.ALdist)[idx])
+    tarval = list(np.array(MorphData.ALdist, dtype=object)[idx])
     ALdist_bp_flat = np.array([item for sublist in tarval for item in sublist])
     
     branchPidx = BranchData.AL_branchP[un_AL[ib]]
@@ -8794,8 +8818,8 @@ for ib in range(len(un_AL)):
         
         for b in range(len(radiussize)):
             inbound_AL = np.where(np.sqrt(np.square(ALdist_bp_flat[:,0] - AL_CM_temp[0]) +
-                                             np.square(ALdist_bp_flat[:,1] - AL_CM_temp[1]) +
-                                             np.square(ALdist_bp_flat[:,2] - AL_CM_temp[2])) <= radiussize[b])[0]
+                                          np.square(ALdist_bp_flat[:,1] - AL_CM_temp[1]) +
+                                          np.square(ALdist_bp_flat[:,2] - AL_CM_temp[2])) <= radiussize[b])[0]
             (rGy_temp, cML_temp) = utils.radiusOfGyration(np.array([ALdist_bp_flat[inbound_AL]]))
             
             dist_AL = 0
@@ -8865,6 +8889,9 @@ contour_calyx_bp_avg_avg = np.average(contour_calyx_bp_avg, axis=0)
 contour_LH_bp_avg_avg = np.average(contour_LH_bp_avg, axis=0)
 contour_AL_bp_avg_avg = np.average(contour_AL_bp_avg, axis=0)
 
+count_calyx_bp_avg_avg = np.average(count_calyx_bp_avg, axis=0)
+count_LH_bp_avg_avg = np.average(count_LH_bp_avg, axis=0)
+count_AL_bp_avg_avg = np.average(count_AL_bp_avg, axis=0)
 
 #%% Rgy centered at BP plotting
 
@@ -8896,20 +8923,20 @@ plt.show()
 #%% Rgy centered at BP average
 
 fig = plt.figure(figsize=(8,6))
-plt.plot(np.average(contour_AL_bp_avg, axis=0), np.average(rGy_AL_bp_avg, axis=0), marker='.', color='tab:blue')
-plt.fill_between(np.average(contour_AL_bp_avg, axis=0), 
+plt.plot(np.average(count_AL_bp_avg, axis=0), np.average(rGy_AL_bp_avg, axis=0), marker='.', color='tab:blue')
+plt.fill_between(np.average(count_AL_bp_avg, axis=0), 
                  np.average(rGy_AL_bp_avg, axis=0)+np.std(rGy_AL_bp_avg, axis=0),
                  np.average(rGy_AL_bp_avg, axis=0)-np.std(rGy_AL_bp_avg, axis=0),
                  alpha=0.3,
                  color='tab:blue')
-plt.plot(np.average(contour_calyx_bp_avg, axis=0), np.average(rGy_calyx_bp_avg, axis=0), marker='.', color='tab:orange')
-plt.fill_between(np.average(contour_calyx_bp_avg, axis=0), 
+plt.plot(np.average(count_calyx_bp_avg, axis=0), np.average(rGy_calyx_bp_avg, axis=0), marker='.', color='tab:orange')
+plt.fill_between(np.average(count_calyx_bp_avg, axis=0), 
                  np.average(rGy_calyx_bp_avg, axis=0)+np.std(rGy_calyx_bp_avg, axis=0),
                  np.average(rGy_calyx_bp_avg, axis=0)-np.std(rGy_calyx_bp_avg, axis=0),
                  alpha=0.3,
                  color='tab:orange')
-plt.plot(np.average(contour_LH_bp_avg, axis=0), np.average(rGy_LH_bp_avg, axis=0), marker='.', color='tab:green')
-plt.fill_between(np.average(contour_LH_bp_avg, axis=0), 
+plt.plot(np.average(count_LH_bp_avg, axis=0), np.average(rGy_LH_bp_avg, axis=0), marker='.', color='tab:green')
+plt.fill_between(np.average(count_LH_bp_avg, axis=0), 
                  np.average(rGy_LH_bp_avg, axis=0)+np.std(rGy_LH_bp_avg, axis=0),
                  np.average(rGy_LH_bp_avg, axis=0)-np.std(rGy_LH_bp_avg, axis=0),
                  alpha=0.3,
@@ -8928,7 +8955,7 @@ plt.show()
 mw_rGy_calyx_bp_avg = []
 mw_rGy_calyx_bp_avg_err = []
 mwx_calyx = []
-shiftN = 7
+shiftN = 5
 
 for i in range(len(contour_calyx_bp_avg_avg) - shiftN):
     mwx_calyx.append(np.average(contour_calyx_bp_avg_avg[i:i+shiftN]))
@@ -8974,18 +9001,18 @@ for i in range(len(contour_AL_bp_avg_avg) - shiftN):
     
 
 fig = plt.figure(figsize=(8,6))
-plt.plot(np.array(mwx_AL), np.array(mw_rGy_AL_bp_avg), lw=2)
-plt.plot(np.array(mwx_calyx), np.array(mw_rGy_calyx_bp_avg), lw=2)
-plt.plot(np.array(mwx_LH), np.array(mw_rGy_LH_bp_avg), lw=2)
-plt.fill_between(np.array(mwx_AL), 
+plt.plot(1/np.array(mwx_AL), np.array(mw_rGy_AL_bp_avg), lw=2)
+plt.plot(1/np.array(mwx_calyx), np.array(mw_rGy_calyx_bp_avg), lw=2)
+plt.plot(1/np.array(mwx_LH), np.array(mw_rGy_LH_bp_avg), lw=2)
+plt.fill_between(1/np.array(mwx_AL), 
                  (np.array(mw_rGy_AL_bp_avg)-np.array(mw_rGy_AL_bp_avg_err)), 
                  (np.array(mw_rGy_AL_bp_avg)+np.array(mw_rGy_AL_bp_avg_err)), 
                  alpha=0.3)
-plt.fill_between(np.array(mwx_calyx), 
+plt.fill_between(1/np.array(mwx_calyx), 
                  (np.array(mw_rGy_calyx_bp_avg)-np.array(mw_rGy_calyx_bp_avg_err)),
                  (np.array(mw_rGy_calyx_bp_avg)+np.array(mw_rGy_calyx_bp_avg_err)), 
                  alpha=0.3)
-plt.fill_between(np.array(mwx_LH),
+plt.fill_between(1/np.array(mwx_LH),
                  (np.array(mw_rGy_LH_bp_avg)-np.array(mw_rGy_LH_bp_avg_err)),
                  (np.array(mw_rGy_LH_bp_avg)+np.array(mw_rGy_LH_bp_avg_err)), 
                  alpha=0.3)
@@ -8999,17 +9026,17 @@ plt.text(10.5, 7/16-0.01, '$\Theta-Solvent$')
 plt.text(10.5, 1/2-0.01, 'Random')
 plt.text(10.5, 1-0.01,' Rigid')
 
-# plt.vlines(np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
-# plt.vlines(np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
-# plt.vlines(np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
+plt.vlines(1/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
+plt.vlines(1/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
+plt.vlines(1/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
 
-# plt.vlines(np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
-# plt.vlines(np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
-# plt.vlines(np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
+plt.vlines(1/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+plt.vlines(1/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
+plt.vlines(1/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
 
-# plt.vlines(rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
-# plt.vlines(rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
-# plt.vlines(rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
+plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
+plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
+plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 
 plt.xscale('log')
 # plt.yscale('log')
