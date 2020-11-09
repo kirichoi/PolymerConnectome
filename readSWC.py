@@ -8238,13 +8238,28 @@ plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 
+line1 = 1/100000*np.power(q_range, -16/7)
+line2 = 1/10000000*np.power(q_range, -4/1)
+line3 = 1/50000*np.power(q_range, -2/1)
+line4 = 1/50000*np.power(q_range, -1)
+
+plt.plot(q_range[28:36], line1[28:36], lw=2, color='k')
+plt.plot(q_range[10:17], line2[10:17], lw=2, color='k')
+plt.plot(q_range[19:27], line3[19:27], lw=2, color='k')
+plt.plot(q_range[45:55], line4[45:55], lw=2, color='k')
+
+plt.text(0.22, 2e-5, r'$\lambda = \dfrac{7}{16}$', fontsize=13)
+plt.text(0.025, 7e-3, r'$\lambda = \dfrac{1}{4}$', fontsize=13)
+plt.text(0.08, 3e-4, r'$\lambda = \dfrac{1}{2}$', fontsize=13)
+plt.text(2.3, 2.5e-6, r'$\lambda = 1$', fontsize=13)
+
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q", fontsize=15)
 plt.ylabel("S(q)", fontsize=15)
-# plt.ylim(1e-6, 5)
+plt.ylim(1e-6, 10)
 plt.legend(['AL', 'MB calyx', 'LH'], fontsize=13)
-# plt.savefig(Parameter.outputdir + '/Pq_neuropil_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_neuropil_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -8531,6 +8546,21 @@ plt.vlines(1/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted'
 plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
+
+line1 = 1/1000*np.power(q_range, -16/7)
+# line2 = 1/1000000*np.power(q_range, -4/1)
+line3 = 1/1000*np.power(q_range, -2/1)
+line4 = 1/500*np.power(q_range, -1)
+
+plt.plot(q_range[28:36], line1[28:36], lw=2, color='k')
+# plt.plot(q_range[10:17], line2[10:17], lw=2, color='k')
+plt.plot(q_range[19:27], line3[19:27], lw=2, color='k')
+plt.plot(q_range[45:55], line4[45:55], lw=2, color='k')
+
+plt.text(0.22, 2e-3, r'$\lambda = \dfrac{7}{16}$', fontsize=13)
+# plt.text(0.025, 7e-3, r'$\lambda = \dfrac{1}{4}$', fontsize=13)
+plt.text(0.08, 3e-2, r'$\lambda = \dfrac{1}{2}$', fontsize=13)
+plt.text(2.3, 2.5e-4, r'$\lambda = 1$', fontsize=13)
 
 plt.xscale('log')
 plt.yscale('log')
