@@ -8375,6 +8375,100 @@ plt.ylabel(r"$-1/\lambda$", fontsize=15)
 plt.show()
 
 
+#%% Example calyx neuron skeletal plot for characteristic scales shown in form factor
+
+scaleVal = 2
+
+fig = plt.figure(figsize=(16, 16))
+ax = plt.axes(projection='3d')
+
+cmap = cm.get_cmap('viridis', len(MorphData.calyxdist))
+for i in range(len(MorphData.calyxdist)):
+    listOfPoints = MorphData.calyxdist[i]
+    for f in range(len(listOfPoints)-1):
+        if (((calyxCM[0] - scaleVal/2 <= listOfPoints[f][0] <= calyxCM[0] + scaleVal/2) or
+            (calyxCM[0] - scaleVal/2 <= listOfPoints[f+1][0] <= calyxCM[0] + scaleVal/2)) and
+            ((calyxCM[1] - scaleVal/2 <= listOfPoints[f][1] <= calyxCM[1] + scaleVal/2) or
+            (calyxCM[1] - scaleVal/2 <= listOfPoints[f+1][1] <= calyxCM[1] + scaleVal/2)) and
+            ((calyxCM[2] - scaleVal/2 <= listOfPoints[f][2] <= calyxCM[2] + scaleVal/2) or
+            (calyxCM[2] - scaleVal/2 <= listOfPoints[f+1][2] <= calyxCM[2] + scaleVal/2))):
+            morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(i))
+
+ax.set_xlim(calyxCM[0] - scaleVal/2, calyxCM[0] + scaleVal/2)
+ax.set_ylim(calyxCM[1] - scaleVal/2, calyxCM[1] + scaleVal/2)
+ax.set_zlim(calyxCM[2] - scaleVal/2, calyxCM[2] + scaleVal/2)
+# ax.grid(True)
+# ax.set_xticklabels([])
+# ax.set_yticklabels([])
+# ax.set_zticklabels([])
+
+# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_calyx_scale10.pdf'), dpi=300, bbox_inches='tight')
+plt.show()
+
+
+#%% Example LH neuron skeletal plot for characteristic scales shown in form factor
+
+scaleVal = 10
+
+fig = plt.figure(figsize=(16, 16))
+ax = plt.axes(projection='3d')
+
+cmap = cm.get_cmap('viridis', len(MorphData.LHdist))
+for i in range(len(MorphData.LHdist)):
+    listOfPoints = MorphData.LHdist[i]
+    for f in range(len(listOfPoints)-1):
+        if (((LHCM[0] - scaleVal/2 <= listOfPoints[f][0] <= LHCM[0] + scaleVal/2) or
+            (LHCM[0] - scaleVal/2 <= listOfPoints[f+1][0] <= LHCM[0] + scaleVal/2)) and
+            ((LHCM[1] - scaleVal/2 <= listOfPoints[f][1] <= LHCM[1] + scaleVal/2) or
+            (LHCM[1] - scaleVal/2 <= listOfPoints[f+1][1] <= LHCM[1] + scaleVal/2)) and
+            ((LHCM[2] - scaleVal/2 <= listOfPoints[f][2] <= LHCM[2] + scaleVal/2) or
+            (LHCM[2] - scaleVal/2 <= listOfPoints[f+1][2] <= LHCM[2] + scaleVal/2))):
+            morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(i))
+
+ax.set_xlim(LHCM[0] - scaleVal/2, LHCM[0] + scaleVal/2)
+ax.set_ylim(LHCM[1] - scaleVal/2, LHCM[1] + scaleVal/2)
+ax.set_zlim(LHCM[2] - scaleVal/2, LHCM[2] + scaleVal/2)
+# ax.grid(True)
+# ax.set_xticklabels([])
+# ax.set_yticklabels([])
+# ax.set_zticklabels([])
+
+# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_LH_scale10.pdf'), dpi=300, bbox_inches='tight')
+plt.show()
+
+#%% Example AL neuron skeletal plot for characteristic scales shown in form factor
+
+scaleVal = 10
+
+fig = plt.figure(figsize=(16, 16))
+ax = plt.axes(projection='3d')
+
+cmap = cm.get_cmap('viridis', len(MorphData.ALdist))
+for i in range(len(MorphData.ALdist)):
+    listOfPoints = MorphData.ALdist[i]
+    for f in range(len(listOfPoints)-1):
+        # if scipy.spatial.distance.cdist(np.array([listOfPoints[f]]), np.array([listOfPoints[f+1]])) < scaleVal:
+        if (((ALCM[0] - scaleVal/2 <= listOfPoints[f][0] <= ALCM[0] + scaleVal/2) or
+            (ALCM[0] - scaleVal/2 <= listOfPoints[f+1][0] <= ALCM[0] + scaleVal/2)) and
+            ((ALCM[1] - scaleVal/2 <= listOfPoints[f][1] <= ALCM[1] + scaleVal/2) or
+            (ALCM[1] - scaleVal/2 <= listOfPoints[f+1][1] <= ALCM[1] + scaleVal/2)) and
+            ((ALCM[2] - scaleVal/2 <= listOfPoints[f][2] <= ALCM[2] + scaleVal/2) or
+            (ALCM[2] - scaleVal/2 <= listOfPoints[f+1][2] <= ALCM[2] + scaleVal/2))):
+            morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(i))
+
+ax.set_xlim(ALCM[0] - scaleVal/2, ALCM[0] + scaleVal/2)
+ax.set_ylim(ALCM[1] - scaleVal/2, ALCM[1] + scaleVal/2)
+ax.set_zlim(ALCM[2] - scaleVal/2, ALCM[2] + scaleVal/2)
+# ax.grid(True)
+# ax.set_xticklabels([])
+# ax.set_yticklabels([])
+# ax.set_zticklabels([])
+
+# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_AL_scale10.pdf'), dpi=300, bbox_inches='tight')
+plt.show()
 
 #%% form factor per glomerulus plotting
 
@@ -8552,14 +8646,14 @@ line1 = 1/1000*np.power(q_range, -16/7)
 line3 = 1/1000*np.power(q_range, -2/1)
 line4 = 1/500*np.power(q_range, -1)
 
-plt.plot(q_range[28:36], line1[28:36], lw=2, color='k')
 # plt.plot(q_range[10:17], line2[10:17], lw=2, color='k')
-plt.plot(q_range[19:27], line3[19:27], lw=2, color='k')
+plt.plot(q_range[19:27], line1[19:27], lw=2, color='k')
+plt.plot(q_range[28:36], line3[28:36], lw=2, color='k')
 plt.plot(q_range[45:55], line4[45:55], lw=2, color='k')
 
-plt.text(0.22, 2e-3, r'$\lambda = \dfrac{7}{16}$', fontsize=13)
 # plt.text(0.025, 7e-3, r'$\lambda = \dfrac{1}{4}$', fontsize=13)
-plt.text(0.08, 3e-2, r'$\lambda = \dfrac{1}{2}$', fontsize=13)
+plt.text(0.06, 5e-2, r'$\lambda = \dfrac{7}{16}$', fontsize=13)
+plt.text(0.21, 3e-3, r'$\lambda = \dfrac{1}{2}$', fontsize=13)
 plt.text(2.3, 2.5e-4, r'$\lambda = 1$', fontsize=13)
 
 plt.xscale('log')
@@ -8568,7 +8662,7 @@ plt.xlabel("q", fontsize=15)
 plt.ylabel("S(q)", fontsize=15)
 plt.ylim(1e-4, 10)
 plt.legend(['AL', 'MB calyx', 'LH'], fontsize=13)
-# plt.savefig(Parameter.outputdir + '/Pq_neuropil_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
