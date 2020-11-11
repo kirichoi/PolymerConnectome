@@ -8371,105 +8371,97 @@ plt.xlim(0.01, 10)
 plt.legend(["AL", "MB calyx", "LH"], fontsize=13)
 plt.xlabel("q", fontsize=15)
 plt.ylabel(r"$-1/\lambda$", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/Pq_all_mv_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_mv_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
 #%% Example calyx neuron skeletal plot for characteristic scales shown in form factor
 
-scaleVal = 2
-
-fig = plt.figure(figsize=(16, 16))
-ax = plt.axes(projection='3d')
+scaleVal = [1, 2, 5, 10]
+calyxcent = [510, 219, 171]#calyxCM
 
 cmap = cm.get_cmap('viridis', len(MorphData.calyxdist))
-for i in range(len(MorphData.calyxdist)):
-    listOfPoints = MorphData.calyxdist[i]
-    for f in range(len(listOfPoints)-1):
-        if (((calyxCM[0] - scaleVal/2 <= listOfPoints[f][0] <= calyxCM[0] + scaleVal/2) or
-            (calyxCM[0] - scaleVal/2 <= listOfPoints[f+1][0] <= calyxCM[0] + scaleVal/2)) and
-            ((calyxCM[1] - scaleVal/2 <= listOfPoints[f][1] <= calyxCM[1] + scaleVal/2) or
-            (calyxCM[1] - scaleVal/2 <= listOfPoints[f+1][1] <= calyxCM[1] + scaleVal/2)) and
-            ((calyxCM[2] - scaleVal/2 <= listOfPoints[f][2] <= calyxCM[2] + scaleVal/2) or
-            (calyxCM[2] - scaleVal/2 <= listOfPoints[f+1][2] <= calyxCM[2] + scaleVal/2))):
-            morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
-            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(i))
 
-ax.set_xlim(calyxCM[0] - scaleVal/2, calyxCM[0] + scaleVal/2)
-ax.set_ylim(calyxCM[1] - scaleVal/2, calyxCM[1] + scaleVal/2)
-ax.set_zlim(calyxCM[2] - scaleVal/2, calyxCM[2] + scaleVal/2)
-# ax.grid(True)
-# ax.set_xticklabels([])
-# ax.set_yticklabels([])
-# ax.set_zticklabels([])
-
-# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_calyx_scale10.pdf'), dpi=300, bbox_inches='tight')
-plt.show()
-
+for s in scaleVal:
+    fig = plt.figure(figsize=(8, 8))
+    for i in range(len(MorphData.calyxdist)):
+        listOfPoints = MorphData.calyxdist[i]
+        for f in range(len(listOfPoints)-1):
+            if (((calyxcent[0] - s/2 <= listOfPoints[f][0] <= calyxcent[0] + s/2) or
+                (calyxcent[0] - s/2 <= listOfPoints[f+1][0] <= calyxcent[0] + s/2)) and
+                ((calyxcent[1] - s/2 <= listOfPoints[f][1] <= calyxcent[1] + s/2) or
+                (calyxcent[1] - s/2 <= listOfPoints[f+1][1] <= calyxcent[1] + s/2)) and
+                ((calyxcent[2] - s/2 <= listOfPoints[f][2] <= calyxcent[2] + s/2) or
+                (calyxcent[2] - s/2 <= listOfPoints[f+1][2] <= calyxcent[2] + s/2))):
+                morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+                plt.plot(morph_line[:,0], morph_line[:,1], color=cmap(i))
+    
+    plt.xlim(calyxcent[0] - s/2, calyxcent[0] + s/2)
+    plt.ylim(calyxcent[1] - s/2, calyxcent[1] + s/2)
+    plt.xticks([])
+    plt.yticks([])
+    
+    # plt.savefig(os.path.join(Parameter.outputdir, 'Pq_all_char_calyx_' + str(s) + '.png'), dpi=300, bbox_inches='tight')
+    plt.show()
 
 #%% Example LH neuron skeletal plot for characteristic scales shown in form factor
 
-scaleVal = 10
-
-fig = plt.figure(figsize=(16, 16))
-ax = plt.axes(projection='3d')
+scaleVal = [1, 2, 5, 10]
+LHcent = [427, 223 , 152]#LHCM
 
 cmap = cm.get_cmap('viridis', len(MorphData.LHdist))
-for i in range(len(MorphData.LHdist)):
-    listOfPoints = MorphData.LHdist[i]
-    for f in range(len(listOfPoints)-1):
-        if (((LHCM[0] - scaleVal/2 <= listOfPoints[f][0] <= LHCM[0] + scaleVal/2) or
-            (LHCM[0] - scaleVal/2 <= listOfPoints[f+1][0] <= LHCM[0] + scaleVal/2)) and
-            ((LHCM[1] - scaleVal/2 <= listOfPoints[f][1] <= LHCM[1] + scaleVal/2) or
-            (LHCM[1] - scaleVal/2 <= listOfPoints[f+1][1] <= LHCM[1] + scaleVal/2)) and
-            ((LHCM[2] - scaleVal/2 <= listOfPoints[f][2] <= LHCM[2] + scaleVal/2) or
-            (LHCM[2] - scaleVal/2 <= listOfPoints[f+1][2] <= LHCM[2] + scaleVal/2))):
-            morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
-            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(i))
 
-ax.set_xlim(LHCM[0] - scaleVal/2, LHCM[0] + scaleVal/2)
-ax.set_ylim(LHCM[1] - scaleVal/2, LHCM[1] + scaleVal/2)
-ax.set_zlim(LHCM[2] - scaleVal/2, LHCM[2] + scaleVal/2)
-# ax.grid(True)
-# ax.set_xticklabels([])
-# ax.set_yticklabels([])
-# ax.set_zticklabels([])
-
-# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_LH_scale10.pdf'), dpi=300, bbox_inches='tight')
-plt.show()
+for s in scaleVal:
+    fig = plt.figure(figsize=(8, 8))
+    for i in range(len(MorphData.LHdist)):
+        listOfPoints = MorphData.LHdist[i]
+        for f in range(len(listOfPoints)-1):
+            if (((LHcent[0] - s/2 <= listOfPoints[f][0] <= LHcent[0] + s/2) or
+                (LHcent[0] - s/2 <= listOfPoints[f+1][0] <= LHcent[0] + s/2)) and
+                ((LHcent[1] - s/2 <= listOfPoints[f][1] <= LHcent[1] + s/2) or
+                (LHcent[1] - s/2 <= listOfPoints[f+1][1] <= LHcent[1] + s/2)) and
+                ((LHcent[2] - s/2 <= listOfPoints[f][2] <= LHcent[2] + s/2) or
+                (LHcent[2] - s/2 <= listOfPoints[f+1][2] <= LHcent[2] + s/2))):
+                morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+                plt.plot(morph_line[:,0], morph_line[:,1], color=cmap(i))
+    
+    plt.xlim(LHcent[0] - s/2, LHcent[0] + s/2)
+    plt.ylim(LHcent[1] - s/2, LHcent[1] + s/2)
+    plt.xticks([])
+    plt.yticks([])
+    
+    # plt.savefig(os.path.join(Parameter.outputdir, 'Pq_all_char_LH_' + str(s) + '.png'), dpi=300, bbox_inches='tight')
+    plt.show()
 
 #%% Example AL neuron skeletal plot for characteristic scales shown in form factor
 
-scaleVal = 10
-
-fig = plt.figure(figsize=(16, 16))
-ax = plt.axes(projection='3d')
+scaleVal = [0.5, 2, 5, 20]
+ALcent = [545 , 310,  44]#ALCM
 
 cmap = cm.get_cmap('viridis', len(MorphData.ALdist))
-for i in range(len(MorphData.ALdist)):
-    listOfPoints = MorphData.ALdist[i]
-    for f in range(len(listOfPoints)-1):
-        # if scipy.spatial.distance.cdist(np.array([listOfPoints[f]]), np.array([listOfPoints[f+1]])) < scaleVal:
-        if (((ALCM[0] - scaleVal/2 <= listOfPoints[f][0] <= ALCM[0] + scaleVal/2) or
-            (ALCM[0] - scaleVal/2 <= listOfPoints[f+1][0] <= ALCM[0] + scaleVal/2)) and
-            ((ALCM[1] - scaleVal/2 <= listOfPoints[f][1] <= ALCM[1] + scaleVal/2) or
-            (ALCM[1] - scaleVal/2 <= listOfPoints[f+1][1] <= ALCM[1] + scaleVal/2)) and
-            ((ALCM[2] - scaleVal/2 <= listOfPoints[f][2] <= ALCM[2] + scaleVal/2) or
-            (ALCM[2] - scaleVal/2 <= listOfPoints[f+1][2] <= ALCM[2] + scaleVal/2))):
-            morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
-            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(i))
 
-ax.set_xlim(ALCM[0] - scaleVal/2, ALCM[0] + scaleVal/2)
-ax.set_ylim(ALCM[1] - scaleVal/2, ALCM[1] + scaleVal/2)
-ax.set_zlim(ALCM[2] - scaleVal/2, ALCM[2] + scaleVal/2)
-# ax.grid(True)
-# ax.set_xticklabels([])
-# ax.set_yticklabels([])
-# ax.set_zticklabels([])
-
-# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_AL_scale10.pdf'), dpi=300, bbox_inches='tight')
-plt.show()
-
+for s in scaleVal:
+    fig = plt.figure(figsize=(8, 8))
+    for i in range(len(MorphData.ALdist)):
+        listOfPoints = MorphData.ALdist[i]
+        for f in range(len(listOfPoints)-1):
+            if (((ALcent[0] - s/2 <= listOfPoints[f][0] <= ALcent[0] + s/2) or
+                (ALcent[0] - s/2 <= listOfPoints[f+1][0] <= ALcent[0] + s/2)) and
+                ((ALcent[1] - s/2 <= listOfPoints[f][1] <= ALcent[1] + s/2) or
+                (ALcent[1] - s/2 <= listOfPoints[f+1][1] <= ALcent[1] + s/2)) and
+                ((ALcent[2] - s/2 <= listOfPoints[f][2] <= ALcent[2] + s/2) or
+                (ALcent[2] - s/2 <= listOfPoints[f+1][2] <= ALcent[2] + s/2))):
+                morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+                plt.plot(morph_line[:,0], morph_line[:,1], color=cmap(i))
+    
+    plt.xlim(ALcent[0] - s/2, ALcent[0] + s/2)
+    plt.ylim(ALcent[1] - s/2, ALcent[1] + s/2)
+    plt.xticks([])
+    plt.yticks([])
+    
+    # plt.savefig(os.path.join(Parameter.outputdir, 'Pq_all_char_AL_' + str(s) + '.png'), dpi=300, bbox_inches='tight')
+    plt.show()
+    
 #%% form factor per glomerulus plotting
 
 q_range = np.logspace(-2,3,100)
@@ -8762,8 +8754,38 @@ plt.xlim(0.01, 10)
 plt.legend(["AL", "MB calyx", "LH"], fontsize=13)
 plt.xlabel("q", fontsize=15)
 plt.ylabel(r"$-1/\lambda$", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_mv_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_mv_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
+
+
+#%% Example calyx neuron skeletal plot for characteristic scales shown in form factor
+
+scaleVal = [1, 2, 5, 10]
+calyxcent = [510, 219, 171]#calyxCM
+
+cmap = cm.get_cmap('viridis', len(MorphData.calyxdist))
+
+for s in scaleVal:
+    fig = plt.figure(figsize=(8, 8))
+    for i in range(len(MorphData.calyxdist)):
+        listOfPoints = MorphData.calyxdist[i]
+        for f in range(len(listOfPoints)-1):
+            if (((calyxcent[0] - s/2 <= listOfPoints[f][0] <= calyxcent[0] + s/2) or
+                (calyxcent[0] - s/2 <= listOfPoints[f+1][0] <= calyxcent[0] + s/2)) and
+                ((calyxcent[1] - s/2 <= listOfPoints[f][1] <= calyxcent[1] + s/2) or
+                (calyxcent[1] - s/2 <= listOfPoints[f+1][1] <= calyxcent[1] + s/2)) and
+                ((calyxcent[2] - s/2 <= listOfPoints[f][2] <= calyxcent[2] + s/2) or
+                (calyxcent[2] - s/2 <= listOfPoints[f+1][2] <= calyxcent[2] + s/2))):
+                morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+                plt.plot(morph_line[:,0], morph_line[:,1], color=cmap(i))
+    
+    plt.xlim(calyxcent[0] - s/2, calyxcent[0] + s/2)
+    plt.ylim(calyxcent[1] - s/2, calyxcent[1] + s/2)
+    plt.xticks([])
+    plt.yticks([])
+    
+    # plt.savefig(os.path.join(Parameter.outputdir, 'Pq_all_char_calyx_' + str(s) + '.png'), dpi=300, bbox_inches='tight')
+    plt.show()
 
 
 #%% Form factor per neuron moving window fitted averaged
