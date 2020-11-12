@@ -9372,3 +9372,32 @@ plt.ylabel(r"$\nu$", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/Rg_all_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
+#%% Segmentation diagram
+
+nidx = 11
+
+fig = plt.figure(figsize=(8, 8))
+ax = plt.axes(projection='3d')
+ax.set_xlim(450, 600)
+ax.set_ylim(400, 250)
+ax.set_zlim(75, 225)
+cmap = cm.get_cmap('viridis', len(MorphData.morph_id))
+
+tararr = np.array(MorphData.morph_dist[nidx])
+somaIdx = np.where(np.array(MorphData.morph_parent[nidx]) < 0)[0]
+for p in range(len(MorphData.morph_parent[nidx])):
+    if MorphData.morph_parent[nidx][p] < 0:
+        pass
+    else:
+        morph_line = np.vstack((MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(MorphData.morph_parent[nidx][p])], MorphData.morph_dist[nidx][p]))
+        ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(nidx), lw=1)
+
+ax.grid(True)
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+ax.set_xticklabels([])
+ax.set_yticklabels([])
+ax.set_zticklabels([])
+# plt.savefig(Parameter.outputdir + '/neuron_' + str(idx) + '.png', dpi=300, bbox_inches='tight')
+plt.show()
