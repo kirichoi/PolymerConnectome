@@ -8736,10 +8736,12 @@ plt.hlines(1/4, 0.01, 100, ls='dashed')
 plt.hlines(7/16, 0.01, 100, ls='dashed')
 plt.hlines(1/2, 0.01, 100, ls='dashed')
 plt.hlines(1, 0.01, 100, ls='dashed')
+plt.hlines(3/5, 0.01, 100, ls='dashed')
 plt.text(10.3, 1/4-0.01, 'Ideal')
 plt.text(10.3, 7/16-0.01, '$\Theta-Solvent$')
 plt.text(10.3, 1/2-0.01, 'Random')
-plt.text(10.3, 1-0.01,' Rigid')
+plt.text(10.3, 1-0.01,'Rigid')
+plt.text(10.3, 3/5-0.01,'SAW')
 
 plt.vlines(1/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
 plt.vlines(1/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
@@ -8752,6 +8754,7 @@ plt.vlines(1/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted'
 plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
+
 
 plt.xscale('log')
 # plt.yscale('log')
