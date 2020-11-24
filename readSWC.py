@@ -8607,20 +8607,47 @@ plt.show()
 
 fig = plt.figure(figsize=(8,6))
 for i in range(len(Pq_AL_pn)):
-    plt.plot(q_range[:AL_q_idx], Pq_AL_pn[:AL_q_idx,i], marker='.', color='tab:blue')
-    plt.plot(q_range[:calyx_q_idx], Pq_calyx_pn[:calyx_q_idx,i], marker='.', color='tab:orange')
-    plt.plot(q_range[:LH_q_idx], Pq_LH_pn[:LH_q_idx,i], marker='.', color='tab:green')
+    plt.plot(q_range[:AL_q_idx], Pq_AL_pn[:AL_q_idx,i], marker='.', color='tab:blue', alpha=0.5)
 
-plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
-plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
-plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
+plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dashdot')
 
 plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
-plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
-plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
 
 plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
-plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
+
+line1 = 1/7500*np.power(q_range, -16/7)
+# line2 = 1/1000000*np.power(q_range, -4/1)
+line3 = 1/5000*np.power(q_range, -2/1)
+line4 = 1/2500*np.power(q_range, -1)
+
+# plt.plot(q_range[10:17], line2[10:17], lw=2, color='k')
+plt.plot(q_range[19:27], line1[19:27], lw=2, color='k')
+plt.plot(q_range[28:36], line3[28:36], lw=2, color='k')
+plt.plot(q_range[38:48], line4[38:48], lw=2, color='k')
+
+# plt.text(0.025, 7e-3, r'$\lambda = \dfrac{1}{4}$', fontsize=13)
+plt.text(0.05, 0.8e-2, r'$\lambda = \dfrac{7}{16}$', fontsize=13)
+plt.text(0.16, 0.8e-3, r'$\lambda = \dfrac{1}{2}$', fontsize=13)
+plt.text(0.7, 1.5e-4, r'$\lambda = 1$', fontsize=13)
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q", fontsize=15)
+plt.ylabel("S(q)", fontsize=15)
+plt.ylim(1e-4, 10)
+plt.xlim(0.8e-2, 1e2)
+# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_AL_full_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+fig = plt.figure(figsize=(8,6))
+for i in range(len(Pq_AL_pn)):
+    plt.plot(q_range[:LH_q_idx], Pq_LH_pn[:LH_q_idx,i], marker='.', color='tab:green', alpha=0.5)
+
+plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green', ls='dashdot')
+
+plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
+
 plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 
 line1 = 1/7500*np.power(q_range, -16/7)
@@ -8643,9 +8670,45 @@ plt.yscale('log')
 plt.xlabel("q", fontsize=15)
 plt.ylabel("S(q)", fontsize=15)
 plt.ylim(1e-4, 10)
-plt.legend(['AL', 'MB calyx', 'LH'], fontsize=13)
-# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_full_1.pdf', dpi=300, bbox_inches='tight')
+plt.xlim(0.8e-2, 1e2)
+# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_LH_full_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
+
+
+fig = plt.figure(figsize=(8,6))
+for i in range(len(Pq_AL_pn)):
+    plt.plot(q_range[:calyx_q_idx], Pq_calyx_pn[:calyx_q_idx,i], marker='.', color='tab:orange', alpha=0.5)
+
+plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dashdot')
+
+plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
+
+plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
+
+line1 = 1/7500*np.power(q_range, -16/7)
+# line2 = 1/1000000*np.power(q_range, -4/1)
+line3 = 1/5000*np.power(q_range, -2/1)
+line4 = 1/2500*np.power(q_range, -1)
+
+# plt.plot(q_range[10:17], line2[10:17], lw=2, color='k')
+plt.plot(q_range[19:27], line1[19:27], lw=2, color='k')
+plt.plot(q_range[28:36], line3[28:36], lw=2, color='k')
+plt.plot(q_range[38:48], line4[38:48], lw=2, color='k')
+
+# plt.text(0.025, 7e-3, r'$\lambda = \dfrac{1}{4}$', fontsize=13)
+plt.text(0.05, 0.8e-2, r'$\lambda = \dfrac{7}{16}$', fontsize=13)
+plt.text(0.16, 0.8e-3, r'$\lambda = \dfrac{1}{2}$', fontsize=13)
+plt.text(0.7, 1.5e-4, r'$\lambda = 1$', fontsize=13)
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q", fontsize=15)
+plt.ylabel("S(q)", fontsize=15)
+plt.ylim(1e-4, 10)
+plt.xlim(0.8e-2, 1e2)
+# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_calyx_full_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
 
 
 
@@ -8759,7 +8822,7 @@ plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange', ls=
 
 plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
 
-plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:blue', ls='--')
+plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 
 
 plt.xscale('log')
@@ -8768,7 +8831,7 @@ plt.ylim(0.1, 1.7)
 plt.xlim(0.01, 10)
 plt.xlabel("q", fontsize=15)
 plt.ylabel(r"$-1/\lambda$", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_calyx_mv_3.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_calyx_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
   
 
@@ -8792,7 +8855,7 @@ plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green', ls='das
 
 plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
 
-plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:blue', ls='--')
+plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 
 
 plt.xscale('log')
@@ -8801,7 +8864,7 @@ plt.ylim(0.1, 1.7)
 plt.xlim(0.01, 10)
 plt.xlabel("q", fontsize=15)
 plt.ylabel(r"$-1/\lambda$", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_LH_mv_3.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_LH_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -8834,7 +8897,7 @@ plt.ylim(0.1, 1.7)
 plt.xlim(0.01, 10)
 plt.xlabel("q", fontsize=15)
 plt.ylabel(r"$-1/\lambda$", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_mv_3.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
