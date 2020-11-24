@@ -8644,7 +8644,7 @@ plt.xlabel("q", fontsize=15)
 plt.ylabel("S(q)", fontsize=15)
 plt.ylim(1e-4, 10)
 plt.legend(['AL', 'MB calyx', 'LH'], fontsize=13)
-# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_3.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_full_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -8656,98 +8656,185 @@ mw_Pq_calyx_pn_err = []
 mwx_calyx_pn = []
 shiftN = 15
 
-for i in range(len(q_range[:calyx_q_idx]) - shiftN):
-    mwx_calyx_pn.append(np.average(q_range[:calyx_q_idx][i:i+shiftN]))
+for j in range(len(Pq_calyx_pn)):
+    mw_Pq_calyx_pn_temp = []
+    mw_Pq_calyx_pn_err_temp = []
+    mwx_calyx_pn_temp = []
     
-    poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                np.log10(q_range[:calyx_q_idx][i:i+shiftN]), 
-                                                np.log10(np.average(Pq_calyx_pn, axis=1)[:calyx_q_idx][i:i+shiftN]), 
-                                                p0=[1., 0.], 
-                                                maxfev=100000)
-    mw_Pq_calyx_pn.append(poptmxc[0])
-    mw_Pq_calyx_pn_err.append(np.sqrt(np.diag(pcovmxc))[0])
+    Pq_calyx_posidx = np.where(Pq_calyx_pn[:,j] > 0)[0]
+    
+    calyx_q_idx_new = Pq_calyx_posidx[Pq_calyx_posidx < calyx_q_idx]
+    
+    for i in range(len(calyx_q_idx_new) - shiftN):
+        mwx_calyx_pn_temp.append(np.average(q_range[calyx_q_idx_new][i:i+shiftN]))
+        
+        poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
+                                                    np.log10(q_range[calyx_q_idx_new][i:i+shiftN]), 
+                                                    np.log10(Pq_calyx_pn[calyx_q_idx_new,j][i:i+shiftN]), 
+                                                    p0=[1., 0.], 
+                                                    maxfev=100000)
+        mw_Pq_calyx_pn_temp.append(poptmxc[0])
+        mw_Pq_calyx_pn_err_temp.append(np.sqrt(np.diag(pcovmxc))[0])
+    
+    mw_Pq_calyx_pn.append(mw_Pq_calyx_pn_temp)
+    mw_Pq_calyx_pn_err.append(mw_Pq_calyx_pn_err_temp)
+    mwx_calyx_pn.append(mwx_calyx_pn_temp)
+
 
 mw_Pq_LH_pn = []
 mw_Pq_LH_pn_err = []
 mwx_LH_pn = []
 
-for i in range(len(q_range[:LH_q_idx]) - shiftN):
-    mwx_LH_pn.append(np.average(q_range[:LH_q_idx][i:i+shiftN]))
+for j in range(len(Pq_LH_pn)):
+    mw_Pq_LH_pn_temp = []
+    mw_Pq_LH_pn_err_temp = []
+    mwx_LH_pn_temp = []
     
-    poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                np.log10(q_range[:LH_q_idx][i:i+shiftN]), 
-                                                np.log10(np.average(Pq_LH_pn, axis=1)[:LH_q_idx][i:i+shiftN]), 
-                                                p0=[1., 0.], 
-                                                maxfev=100000)
-    mw_Pq_LH_pn.append(poptmxc[0])
-    mw_Pq_LH_pn_err.append(np.sqrt(np.diag(pcovmxc))[0])
+    Pq_LH_posidx = np.where(Pq_LH_pn[:,j] > 0)[0]
+    
+    LH_q_idx_new = Pq_LH_posidx[Pq_LH_posidx < LH_q_idx]
+    
+    for i in range(len(LH_q_idx_new) - shiftN):
+        mwx_LH_pn_temp.append(np.average(q_range[LH_q_idx_new][i:i+shiftN]))
+        
+        poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
+                                                    np.log10(q_range[LH_q_idx_new][i:i+shiftN]), 
+                                                    np.log10(Pq_LH_pn[LH_q_idx_new,j][i:i+shiftN]), 
+                                                    p0=[1., 0.], 
+                                                    maxfev=100000)
+        mw_Pq_LH_pn_temp.append(poptmxc[0])
+        mw_Pq_LH_pn_err_temp.append(np.sqrt(np.diag(pcovmxc))[0])
+    
+    mw_Pq_LH_pn.append(mw_Pq_LH_pn_temp)
+    mw_Pq_LH_pn_err.append(mw_Pq_LH_pn_err_temp)
+    mwx_LH_pn.append(mwx_LH_pn_temp)
+
 
 mw_Pq_AL_pn = []
 mw_Pq_AL_pn_err = []
 mwx_AL_pn = []
 
-for i in range(len(q_range[:AL_q_idx]) - shiftN):
-    mwx_AL_pn.append(np.average(q_range[:AL_q_idx][i:i+shiftN]))
+for j in range(len(Pq_AL_pn)):
+    mw_Pq_AL_pn_temp = []
+    mw_Pq_AL_pn_err_temp = []
+    mwx_AL_pn_temp = []
     
-    poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                np.log10(q_range[:AL_q_idx][i:i+shiftN]), 
-                                                np.log10(np.average(Pq_AL_pn, axis=1)[:AL_q_idx][i:i+shiftN]), 
-                                                p0=[1., 0.], 
-                                                maxfev=100000)
-    mw_Pq_AL_pn.append(poptmxc[0])
-    mw_Pq_AL_pn_err.append(np.sqrt(np.diag(pcovmxc))[0])
+    Pq_AL_posidx = np.where(Pq_AL_pn[:,j] > 0)[0]
+    
+    AL_q_idx_new = Pq_AL_posidx[Pq_AL_posidx < AL_q_idx]
+    
+    for i in range(len(AL_q_idx_new) - shiftN):
+        mwx_AL_pn_temp.append(np.average(q_range[AL_q_idx_new][i:i+shiftN]))
+        
+        poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
+                                                    np.log10(q_range[AL_q_idx_new][i:i+shiftN]), 
+                                                    np.log10(Pq_AL_pn[AL_q_idx_new,j][i:i+shiftN]), 
+                                                    p0=[1., 0.], 
+                                                    maxfev=100000)
+        mw_Pq_AL_pn_temp.append(poptmxc[0])
+        mw_Pq_AL_pn_err_temp.append(np.sqrt(np.diag(pcovmxc))[0])
+    
+    mw_Pq_AL_pn.append(mw_Pq_AL_pn_temp)
+    mw_Pq_AL_pn_err.append(mw_Pq_AL_pn_err_temp)
+    mwx_AL_pn.append(mwx_AL_pn_temp)
 
-    
 
 fig = plt.figure(figsize=(8,6))
-plt.plot(mwx_AL_pn, -1/np.array(mw_Pq_AL_pn), lw=2)
-plt.plot(mwx_calyx_pn, -1/np.array(mw_Pq_calyx_pn), lw=2)
-plt.plot(mwx_LH_pn, -1/np.array(mw_Pq_LH_pn), lw=2)
-plt.fill_between(mwx_AL_pn, 
-                 -1/(np.array(mw_Pq_AL_pn)-np.array(mw_Pq_AL_pn_err)), 
-                 -1/(np.array(mw_Pq_AL_pn)+np.array(mw_Pq_AL_pn_err)), 
-                 alpha=0.3)
-plt.fill_between(mwx_calyx_pn, 
-                 -1/(np.array(mw_Pq_calyx_pn)-np.array(mw_Pq_calyx_pn_err)),
-                 -1/(np.array(mw_Pq_calyx_pn)+np.array(mw_Pq_calyx_pn_err)), 
-                 alpha=0.3)
-plt.fill_between(mwx_LH_pn,
-                 -1/(np.array(mw_Pq_LH_pn)-np.array(mw_Pq_LH_pn_err)),
-                 -1/(np.array(mw_Pq_LH_pn)+np.array(mw_Pq_LH_pn_err)), 
-                 alpha=0.3)
 
-plt.hlines(1/4, 0.01, 100, ls='dashed')
-plt.hlines(7/16, 0.01, 100, ls='dashed')
-plt.hlines(1/2, 0.01, 100, ls='dashed')
-plt.hlines(1, 0.01, 100, ls='dashed')
-plt.hlines(3/5, 0.01, 100, ls='dashed')
+for i in range(len(mw_Pq_calyx_pn)):
+    plt.plot(mwx_calyx_pn[i], -1/np.array(mw_Pq_calyx_pn[i]), color='tab:orange', lw=2, alpha=0.5)
+
+plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
+plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1, 0.01, 100, ls='dashed', color='k')
+plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
 plt.text(10.3, 1/4-0.01, 'Ideal')
 plt.text(10.3, 7/16-0.01, '$\Theta-Solvent$')
 plt.text(10.3, 1/2-0.01, 'Random')
 plt.text(10.3, 1-0.01,'Rigid')
 plt.text(10.3, 3/5-0.01,'SAW')
 
-plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
-plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
-plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
+plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dashdot')
 
-plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
 plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
-plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
 
-plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
-plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
-plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
+plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:blue', ls='--')
 
 
 plt.xscale('log')
 # plt.yscale('log')
-plt.ylim(0.1, 1.5)
+plt.ylim(0.1, 1.7)
 plt.xlim(0.01, 10)
-plt.legend(["AL", "MB calyx", "LH"], fontsize=13)
 plt.xlabel("q", fontsize=15)
 plt.ylabel(r"$-1/\lambda$", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_mv_3.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_calyx_mv_3.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+  
+
+fig = plt.figure(figsize=(8,6))
+
+for i in range(len(mw_Pq_LH_pn)):
+    plt.plot(mwx_LH_pn[i], -1/np.array(mw_Pq_LH_pn[i]), color='tab:green', lw=2, alpha=0.5)
+
+plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
+plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1, 0.01, 100, ls='dashed', color='k')
+plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
+plt.text(10.3, 1/4-0.01, 'Ideal')
+plt.text(10.3, 7/16-0.01, '$\Theta-Solvent$')
+plt.text(10.3, 1/2-0.01, 'Random')
+plt.text(10.3, 1-0.01,'Rigid')
+plt.text(10.3, 3/5-0.01,'SAW')
+
+plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green', ls='dashdot')
+
+plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
+
+plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:blue', ls='--')
+
+
+plt.xscale('log')
+# plt.yscale('log')
+plt.ylim(0.1, 1.7)
+plt.xlim(0.01, 10)
+plt.xlabel("q", fontsize=15)
+plt.ylabel(r"$-1/\lambda$", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_LH_mv_3.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+fig = plt.figure(figsize=(8,6))
+
+for i in range(len(mw_Pq_AL_pn)):
+    plt.plot(mwx_AL_pn[i], -1/np.array(mw_Pq_AL_pn[i]), color='tab:blue', lw=2, alpha=0.5)
+
+plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
+plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1, 0.01, 100, ls='dashed', color='k')
+plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
+plt.text(10.3, 1/4-0.01, 'Ideal')
+plt.text(10.3, 7/16-0.01, '$\Theta-Solvent$')
+plt.text(10.3, 1/2-0.01, 'Random')
+plt.text(10.3, 1-0.01,'Rigid')
+plt.text(10.3, 3/5-0.01,'SAW')
+
+plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dashdot')
+
+plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+
+plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
+
+
+plt.xscale('log')
+# plt.yscale('log')
+plt.ylim(0.1, 1.7)
+plt.xlim(0.01, 10)
+plt.xlabel("q", fontsize=15)
+plt.ylabel(r"$-1/\lambda$", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_mv_3.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
