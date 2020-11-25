@@ -305,7 +305,7 @@ class MorphData():
             plt.title(np.array(self.neuron_id)[idx], fontsize=15)
         plt.gca().invert_yaxis()
         if save:
-            plt.savefig(Parameter.outputdir + '/neuron_' + str(idx) + '.png', dpi=300, bbox_inches='tight')
+            plt.savefig(Parameter.outputdir + '/neuron_proj_' + str(idx) + '.png', dpi=300, bbox_inches='tight')
         if show:
             plt.show()
         else:
@@ -9506,15 +9506,15 @@ plt.ylabel(r"$\nu$", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/Rg_all_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
-#%% Segmentation diagram
+#%% Segmentation process diagram
 
 nidx = 11
 
 fig = plt.figure(figsize=(8, 8))
 ax = plt.axes(projection='3d')
-ax.set_xlim(450, 600)
-ax.set_ylim(400, 250)
-ax.set_zlim(75, 225)
+ax.set_xlim(460, 590)
+ax.set_ylim(365, 235)
+ax.set_zlim(85, 215)
 cmap = cm.get_cmap('viridis', len(MorphData.morph_id))
 
 tararr = np.array(MorphData.morph_dist[nidx])
@@ -9533,5 +9533,128 @@ ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
 ax.set_xticklabels([])
 ax.set_yticklabels([])
 ax.set_zticklabels([])
-# plt.savefig(Parameter.outputdir + '/neuron_' + str(idx) + '.png', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/spd_neuron_' + str(idx) + '.png', dpi=300, bbox_inches='tight')
 plt.show()
+
+
+fig = plt.figure(figsize=(8, 8))
+ax.set_xlim(460, 590)
+ax.set_ylim(365, 235)
+for p in range(len(MorphData.morph_parent[nidx])):
+    if MorphData.morph_parent[nidx][p] < 0:
+        pass
+    else:
+        morph_line = np.vstack((MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(MorphData.morph_parent[nidx][p])], MorphData.morph_dist[nidx][p]))
+        plt.plot(morph_line[:,0], morph_line[:,1], color=cmap(nidx), lw=1)
+plt.gca().invert_yaxis()
+plt.axis('off')
+# plt.savefig(Parameter.outputdir + '/spd_neuron_proj_z_' + str(nidx) + '.png', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig = plt.figure(figsize=(8, 8))
+ax.set_xlim(460, 590)
+ax.set_zlim(85, 215)
+for p in range(len(MorphData.morph_parent[nidx])):
+    if MorphData.morph_parent[nidx][p] < 0:
+        pass
+    else:
+        morph_line = np.vstack((MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(MorphData.morph_parent[nidx][p])], MorphData.morph_dist[nidx][p]))
+        plt.plot(morph_line[:,0], morph_line[:,2], color=cmap(nidx), lw=1)
+plt.axis('off')
+# plt.savefig(Parameter.outputdir + '/spd_neuron_proj_y_' + str(nidx) + '.png', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig = plt.figure(figsize=(8, 8))
+ax.set_ylim(365, 235)
+ax.set_zlim(85, 215)
+for p in range(len(MorphData.morph_parent[nidx])):
+    if MorphData.morph_parent[nidx][p] < 0:
+        pass
+    else:
+        morph_line = np.vstack((MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(MorphData.morph_parent[nidx][p])], MorphData.morph_dist[nidx][p]))
+        plt.plot(morph_line[:,1], morph_line[:,2], color=cmap(nidx), lw=1)
+plt.gca().invert_xaxis()
+plt.axis('off')
+# plt.savefig(Parameter.outputdir + '/spd_neuron_proj_x_' + str(nidx) + '.png', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+from scipy.signal import argrelextrema
+
+r_d_x = -10
+r_rad_x = np.radians(r_d_x)
+r_x = np.array([0, 1, 0])
+r_vec_x = r_rad_x * r_x
+rotx = Rotation.from_rotvec(r_vec_x)
+
+r_d_y = -25
+r_rad_y = np.radians(r_d_y)
+r_y = np.array([0, 1, 0])
+r_vec_y = r_rad_y * r_y
+roty = Rotation.from_rotvec(r_vec_y)
+
+r_d_z = -40
+r_rad_z = np.radians(r_d_z)
+r_z = np.array([0, 1, 0])
+r_vec_z = r_rad_z * r_z
+rotz = Rotation.from_rotvec(r_vec_z)
+
+morph_dist_flat_rot = rotx.apply(MorphData.morph_dist_flat)
+calyxdist_flat_rot = rotx.apply(calyx_dist_flat)
+LHdist_flat_rot = rotx.apply(LH_dist_flat)
+ALdist_flat_rot = rotx.apply(AL_dist_flat)
+
+morph_dist_flat_rot = roty.apply(morph_dist_flat_rot)
+# calyxdist_flat_rot = roty.apply(calyxdist_flat)
+# LHdist_flat_rot = roty.apply(LHdist_flat)
+# ALdist_flat_rot = roty.apply(ALdist_flat)
+
+morph_dist_flat_rot = rotz.apply(morph_dist_flat_rot)
+
+x = np.histogram(morph_dist_flat_rot[:,0], bins=int((np.max(morph_dist_flat_rot[:,0]) - np.min(morph_dist_flat_rot[:,0]))/1))
+y = np.histogram(morph_dist_flat_rot[:,1], bins=int((np.max(morph_dist_flat_rot[:,1]) - np.min(morph_dist_flat_rot[:,1]))/1))
+z = np.histogram(morph_dist_flat_rot[:,2], bins=int((np.max(morph_dist_flat_rot[:,2]) - np.min(morph_dist_flat_rot[:,2]))/1))
+
+xex = argrelextrema(x[0], np.less)[0]
+yex = argrelextrema(y[0], np.less)[0]
+zex = argrelextrema(z[0], np.less)[0]
+
+fig = plt.figure(figsize=(8,6))
+plt.hist(morph_dist_flat_rot[:,0], bins=int((np.max(morph_dist_flat_rot[:,0]) - np.min(morph_dist_flat_rot[:,0]))/1), color='tab:purple', alpha=0.5)
+plt.hist(np.array(ALdist_flat_rot)[:,0], bins=int((np.max(np.array(ALdist_flat_rot)[:,0]) - np.min(np.array(ALdist_flat_rot)[:,0]))/1), color='tab:blue', alpha=0.5)
+plt.hist(np.array(calyxdist_flat_rot)[:,0], bins=int((np.max(np.array(calyxdist_flat_rot)[:,0]) - np.min(np.array(calyxdist_flat_rot)[:,0]))/1), color='tab:orange', alpha=0.5)
+plt.hist(np.array(LHdist_flat_rot)[:,0], bins=int((np.max(np.array(LHdist_flat_rot)[:,0]) - np.min(np.array(LHdist_flat_rot)[:,0]))/1), color='tab:green', alpha=0.5)
+plt.xlabel('x Coordinates', fontsize=15)
+plt.ylabel('Count', fontsize=15)
+plt.legend(['All', 'AL', 'MB calyx', 'LH'], fontsize=13)
+# plt.scatter(x[1][xex[[13,27,40]]], x[0][xex[[13,27,40]]], color='tab:red')
+# plt.savefig(Parameter.outputdir + '/spd_x_segment_hist_2.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig = plt.figure(figsize=(8,6))
+plt.hist(morph_dist_flat_rot[:,1], bins=int((np.max(morph_dist_flat_rot[:,1]) - np.min(morph_dist_flat_rot[:,1]))/1), color='tab:purple', alpha=0.5)
+plt.hist(np.array(ALdist_flat_rot)[:,1], bins=int((np.max(np.array(ALdist_flat_rot)[:,1]) - np.min(np.array(ALdist_flat_rot)[:,1]))/1), color='tab:blue', alpha=0.5)
+plt.hist(np.array(calyxdist_flat_rot)[:,1], bins=int((np.max(np.array(calyxdist_flat_rot)[:,1]) - np.min(np.array(calyxdist_flat_rot)[:,1]))/1), color='tab:orange', alpha=0.5)
+plt.hist(np.array(LHdist_flat_rot)[:,1], bins=int((np.max(np.array(LHdist_flat_rot)[:,1]) - np.min(np.array(LHdist_flat_rot)[:,1]))/1), color='tab:green', alpha=0.5)
+plt.xlabel('y Coordinates', fontsize=15)
+plt.ylabel('Count', fontsize=15)
+plt.legend(['All', 'AL', 'MB calyx', 'LH'], fontsize=13)
+# plt.scatter(y[1][yex[[9,26,46]]], y[0][yex[[9,26,46]]], color='tab:red')
+# plt.savefig(Parameter.outputdir + '/spd_y_segment_hist_2.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig = plt.figure(figsize=(8,6))
+plt.hist(morph_dist_flat_rot[:,2], bins=int((np.max(morph_dist_flat_rot[:,2]) - np.min(morph_dist_flat_rot[:,2]))/1), color='tab:purple', alpha=0.5)
+plt.hist(np.array(ALdist_flat_rot)[:,2], bins=int((np.max(np.array(ALdist_flat_rot)[:,2]) - np.min(np.array(ALdist_flat_rot)[:,2]))/1), color='tab:blue', alpha=0.5)
+plt.hist(np.array(calyxdist_flat_rot)[:,2], bins=int((np.max(np.array(calyxdist_flat_rot)[:,2]) - np.min(np.array(calyxdist_flat_rot)[:,2]))/1), color='tab:orange', alpha=0.5)
+plt.hist(np.array(LHdist_flat_rot)[:,2], bins=int((np.max(np.array(LHdist_flat_rot)[:,2]) - np.min(np.array(LHdist_flat_rot)[:,2]))/1), color='tab:green', alpha=0.5)
+plt.xlabel('z Coordinates', fontsize=15)
+plt.ylabel('Count', fontsize=15)
+plt.legend(['All', 'AL', 'MB calyx', 'LH'], fontsize=13)
+# plt.scatter(z[1][zex[[7,12,22,24,28]]], z[0][zex[[7,12,22,24,28]]], color='tab:red')
+# plt.scatter(z[1][zex[[14]]], z[0][zex[[14]]], color='tab:red')
+# plt.savefig(Parameter.outputdir + '/spd_z_segment_hist_2_xrot.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+
