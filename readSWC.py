@@ -8900,12 +8900,14 @@ plt.ylabel(r"$-1/\lambda$", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
-#%% 28876 moving average
 
+#%% 16 moving average
+
+nid = 6
 
 fig = plt.figure(figsize=(8,6))
 
-plt.plot(mwx_calyx_pn[49], -1/np.array(mw_Pq_calyx_pn[49]), color='tab:orange', lw=2, alpha=0.5)
+plt.plot(mwx_calyx_pn[nid], -1/np.array(mw_Pq_calyx_pn[nid]), color='tab:orange', lw=2)
 
 plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
 plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
@@ -8931,45 +8933,12 @@ plt.ylim(0.1, 1.7)
 plt.xlim(0.01, 10)
 plt.xlabel("q", fontsize=15)
 plt.ylabel(r"$-1/\lambda$", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_calyx_mv_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_calyx_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
   
-
 fig = plt.figure(figsize=(8,6))
 
-plt.plot(mwx_LH_pn[49], -1/np.array(mw_Pq_LH_pn[49]), color='tab:green', lw=2, alpha=0.5)
-
-plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
-plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
-plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
-plt.hlines(1, 0.01, 100, ls='dashed', color='k')
-plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
-plt.text(10.3, 1/4-0.01, 'Ideal')
-plt.text(10.3, 7/16-0.01, '$\Theta-Solvent$')
-plt.text(10.3, 1/2-0.01, 'Random')
-plt.text(10.3, 1-0.01,'Rigid')
-plt.text(10.3, 3/5-0.01,'SAW')
-
-plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green', ls='dashdot')
-
-plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
-
-plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
-
-
-plt.xscale('log')
-# plt.yscale('log')
-plt.ylim(0.1, 1.7)
-plt.xlim(0.01, 10)
-plt.xlabel("q", fontsize=15)
-plt.ylabel(r"$-1/\lambda$", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_LH_mv_1.pdf', dpi=300, bbox_inches='tight')
-plt.show()
-
-
-fig = plt.figure(figsize=(8,6))
-
-plt.plot(mwx_AL_pn[49], -1/np.array(mw_Pq_AL_pn[49]), color='tab:blue', lw=2, alpha=0.5)
+plt.plot(mwx_AL_pn[nid], -1/np.array(mw_Pq_AL_pn[nid]), color='tab:blue', lw=2)
 
 plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
 plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
@@ -8995,9 +8964,207 @@ plt.ylim(0.1, 1.7)
 plt.xlim(0.01, 10)
 plt.xlabel("q", fontsize=15)
 plt.ylabel(r"$-1/\lambda$", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_mv_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_AL_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
+#%% 30891 moving average
+
+nid = 60
+
+fig = plt.figure(figsize=(8,6))
+
+plt.plot(mwx_calyx_pn[nid], -1/np.array(mw_Pq_calyx_pn[nid]), color='tab:orange', lw=2)
+
+plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
+plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1, 0.01, 100, ls='dashed', color='k')
+plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
+plt.text(10.3, 1/4-0.01, 'Ideal')
+plt.text(10.3, 7/16-0.01, '$\Theta-Solvent$')
+plt.text(10.3, 1/2-0.01, 'Random')
+plt.text(10.3, 1-0.01,'Rigid')
+plt.text(10.3, 3/5-0.01,'SAW')
+
+plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dashdot')
+
+plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
+
+plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
+
+
+plt.xscale('log')
+# plt.yscale('log')
+plt.ylim(0.1, 1.7)
+plt.xlim(0.01, 10)
+plt.xlabel("q", fontsize=15)
+plt.ylabel(r"$-1/\lambda$", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_calyx_mv_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+  
+
+fig = plt.figure(figsize=(8,6))
+
+plt.plot(mwx_LH_pn[nid], -1/np.array(mw_Pq_LH_pn[nid]), color='tab:green', lw=2)
+
+plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
+plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1, 0.01, 100, ls='dashed', color='k')
+plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
+plt.text(10.3, 1/4-0.01, 'Ideal')
+plt.text(10.3, 7/16-0.01, '$\Theta-Solvent$')
+plt.text(10.3, 1/2-0.01, 'Random')
+plt.text(10.3, 1-0.01,'Rigid')
+plt.text(10.3, 3/5-0.01,'SAW')
+
+plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green', ls='dashdot')
+
+plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
+
+plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
+
+
+plt.xscale('log')
+# plt.yscale('log')
+plt.ylim(0.1, 1.7)
+plt.xlim(0.01, 10)
+plt.xlabel("q", fontsize=15)
+plt.ylabel(r"$-1/\lambda$", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_LH_mv_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+fig = plt.figure(figsize=(8,6))
+
+plt.plot(mwx_AL_pn[nid], -1/np.array(mw_Pq_AL_pn[nid]), color='tab:blue', lw=2)
+
+plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
+plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1, 0.01, 100, ls='dashed', color='k')
+plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
+plt.text(10.3, 1/4-0.01, 'Ideal')
+plt.text(10.3, 7/16-0.01, '$\Theta-Solvent$')
+plt.text(10.3, 1/2-0.01, 'Random')
+plt.text(10.3, 1-0.01,'Rigid')
+plt.text(10.3, 3/5-0.01,'SAW')
+
+plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dashdot')
+
+plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+
+plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
+
+
+plt.xscale('log')
+# plt.yscale('log')
+plt.ylim(0.1, 1.7)
+plt.xlim(0.01, 10)
+plt.xlabel("q", fontsize=15)
+plt.ylabel(r"$-1/\lambda$", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_AL_mv_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+#%% 39254 moving average
+
+nid = 77
+
+fig = plt.figure(figsize=(8,6))
+
+plt.plot(mwx_calyx_pn[nid], -1/np.array(mw_Pq_calyx_pn[nid]), color='tab:orange', lw=2)
+
+plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
+plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1, 0.01, 100, ls='dashed', color='k')
+plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
+plt.text(10.3, 1/4-0.01, 'Ideal')
+plt.text(10.3, 7/16-0.01, '$\Theta-Solvent$')
+plt.text(10.3, 1/2-0.01, 'Random')
+plt.text(10.3, 1-0.01,'Rigid')
+plt.text(10.3, 3/5-0.01,'SAW')
+
+plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dashdot')
+
+plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
+
+plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
+
+
+plt.xscale('log')
+# plt.yscale('log')
+plt.ylim(0.1, 1.7)
+plt.xlim(0.01, 10)
+plt.xlabel("q", fontsize=15)
+plt.ylabel(r"$-1/\lambda$", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_calyx_mv_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+  
+
+fig = plt.figure(figsize=(8,6))
+
+plt.plot(mwx_LH_pn[nid], -1/np.array(mw_Pq_LH_pn[nid]), color='tab:green', lw=2)
+
+plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
+plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1, 0.01, 100, ls='dashed', color='k')
+plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
+plt.text(10.3, 1/4-0.01, 'Ideal')
+plt.text(10.3, 7/16-0.01, '$\Theta-Solvent$')
+plt.text(10.3, 1/2-0.01, 'Random')
+plt.text(10.3, 1-0.01,'Rigid')
+plt.text(10.3, 3/5-0.01,'SAW')
+
+plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green', ls='dashdot')
+
+plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
+
+plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
+
+
+plt.xscale('log')
+# plt.yscale('log')
+plt.ylim(0.1, 1.7)
+plt.xlim(0.01, 10)
+plt.xlabel("q", fontsize=15)
+plt.ylabel(r"$-1/\lambda$", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_LH_mv_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+fig = plt.figure(figsize=(8,6))
+
+plt.plot(mwx_AL_pn[nid], -1/np.array(mw_Pq_AL_pn[nid]), color='tab:blue', lw=2)
+
+plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
+plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1, 0.01, 100, ls='dashed', color='k')
+plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
+plt.text(10.3, 1/4-0.01, 'Ideal')
+plt.text(10.3, 7/16-0.01, '$\Theta-Solvent$')
+plt.text(10.3, 1/2-0.01, 'Random')
+plt.text(10.3, 1-0.01,'Rigid')
+plt.text(10.3, 3/5-0.01,'SAW')
+
+plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dashdot')
+
+plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+
+plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
+
+
+plt.xscale('log')
+# plt.yscale('log')
+plt.ylim(0.1, 1.7)
+plt.xlim(0.01, 10)
+plt.xlabel("q", fontsize=15)
+plt.ylabel(r"$-1/\lambda$", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_AL_mv_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
 
 #%% Example calyx neuron skeletal plot for characteristic scales shown in form factor
 
