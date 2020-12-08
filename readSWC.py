@@ -9818,8 +9818,7 @@ ax.set_zlim(45, 215)
 cmap = cm.get_cmap('viridis', len(nidx_list))
 
 for i, nidx in enumerate(nidx_list):
-    tararr = np.array(MorphData.morph_dist[nidx])
-    somaIdx = np.where(np.array(MorphData.morph_parent[nidx]) < 0)[0]
+    
     for p in range(len(MorphData.morph_parent[nidx])):
         if MorphData.morph_parent[nidx][p] < 0:
             pass
@@ -9838,67 +9837,72 @@ ax.set_zticklabels([])
 plt.show()
 
 
-# fig = plt.figure(figsize=(6, 6))
-# ax.set_xlim(460, 590)
-# ax.set_ylim(365, 235)
-# for p in range(len(MorphData.morph_parent[nidx])):
-#     if MorphData.morph_parent[nidx][p] < 0:
-#         pass
-#     else:
-#         morph_line = np.vstack((MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(MorphData.morph_parent[nidx][p])], MorphData.morph_dist[nidx][p]))
-#         plt.plot(morph_line[:,0], morph_line[:,1], color=cmap(nidx), lw=1)
-# plt.gca().invert_yaxis()
-# plt.xticks([])
-# plt.yticks([])
-# # plt.savefig(Parameter.outputdir + '/spd_neuron_proj_z_' + str(nidx) + '.png', dpi=300, bbox_inches='tight')
-# plt.show()
+#%% Rotated segmentation process diagram
 
-# fig = plt.figure(figsize=(6, 6))
-# ax.set_xlim(460, 590)
-# ax.set_zlim(85, 215)
-# for p in range(len(MorphData.morph_parent[nidx])):
-#     if MorphData.morph_parent[nidx][p] < 0:
-#         pass
-#     else:
-#         morph_line = np.vstack((MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(MorphData.morph_parent[nidx][p])], MorphData.morph_dist[nidx][p]))
-#         plt.plot(morph_line[:,0], morph_line[:,2], color=cmap(nidx), lw=1)
-# plt.xticks([])
-# plt.yticks([])
-# # plt.savefig(Parameter.outputdir + '/spd_neuron_proj_y_' + str(nidx) + '.png', dpi=300, bbox_inches='tight')
-# plt.show()
-
-# fig = plt.figure(figsize=(6, 6))
-# ax.set_ylim(365, 235)
-# ax.set_zlim(85, 215)
-# for p in range(len(MorphData.morph_parent[nidx])):
-#     if MorphData.morph_parent[nidx][p] < 0:
-#         pass
-#     else:
-#         morph_line = np.vstack((MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(MorphData.morph_parent[nidx][p])], MorphData.morph_dist[nidx][p]))
-#         plt.plot(morph_line[:,1], morph_line[:,2], color=cmap(nidx), lw=1)
-# plt.gca().invert_xaxis()
-# plt.xticks([])
-# plt.yticks([])
-# # plt.savefig(Parameter.outputdir + '/spd_neuron_proj_x_' + str(nidx) + '.png', dpi=300, bbox_inches='tight')
-# plt.show()
-
-#%% Segmentation process diagram 2
-
-from scipy.signal import argrelextrema
-
-r_d_x = 0#-10
+r_d_x = -10
 r_rad_x = np.radians(r_d_x)
 r_x = np.array([0, 1, 0])
 r_vec_x = r_rad_x * r_x
 rotx = Rotation.from_rotvec(r_vec_x)
 
-r_d_y = 0#-25
+r_d_y = -25
 r_rad_y = np.radians(r_d_y)
 r_y = np.array([0, 1, 0])
 r_vec_y = r_rad_y * r_y
 roty = Rotation.from_rotvec(r_vec_y)
 
-r_d_z = 0#-40
+r_d_z = -40
+r_rad_z = np.radians(r_d_z)
+r_z = np.array([0, 1, 0])
+r_vec_z = r_rad_z * r_z
+rotz = Rotation.from_rotvec(r_vec_z)
+
+fig = plt.figure(figsize=(6, 6))
+ax = plt.axes(projection='3d')
+# ax.set_xlim(440, 610)
+# ax.set_ylim(375, 205)
+# ax.set_zlim(45, 215)
+cmap = cm.get_cmap('viridis', len(nidx_list))
+
+for i, nidx in enumerate(nidx_list):
+    
+    for p in range(len(MorphData.morph_parent[nidx])):
+        if MorphData.morph_parent[nidx][p] < 0:
+            pass
+        else:
+            morph_line = np.vstack((MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(MorphData.morph_parent[nidx][p])], MorphData.morph_dist[nidx][p]))
+            morph_line = rotx.apply(morph_line)
+            morph_line = roty.apply(morph_line)
+            morph_line = rotz.apply(morph_line)
+            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(i), lw=0.75)
+
+ax.grid(True)
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+ax.set_xticklabels([])
+ax.set_yticklabels([])
+ax.set_zticklabels([])
+# plt.savefig(Parameter.outputdir + '/spd_neuron_all_rotated.png', dpi=300, bbox_inches='tight', transparent=True)
+plt.show()
+
+#%% Segmentation process diagram 2
+
+from scipy.signal import argrelextrema
+
+r_d_x = -10
+r_rad_x = np.radians(r_d_x)
+r_x = np.array([0, 1, 0])
+r_vec_x = r_rad_x * r_x
+rotx = Rotation.from_rotvec(r_vec_x)
+
+r_d_y = -25
+r_rad_y = np.radians(r_d_y)
+r_y = np.array([0, 1, 0])
+r_vec_y = r_rad_y * r_y
+roty = Rotation.from_rotvec(r_vec_y)
+
+r_d_z = -40
 r_rad_z = np.radians(r_d_z)
 r_z = np.array([0, 1, 0])
 r_vec_z = r_rad_z * r_z
@@ -9918,7 +9922,7 @@ morph_dist_flat_rot = roty.apply(morph_dist_flat_rot)
 
 morph_dist_flat_rot = rotz.apply(morph_dist_flat_rot)
 
-x = np.histogram(morph_dist_flat_rot[:,0], bins=int((np.max(morph_dist_flat_rot[:,0]) - np.min(morph_dist_flat_rot[:,0]))/1))
+x = np.histogram(morph_dist_flat_rot[:,0], bins=int((np.max(morph_dist_flat_rot[:,0]) - np.min(morph_dist_flat_rot[:,0]))/1), density=True)
 y = np.histogram(morph_dist_flat_rot[:,1], bins=int((np.max(morph_dist_flat_rot[:,1]) - np.min(morph_dist_flat_rot[:,1]))/1))
 z = np.histogram(morph_dist_flat_rot[:,2], bins=int((np.max(morph_dist_flat_rot[:,2]) - np.min(morph_dist_flat_rot[:,2]))/1))
 
@@ -9927,29 +9931,31 @@ yex = argrelextrema(y[0], np.less)[0]
 zex = argrelextrema(z[0], np.less)[0]
 
 
-fig = plt.figure(figsize=(8,6))
 xval = np.abs(np.linspace(min(morph_dist_flat_rot[:,0])-0.1, max(morph_dist_flat_rot[:,0])+0.1, 300))
 kde = neighbors.KernelDensity(kernel='gaussian', bandwidth=3).fit(morph_dist_flat_rot[:,0].reshape((len(morph_dist_flat_rot[:,0]),1)))
 log_dens = kde.score_samples(xval.reshape((len(xval),1)))
+
+fig = plt.figure(figsize=(8,6))
 plt.plot(xval, np.exp(log_dens), lw=3)
-# plt.hist(morph_dist_flat_rot[:,0], bins=int((np.max(morph_dist_flat_rot[:,0]) - np.min(morph_dist_flat_rot[:,0]))/1), color='tab:purple', alpha=0.5, density=True)
+plt.hist(morph_dist_flat_rot[:,0], bins=int((np.max(morph_dist_flat_rot[:,0]) - np.min(morph_dist_flat_rot[:,0]))/1), color='tab:purple', alpha=0.5, density=True)
 # plt.hist(np.array(ALdist_flat_rot)[:,0], bins=int((np.max(np.array(ALdist_flat_rot)[:,0]) - np.min(np.array(ALdist_flat_rot)[:,0]))/1), color='tab:blue', alpha=0.5)
 # plt.hist(np.array(calyxdist_flat_rot)[:,0], bins=int((np.max(np.array(calyxdist_flat_rot)[:,0]) - np.min(np.array(calyxdist_flat_rot)[:,0]))/1), color='tab:orange', alpha=0.5)
 # plt.hist(np.array(LHdist_flat_rot)[:,0], bins=int((np.max(np.array(LHdist_flat_rot)[:,0]) - np.min(np.array(LHdist_flat_rot)[:,0]))/1), color='tab:green', alpha=0.5)
 # plt.xlabel('x Coordinates', fontsize=15)
 # plt.ylabel('Count', fontsize=15)
 # plt.legend(['All', 'AL', 'MB calyx', 'LH'], fontsize=13)
-# plt.scatter(x[1][xex[[13,27,40]]], x[0][xex[[13,27,40]]], color='tab:red')
+plt.scatter(x[1][xex], x[0][xex], color='tab:red')
 plt.xticks([])
 plt.yticks([])
 # plt.savefig(Parameter.outputdir + '/spd_x_segment_hist_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
-fig = plt.figure(figsize=(8,6))
-xval = np.abs(np.linspace(min(morph_dist_flat_rot[:,1])-0.1, max(morph_dist_flat_rot[:,1])+0.1, 300))
+yval = np.abs(np.linspace(min(morph_dist_flat_rot[:,1])-0.1, max(morph_dist_flat_rot[:,1])+0.1, 300))
 kde = neighbors.KernelDensity(kernel='gaussian', bandwidth=3).fit(morph_dist_flat_rot[:,1].reshape((len(morph_dist_flat_rot[:,1]),1)))
-log_dens = kde.score_samples(xval.reshape((len(xval),1)))
-plt.plot(xval, np.exp(log_dens), lw=3)
+log_dens = kde.score_samples(yval.reshape((len(yval),1)))
+
+fig = plt.figure(figsize=(8,6))
+plt.plot(yval, np.exp(log_dens), lw=3)
 # plt.hist(morph_dist_flat_rot[:,1], bins=int((np.max(morph_dist_flat_rot[:,1]) - np.min(morph_dist_flat_rot[:,1]))/1), color='tab:purple', alpha=0.5)
 # plt.hist(np.array(ALdist_flat_rot)[:,1], bins=int((np.max(np.array(ALdist_flat_rot)[:,1]) - np.min(np.array(ALdist_flat_rot)[:,1]))/1), color='tab:blue', alpha=0.5)
 # plt.hist(np.array(calyxdist_flat_rot)[:,1], bins=int((np.max(np.array(calyxdist_flat_rot)[:,1]) - np.min(np.array(calyxdist_flat_rot)[:,1]))/1), color='tab:orange', alpha=0.5)
@@ -9963,11 +9969,12 @@ plt.yticks([])
 # plt.savefig(Parameter.outputdir + '/spd_y_segment_hist_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
-fig = plt.figure(figsize=(8,6))
-xval = np.abs(np.linspace(min(morph_dist_flat_rot[:,2])-0.1, max(morph_dist_flat_rot[:,2])+0.1, 300))
+zval = np.abs(np.linspace(min(morph_dist_flat_rot[:,2])-0.1, max(morph_dist_flat_rot[:,2])+0.1, 300))
 kde = neighbors.KernelDensity(kernel='gaussian', bandwidth=3).fit(morph_dist_flat_rot[:,2].reshape((len(morph_dist_flat_rot[:,2]),1)))
-log_dens = kde.score_samples(xval.reshape((len(xval),1)))
-plt.plot(xval, np.exp(log_dens), lw=3)
+log_dens = kde.score_samples(zval.reshape((len(zval),1)))
+
+fig = plt.figure(figsize=(8,6))
+plt.plot(zval, np.exp(log_dens), lw=3)
 # plt.hist(morph_dist_flat_rot[:,2], bins=int((np.max(morph_dist_flat_rot[:,2]) - np.min(morph_dist_flat_rot[:,2]))/1), color='tab:purple', alpha=0.5)
 # plt.hist(np.array(ALdist_flat_rot)[:,2], bins=int((np.max(np.array(ALdist_flat_rot)[:,2]) - np.min(np.array(ALdist_flat_rot)[:,2]))/1), color='tab:blue', alpha=0.5)
 # plt.hist(np.array(calyxdist_flat_rot)[:,2], bins=int((np.max(np.array(calyxdist_flat_rot)[:,2]) - np.min(np.array(calyxdist_flat_rot)[:,2]))/1), color='tab:orange', alpha=0.5)
@@ -9979,7 +9986,7 @@ plt.plot(xval, np.exp(log_dens), lw=3)
 # plt.scatter(z[1][zex[[14]]], z[0][zex[[14]]], color='tab:red')
 plt.xticks([])
 plt.yticks([])
-# plt.savefig(Parameter.outputdir + '/spd_z_segment_hist_2_xrot.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/spd_z_segment_hist_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
