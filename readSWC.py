@@ -8935,7 +8935,40 @@ plt.xlabel("q", fontsize=15)
 plt.ylabel(r"$-1/\lambda$", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_calyx_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
-  
+
+
+fig = plt.figure(figsize=(8,6))
+
+plt.plot(mwx_LH_pn[nid], -1/np.array(mw_Pq_LH_pn[nid]), color='tab:green', lw=2)
+
+plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
+plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1, 0.01, 100, ls='dashed', color='k')
+plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
+plt.text(10.3, 1/4-0.01, 'Ideal')
+plt.text(10.3, 7/16-0.01, '$\Theta-Solvent$')
+plt.text(10.3, 1/2-0.01, 'Random')
+plt.text(10.3, 1-0.01,'Rigid')
+plt.text(10.3, 3/5-0.01,'SAW')
+
+plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green', ls='dashdot')
+
+plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
+
+plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
+
+
+plt.xscale('log')
+# plt.yscale('log')
+plt.ylim(0.1, 1.7)
+plt.xlim(0.01, 10)
+plt.xlabel("q", fontsize=15)
+plt.ylabel(r"$-1/\lambda$", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_LH_mv_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
 fig = plt.figure(figsize=(8,6))
 
 plt.plot(mwx_AL_pn[nid], -1/np.array(mw_Pq_AL_pn[nid]), color='tab:blue', lw=2)
@@ -9773,23 +9806,26 @@ plt.show()
 
 #%% Segmentation process diagram
 
-nidx = 11
+nidx_list = [6, 8, 11, 12, 13, 18, 19, 22, 23, 24, 25, 27, 28, 29, 30, 31, 32, 
+             33, 34, 35, 36, 37, 38, 39, 53, 54, 57, 63, 64, 66, 67, 68, 69, 
+             74, 75, 77, 78, 79, 80, 81]
 
-fig = plt.figure(figsize=(8, 8))
+fig = plt.figure(figsize=(6, 6))
 ax = plt.axes(projection='3d')
-ax.set_xlim(460, 590)
-ax.set_ylim(365, 235)
-ax.set_zlim(85, 215)
-cmap = cm.get_cmap('viridis', len(MorphData.morph_id))
+ax.set_xlim(440, 610)
+ax.set_ylim(375, 205)
+ax.set_zlim(45, 215)
+cmap = cm.get_cmap('viridis', len(nidx_list))
 
-tararr = np.array(MorphData.morph_dist[nidx])
-somaIdx = np.where(np.array(MorphData.morph_parent[nidx]) < 0)[0]
-for p in range(len(MorphData.morph_parent[nidx])):
-    if MorphData.morph_parent[nidx][p] < 0:
-        pass
-    else:
-        morph_line = np.vstack((MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(MorphData.morph_parent[nidx][p])], MorphData.morph_dist[nidx][p]))
-        ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(nidx), lw=1)
+for i, nidx in enumerate(nidx_list):
+    tararr = np.array(MorphData.morph_dist[nidx])
+    somaIdx = np.where(np.array(MorphData.morph_parent[nidx]) < 0)[0]
+    for p in range(len(MorphData.morph_parent[nidx])):
+        if MorphData.morph_parent[nidx][p] < 0:
+            pass
+        else:
+            morph_line = np.vstack((MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(MorphData.morph_parent[nidx][p])], MorphData.morph_dist[nidx][p]))
+            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(i), lw=0.75)
 
 ax.grid(True)
 ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
@@ -9798,53 +9834,53 @@ ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
 ax.set_xticklabels([])
 ax.set_yticklabels([])
 ax.set_zticklabels([])
-# plt.savefig(Parameter.outputdir + '/spd_neuron_' + str(nidx) + '.png', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/spd_neuron_all.png', dpi=300, bbox_inches='tight', transparent=True)
 plt.show()
 
 
-fig = plt.figure(figsize=(8, 8))
-ax.set_xlim(460, 590)
-ax.set_ylim(365, 235)
-for p in range(len(MorphData.morph_parent[nidx])):
-    if MorphData.morph_parent[nidx][p] < 0:
-        pass
-    else:
-        morph_line = np.vstack((MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(MorphData.morph_parent[nidx][p])], MorphData.morph_dist[nidx][p]))
-        plt.plot(morph_line[:,0], morph_line[:,1], color=cmap(nidx), lw=1)
-plt.gca().invert_yaxis()
-plt.xticks([])
-plt.yticks([])
-# plt.savefig(Parameter.outputdir + '/spd_neuron_proj_z_' + str(nidx) + '.png', dpi=600, bbox_inches='tight')
-plt.show()
+# fig = plt.figure(figsize=(6, 6))
+# ax.set_xlim(460, 590)
+# ax.set_ylim(365, 235)
+# for p in range(len(MorphData.morph_parent[nidx])):
+#     if MorphData.morph_parent[nidx][p] < 0:
+#         pass
+#     else:
+#         morph_line = np.vstack((MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(MorphData.morph_parent[nidx][p])], MorphData.morph_dist[nidx][p]))
+#         plt.plot(morph_line[:,0], morph_line[:,1], color=cmap(nidx), lw=1)
+# plt.gca().invert_yaxis()
+# plt.xticks([])
+# plt.yticks([])
+# # plt.savefig(Parameter.outputdir + '/spd_neuron_proj_z_' + str(nidx) + '.png', dpi=300, bbox_inches='tight')
+# plt.show()
 
-fig = plt.figure(figsize=(8, 8))
-ax.set_xlim(460, 590)
-ax.set_zlim(85, 215)
-for p in range(len(MorphData.morph_parent[nidx])):
-    if MorphData.morph_parent[nidx][p] < 0:
-        pass
-    else:
-        morph_line = np.vstack((MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(MorphData.morph_parent[nidx][p])], MorphData.morph_dist[nidx][p]))
-        plt.plot(morph_line[:,0], morph_line[:,2], color=cmap(nidx), lw=1)
-plt.xticks([])
-plt.yticks([])
-# plt.savefig(Parameter.outputdir + '/spd_neuron_proj_y_' + str(nidx) + '.png', dpi=600, bbox_inches='tight')
-plt.show()
+# fig = plt.figure(figsize=(6, 6))
+# ax.set_xlim(460, 590)
+# ax.set_zlim(85, 215)
+# for p in range(len(MorphData.morph_parent[nidx])):
+#     if MorphData.morph_parent[nidx][p] < 0:
+#         pass
+#     else:
+#         morph_line = np.vstack((MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(MorphData.morph_parent[nidx][p])], MorphData.morph_dist[nidx][p]))
+#         plt.plot(morph_line[:,0], morph_line[:,2], color=cmap(nidx), lw=1)
+# plt.xticks([])
+# plt.yticks([])
+# # plt.savefig(Parameter.outputdir + '/spd_neuron_proj_y_' + str(nidx) + '.png', dpi=300, bbox_inches='tight')
+# plt.show()
 
-fig = plt.figure(figsize=(8, 8))
-ax.set_ylim(365, 235)
-ax.set_zlim(85, 215)
-for p in range(len(MorphData.morph_parent[nidx])):
-    if MorphData.morph_parent[nidx][p] < 0:
-        pass
-    else:
-        morph_line = np.vstack((MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(MorphData.morph_parent[nidx][p])], MorphData.morph_dist[nidx][p]))
-        plt.plot(morph_line[:,1], morph_line[:,2], color=cmap(nidx), lw=1)
-plt.gca().invert_xaxis()
-plt.xticks([])
-plt.yticks([])
-# plt.savefig(Parameter.outputdir + '/spd_neuron_proj_x_' + str(nidx) + '.png', dpi=600, bbox_inches='tight')
-plt.show()
+# fig = plt.figure(figsize=(6, 6))
+# ax.set_ylim(365, 235)
+# ax.set_zlim(85, 215)
+# for p in range(len(MorphData.morph_parent[nidx])):
+#     if MorphData.morph_parent[nidx][p] < 0:
+#         pass
+#     else:
+#         morph_line = np.vstack((MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(MorphData.morph_parent[nidx][p])], MorphData.morph_dist[nidx][p]))
+#         plt.plot(morph_line[:,1], morph_line[:,2], color=cmap(nidx), lw=1)
+# plt.gca().invert_xaxis()
+# plt.xticks([])
+# plt.yticks([])
+# # plt.savefig(Parameter.outputdir + '/spd_neuron_proj_x_' + str(nidx) + '.png', dpi=300, bbox_inches='tight')
+# plt.show()
 
 #%% Segmentation process diagram 2
 
