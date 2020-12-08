@@ -9886,25 +9886,27 @@ plt.show()
 
 from scipy.signal import argrelextrema
 
-r_d_x = -10
+r_d_x = 0#-10
 r_rad_x = np.radians(r_d_x)
 r_x = np.array([0, 1, 0])
 r_vec_x = r_rad_x * r_x
 rotx = Rotation.from_rotvec(r_vec_x)
 
-r_d_y = -25
+r_d_y = 0#-25
 r_rad_y = np.radians(r_d_y)
 r_y = np.array([0, 1, 0])
 r_vec_y = r_rad_y * r_y
 roty = Rotation.from_rotvec(r_vec_y)
 
-r_d_z = -40
+r_d_z = 0#-40
 r_rad_z = np.radians(r_d_z)
 r_z = np.array([0, 1, 0])
 r_vec_z = r_rad_z * r_z
 rotz = Rotation.from_rotvec(r_vec_z)
 
-morph_dist_flat_rot = rotx.apply(MorphData.morph_dist_flat)
+sel_morph_dist_flat = np.array([item for sublist in np.array(MorphData.morph_dist,dtype=object)[nidx_list] for item in sublist])
+
+morph_dist_flat_rot = rotx.apply(sel_morph_dist_flat)
 calyxdist_flat_rot = rotx.apply(calyx_dist_flat)
 LHdist_flat_rot = rotx.apply(LH_dist_flat)
 ALdist_flat_rot = rotx.apply(AL_dist_flat)
@@ -9924,8 +9926,13 @@ xex = argrelextrema(x[0], np.less)[0]
 yex = argrelextrema(y[0], np.less)[0]
 zex = argrelextrema(z[0], np.less)[0]
 
+
 fig = plt.figure(figsize=(8,6))
-plt.hist(morph_dist_flat_rot[:,0], bins=int((np.max(morph_dist_flat_rot[:,0]) - np.min(morph_dist_flat_rot[:,0]))/1), color='tab:purple', alpha=0.5)
+xval = np.abs(np.linspace(min(morph_dist_flat_rot[:,0])-0.1, max(morph_dist_flat_rot[:,0])+0.1, 300))
+kde = neighbors.KernelDensity(kernel='gaussian', bandwidth=3).fit(morph_dist_flat_rot[:,0].reshape((len(morph_dist_flat_rot[:,0]),1)))
+log_dens = kde.score_samples(xval.reshape((len(xval),1)))
+plt.plot(xval, np.exp(log_dens), lw=3)
+# plt.hist(morph_dist_flat_rot[:,0], bins=int((np.max(morph_dist_flat_rot[:,0]) - np.min(morph_dist_flat_rot[:,0]))/1), color='tab:purple', alpha=0.5, density=True)
 # plt.hist(np.array(ALdist_flat_rot)[:,0], bins=int((np.max(np.array(ALdist_flat_rot)[:,0]) - np.min(np.array(ALdist_flat_rot)[:,0]))/1), color='tab:blue', alpha=0.5)
 # plt.hist(np.array(calyxdist_flat_rot)[:,0], bins=int((np.max(np.array(calyxdist_flat_rot)[:,0]) - np.min(np.array(calyxdist_flat_rot)[:,0]))/1), color='tab:orange', alpha=0.5)
 # plt.hist(np.array(LHdist_flat_rot)[:,0], bins=int((np.max(np.array(LHdist_flat_rot)[:,0]) - np.min(np.array(LHdist_flat_rot)[:,0]))/1), color='tab:green', alpha=0.5)
@@ -9939,7 +9946,11 @@ plt.yticks([])
 plt.show()
 
 fig = plt.figure(figsize=(8,6))
-plt.hist(morph_dist_flat_rot[:,1], bins=int((np.max(morph_dist_flat_rot[:,1]) - np.min(morph_dist_flat_rot[:,1]))/1), color='tab:purple', alpha=0.5)
+xval = np.abs(np.linspace(min(morph_dist_flat_rot[:,1])-0.1, max(morph_dist_flat_rot[:,1])+0.1, 300))
+kde = neighbors.KernelDensity(kernel='gaussian', bandwidth=3).fit(morph_dist_flat_rot[:,1].reshape((len(morph_dist_flat_rot[:,1]),1)))
+log_dens = kde.score_samples(xval.reshape((len(xval),1)))
+plt.plot(xval, np.exp(log_dens), lw=3)
+# plt.hist(morph_dist_flat_rot[:,1], bins=int((np.max(morph_dist_flat_rot[:,1]) - np.min(morph_dist_flat_rot[:,1]))/1), color='tab:purple', alpha=0.5)
 # plt.hist(np.array(ALdist_flat_rot)[:,1], bins=int((np.max(np.array(ALdist_flat_rot)[:,1]) - np.min(np.array(ALdist_flat_rot)[:,1]))/1), color='tab:blue', alpha=0.5)
 # plt.hist(np.array(calyxdist_flat_rot)[:,1], bins=int((np.max(np.array(calyxdist_flat_rot)[:,1]) - np.min(np.array(calyxdist_flat_rot)[:,1]))/1), color='tab:orange', alpha=0.5)
 # plt.hist(np.array(LHdist_flat_rot)[:,1], bins=int((np.max(np.array(LHdist_flat_rot)[:,1]) - np.min(np.array(LHdist_flat_rot)[:,1]))/1), color='tab:green', alpha=0.5)
@@ -9953,7 +9964,11 @@ plt.yticks([])
 plt.show()
 
 fig = plt.figure(figsize=(8,6))
-plt.hist(morph_dist_flat_rot[:,2], bins=int((np.max(morph_dist_flat_rot[:,2]) - np.min(morph_dist_flat_rot[:,2]))/1), color='tab:purple', alpha=0.5)
+xval = np.abs(np.linspace(min(morph_dist_flat_rot[:,2])-0.1, max(morph_dist_flat_rot[:,2])+0.1, 300))
+kde = neighbors.KernelDensity(kernel='gaussian', bandwidth=3).fit(morph_dist_flat_rot[:,2].reshape((len(morph_dist_flat_rot[:,2]),1)))
+log_dens = kde.score_samples(xval.reshape((len(xval),1)))
+plt.plot(xval, np.exp(log_dens), lw=3)
+# plt.hist(morph_dist_flat_rot[:,2], bins=int((np.max(morph_dist_flat_rot[:,2]) - np.min(morph_dist_flat_rot[:,2]))/1), color='tab:purple', alpha=0.5)
 # plt.hist(np.array(ALdist_flat_rot)[:,2], bins=int((np.max(np.array(ALdist_flat_rot)[:,2]) - np.min(np.array(ALdist_flat_rot)[:,2]))/1), color='tab:blue', alpha=0.5)
 # plt.hist(np.array(calyxdist_flat_rot)[:,2], bins=int((np.max(np.array(calyxdist_flat_rot)[:,2]) - np.min(np.array(calyxdist_flat_rot)[:,2]))/1), color='tab:orange', alpha=0.5)
 # plt.hist(np.array(LHdist_flat_rot)[:,2], bins=int((np.max(np.array(LHdist_flat_rot)[:,2]) - np.min(np.array(LHdist_flat_rot)[:,2]))/1), color='tab:green', alpha=0.5)
