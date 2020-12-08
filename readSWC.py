@@ -9839,6 +9839,7 @@ plt.show()
 
 #%% Rotated segmentation process diagram
 
+
 r_d_x = -10
 r_rad_x = np.radians(r_d_x)
 r_x = np.array([0, 1, 0])
@@ -9859,9 +9860,9 @@ rotz = Rotation.from_rotvec(r_vec_z)
 
 fig = plt.figure(figsize=(6, 6))
 ax = plt.axes(projection='3d')
-# ax.set_xlim(440, 610)
-# ax.set_ylim(375, 205)
-# ax.set_zlim(45, 215)
+ax.set_xlim(-55, 115)
+ax.set_ylim(330, 160)
+ax.set_zlim(420, 590)
 cmap = cm.get_cmap('viridis', len(nidx_list))
 
 for i, nidx in enumerate(nidx_list):
