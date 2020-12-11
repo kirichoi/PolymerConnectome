@@ -684,6 +684,56 @@ ymin_AL = np.min(AL_dist_flat[:,1])
 zmax_AL = np.max(AL_dist_flat[:,2])
 zmin_AL = np.min(AL_dist_flat[:,2])
 
+# Find the BP closest to the CM
+calyxcent_bp = np.array([0,0,0])
+
+for nidx in range(len(BranchData.calyx_branchP)):
+    for bidx in range(len(BranchData.calyx_branchP[nidx])):
+        calyxcent_temp = MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(BranchData.calyx_branchP[nidx][bidx])]
+        
+        if np.linalg.norm(np.subtract(calyxCM, calyxcent_temp)) < np.linalg.norm(np.subtract(calyxCM, calyxcent_bp)):
+            calyxcent_bp = calyxcent_temp
+        
+LHcent_bp = np.array([0,0,0])
+
+for nidx in range(len(BranchData.LH_branchP)):
+    for bidx in range(len(BranchData.LH_branchP[nidx])):
+        LHcent_temp = MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(BranchData.LH_branchP[nidx][bidx])]
+        
+        if np.linalg.norm(np.subtract(LHCM, LHcent_temp)) < np.linalg.norm(np.subtract(LHCM, LHcent_bp)):
+            LHcent_bp = LHcent_temp
+        
+ALcent_bp = np.array([0,0,0])
+
+for nidx in range(len(BranchData.AL_branchP)):
+    for bidx in range(len(BranchData.AL_branchP[nidx])):
+        ALcent_temp = MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(BranchData.AL_branchP[nidx][bidx])]
+        
+        if np.linalg.norm(np.subtract(ALCM, ALcent_temp)) < np.linalg.norm(np.subtract(ALCM, ALcent_bp)):
+            ALcent_bp = ALcent_temp
+
+# Find the point closest to the CM
+calyxcent_npl = np.array([0,0,0])
+
+for nidx in range(len(MorphData.calyxdist)):
+    for bidx in range(len(MorphData.calyxdist[nidx])):
+        if np.linalg.norm(np.subtract(calyxCM, MorphData.calyxdist[nidx][bidx])) < np.linalg.norm(np.subtract(calyxCM, calyxcent_npl)):
+            calyxcent_npl = MorphData.calyxdist[nidx][bidx]
+        
+LHcent_npl = np.array([0,0,0])
+
+for nidx in range(len(MorphData.LHdist)):
+    for bidx in range(len(MorphData.LHdist[nidx])):
+        if np.linalg.norm(np.subtract(LHCM, MorphData.LHdist[nidx][bidx])) < np.linalg.norm(np.subtract(LHCM, LHcent_npl)):
+            LHcent_npl = MorphData.LHdist[nidx][bidx]
+        
+ALcent_npl = np.array([0,0,0])
+
+for nidx in range(len(MorphData.ALdist)):
+    for bidx in range(len(MorphData.ALdist[nidx])):
+        if np.linalg.norm(np.subtract(ALCM, MorphData.ALdist[nidx][bidx])) < np.linalg.norm(np.subtract(ALCM, ALcent_npl)):
+            ALcent_npl = MorphData.ALdist[nidx][bidx]
+
 t5 = time.time()
 
 print('checkpoint 5: ' + str(t5-t4))
@@ -1651,14 +1701,14 @@ plt.show()
 
 
 #%% Cluster scaling exponent calculation V2
-        
+
 def cons_check(val):
     val = sorted(set(val))
     gaps = [[s, e] for s, e in zip(val, val[1:]) if s+1 < e]
     edges = iter(val[:1] + sum(gaps, []) + val[-1:])
     return list(zip(edges, edges))
-
-radiussize = np.logspace(-1, 2, 100)[25:99]
+            
+radiussize = np.logspace(-1, 2, 100)[0:99]
 # radiussize = np.linspace(1, 100, 100)[0:99:3]
 
 spheredist_calyx_sum = np.empty(len(radiussize))
@@ -1683,9 +1733,9 @@ for b in range(len(radiussize)):
     spheredist_AL_c_temp2 = []
     
     for ib in range(len(MorphData.calyxdist)):
-        inbound_calyx = np.where(np.sqrt(np.square(np.array(MorphData.calyxdist[ib])[:,0] - calyxCM[0]) +
-                                         np.square(np.array(MorphData.calyxdist[ib])[:,1] - calyxCM[1]) +
-                                         np.square(np.array(MorphData.calyxdist[ib])[:,2] - calyxCM[2])) <= radiussize[b])[0]
+        inbound_calyx = np.where(np.sqrt(np.square(np.array(MorphData.calyxdist[ib])[:,0] - calyxcent_npl[0]) +
+                                         np.square(np.array(MorphData.calyxdist[ib])[:,1] - calyxcent_npl[1]) +
+                                         np.square(np.array(MorphData.calyxdist[ib])[:,2] - calyxcent_npl[2])) <= radiussize[b])[0]
         dist_calyx = 0
         lenc = 0
         if len(inbound_calyx) > 1:
@@ -1707,9 +1757,9 @@ for b in range(len(radiussize)):
         spheredist_calyx_c_temp2.append(len(inbound_calyx))
         
     for ib in range(len(MorphData.LHdist)):
-        inbound_LH = np.where(np.sqrt(np.square(np.array(MorphData.LHdist[ib])[:,0] - LHCM[0]) +
-                                      np.square(np.array(MorphData.LHdist[ib])[:,1] - LHCM[1]) +
-                                      np.square(np.array(MorphData.LHdist[ib])[:,2] - LHCM[2])) <= radiussize[b])[0]
+        inbound_LH = np.where(np.sqrt(np.square(np.array(MorphData.LHdist[ib])[:,0] - LHcent_npl[0]) +
+                                      np.square(np.array(MorphData.LHdist[ib])[:,1] - LHcent_npl[1]) +
+                                      np.square(np.array(MorphData.LHdist[ib])[:,2] - LHcent_npl[2])) <= radiussize[b])[0]
         dist_LH = 0
         lenc = 0
         if len(inbound_LH) > 1:
@@ -1731,9 +1781,9 @@ for b in range(len(radiussize)):
         spheredist_LH_c_temp2.append(len(inbound_LH))
     
     for ib in range(len(MorphData.ALdist)):
-        inbound_AL = np.where(np.sqrt(np.square(np.array(MorphData.ALdist[ib])[:,0] - ALCM[0]) +
-                                      np.square(np.array(MorphData.ALdist[ib])[:,1] - ALCM[1]) +
-                                      np.square(np.array(MorphData.ALdist[ib])[:,2] - ALCM[2])) <= radiussize[b])[0]
+        inbound_AL = np.where(np.sqrt(np.square(np.array(MorphData.ALdist[ib])[:,0] - ALcent_npl[0]) +
+                                      np.square(np.array(MorphData.ALdist[ib])[:,1] - ALcent_npl[1]) +
+                                      np.square(np.array(MorphData.ALdist[ib])[:,2] - ALcent_npl[2])) <= radiussize[b])[0]
         dist_AL = 0
         lenc = 0
         if len(inbound_AL) > 1:
@@ -1772,7 +1822,7 @@ poptD_LH_all = []
 poptD_AL_all = []
 
 farg_calyx = np.where(np.abs(np.diff(np.log10(spheredist_calyx_sum[np.nonzero(spheredist_calyx_sum)]))) > 0.03)[0][-5]
-iarg_calyx = np.where(np.abs(np.diff(np.log10(spheredist_calyx_sum[np.nonzero(spheredist_calyx_sum)]))) < 0.1)[0][15]
+iarg_calyx = np.where(np.abs(np.diff(np.log10(spheredist_calyx_sum[np.nonzero(spheredist_calyx_sum)]))) < 0.1)[0][0]
 
 poptD_calyx, pcovD_calyx = scipy.optimize.curve_fit(objFuncGL, 
                                                     np.log10(radiussize[np.nonzero(spheredist_calyx_sum)][iarg_calyx:farg_calyx]), 
@@ -1782,7 +1832,7 @@ poptD_calyx, pcovD_calyx = scipy.optimize.curve_fit(objFuncGL,
 perrD_calyx = np.sqrt(np.diag(pcovD_calyx))
 
 farg_LH = np.where(np.abs(np.diff(np.log10(spheredist_LH_sum[np.nonzero(spheredist_LH_sum)]))) > 0.03)[0][-1]
-iarg_LH = np.where(np.abs(np.diff(np.log10(spheredist_LH_sum[np.nonzero(spheredist_LH_sum)]))) < 0.1)[0][5]
+iarg_LH = np.where(np.abs(np.diff(np.log10(spheredist_LH_sum[np.nonzero(spheredist_LH_sum)]))) < 0.1)[0][0]
 
 poptD_LH, pcovD_LH = scipy.optimize.curve_fit(objFuncGL, 
                                               np.log10(radiussize[np.nonzero(spheredist_LH_sum)][iarg_LH:farg_LH]), 
@@ -1792,7 +1842,7 @@ poptD_LH, pcovD_LH = scipy.optimize.curve_fit(objFuncGL,
 perrD_LH = np.sqrt(np.diag(pcovD_LH))
 
 farg_AL1 = np.where(np.abs(np.diff(np.log10(spheredist_AL_sum[np.nonzero(spheredist_AL_sum)]))) > 0.03)[0][-1]
-iarg_AL1 = np.where(np.abs(np.diff(np.log10(spheredist_AL_sum[np.nonzero(spheredist_AL_sum)]))) < 0.1)[0][26]
+iarg_AL1 = np.where(np.abs(np.diff(np.log10(spheredist_AL_sum[np.nonzero(spheredist_AL_sum)]))) < 0.1)[0][0]
 
 poptD_AL1, pcovD_AL1 = scipy.optimize.curve_fit(objFuncGL, 
                                               np.log10(radiussize[np.nonzero(spheredist_AL_sum)][iarg_AL1:farg_AL1]), 
@@ -1801,8 +1851,8 @@ poptD_AL1, pcovD_AL1 = scipy.optimize.curve_fit(objFuncGL,
                                               maxfev=10000)
 perrD_AL1 = np.sqrt(np.diag(pcovD_AL1))
 
-farg_AL2 = np.where(np.abs(np.diff(np.log10(spheredist_AL_sum[np.nonzero(spheredist_AL_sum)]))) > 0.03)[0][-30]
-iarg_AL2 = np.where(np.abs(np.diff(np.log10(spheredist_AL_sum[np.nonzero(spheredist_AL_sum)]))) < 0.1)[0][18]
+farg_AL2 = np.where(np.abs(np.diff(np.log10(spheredist_AL_sum[np.nonzero(spheredist_AL_sum)]))) > 0.03)[0][-15]
+iarg_AL2 = np.where(np.abs(np.diff(np.log10(spheredist_AL_sum[np.nonzero(spheredist_AL_sum)]))) < 0.1)[0][0]
 
 poptD_AL2, pcovD_AL2 = scipy.optimize.curve_fit(objFuncGL, 
                                               np.log10(radiussize[np.nonzero(spheredist_AL_sum)][iarg_AL2:farg_AL2]), 
@@ -1811,7 +1861,7 @@ poptD_AL2, pcovD_AL2 = scipy.optimize.curve_fit(objFuncGL,
                                               maxfev=10000)
 perrD_AL2 = np.sqrt(np.diag(pcovD_AL2))
 
-farg_AL3 = np.where(np.abs(np.diff(np.log10(spheredist_AL_sum[np.nonzero(spheredist_AL_sum)]))) > 0.03)[0][-25]
+farg_AL3 = np.where(np.abs(np.diff(np.log10(spheredist_AL_sum[np.nonzero(spheredist_AL_sum)]))) > 0.03)[0][-15]
 iarg_AL3 = np.where(np.abs(np.diff(np.log10(spheredist_AL_sum[np.nonzero(spheredist_AL_sum)]))) < 0.1)[0][0]
 
 poptD_AL3, pcovD_AL3 = scipy.optimize.curve_fit(objFuncGL, 
@@ -1830,8 +1880,8 @@ fitYD_AL3 = objFuncPpow(radiussize, poptD_AL3[0], poptD_AL3[1])
 
 fig = plt.figure(figsize=(8,6))
 
-plt.scatter(radiussize[np.nonzero(spheredist_AL_sum)][iarg_AL1:], 
-            spheredist_AL_sum[np.nonzero(spheredist_AL_sum)][iarg_AL1:], 
+plt.scatter(radiussize[np.nonzero(spheredist_AL_sum)][iarg_AL2:], 
+            spheredist_AL_sum[np.nonzero(spheredist_AL_sum)][iarg_AL2:], 
             color='tab:blue', facecolors='none')
 plt.scatter(radiussize[np.nonzero(spheredist_calyx_sum)][iarg_calyx:], 
             spheredist_calyx_sum[np.nonzero(spheredist_calyx_sum)][iarg_calyx:], 
@@ -1841,15 +1891,15 @@ plt.scatter(radiussize[np.nonzero(spheredist_LH_sum)][iarg_LH:],
             color='tab:green', facecolors='none')
 
 
-plt.plot(radiussize[np.nonzero(spheredist_AL_sum)][iarg_AL2+15:],
-         fitYD_AL1[np.nonzero(spheredist_AL_sum)][iarg_AL2+15:],
+plt.plot(radiussize[np.nonzero(spheredist_AL_sum)][iarg_AL2:],
+         fitYD_AL1[np.nonzero(spheredist_AL_sum)][iarg_AL2:],
          lw=2, color='tab:blue', alpha=0.5)
-# plt.plot(radiussize[np.nonzero(spheredist_AL_sum)][iarg_AL2-10:-27], 
-#          fitYD_AL2[np.nonzero(spheredist_AL_sum)][iarg_AL2-10:-27],
-#          lw=2, linestyle='--', color='tab:blue', alpha=0.5)
-# plt.plot(radiussize[np.nonzero(spheredist_AL_sum)][iarg_AL3:-57], 
-#          fitYD_AL3[np.nonzero(spheredist_AL_sum)][iarg_AL3:-57],
-#          lw=2, linestyle='dotted', color='tab:blue', alpha=0.5)
+plt.plot(radiussize[np.nonzero(spheredist_AL_sum)][iarg_AL2-10:-27], 
+          fitYD_AL2[np.nonzero(spheredist_AL_sum)][iarg_AL2-10:-27],
+          lw=2, linestyle='--', color='tab:blue', alpha=0.5)
+plt.plot(radiussize[np.nonzero(spheredist_AL_sum)][iarg_AL3:-57], 
+          fitYD_AL3[np.nonzero(spheredist_AL_sum)][iarg_AL3:-57],
+          lw=2, linestyle='dotted', color='tab:blue', alpha=0.5)
 plt.plot(radiussize[np.nonzero(spheredist_calyx_sum)][iarg_calyx:],
          fitYD_calyx[np.nonzero(spheredist_calyx_sum)][iarg_calyx:],
          lw=2, color='tab:orange', alpha=0.5)
@@ -4408,7 +4458,7 @@ un_AL = np.unique(MorphData.ALdist_trk)
 
 for i in range(len(un_calyx)):
     idx = np.where(MorphData.calyxdist_trk == un_calyx[i])[0]
-    tarval = np.array(MorphData.calyxdist)[idx]
+    tarval = np.array(MorphData.calyxdist,dtype=object)[idx]
     calyxdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
     sumval = np.sum(LengthData.length_calyx[un_calyx[i]])
     if calyxdist_per_n_flat_t:# and sumval > 1:# and sumval < 5000:
@@ -4420,7 +4470,7 @@ for i in range(len(un_calyx)):
 
 for i in range(len(un_LH)):
     idx = np.where(MorphData.LHdist_trk == un_LH[i])[0]
-    tarval = np.array(MorphData.LHdist)[idx]
+    tarval = np.array(MorphData.LHdist,dtype=object)[idx]
     LHdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
     sumval = np.sum(LengthData.length_LH[un_LH[i]])
     if LHdist_per_n_flat_t:# and sumval > 1:# and sumval < 5000:
@@ -4432,7 +4482,7 @@ for i in range(len(un_LH)):
 
 for i in range(len(un_AL)):
     idx = np.where(MorphData.ALdist_trk == un_AL[i])[0]
-    tarval = np.array(MorphData.ALdist)[idx]
+    tarval = np.array(MorphData.ALdist,dtype=object)[idx]
     ALdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
     sumval = np.sum(LengthData.length_AL[un_AL[i]])
     if ALdist_per_n_flat_t:# and sumval > 1:# and sumval < 5000:
@@ -4489,7 +4539,7 @@ plt.legend(['AL: ' + str(round(poptR_AL[0], 3)) + '$\pm$' + str(round(perrR_AL[0
 plt.xlabel(r"$L$", fontsize=15)
 plt.ylabel(r"$R_{g}$", fontsize=15)
 plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/rgy_neuropil_fixed_2.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/rgy_neuropil_fixed_3.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 print('MB Calyx: ' + str(np.corrcoef(np.log10(LengthData.length_calyx_total), np.log10(rGy_calyx))[0][1]))
