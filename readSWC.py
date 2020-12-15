@@ -1733,9 +1733,9 @@ for b in range(len(radiussize)):
     spheredist_AL_c_temp2 = []
     
     for ib in range(len(MorphData.calyxdist)):
-        inbound_calyx = np.where(np.sqrt(np.square(np.array(MorphData.calyxdist[ib])[:,0] - calyxcent_npl[0]) +
-                                         np.square(np.array(MorphData.calyxdist[ib])[:,1] - calyxcent_npl[1]) +
-                                         np.square(np.array(MorphData.calyxdist[ib])[:,2] - calyxcent_npl[2])) <= radiussize[b])[0]
+        inbound_calyx = np.where(np.sqrt(np.square(np.array(MorphData.calyxdist[ib])[:,0] - calyxcent_bp[0]) +
+                                         np.square(np.array(MorphData.calyxdist[ib])[:,1] - calyxcent_bp[1]) +
+                                         np.square(np.array(MorphData.calyxdist[ib])[:,2] - calyxcent_bp[2])) <= radiussize[b])[0]
         dist_calyx = 0
         lenc = 0
         if len(inbound_calyx) > 1:
@@ -1757,9 +1757,9 @@ for b in range(len(radiussize)):
         spheredist_calyx_c_temp2.append(len(inbound_calyx))
         
     for ib in range(len(MorphData.LHdist)):
-        inbound_LH = np.where(np.sqrt(np.square(np.array(MorphData.LHdist[ib])[:,0] - LHcent_npl[0]) +
-                                      np.square(np.array(MorphData.LHdist[ib])[:,1] - LHcent_npl[1]) +
-                                      np.square(np.array(MorphData.LHdist[ib])[:,2] - LHcent_npl[2])) <= radiussize[b])[0]
+        inbound_LH = np.where(np.sqrt(np.square(np.array(MorphData.LHdist[ib])[:,0] - LHcent_bp[0]) +
+                                      np.square(np.array(MorphData.LHdist[ib])[:,1] - LHcent_bp[1]) +
+                                      np.square(np.array(MorphData.LHdist[ib])[:,2] - LHcent_bp[2])) <= radiussize[b])[0]
         dist_LH = 0
         lenc = 0
         if len(inbound_LH) > 1:
@@ -1781,9 +1781,9 @@ for b in range(len(radiussize)):
         spheredist_LH_c_temp2.append(len(inbound_LH))
     
     for ib in range(len(MorphData.ALdist)):
-        inbound_AL = np.where(np.sqrt(np.square(np.array(MorphData.ALdist[ib])[:,0] - ALcent_npl[0]) +
-                                      np.square(np.array(MorphData.ALdist[ib])[:,1] - ALcent_npl[1]) +
-                                      np.square(np.array(MorphData.ALdist[ib])[:,2] - ALcent_npl[2])) <= radiussize[b])[0]
+        inbound_AL = np.where(np.sqrt(np.square(np.array(MorphData.ALdist[ib])[:,0] - ALcent_bp[0]) +
+                                      np.square(np.array(MorphData.ALdist[ib])[:,1] - ALcent_bp[1]) +
+                                      np.square(np.array(MorphData.ALdist[ib])[:,2] - ALcent_bp[2])) <= radiussize[b])[0]
         dist_AL = 0
         lenc = 0
         if len(inbound_AL) > 1:
@@ -1943,7 +1943,7 @@ ALmwerr = []
 mwx_calyx = []
 mwx_LH = []
 mwx_AL = []
-shiftN = 5
+shiftN = 15
 for i in range(len(radiussize[np.nonzero(spheredist_calyx_sum)]) - shiftN):
     mwx_calyx.append(np.average(radiussize[np.nonzero(spheredist_calyx_sum)][i:i+shiftN]))
     
@@ -1977,18 +1977,18 @@ for i in range(len(radiussize[np.nonzero(spheredist_AL_sum)]) - shiftN):
     
 
 fig = plt.figure(figsize=(8,6))
-plt.plot(mwx_AL, ALmw, lw=2)
-plt.plot(mwx_calyx, Calyxmw, lw=2)
-plt.plot(mwx_LH, LHmw, lw=2)
-plt.fill_between(mwx_AL, np.array(ALmw)-np.array(ALmwerr), np.array(ALmw)+np.array(ALmwerr), alpha=0.3)
-plt.fill_between(mwx_calyx, np.array(Calyxmw)-np.array(Calyxmwerr), np.array(Calyxmw)+np.array(Calyxmwerr), alpha=0.3)
-plt.fill_between(mwx_LH, np.array(LHmw)-np.array(LHmwerr), np.array(LHmw)+np.array(LHmwerr), alpha=0.3)
+plt.plot(1/np.array(mwx_AL), 1/np.array(ALmw), lw=2)
+plt.plot(1/np.array(mwx_calyx), 1/np.array(Calyxmw), lw=2)
+plt.plot(1/np.array(mwx_LH), 1/np.array(LHmw), lw=2)
+# plt.fill_between(mwx_AL, np.array(ALmw)-np.array(ALmwerr), np.array(ALmw)+np.array(ALmwerr), alpha=0.3)
+# plt.fill_between(mwx_calyx, np.array(Calyxmw)-np.array(Calyxmwerr), np.array(Calyxmw)+np.array(Calyxmwerr), alpha=0.3)
+# plt.fill_between(mwx_LH, np.array(LHmw)-np.array(LHmwerr), np.array(LHmw)+np.array(LHmwerr), alpha=0.3)
 
 plt.xscale('log')
 plt.legend(["AL", "MB calyx", "LH"], fontsize=13)
 # plt.yscale('log')
 #plt.xlim(1, 75)
-#plt.ylim(3, 1500)
+plt.ylim(0, 1.5)
 #plt.tight_layout()
 plt.xlabel("Radius $r$", fontsize=15)
 plt.ylabel("Slope", fontsize=15)
@@ -2004,7 +2004,7 @@ poptD_LH_all = []
 poptD_AL_all = []
 
 farg_calyx = np.where(np.abs(np.diff(np.log10(spheredist_calyx_count1[np.nonzero(spheredist_calyx_count1)]))) > 0.05)[0][-1]
-iarg_calyx = np.where(np.abs(np.diff(np.log10(spheredist_calyx_count1[np.nonzero(spheredist_calyx_count1)]))) < 0.1)[0][10]
+iarg_calyx = np.where(np.abs(np.diff(np.log10(spheredist_calyx_count1[np.nonzero(spheredist_calyx_count1)]))) < 0.1)[0][0]
 
 poptD_calyx, pcovD_calyx = scipy.optimize.curve_fit(objFuncGL, 
                                                     np.log10(radiussize[np.nonzero(spheredist_calyx_count1)][iarg_calyx:farg_calyx]), 
@@ -2014,7 +2014,7 @@ poptD_calyx, pcovD_calyx = scipy.optimize.curve_fit(objFuncGL,
 perrD_calyx = np.sqrt(np.diag(pcovD_calyx))
 
 farg_LH = np.where(np.abs(np.diff(np.log10(spheredist_LH_count1[np.nonzero(spheredist_LH_count1)]))) > 0.05)[0][-1]
-iarg_LH = np.where(np.abs(np.diff(np.log10(spheredist_LH_count1[np.nonzero(spheredist_LH_count1)]))) < 0.1)[0][5]
+iarg_LH = np.where(np.abs(np.diff(np.log10(spheredist_LH_count1[np.nonzero(spheredist_LH_count1)]))) < 0.1)[0][0]
 
 poptD_LH, pcovD_LH = scipy.optimize.curve_fit(objFuncGL, 
                                               np.log10(radiussize[np.nonzero(spheredist_LH_count1)][iarg_LH:farg_LH]), 
@@ -2024,7 +2024,7 @@ poptD_LH, pcovD_LH = scipy.optimize.curve_fit(objFuncGL,
 perrD_LH = np.sqrt(np.diag(pcovD_LH))
 
 farg_AL = np.where(np.abs(np.diff(np.log10(spheredist_AL_count1[np.nonzero(spheredist_AL_count1)]))) > 0.05)[0][-1]
-iarg_AL = np.where(np.abs(np.diff(np.log10(spheredist_AL_count1[np.nonzero(spheredist_AL_count1)]))) < 0.1)[0][30]
+iarg_AL = np.where(np.abs(np.diff(np.log10(spheredist_AL_count1[np.nonzero(spheredist_AL_count1)]))) < 0.1)[0][0]
 
 poptD_AL, pcovD_AL = scipy.optimize.curve_fit(objFuncGL, 
                                               np.log10(radiussize[np.nonzero(spheredist_AL_count1)][iarg_AL:farg_AL]), 
@@ -2084,7 +2084,7 @@ ALmwerr = []
 mwx_calyx = []
 mwx_LH = []
 mwx_AL = []
-shiftN = 5
+shiftN = 15
 for i in range(len(radiussize[np.nonzero(spheredist_calyx_count1)]) - shiftN):
     mwx_calyx.append(np.average(radiussize[np.nonzero(spheredist_calyx_count1)][i:i+shiftN]))
     
@@ -2118,18 +2118,18 @@ for i in range(len(radiussize[np.nonzero(spheredist_AL_count1)]) - shiftN):
     
 
 fig = plt.figure(figsize=(8,6))
-plt.plot(mwx_AL, ALmw, lw=2)
-plt.plot(mwx_calyx, Calyxmw, lw=2)
-plt.plot(mwx_LH, LHmw, lw=2)
-plt.fill_between(mwx_AL, np.array(ALmw)-np.array(ALmwerr), np.array(ALmw)+np.array(ALmwerr), alpha=0.3)
-plt.fill_between(mwx_calyx, np.array(Calyxmw)-np.array(Calyxmwerr), np.array(Calyxmw)+np.array(Calyxmwerr), alpha=0.3)
-plt.fill_between(mwx_LH, np.array(LHmw)-np.array(LHmwerr), np.array(LHmw)+np.array(LHmwerr), alpha=0.3)
+plt.plot(1/np.array(mwx_AL), 1/np.array(ALmw), lw=2)
+plt.plot(1/np.array(mwx_calyx), 1/np.array(Calyxmw), lw=2)
+plt.plot(1/np.array(mwx_LH), 1/np.array(LHmw), lw=2)
+# plt.fill_between(mwx_AL, np.array(ALmw)-np.array(ALmwerr), np.array(ALmw)+np.array(ALmwerr), alpha=0.3)
+# plt.fill_between(mwx_calyx, np.array(Calyxmw)-np.array(Calyxmwerr), np.array(Calyxmw)+np.array(Calyxmwerr), alpha=0.3)
+# plt.fill_between(mwx_LH, np.array(LHmw)-np.array(LHmwerr), np.array(LHmw)+np.array(LHmwerr), alpha=0.3)
 
 plt.xscale('log')
 plt.legend(["AL", "MB calyx", "LH"], fontsize=13)
 # plt.yscale('log')
 #plt.xlim(1, 75)
-#plt.ylim(3, 1500)
+plt.ylim(0, 1.5)
 #plt.tight_layout()
 plt.xlabel("Radius $r$", fontsize=15)
 plt.ylabel("Slope", fontsize=15)
@@ -8391,11 +8391,11 @@ plt.fill_between(mwx_LH,
                  -1/(np.array(mw_Pq_LH)+np.array(mw_Pq_LH_err)), 
                  alpha=0.3)
 
-plt.hlines(1/4, 0.01, 100, ls='dashed')
-plt.hlines(7/16, 0.01, 100, ls='dashed')
-plt.hlines(1/2, 0.01, 100, ls='dashed')
-plt.hlines(1, 0.01, 100, ls='dashed')
-plt.hlines(3/5, 0.01, 100, ls='dashed')
+plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
+plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1, 0.01, 100, ls='dashed', color='k')
+plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
 plt.text(10.3, 1/4-0.01, 'Ideal')
 plt.text(10.3, 7/16-0.01, '$\Theta-Solvent$')
 plt.text(10.3, 1/2-0.01, 'Random')
@@ -8406,9 +8406,9 @@ plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
 plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
 plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
 
-plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
-plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
-plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
+# plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+# plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
 
 plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
@@ -8422,7 +8422,7 @@ plt.xlim(0.01, 10)
 plt.legend(["AL", "MB calyx", "LH"], fontsize=13)
 plt.xlabel("q", fontsize=15)
 plt.ylabel(r"$-1/\lambda$", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/Pq_all_mv_3.png', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_mv_4.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -8868,9 +8868,9 @@ plt.text(10.3, 1/2-0.01, 'Random')
 plt.text(10.3, 1-0.01,'Rigid')
 plt.text(10.3, 3/5-0.01,'SAW')
 
-plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dashdot')
+plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
 
-plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
+# plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
 
 plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 
@@ -8881,7 +8881,7 @@ plt.ylim(0.1, 1.7)
 plt.xlim(0.01, 10)
 plt.xlabel("q", fontsize=15)
 plt.ylabel(r"$-1/\lambda$", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_calyx_mv_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_calyx_mv_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
   
 
@@ -8901,9 +8901,9 @@ plt.text(10.3, 1/2-0.01, 'Random')
 plt.text(10.3, 1-0.01,'Rigid')
 plt.text(10.3, 3/5-0.01,'SAW')
 
-plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green', ls='dashdot')
+plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
 
-plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
 
 plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 
@@ -8914,7 +8914,7 @@ plt.ylim(0.1, 1.7)
 plt.xlim(0.01, 10)
 plt.xlabel("q", fontsize=15)
 plt.ylabel(r"$-1/\lambda$", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_LH_mv_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_LH_mv_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -8934,9 +8934,9 @@ plt.text(10.3, 1/2-0.01, 'Random')
 plt.text(10.3, 1-0.01,'Rigid')
 plt.text(10.3, 3/5-0.01,'SAW')
 
-plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dashdot')
+plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
 
-plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+# plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
 
 plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 
@@ -8947,7 +8947,7 @@ plt.ylim(0.1, 1.7)
 plt.xlim(0.01, 10)
 plt.xlabel("q", fontsize=15)
 plt.ylabel(r"$-1/\lambda$", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_mv_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_mv_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
