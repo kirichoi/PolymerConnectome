@@ -8970,9 +8970,9 @@ plt.text(10.3, 1/2-0.01, 'Random')
 plt.text(10.3, 1-0.01,'Rigid')
 plt.text(10.3, 3/5-0.01,'SAW')
 
-plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dashdot')
+plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
 
-plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
+# plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
 
 plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 
@@ -8983,7 +8983,7 @@ plt.ylim(0.1, 1.7)
 plt.xlim(0.01, 10)
 plt.xlabel("q", fontsize=15)
 plt.ylabel(r"$-1/\lambda$", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_calyx_mv_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_calyx_mv_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -9002,9 +9002,9 @@ plt.text(10.3, 1/2-0.01, 'Random')
 plt.text(10.3, 1-0.01,'Rigid')
 plt.text(10.3, 3/5-0.01,'SAW')
 
-plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green', ls='dashdot')
+plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
 
-plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
 
 plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 
@@ -9015,7 +9015,7 @@ plt.ylim(0.1, 1.7)
 plt.xlim(0.01, 10)
 plt.xlabel("q", fontsize=15)
 plt.ylabel(r"$-1/\lambda$", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_LH_mv_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_LH_mv_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -9034,9 +9034,9 @@ plt.text(10.3, 1/2-0.01, 'Random')
 plt.text(10.3, 1-0.01,'Rigid')
 plt.text(10.3, 3/5-0.01,'SAW')
 
-plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dashdot')
+plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
 
-plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+# plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
 
 plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 
@@ -9047,7 +9047,7 @@ plt.ylim(0.1, 1.7)
 plt.xlim(0.01, 10)
 plt.xlabel("q", fontsize=15)
 plt.ylabel(r"$-1/\lambda$", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_AL_mv_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_AL_mv_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 #%% 30891 moving average
