@@ -1943,7 +1943,7 @@ ALmwerr = []
 mwx_calyx = []
 mwx_LH = []
 mwx_AL = []
-shiftN = 15
+shiftN = 10
 for i in range(len(radiussize[np.nonzero(spheredist_calyx_sum)]) - shiftN):
     mwx_calyx.append(np.average(radiussize[np.nonzero(spheredist_calyx_sum)][i:i+shiftN]))
     
@@ -1977,9 +1977,9 @@ for i in range(len(radiussize[np.nonzero(spheredist_AL_sum)]) - shiftN):
     
 
 fig = plt.figure(figsize=(8,6))
-plt.plot(1/np.array(mwx_AL), 1/np.array(ALmw), lw=2)
-plt.plot(1/np.array(mwx_calyx), 1/np.array(Calyxmw), lw=2)
-plt.plot(1/np.array(mwx_LH), 1/np.array(LHmw), lw=2)
+plt.plot(np.array(mwx_AL), np.array(ALmw), lw=2)
+plt.plot(np.array(mwx_calyx), np.array(Calyxmw), lw=2)
+plt.plot(np.array(mwx_LH), np.array(LHmw), lw=2)
 # plt.fill_between(mwx_AL, np.array(ALmw)-np.array(ALmwerr), np.array(ALmw)+np.array(ALmwerr), alpha=0.3)
 # plt.fill_between(mwx_calyx, np.array(Calyxmw)-np.array(Calyxmwerr), np.array(Calyxmw)+np.array(Calyxmwerr), alpha=0.3)
 # plt.fill_between(mwx_LH, np.array(LHmw)-np.array(LHmwerr), np.array(LHmw)+np.array(LHmwerr), alpha=0.3)
@@ -1988,7 +1988,7 @@ plt.xscale('log')
 plt.legend(["AL", "MB calyx", "LH"], fontsize=13)
 # plt.yscale('log')
 #plt.xlim(1, 75)
-plt.ylim(0, 1.5)
+plt.ylim(0, 4)
 #plt.tight_layout()
 plt.xlabel("Radius $r$", fontsize=15)
 plt.ylabel("Slope", fontsize=15)
@@ -2168,7 +2168,7 @@ for b in range(len(radiussize)):
         spheredist_calyx_c_temp2 = []
         
         trkd = np.where(MorphData.calyxdist_trk == un_calyx[n])[0]
-        ncalyxdist_flat = np.array([item for sublist in np.array(MorphData.calyxdist)[trkd] for item in sublist])
+        ncalyxdist_flat = np.array([item for sublist in np.array(MorphData.calyxdist, dtype=object)[trkd] for item in sublist])
         ncalyx_CM = np.average(ncalyxdist_flat, axis=0)
         
         for ib in trkd:
@@ -2205,7 +2205,7 @@ for b in range(len(radiussize)):
         spheredist_LH_c_temp2 = []
         
         trkd = np.where(MorphData.LHdist_trk == un_LH[n])[0]
-        nLHdist_flat = np.array([item for sublist in np.array(MorphData.LHdist)[trkd] for item in sublist])
+        nLHdist_flat = np.array([item for sublist in np.array(MorphData.LHdist, dtype=object)[trkd] for item in sublist])
         nLH_CM = np.average(nLHdist_flat, axis=0)
         
         for ib in trkd:
@@ -2242,7 +2242,7 @@ for b in range(len(radiussize)):
         spheredist_AL_c_temp2 = []
         
         trkd = np.where(MorphData.ALdist_trk == un_AL[n])[0]
-        nALdist_flat = np.array([item for sublist in np.array(MorphData.ALdist)[trkd] for item in sublist])
+        nALdist_flat = np.array([item for sublist in np.array(MorphData.ALdist, dtype=object)[trkd] for item in sublist])
         nAL_CM = np.average(nALdist_flat, axis=0)
         
         for ib in trkd:
@@ -2274,6 +2274,8 @@ for b in range(len(radiussize)):
         spheredist_AL_count2[n][b] = np.sum(spheredist_AL_c_temp2)
 
 
+spheredist_AL_sum = np.delete(spheredist_AL_sum, 73, 0)
+
 spheredist_calyx_sum_avg = np.average(spheredist_calyx_sum, axis=0)
 spheredist_calyx_sum_std = np.std(spheredist_calyx_sum, axis=0)
 spheredist_LH_sum_avg = np.average(spheredist_LH_sum, axis=0)
@@ -2296,34 +2298,40 @@ spheredist_AL_count2_avg = np.average(spheredist_AL_count2, axis=0)
 spheredist_AL_count2_std = np.std(spheredist_AL_count2, axis=0)
 
 
+
+
 #%%
 
+spheredist_calyx_sum_avg_nz = spheredist_calyx_sum_avg[np.nonzero(spheredist_calyx_sum_avg)]
+spheredist_LH_sum_avg_nz = spheredist_LH_sum_avg[np.nonzero(spheredist_LH_sum_avg)]
+spheredist_AL_sum_avg_nz = spheredist_AL_sum_avg[np.nonzero(spheredist_AL_sum_avg)]
+
 farg = np.where(np.abs(np.diff(np.log10(spheredist_calyx_sum_avg))) > 0.14)[0][-1]
-iarg =  np.where(np.abs(np.diff(np.log10(spheredist_calyx_sum_avg))) > 0.14)[0][0]
+iarg = np.where(np.abs(np.diff(np.log10(spheredist_calyx_sum_avg))) > 0.14)[0][0]
 
 poptD_calyx, pcovD_calyx = scipy.optimize.curve_fit(objFuncGL, 
-                                                    np.log10(radiussize[iarg:farg]), 
-                                                    np.log10(spheredist_calyx_sum_avg[iarg:farg]), 
+                                                    np.log10(radiussize[np.nonzero(spheredist_calyx_sum_avg)][iarg:farg]), 
+                                                    np.log10(spheredist_calyx_sum_avg_nz[iarg:farg]), 
                                                     p0=[-0.1, 0.1], 
                                                     maxfev=10000)
 perrD_calyx = np.sqrt(np.diag(pcovD_calyx))
 
 farg = np.where(np.abs(np.diff(np.log10(spheredist_LH_sum_avg))) > 0.14)[0][-1]
-iarg =  np.where(np.abs(np.diff(np.log10(spheredist_LH_sum_avg))) > 0.14)[0][0]
+iarg = np.where(np.abs(np.diff(np.log10(spheredist_LH_sum_avg))) > 0.14)[0][0]
 
 poptD_LH, pcovD_LH = scipy.optimize.curve_fit(objFuncGL, 
-                                              np.log10(radiussize[iarg:farg]), 
-                                              np.log10(spheredist_LH_sum_avg[iarg:farg]), 
+                                              np.log10(radiussize[np.nonzero(spheredist_LH_sum_avg)][iarg:farg]), 
+                                              np.log10(spheredist_LH_sum_avg_nz[iarg:farg]), 
                                               p0=[-0.1, 0.1], 
                                               maxfev=10000)
 perrD_LH = np.sqrt(np.diag(pcovD_LH))
 
 farg = np.where(np.abs(np.diff(np.log10(spheredist_AL_sum_avg))) > 0.14)[0][-1]
-iarg =  np.where(np.abs(np.diff(np.log10(spheredist_AL_sum_avg))) > 0.14)[0][0]
+iarg = np.where(np.abs(np.diff(np.log10(spheredist_AL_sum_avg))) > 0.14)[0][0]
 
 poptD_AL, pcovD_AL = scipy.optimize.curve_fit(objFuncGL, 
-                                              np.log10(radiussize[iarg:farg]), 
-                                              np.log10(spheredist_AL_sum_avg[iarg:farg]), 
+                                              np.log10(radiussize[np.nonzero(spheredist_AL_sum_avg)][iarg:farg]), 
+                                              np.log10(spheredist_AL_sum_avg_nz[iarg:farg]), 
                                               p0=[-0.1, 0.1], 
                                               maxfev=10000)
 perrD_AL = np.sqrt(np.diag(pcovD_AL))
@@ -2334,30 +2342,76 @@ fitYD_AL = objFuncPpow(radiussize, poptD_AL[0], poptD_AL[1])
 
 fig = plt.figure(figsize=(8,6))
 
-plt.scatter(radiussize, spheredist_AL_sum_avg, color='tab:blue', facecolors='none', alpha=0.5)
+plt.scatter(radiussize[np.nonzero(spheredist_AL_sum_avg)], spheredist_AL_sum_avg_nz, color='tab:blue', facecolors='none')
 # plt.errorbar(radiussize, spheredist_AL_sum_avg, scipy.stats.sem(spheredist_AL_sum, axis=0), capsize=2)
-plt.scatter(radiussize, spheredist_calyx_sum_avg, color='tab:orange', facecolors='none', alpha=0.5)
+plt.scatter(radiussize[np.nonzero(spheredist_calyx_sum_avg)], spheredist_calyx_sum_avg_nz, color='tab:orange', facecolors='none')
 # plt.errorbar(radiussize, spheredist_calyx_sum_avg, scipy.stats.sem(spheredist_calyx_sum, axis=0), capsize=2)
-plt.scatter(radiussize, spheredist_LH_sum_avg, color='tab:green', facecolors='none', alpha=0.5)
+plt.scatter(radiussize[np.nonzero(spheredist_LH_sum_avg)], spheredist_LH_sum_avg_nz, color='tab:green', facecolors='none')
 # plt.errorbar(radiussize, spheredist_LH_sum_avg, scipy.stats.sem(spheredist_LH_sum, axis=0), capsize=2)
 
 
-plt.plot(radiussize, fitYD_AL, lw=2, color='tab:blue')
-plt.plot(radiussize, fitYD_calyx, lw=2, color='tab:orange')
-plt.plot(radiussize, fitYD_LH, lw=2, color='tab:green')
+plt.plot(radiussize, fitYD_AL, lw=2, color='tab:blue', alpha=0.5)
+plt.plot(radiussize, fitYD_calyx, lw=2, color='tab:orange', alpha=0.5)
+plt.plot(radiussize, fitYD_LH, lw=2, color='tab:green', alpha=0.5)
 plt.yscale('log')
 plt.xscale('log')
 plt.legend(['AL: ' + str(round(poptD_AL[0], 3)) + '$\pm$' + str(round(perrD_AL[0], 3)),
             'MB calyx: ' + str(round(poptD_calyx[0], 3)) + '$\pm$' + str(round(perrD_calyx[0], 3)),
             'LH: ' + str(round(poptD_LH[0], 3)) + '$\pm$' + str(round(perrD_LH[0], 3))], fontsize=13)
 #plt.xlim(1, 75)
-plt.ylim(10e-3, 10e2)
+# plt.ylim(10e-3, 10e2)
 #plt.tight_layout()
 plt.xlabel("Radius $r$", fontsize=15)
 plt.ylabel("$L$", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/density_scale_neuropil_per_n.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
+
+
+fig = plt.figure(figsize=(8,6))
+
+plt.scatter(np.tile(radiussize, (len(spheredist_AL_sum),1)), spheredist_AL_sum, color='tab:blue', facecolors='none')
+
+plt.yscale('log')
+plt.xscale('log')
+plt.xlim(1e-1, 1e2)
+plt.ylim(1e-2, 1e4)
+#plt.tight_layout()
+plt.xlabel("Radius $r$", fontsize=15)
+plt.ylabel("$L$", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/density_scale_neuropil_per_n.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig = plt.figure(figsize=(8,6))
+
+plt.scatter(np.tile(radiussize, (len(spheredist_calyx_sum),1)), spheredist_calyx_sum, color='tab:orange', facecolors='none')
+
+plt.yscale('log')
+plt.xscale('log')
+plt.xlim(1e-1, 1e2)
+plt.ylim(1e-2, 1e4)
+#plt.tight_layout()
+plt.xlabel("Radius $r$", fontsize=15)
+plt.ylabel("$L$", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/density_scale_neuropil_per_n.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig = plt.figure(figsize=(8,6))
+
+plt.scatter(np.tile(radiussize, (len(spheredist_LH_sum),1)), spheredist_LH_sum, color='tab:green', facecolors='none')
+
+plt.yscale('log')
+plt.xscale('log')
+plt.xlim(1e-1, 1e2)
+plt.ylim(1e-2, 1e4)
+#plt.tight_layout()
+plt.xlabel("Radius $r$", fontsize=15)
+plt.ylabel("$L$", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/density_scale_neuropil_per_n.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+#%% 
 
 farg = np.where(np.abs(np.diff(np.log10(spheredist_calyx_count1_avg))) > 0.14)[0][-1]
 iarg =  np.where(np.abs(np.diff(np.log10(spheredist_calyx_count1_avg))) > 0.14)[0][0]
@@ -2988,7 +3042,7 @@ plt.show()
 
 #%% Fractal dimension using binary box counting for each region in sub-physiological scale
 
-binsize = np.logspace(-1, 3, 100)[13:85:3]
+binsize = np.logspace(-2, 3, 100)[20:90:3]
 
 sp_l1 = 0
 
@@ -3121,7 +3175,7 @@ plt.xscale('log')
 plt.legend(['AL: ' + str(round(-poptBcount_AL_b[0], 3)) + '$\pm$' + str(round(perrBcount_AL_b[0], 3)),
             'MB calyx: ' + str(round(-poptBcount_calyx_b[0], 3)) + '$\pm$' + str(round(perrBcount_calyx_b[0], 3)),
             'LH: ' + str(round(-poptBcount_LH_b[0], 3)) + '$\pm$' + str(round(perrBcount_LH_b[0], 3))], fontsize=13)
-plt.xlim(3e-3, 4)
+# plt.xlim(3e-3, 4)
 #plt.tight_layout()
 plt.xlabel("$1/l$", fontsize=15)
 plt.ylabel("Count", fontsize=15)
@@ -8281,9 +8335,9 @@ plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
 plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
 plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
 
-plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
-plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
-plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
+# plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+# plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
 
 plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
@@ -8659,9 +8713,9 @@ fig = plt.figure(figsize=(8,6))
 for i in range(len(Pq_AL_pn)):
     plt.plot(q_range[:AL_q_idx], Pq_AL_pn[:AL_q_idx,i], marker='.', color='tab:blue', alpha=0.5)
 
-plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dashdot')
+plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
 
-plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+# plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
 
 plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 
@@ -8686,7 +8740,7 @@ plt.xlabel("q", fontsize=15)
 plt.ylabel("S(q)", fontsize=15)
 plt.ylim(1e-4, 10)
 plt.xlim(0.8e-2, 1e2)
-# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_AL_full_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_AL_full_1.png', dpi=600, bbox_inches='tight')
 plt.show()
 
 
@@ -8694,9 +8748,9 @@ fig = plt.figure(figsize=(8,6))
 for i in range(len(Pq_AL_pn)):
     plt.plot(q_range[:LH_q_idx], Pq_LH_pn[:LH_q_idx,i], marker='.', color='tab:green', alpha=0.5)
 
-plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green', ls='dashdot')
+plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
 
-plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
 
 plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 
@@ -8721,7 +8775,7 @@ plt.xlabel("q", fontsize=15)
 plt.ylabel("S(q)", fontsize=15)
 plt.ylim(1e-4, 10)
 plt.xlim(0.8e-2, 1e2)
-# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_LH_full_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_LH_full_1.png', dpi=600, bbox_inches='tight')
 plt.show()
 
 
@@ -8729,9 +8783,9 @@ fig = plt.figure(figsize=(8,6))
 for i in range(len(Pq_AL_pn)):
     plt.plot(q_range[:calyx_q_idx], Pq_calyx_pn[:calyx_q_idx,i], marker='.', color='tab:orange', alpha=0.5)
 
-plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dashdot')
+plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
 
-plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
+# plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
 
 plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 
@@ -8756,7 +8810,7 @@ plt.xlabel("q", fontsize=15)
 plt.ylabel("S(q)", fontsize=15)
 plt.ylim(1e-4, 10)
 plt.xlim(0.8e-2, 1e2)
-# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_calyx_full_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_calyx_full_1.png', dpi=600, bbox_inches='tight')
 plt.show()
 
 
