@@ -2276,6 +2276,8 @@ for b in range(len(radiussize)):
 
 spheredist_AL_sum = np.delete(spheredist_AL_sum, 73, 0)
 
+spheredist_calyx_sum = np.delete(spheredist_calyx_sum, [40,41], 0)
+
 spheredist_calyx_sum_avg = np.average(spheredist_calyx_sum, axis=0)
 spheredist_calyx_sum_std = np.std(spheredist_calyx_sum, axis=0)
 spheredist_LH_sum_avg = np.average(spheredist_LH_sum, axis=0)
@@ -2363,14 +2365,15 @@ plt.legend(['AL: ' + str(round(poptD_AL[0], 3)) + '$\pm$' + str(round(perrD_AL[0
 #plt.tight_layout()
 plt.xlabel("Radius $r$", fontsize=15)
 plt.ylabel("$L$", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/density_scale_neuropil_per_n.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/density_scale_neuropil_per_n_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
-
 
 
 fig = plt.figure(figsize=(8,6))
 
-plt.scatter(np.tile(radiussize, (len(spheredist_AL_sum),1)), spheredist_AL_sum, color='tab:blue', facecolors='none')
+plt.scatter(np.tile(radiussize, (len(spheredist_AL_sum),1)), spheredist_AL_sum, color='tab:blue', facecolors='none', alpha=0.5)
+seaborn.kdeplot(x=np.tile(radiussize, len(spheredist_AL_sum))[np.nonzero(spheredist_AL_sum.flatten())],
+                y=spheredist_AL_sum.flatten()[np.nonzero(spheredist_AL_sum.flatten())], log_scale=True, color='tab:blue')
 
 plt.yscale('log')
 plt.xscale('log')
@@ -2379,12 +2382,14 @@ plt.ylim(1e-2, 1e4)
 #plt.tight_layout()
 plt.xlabel("Radius $r$", fontsize=15)
 plt.ylabel("$L$", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/density_scale_neuropil_per_n.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/density_scale_AL_per_n_1.png', dpi=300, bbox_inches='tight')
 plt.show()
 
 fig = plt.figure(figsize=(8,6))
 
-plt.scatter(np.tile(radiussize, (len(spheredist_calyx_sum),1)), spheredist_calyx_sum, color='tab:orange', facecolors='none')
+plt.scatter(np.tile(radiussize, (len(spheredist_calyx_sum),1)), spheredist_calyx_sum, color='tab:orange', facecolors='none', alpha=0.5)
+seaborn.kdeplot(x=np.tile(radiussize, len(spheredist_calyx_sum))[np.nonzero(spheredist_calyx_sum.flatten())],
+                y=spheredist_calyx_sum.flatten()[np.nonzero(spheredist_calyx_sum.flatten())], log_scale=True, color='tab:orange')
 
 plt.yscale('log')
 plt.xscale('log')
@@ -2393,12 +2398,14 @@ plt.ylim(1e-2, 1e4)
 #plt.tight_layout()
 plt.xlabel("Radius $r$", fontsize=15)
 plt.ylabel("$L$", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/density_scale_neuropil_per_n.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/density_scale_calyx_per_n_1.png', dpi=300, bbox_inches='tight')
 plt.show()
 
 fig = plt.figure(figsize=(8,6))
 
-plt.scatter(np.tile(radiussize, (len(spheredist_LH_sum),1)), spheredist_LH_sum, color='tab:green', facecolors='none')
+plt.scatter(np.tile(radiussize, (len(spheredist_LH_sum),1)), spheredist_LH_sum, color='tab:green', facecolors='none', alpha=0.5)
+seaborn.kdeplot(x=np.tile(radiussize, len(spheredist_LH_sum))[np.nonzero(spheredist_LH_sum.flatten())],
+                y=spheredist_LH_sum.flatten()[np.nonzero(spheredist_LH_sum.flatten())], log_scale=True, color='tab:green')
 
 plt.yscale('log')
 plt.xscale('log')
@@ -2407,7 +2414,7 @@ plt.ylim(1e-2, 1e4)
 #plt.tight_layout()
 plt.xlabel("Radius $r$", fontsize=15)
 plt.ylabel("$L$", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/density_scale_neuropil_per_n.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/density_scale_LH_per_n_1.png', dpi=300, bbox_inches='tight')
 plt.show()
 
 
