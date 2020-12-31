@@ -6282,123 +6282,9 @@ plt.show()
 
 #%% Correlation matrix cluster with new metric
 
-calyxdist_cluster_u_p_n_avg = np.empty(len(glo_idx))
-calyxdist_cluster_u_p_n_std = np.empty(len(glo_idx))
-calyxdist_noncluster_u_p_n_avg = np.empty(len(glo_idx))
-calyxdist_noncluster_u_p_n_std = np.empty(len(glo_idx))
-
-for i in range(len(glo_idx)):
-    clst = morph_dist_calyx_r_new[glo_lbs[i]:glo_lbs[i+1],glo_lbs[i]:glo_lbs[i+1]]
-    clstval = clst[np.triu_indices_from(clst, k=1)]
-    calyxdist_cluster_u_p_n_avg[i] = np.median(clstval)
-    calyxdist_cluster_u_p_n_std[i] = scipy.stats.median_abs_deviation(clstval, center=np.median)
-    
-    tar = morph_dist_calyx_r_new[glo_lbs[i]:glo_lbs[i+1]]
-    nclst = np.delete(tar, np.arange(glo_lbs[i],glo_lbs[i+1]), axis=1)
-    calyxdist_noncluster_u_p_n_avg[i] = np.average(nclst)
-    calyxdist_noncluster_u_p_n_std[i] = scipy.stats.median_abs_deviation(nclst[0], center=np.median)
-
-LHdist_cluster_u_p_n_avg = np.empty(len(glo_idx))
-LHdist_cluster_u_p_n_std = np.empty(len(glo_idx))
-LHdist_noncluster_u_p_n_avg = np.empty(len(glo_idx))
-LHdist_noncluster_u_p_n_std = np.empty(len(glo_idx))
-
-for i in range(len(glo_idx)):
-    clst = morph_dist_LH_r_new[glo_lbs[i]:glo_lbs[i+1],glo_lbs[i]:glo_lbs[i+1]]
-    clstval = clst[np.triu_indices_from(clst, k=1)]
-    LHdist_cluster_u_p_n_avg[i] = np.median(clstval)
-    LHdist_cluster_u_p_n_std[i] = scipy.stats.median_abs_deviation(clstval, center=np.median)
-    
-    tar = morph_dist_LH_r_new[glo_lbs[i]:glo_lbs[i+1]]
-    nclst = np.delete(tar, np.arange(glo_lbs[i],glo_lbs[i+1]), axis=1)
-    LHdist_noncluster_u_p_n_avg[i] = np.average(nclst)
-    LHdist_noncluster_u_p_n_std[i] = scipy.stats.median_abs_deviation(nclst[0], center=np.median)
-
-ALdist_cluster_u_p_n_avg = np.empty(len(glo_idx))
-ALdist_cluster_u_p_n_std = np.empty(len(glo_idx))
-ALdist_noncluster_u_p_n_avg = np.empty(len(glo_idx))
-ALdist_noncluster_u_p_n_std = np.empty(len(glo_idx))
-
-for i in range(len(glo_idx)):
-    clst = morph_dist_AL_r_new[glo_lbs[i]:glo_lbs[i+1],glo_lbs[i]:glo_lbs[i+1]]
-    clstval = clst[np.triu_indices_from(clst, k=1)]
-    ALdist_cluster_u_p_n_avg[i] = np.median(clstval)
-    ALdist_cluster_u_p_n_std[i] = scipy.stats.median_abs_deviation(clstval, center=np.median)
-    
-    tar = morph_dist_AL_r_new[glo_lbs[i]:glo_lbs[i+1]]
-    nclst = np.delete(tar, np.arange(glo_lbs[i],glo_lbs[i+1]), axis=1)
-    ALdist_noncluster_u_p_n_avg[i] = np.average(nclst)
-    ALdist_noncluster_u_p_n_std[i] = scipy.stats.median_abs_deviation(nclst[0], center=np.median)
-
-
-fig, ax = plt.subplots(figsize=(8,6))
-x = np.arange(len(glo_list))
-width = 1.
-ax.bar(x, calyxdist_cluster_u_p_n_avg, width, 
-       yerr=calyxdist_cluster_u_p_n_std, label='Identical Glomerulus', alpha=0.5, 
-       error_kw=dict(ecolor='tab:blue', lw=1, capsize=2, capthick=1))
-ax.bar(x, calyxdist_noncluster_u_p_n_avg, width, 
-        yerr=calyxdist_noncluster_u_p_n_std, label='Different Glomeruli', alpha=0.5, 
-        error_kw=dict(ecolor='tab:orange', lw=1, capsize=2, capthick=1))
-ax.set_ylabel('Distance', fontsize=15)
-ax.set_xticks(x)
-ax.set_xticklabels(glo_list, rotation=90, fontsize=10)
-ax.legend(fontsize=13)
-plt.xlim(0-0.5, len(glo_list)-0.5)
-plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_p_glo_calyx_2.pdf', dpi=300, bbox_inches='tight')
-plt.show()
-
-fig, ax = plt.subplots(figsize=(8,6))
-x = np.arange(len(glo_list))
-width = 1.
-ax.bar(x, LHdist_cluster_u_p_n_avg, width, 
-       yerr=LHdist_cluster_u_p_n_std, label='Identical Glomerulus', alpha=0.5, 
-       error_kw=dict(ecolor='tab:blue', lw=1, capsize=2, capthick=1))
-ax.bar(x, LHdist_noncluster_u_p_n_avg, width, 
-        yerr=LHdist_noncluster_u_p_n_std, label='Different Glomeruli', alpha=0.5, 
-        error_kw=dict(ecolor='tab:orange', lw=1, capsize=2, capthick=1))
-ax.set_ylabel('Distance', fontsize=15)
-ax.set_xticks(x)
-ax.set_xticklabels(glo_list, rotation=90, fontsize=10)
-ax.legend(fontsize=13)
-plt.xlim(0-0.5, len(glo_list)-0.5)
-plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_p_glo_LH_2.pdf', dpi=300, bbox_inches='tight')
-plt.show()
-
-fig, ax = plt.subplots(figsize=(8,6))
-x = np.arange(len(glo_list))
-width = 1.
-ax.bar(x, ALdist_cluster_u_p_n_avg, width, 
-       yerr=ALdist_cluster_u_p_n_std, label='Identical Glomerulus', alpha=0.5, 
-       error_kw=dict(ecolor='tab:blue', lw=1, capsize=2, capthick=1))
-ax.bar(x, ALdist_noncluster_u_p_n_avg, width, 
-        yerr=ALdist_noncluster_u_p_n_std, label='Different Glomeruli', alpha=0.5, 
-        error_kw=dict(ecolor='tab:orange', lw=1, capsize=2, capthick=1))
-ax.set_ylabel('Distance', fontsize=15)
-ax.set_xticks(x)
-ax.set_xticklabels(glo_list, rotation=90, fontsize=10)
-ax.legend(fontsize=13)
-plt.xlim(0-0.5, len(glo_list)-0.5)
-plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_p_glo_AL_2.pdf', dpi=300, bbox_inches='tight')
-plt.show()
-
-# for i in range(len(glo_idx)):
-#     for j in range(len(glo_idx[i])):
-#         scipy.spatial.distance.cdist(morph_dist_calyx[i], morph_dist_calyx[j])
-        
-
 ALcalyx_corr_new = []
 ALLH_corr_new = []
 LHcalyx_corr_new = []
-
-# for i in range(len(glo_lb)-1):
-#     if len(np.arange(glo_lb[i],glo_lb[i+1])) > 1:
-#         ALcalyx_corr_new.append(np.corrcoef(morph_dist_calyx_r_new[np.arange(glo_lb[i],glo_lb[i+1])], morph_dist_AL_r_new[np.arange(glo_lb[i],glo_lb[i+1])])[0][1])
-#         ALLH_corr_new.append(np.corrcoef(morph_dist_LH_r_new[np.arange(glo_lb[i],glo_lb[i+1])], morph_dist_AL_r_new[np.arange(glo_lb[i],glo_lb[i+1])])[0][1])
-#         LHcalyx_corr_new.append(np.corrcoef(morph_dist_calyx_r_new[np.arange(glo_lb[i],glo_lb[i+1])], morph_dist_LH_r_new[np.arange(glo_lb[i],glo_lb[i+1])])[0][1])
 
 for i in range(len(morph_dist_AL_r_new)):
     ALcalyx_corr_new.append(np.corrcoef(morph_dist_calyx_r_new[i], morph_dist_AL_r_new[i])[0][1])
@@ -8475,7 +8361,7 @@ plt.yscale('log')
 plt.show()
 
 
-#%% form factor per neuropil moving window
+#%% form factor per neuropil moving window (FIGURE FORM FACTOR)
 
 mw_Pq_calyx = []
 mw_Pq_calyx_err = []
@@ -8915,7 +8801,7 @@ plt.show()
 
 
 
-#%% Form factor per neuron moving window
+#%% Form factor per neuron moving window (FIGURE FORM FACTOR)
 
 def tolerant_mean(arrs):
     lens = [len(i) for i in arrs]
@@ -9124,7 +9010,7 @@ plt.yticks(fontsize=14)
 plt.show()
 
 
-#%% 16 moving average
+#%% 16 moving average (FIGURE FORM FACTOR 16)
 
 nid = 6
 
