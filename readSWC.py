@@ -6147,10 +6147,11 @@ ncerr = [scipy.stats.median_abs_deviation(calyxdist_noncluster_u_full_flat_new, 
 
 ax.bar(x - width/2, cmeans, width, yerr=cerr, capsize=5, label='Identical Glomerulus')
 ax.bar(x + width/2, ncmeans, width, yerr=ncerr, capsize=5, label='Different Glomeruli')
-ax.set_ylabel('Distance', fontsize=15)
+ax.set_ylabel('Distance', fontsize=17)
 ax.set_xticks(x)
-ax.set_xticklabels(labels, fontsize=15)
-ax.legend(fontsize=13)
+ax.set_xticklabels(labels, fontsize=17)
+ax.tick_params(axis="y", labelsize=15)
+ax.legend(fontsize=15)
 #ax.set_title('Median distance within and outside cluster')
 plt.tight_layout()
 # plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_median_nnmetric_2.pdf', dpi=300, bbox_inches='tight')
@@ -6173,10 +6174,11 @@ ncerr = [np.std(calyxdist_noncluster_u_full_flat_new),
 
 ax.bar(x - width/2, cmeans, width, yerr=cerr, capsize=5, label='Identical Glomerulus')
 ax.bar(x + width/2, ncmeans, width, yerr=ncerr, capsize=5, label='Different Glomeruli')
-ax.set_ylabel('Distance', fontsize=15)
+ax.set_ylabel('Distance', fontsize=17)
 ax.set_xticks(x)
-ax.set_xticklabels(labels, fontsize=15)
-ax.legend(fontsize=13)
+ax.set_xticklabels(labels, fontsize=17)
+ax.tick_params(axis="y", labelsize=15)
+ax.legend(fontsize=15)
 #ax.set_title('Median distance within and outside cluster')
 plt.tight_layout()
 # plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_average_nnmetric_1.pdf', dpi=300, bbox_inches='tight')
@@ -6202,10 +6204,11 @@ ncerr = [scipy.stats.median_abs_deviation(np.divide(calyxdist_noncluster_u_full_
 
 ax.bar(x - width/2, cmeans, width, yerr=cerr, capsize=5, label='Identical Glomerulus')
 ax.bar(x + width/2, ncmeans, width, yerr=ncerr, capsize=5, label='Different Glomeruli')
-ax.set_ylabel('Volume Corrected Distance', fontsize=15)
+ax.set_ylabel('Volume Corrected Distance', fontsize=17)
 ax.set_xticks(x)
-ax.set_xticklabels(labels, fontsize=15)
-ax.legend(fontsize=13)
+ax.set_xticklabels(labels, fontsize=17)
+ax.tick_params(axis="y", labelsize=15)
+ax.legend(fontsize=15)
 #ax.set_title('Median distance within and outside cluster')
 plt.tight_layout()
 # plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_median_nnmetric_volcorr_1.pdf', dpi=300, bbox_inches='tight')
@@ -6232,16 +6235,16 @@ ncerr = [np.std(np.divide(calyxdist_noncluster_u_full_flat_new, calyx_vol)),
 
 ax.bar(x - width/2, cmeans, width, yerr=cerr, capsize=5, label='Identical Glomerulus')
 ax.bar(x + width/2, ncmeans, width, yerr=ncerr, capsize=5, label='Different Glomeruli')
-ax.set_ylabel('Volume Corrected Distance', fontsize=15)
+ax.set_ylabel('Volume Corrected Distance', fontsize=17)
 ax.set_xticks(x)
-ax.set_xticklabels(labels, fontsize=15)
-ax.legend(fontsize=13)
+ax.set_xticklabels(labels, fontsize=17)
+ax.tick_params(axis="y", labelsize=15)
+ax.legend(fontsize=15)
 #ax.set_title('Median distance within and outside cluster')
 plt.tight_layout()
 # plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_average_nnmetric_volcorr_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
-#%% Correlation matrix cluster with new metric
 
 fig = plt.figure(figsize=(5, 9))
 ax1 = fig.add_subplot(3,1,1)
@@ -6277,6 +6280,7 @@ plt.tight_layout()
 # plt.savefig(Parameter.outputdir + '/skewed_dist_new_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
+#%% Correlation matrix cluster with new metric
 
 calyxdist_cluster_u_p_n_avg = np.empty(len(glo_idx))
 calyxdist_cluster_u_p_n_std = np.empty(len(glo_idx))
