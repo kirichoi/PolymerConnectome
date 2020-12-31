@@ -6129,7 +6129,7 @@ plt.show()
 
 
 
-#%% Correlation matrix cluster with new metric
+#%% Distance difference measure with new metric
 
 fig, ax = plt.subplots(figsize=(8,6))
 labels = ['MB calyx', 'LH', 'AL']
@@ -6156,6 +6156,92 @@ plt.tight_layout()
 # plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_median_nnmetric_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
+
+fig, ax = plt.subplots(figsize=(8,6))
+labels = ['MB calyx', 'LH', 'AL']
+x = np.arange(len(labels))
+width = .3
+
+cmeans = [np.mean(calyxdist_cluster_u_full_flat_new), np.mean(LHdist_cluster_u_full_flat_new), np.mean(ALdist_cluster_u_full_flat_new)]
+cerr = [np.std(calyxdist_cluster_u_full_flat_new), 
+        np.std(LHdist_cluster_u_full_flat_new), 
+        np.std(ALdist_cluster_u_full_flat_new)]
+ncmeans = [np.mean(calyxdist_noncluster_u_full_flat_new), np.mean(LHdist_noncluster_u_full_flat_new), np.mean(ALdist_noncluster_u_full_flat_new)]
+ncerr = [np.std(calyxdist_noncluster_u_full_flat_new), 
+         np.std(LHdist_noncluster_u_full_flat_new), 
+         np.std(ALdist_noncluster_u_full_flat_new)]
+
+ax.bar(x - width/2, cmeans, width, yerr=cerr, capsize=5, label='Identical Glomerulus')
+ax.bar(x + width/2, ncmeans, width, yerr=ncerr, capsize=5, label='Different Glomeruli')
+ax.set_ylabel('Distance', fontsize=15)
+ax.set_xticks(x)
+ax.set_xticklabels(labels, fontsize=15)
+ax.legend(fontsize=13)
+#ax.set_title('Median distance within and outside cluster')
+plt.tight_layout()
+# plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_average_nnmetric_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig, ax = plt.subplots(figsize=(8,6))
+labels = ['MB calyx', 'LH', 'AL']
+x = np.arange(len(labels))
+width = .3
+
+cmeans = [np.median(np.divide(calyxdist_cluster_u_full_flat_new, calyx_vol)), 
+          np.median(np.divide(LHdist_cluster_u_full_flat_new, LH_vol)),
+          np.median(np.divide(ALdist_cluster_u_full_flat_new, AL_vol))]
+cerr = [scipy.stats.median_abs_deviation(np.divide(calyxdist_cluster_u_full_flat_new, calyx_vol), center=np.median), 
+        scipy.stats.median_abs_deviation(np.divide(LHdist_cluster_u_full_flat_new, LH_vol), center=np.median), 
+        scipy.stats.median_abs_deviation(np.divide(ALdist_cluster_u_full_flat_new, AL_vol), center=np.median)]
+ncmeans = [np.median(np.divide(calyxdist_noncluster_u_full_flat_new, calyx_vol)),
+           np.median(np.divide(LHdist_noncluster_u_full_flat_new, LH_vol)), 
+           np.median(np.divide(ALdist_noncluster_u_full_flat_new, AL_vol))]
+ncerr = [scipy.stats.median_abs_deviation(np.divide(calyxdist_noncluster_u_full_flat_new, calyx_vol), center=np.median), 
+         scipy.stats.median_abs_deviation(np.divide(LHdist_noncluster_u_full_flat_new, LH_vol), center=np.median), 
+         scipy.stats.median_abs_deviation(np.divide(ALdist_noncluster_u_full_flat_new, AL_vol), center=np.median)]
+
+ax.bar(x - width/2, cmeans, width, yerr=cerr, capsize=5, label='Identical Glomerulus')
+ax.bar(x + width/2, ncmeans, width, yerr=ncerr, capsize=5, label='Different Glomeruli')
+ax.set_ylabel('Volume Corrected Distance', fontsize=15)
+ax.set_xticks(x)
+ax.set_xticklabels(labels, fontsize=15)
+ax.legend(fontsize=13)
+#ax.set_title('Median distance within and outside cluster')
+plt.tight_layout()
+# plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_median_nnmetric_volcorr_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+fig, ax = plt.subplots(figsize=(8,6))
+labels = ['MB calyx', 'LH', 'AL']
+x = np.arange(len(labels))
+width = .3
+
+cmeans = [np.mean(np.divide(calyxdist_cluster_u_full_flat_new, calyx_vol)), 
+          np.mean(np.divide(LHdist_cluster_u_full_flat_new, LH_vol)), 
+          np.mean(np.divide(ALdist_cluster_u_full_flat_new, AL_vol))]
+cerr = [np.std(np.divide(calyxdist_cluster_u_full_flat_new, calyx_vol)), 
+        np.std(np.divide(LHdist_cluster_u_full_flat_new, LH_vol)), 
+        np.std(np.divide(ALdist_cluster_u_full_flat_new, AL_vol))]
+ncmeans = [np.mean(np.divide(calyxdist_noncluster_u_full_flat_new, calyx_vol)), 
+           np.mean(np.divide(LHdist_noncluster_u_full_flat_new, LH_vol)), 
+           np.mean(np.divide(ALdist_noncluster_u_full_flat_new, AL_vol))]
+ncerr = [np.std(np.divide(calyxdist_noncluster_u_full_flat_new, calyx_vol)), 
+         np.std(np.divide(LHdist_noncluster_u_full_flat_new, LH_vol)), 
+         np.std(np.divide(ALdist_noncluster_u_full_flat_new, AL_vol))]
+
+ax.bar(x - width/2, cmeans, width, yerr=cerr, capsize=5, label='Identical Glomerulus')
+ax.bar(x + width/2, ncmeans, width, yerr=ncerr, capsize=5, label='Different Glomeruli')
+ax.set_ylabel('Volume Corrected Distance', fontsize=15)
+ax.set_xticks(x)
+ax.set_xticklabels(labels, fontsize=15)
+ax.legend(fontsize=13)
+#ax.set_title('Median distance within and outside cluster')
+plt.tight_layout()
+# plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_average_nnmetric_volcorr_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+#%% Correlation matrix cluster with new metric
 
 fig = plt.figure(figsize=(5, 9))
 ax1 = fig.add_subplot(3,1,1)
