@@ -4927,7 +4927,7 @@ plt.show()
 
 #%% Regional dist categorization
 
-glo_info = pd.read_excel(os.path.join(Parameter.PATH, '../all_skeletons_type_list_180919.xlsx'))
+glo_info = pd.read_excel(os.path.join(Parameter.PATH, '../all_skeletons_type_list_180919.xls'))
 
 glo_list = []
 glo_idx = []
@@ -6108,7 +6108,7 @@ plt.show()
 
 
 
-fig, ax = plt.subplots(figsize=(12,6))
+fig, ax = plt.subplots(figsize=(12,4))
 x = np.arange(len(glo_list))
 width = 1.
 ax.bar(x, np.array(ALcalyx_corr_glo_avg)[columns_AL], width, 
@@ -6120,7 +6120,7 @@ ax.bar(x, np.array(ALLH_corr_glo_avg)[columns_AL], width,
 ax.set_ylabel('Correlation Coefficient', fontsize=15)
 ax.set_xticks(x)
 ax.set_xticklabels(glo_list_cluster, rotation=90, fontsize=10)
-ax.legend(fontsize=13)
+ax.legend(fontsize=15)
 # ax.set_title('Distance correlation between calyx/LH and AL by glomerulus')
 plt.xlim(0-0.5, len(glo_list)-0.5)
 plt.tight_layout()
@@ -6158,7 +6158,7 @@ plt.tight_layout()
 plt.show()
 
 
-fig, ax = plt.subplots(figsize=(8,6))
+fig, ax = plt.subplots(figsize=(6,6))
 labels = ['MB calyx', 'LH', 'AL']
 x = np.arange(len(labels))
 width = .3
@@ -6280,6 +6280,95 @@ plt.tight_layout()
 # plt.savefig(Parameter.outputdir + '/skewed_dist_new_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
+#%%
+
+calyxtest_cl = []
+calyxtest_ncl = []
+for i in range(len(calyxdist_cluster_u_full_new)):
+    calyxtest_cl.append(np.mean(calyxdist_cluster_u_full_new[i]))
+for i in range(len(calyxdist_noncluster_u_full_new)):
+    calyxtest_ncl.append(np.mean(calyxdist_noncluster_u_full_new[i]))
+    
+LHtest_cl = []
+LHtest_ncl = []
+for i in range(len(LHdist_cluster_u_full_new)):
+    LHtest_cl.append(np.mean(LHdist_cluster_u_full_new[i]))
+for i in range(len(LHdist_noncluster_u_full_new)):
+    LHtest_ncl.append(np.mean(LHdist_noncluster_u_full_new[i]))
+
+ALtest_cl = []
+ALtest_ncl = []
+for i in range(len(ALdist_cluster_u_full_new)):
+    ALtest_cl.append(np.mean(ALdist_cluster_u_full_new[i]))
+for i in range(len(ALdist_noncluster_u_full_new)):
+    ALtest_ncl.append(np.mean(ALdist_noncluster_u_full_new[i]))
+
+    
+calyxtest_cl = np.nan_to_num(calyxtest_cl)
+calyxtest_ncl = np.nan_to_num(calyxtest_ncl)
+LHtest_cl = np.nan_to_num(LHtest_cl)
+LHtest_ncl = np.nan_to_num(LHtest_ncl)
+ALtest_cl = np.nan_to_num(ALtest_cl)
+ALtest_ncl = np.nan_to_num(ALtest_ncl)
+
+fig, ax = plt.subplots(3, 1, figsize=(12,8))
+x = np.arange(len(np.where(calyxtest_cl != 0)[0]))
+width = .3
+
+ax[0].bar(x - width/2, ALtest_cl[np.where(ALtest_cl != 0)], width, capsize=5, label='Identical Glomerulus')
+ax[0].bar(x + width/2, ALtest_ncl[np.where(ALtest_cl != 0)], width, capsize=5, label='Different Glomeruli')
+# ax[0].set_ylabel('Distance', fontsize=17)
+ax[0].set_xticks(x)
+ax[0].set_title('AL', fontsize=21)
+ax[0].set_xticklabels([])
+ax[0].set_yticks(np.array([0, 25, 50]))
+ax[0].legend(fontsize=15)
+ax[0].tick_params(axis="y", labelsize=15)
+ax[0].set_xlim(x[0] - 1, x[-1] + 1)
+
+ax[1].bar(x - width/2, calyxtest_cl[np.where(calyxtest_cl != 0)], width, capsize=5, label='Identical Glomerulus')
+ax[1].bar(x + width/2, calyxtest_ncl[np.where(calyxtest_cl != 0)], width, capsize=5, label='Different Glomeruli')
+ax[1].set_ylabel('Distance', fontsize=17)
+ax[1].set_xticks(x)
+ax[1].set_title('MB calyx', fontsize=21)
+ax[1].set_xticklabels([])
+ax[1].set_yticks(np.array([0, 5, 10, 15]))
+ax[1].tick_params(axis="y", labelsize=15)
+ax[1].set_xlim(x[0] - 1, x[-1] + 1)
+
+ax[2].bar(x - width/2, LHtest_cl[np.where(LHtest_cl != 0)], width, capsize=5, label='Identical Glomerulus')
+ax[2].bar(x + width/2, LHtest_ncl[np.where(LHtest_cl != 0)], width, capsize=5, label='Different Glomeruli')
+# ax[2].set_ylabel('Distance', fontsize=17)
+ax[2].set_xticks(x)
+ax[2].set_title('LH', fontsize=21)
+ax[2].set_xticklabels(np.array(glo_list)[np.where(LHtest_cl != 0)], rotation=90, fontsize=15)
+ax[2].set_yticks(np.array([0, 10, 20]))
+ax[2].tick_params(axis="y", labelsize=15)
+ax[2].set_xlim(x[0] - 1, x[-1] + 1)
+plt.tight_layout()
+# plt.savefig(Parameter.outputdir + '/glo_dist_diff_per_glo_all.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+ALtest_idx = np.where(ALtest_cl != 0)
+LHtest_idx = np.where(LHtest_cl != 0)
+calyxtest_idx = np.where(calyxtest_cl != 0)
+
+LH_glo_col = np.sort(np.array(glo_list)[LHtest_idx][np.where((LHtest_ncl[LHtest_idx] - LHtest_cl[LHtest_idx])/LHtest_ncl[LHtest_idx] >= 0.75)[0]])
+calyx_glo_col = np.sort(np.array(glo_list)[calyxtest_idx][np.where((calyxtest_ncl[calyxtest_idx] - calyxtest_cl[calyxtest_idx])/calyxtest_ncl[calyxtest_idx] >= 0.75)[0]])
+
+print(LH_glo_col)
+print(calyx_glo_col)
+
+#%%
+
+LH_glo_col_idx = []
+
+for i in range(len(LH_glo_col)):
+    LH_glo_col_idx.append(glo_list.index(LH_glo_col[i]))
+
+print(np.array(glo_len)[LH_glo_col_idx])
+
+
 #%% Correlation matrix cluster with new metric
 
 ALcalyx_corr_new = []
@@ -6352,13 +6441,13 @@ morph_dist_AL_r_new_avg_df = pd.DataFrame(morph_dist_AL_r_new_avg)
 
 L_AL_new = scipy.cluster.hierarchy.linkage(scipy.spatial.distance.squareform(morph_dist_AL_r_new_avg), method='complete', optimal_ordering=True)
 
-fig, ax = plt.subplots(figsize=(12, 3))
+fig, ax = plt.subplots(figsize=(15, 3))
 R_AL_new = scipy.cluster.hierarchy.dendrogram(L_AL_new,
                                         orientation='top',
                                         labels=glo_list,
                                         distance_sort='descending',
                                         show_leaf_counts=False,
-                                        leaf_font_size=10)
+                                        leaf_font_size=15)
 ax.set_yticks([])
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
@@ -6373,7 +6462,7 @@ columns_AL_new = R_AL_new['leaves']#[morph_dist_AL_r_new_avg_df.columns.tolist()
 
 L_calyx_new = scipy.cluster.hierarchy.linkage(scipy.spatial.distance.squareform(morph_dist_calyx_r_new_avg), method='complete', optimal_ordering=True)
 
-fig, ax = plt.subplots(figsize=(12, 4))
+fig, ax = plt.subplots(figsize=(15, 3))
 R_calyx_new = scipy.cluster.hierarchy.dendrogram(L_calyx_new,
                                         orientation='top',
                                         labels=glo_list,
@@ -6395,7 +6484,7 @@ columns_calyx_new = R_calyx_new['leaves']#[morph_dist_calyx_r_new_avg_df.columns
 
 L_LH_new = scipy.cluster.hierarchy.linkage(scipy.spatial.distance.squareform(morph_dist_LH_r_new_avg), method='complete', optimal_ordering=True)
 
-fig, ax = plt.subplots(figsize=(12, 4))
+fig, ax = plt.subplots(figsize=(15, 3))
 R_LH_new = scipy.cluster.hierarchy.dendrogram(L_LH_new,
                                         orientation='top',
                                         labels=glo_list,
@@ -6467,8 +6556,8 @@ ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster_new[1:] + glo
 ax3.yaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster_new[1:] + glo_float_cluster_new[:-1])/2))
 ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
 ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
-ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=10, rotation_mode='default')
-ax3.axis["left"].minor_ticklabels.set(fontsize=10, rotation_mode='default')
+ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=8, rotation_mode='default')
+ax3.axis["left"].minor_ticklabels.set(fontsize=8, rotation_mode='default')
 plt.colorbar(im, fraction=0.045)
 # plt.savefig(Parameter.outputdir + '/distance_grid_calyx_fixed_nnmetric_clst_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
@@ -6537,8 +6626,8 @@ ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster_new[1:] + glo
 ax3.yaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster_new[1:] + glo_float_cluster_new[:-1])/2))
 ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
 ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
-ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=10, rotation_mode='default')
-ax3.axis["left"].minor_ticklabels.set(fontsize=10, rotation_mode='default')
+ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=8, rotation_mode='default')
+ax3.axis["left"].minor_ticklabels.set(fontsize=8, rotation_mode='default')
 plt.colorbar(im, fraction=0.045)
 # plt.savefig(Parameter.outputdir + '/distance_grid_AL_fixed_nnmetric_clst_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
@@ -6561,6 +6650,26 @@ ax.legend(fontsize=13)
 plt.xlim(0-0.5, len(glo_list)-0.5)
 plt.tight_layout()
 # plt.savefig(Parameter.outputdir + '/correlation_glomeruli_nnmetric_clst_2.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig, ax = plt.subplots(figsize=(15,5))
+x = np.arange(len(glo_list))
+width = 1.
+ax.bar(x, np.array(ALcalyx_corr_glo_avg)[columns_AL_new], width, 
+       yerr=np.array(ALcalyx_corr_glo_std)[columns_AL_new], label='Calyx-AL', alpha=0.5, 
+       error_kw=dict(ecolor='tab:blue', lw=1, capsize=2, capthick=1))
+ax.bar(x, np.array(ALLH_corr_glo_avg)[columns_AL_new], width, 
+       yerr=np.array(ALLH_corr_glo_std)[columns_AL_new], label='LH-AL', alpha=0.5, 
+       error_kw=dict(ecolor='tab:orange', lw=1, capsize=2, capthick=1))
+ax.set_ylabel('Correlation Coefficient', fontsize=17)
+ax.set_xticks(x)
+ax.set_xticklabels(glo_list_cluster_new, rotation=90, fontsize=15)
+plt.yticks(fontsize=15)
+ax.legend(fontsize=15)
+# ax.set_title('Distance correlation between calyx/LH and AL by glomerulus')
+plt.xlim(0-0.5, len(glo_list)-0.5)
+plt.tight_layout()
+# plt.savefig(Parameter.outputdir + '/correlation_glomeruli_fixed_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -8028,16 +8137,6 @@ plt.ylabel("S(q)", fontsize=15)
 plt.ylim(1e-6, 10)
 plt.legend(['AL', 'MB calyx', 'LH'], fontsize=13)
 # plt.savefig(Parameter.outputdir + '/Pq_neuropil_3.pdf', dpi=300, bbox_inches='tight')
-plt.show()
-
-
-
-fig = plt.figure(figsize=(8,6))
-plt.plot(q_range[:60], np.multiply(np.square(q_range[:60]), Pq_calyx[:60]), marker='.')
-plt.plot(q_range[:60], np.multiply(np.square(q_range[:60]), Pq_LH[:60]), marker='.')
-plt.plot(q_range[:60], np.multiply(np.square(q_range[:60]), Pq_AL[:60]), marker='.')
-plt.xscale('log')
-plt.yscale('log')
 plt.show()
 
 
