@@ -6302,7 +6302,6 @@ for i in range(len(ALdist_cluster_u_full_new)):
     ALtest_cl.append(np.mean(ALdist_cluster_u_full_new[i]))
 for i in range(len(ALdist_noncluster_u_full_new)):
     ALtest_ncl.append(np.mean(ALdist_noncluster_u_full_new[i]))
-
     
 calyxtest_cl = np.nan_to_num(calyxtest_cl)
 calyxtest_ncl = np.nan_to_num(calyxtest_ncl)
@@ -6311,12 +6310,25 @@ LHtest_ncl = np.nan_to_num(LHtest_ncl)
 ALtest_cl = np.nan_to_num(ALtest_cl)
 ALtest_ncl = np.nan_to_num(ALtest_ncl)
 
+ALtest_idx = np.where(ALtest_cl != 0)[0]
+LHtest_idx = np.where(LHtest_cl != 0)[0]
+calyxtest_idx = np.where(calyxtest_cl != 0)[0]
+
+LHtest_percent = (LHtest_ncl[LHtest_idx] - LHtest_cl[LHtest_idx])/LHtest_ncl[LHtest_idx]
+calyxtest_percent = (calyxtest_ncl[calyxtest_idx] - calyxtest_cl[calyxtest_idx])/calyxtest_ncl[calyxtest_idx]
+
+attavlist = ['tab:red', 'k', 'k', 'tab:green', 'tab:green', 'tab:red', 'tab:red', 
+             'k', 'tab:green', 'k', 'k', 'k', 'k', 'k', 'tab:green', 'tab:green',
+             'tab:red', 'tab:green', 'tab:red', 'tab:green', 'k', 'tab:red', 
+             'tab:orange', 'tab:green', 'tab:red', 'tab:blue', 'tab:blue', 'k',
+             'tab:red', 'tab:red', 'tab:blue', 'tab:blue']
+
 fig, ax = plt.subplots(3, 1, figsize=(12,8))
-x = np.arange(len(np.where(calyxtest_cl != 0)[0]))
+x = np.arange(len(calyxtest_idx))
 width = .3
 
-ax[0].bar(x - width/2, ALtest_cl[np.where(ALtest_cl != 0)], width, capsize=5, label='Identical Glomerulus')
-ax[0].bar(x + width/2, ALtest_ncl[np.where(ALtest_cl != 0)], width, capsize=5, label='Different Glomeruli')
+ax[0].bar(x - width/2, ALtest_cl[ALtest_idx[np.argsort(LHtest_percent)]], width, capsize=5, label='Identical Glomerulus')
+ax[0].bar(x + width/2, ALtest_ncl[ALtest_idx[np.argsort(LHtest_percent)]], width, capsize=5, label='Different Glomeruli')
 # ax[0].set_ylabel('Distance', fontsize=17)
 ax[0].set_xticks(x)
 ax[0].set_title('AL', fontsize=21)
@@ -6326,8 +6338,8 @@ ax[0].legend(fontsize=15)
 ax[0].tick_params(axis="y", labelsize=15)
 ax[0].set_xlim(x[0] - 1, x[-1] + 1)
 
-ax[1].bar(x - width/2, calyxtest_cl[np.where(calyxtest_cl != 0)], width, capsize=5, label='Identical Glomerulus')
-ax[1].bar(x + width/2, calyxtest_ncl[np.where(calyxtest_cl != 0)], width, capsize=5, label='Different Glomeruli')
+ax[1].bar(x - width/2, calyxtest_cl[calyxtest_idx[np.argsort(LHtest_percent)]], width, capsize=5, label='Identical Glomerulus')
+ax[1].bar(x + width/2, calyxtest_ncl[calyxtest_idx[np.argsort(LHtest_percent)]], width, capsize=5, label='Different Glomeruli')
 ax[1].set_ylabel('Distance', fontsize=17)
 ax[1].set_xticks(x)
 ax[1].set_title('MB calyx', fontsize=21)
@@ -6336,30 +6348,25 @@ ax[1].set_yticks(np.array([0, 5, 10, 15]))
 ax[1].tick_params(axis="y", labelsize=15)
 ax[1].set_xlim(x[0] - 1, x[-1] + 1)
 
-ax[2].bar(x - width/2, LHtest_cl[np.where(LHtest_cl != 0)], width, capsize=5, label='Identical Glomerulus')
-ax[2].bar(x + width/2, LHtest_ncl[np.where(LHtest_cl != 0)], width, capsize=5, label='Different Glomeruli')
+ax[2].bar(x - width/2, LHtest_cl[LHtest_idx[np.argsort(LHtest_percent)]], width, capsize=5, label='Identical Glomerulus')
+ax[2].bar(x + width/2, LHtest_ncl[LHtest_idx[np.argsort(LHtest_percent)]], width, capsize=5, label='Different Glomeruli')
 # ax[2].set_ylabel('Distance', fontsize=17)
 ax[2].set_xticks(x)
 ax[2].set_title('LH', fontsize=21)
-ax[2].set_xticklabels(np.array(glo_list)[np.where(LHtest_cl != 0)], rotation=90, fontsize=15)
+ax[2].set_xticklabels(np.array(glo_list)[LHtest_idx[np.argsort(LHtest_percent)]], rotation=90, fontsize=15)
 ax[2].set_yticks(np.array([0, 10, 20]))
 ax[2].tick_params(axis="y", labelsize=15)
 ax[2].set_xlim(x[0] - 1, x[-1] + 1)
+[t.set_color(i) for (i,t) in zip(attavlist, ax[2].xaxis.get_ticklabels())]
 plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/glo_dist_diff_per_glo_all.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/glo_dist_diff_per_glo_all_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
-ALtest_idx = np.where(ALtest_cl != 0)
-LHtest_idx = np.where(LHtest_cl != 0)
-calyxtest_idx = np.where(calyxtest_cl != 0)
-
-LH_glo_col = np.sort(np.array(glo_list)[LHtest_idx][np.where((LHtest_ncl[LHtest_idx] - LHtest_cl[LHtest_idx])/LHtest_ncl[LHtest_idx] >= 0.75)[0]])
-calyx_glo_col = np.sort(np.array(glo_list)[calyxtest_idx][np.where((calyxtest_ncl[calyxtest_idx] - calyxtest_cl[calyxtest_idx])/calyxtest_ncl[calyxtest_idx] >= 0.75)[0]])
+LH_glo_col = np.sort(np.array(glo_list)[LHtest_idx][np.where(LHtest_percent >= 0.75)[0]])
+calyx_glo_col = np.sort(np.array(glo_list)[calyxtest_idx][np.where(calyxtest_percent >= 0.75)[0]])
 
 print(LH_glo_col)
 print(calyx_glo_col)
-
-#%%
 
 LH_glo_col_idx = []
 
@@ -8238,7 +8245,7 @@ plt.xlim(0.01, 10)
 plt.legend(["AL", "MB calyx", "LH"], fontsize=14)
 plt.xlabel("q", fontsize=17)
 plt.xticks(fontsize=14)
-plt.ylabel(r"$-1/\lambda$", fontsize=17)
+plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
 # plt.savefig(Parameter.outputdir + '/Pq_all_mv_4.pdf', dpi=300, bbox_inches='tight')
 plt.show()
@@ -8595,7 +8602,7 @@ mw_Pq_calyx_pn_err = []
 mwx_calyx_pn = []
 shiftN = 15
 
-for j in range(len(Pq_calyx_pn)):
+for j in range(len(Pq_calyx_pn[0])):
     mw_Pq_calyx_pn_temp = []
     mw_Pq_calyx_pn_err_temp = []
     mwx_calyx_pn_temp = []
@@ -8624,7 +8631,7 @@ mw_Pq_LH_pn = []
 mw_Pq_LH_pn_err = []
 mwx_LH_pn = []
 
-for j in range(len(Pq_LH_pn)):
+for j in range(len(Pq_LH_pn[0])):
     mw_Pq_LH_pn_temp = []
     mw_Pq_LH_pn_err_temp = []
     mwx_LH_pn_temp = []
@@ -8653,7 +8660,7 @@ mw_Pq_AL_pn = []
 mw_Pq_AL_pn_err = []
 mwx_AL_pn = []
 
-for j in range(len(Pq_AL_pn)):
+for j in range(len(Pq_AL_pn[0])):
     mw_Pq_AL_pn_temp = []
     mw_Pq_AL_pn_err_temp = []
     mwx_AL_pn_temp = []
@@ -8709,9 +8716,9 @@ plt.ylim(0.1, 1.7)
 plt.xlim(0.01, 10)
 plt.xlabel("q", fontsize=17)
 plt.xticks(fontsize=14)
-plt.ylabel(r"$-1/\lambda$", fontsize=17)
+plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_calyx_mv_3.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_calyx_mv_4.pdf', dpi=300, bbox_inches='tight')
 plt.show()
   
 
@@ -8746,9 +8753,9 @@ plt.ylim(0.1, 1.7)
 plt.xlim(0.01, 10)
 plt.xlabel("q", fontsize=17)
 plt.xticks(fontsize=14)
-plt.ylabel(r"$-1/\lambda$", fontsize=17)
+plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_LH_mv_3.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_LH_mv_4.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -8783,15 +8790,15 @@ plt.ylim(0.1, 1.7)
 plt.xlim(0.01, 10)
 plt.xlabel("q", fontsize=17)
 plt.xticks(fontsize=14)
-plt.ylabel(r"$-1/\lambda$", fontsize=17)
+plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_mv_3.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_mv_4.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
-#%% 16 moving average (FIGURE FORM FACTOR 16)
+#%% 16 moving average (FIGURE FORM FACTOR 16)186573
 
-nid = 6
+nid = np.where(np.unique(MorphData.LHdist_trk) == 13)[0]
 
 fig = plt.figure(figsize=(6,4.5))
 
@@ -8893,6 +8900,75 @@ plt.ylabel(r"$-1/\lambda$", fontsize=17)
 plt.yticks(fontsize=14)
 # plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_AL_mv_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
+
+
+#%% LH form factor of glomerulus with large inter and intra distance difference
+
+for i in range(len(LH_glo_col_idx)):
+    fig = plt.figure(figsize=(6,4.5))
+
+    for j in range(len(glo_idx[i])):
+        nid = np.where(np.unique(MorphData.LHdist_trk) == glo_idx[i][j])[0][0]
+        plt.plot(mwx_LH_pn[nid], -1/np.array(mw_Pq_LH_pn[nid]), color='tab:green', lw=2)
+    
+    plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
+    plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
+    plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
+    plt.hlines(1, 0.01, 100, ls='dashed', color='k')
+    plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
+    plt.text(10.3, 1/4-0.03, 'Ideal', fontsize=14)
+    plt.text(10.3, 7/16-0.04, '$\Theta-Solvent$', fontsize=14)
+    plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
+    plt.text(10.3, 1-0.03,'Rigid', fontsize=14)
+    plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
+    
+    plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
+    plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
+    
+    plt.xscale('log')
+    plt.ylim(0.1, 1.7)
+    plt.xlim(0.01, 10)
+    plt.xlabel("q", fontsize=17)
+    plt.xticks(fontsize=14)
+    plt.ylabel(r"$-1/\lambda$", fontsize=17)
+    plt.yticks(fontsize=14)
+    # plt.savefig(Parameter.outputdir + '/Pq_lIIDd_' + str(MorphData.neuron_id[nid]) + '_pn_LH_mv_2.pdf', dpi=300, bbox_inches='tight')
+    plt.show()
+
+
+#%% LH form factor of glomerulus with large PN number
+
+for i in range(len(LH_glo_col_idx)):
+    fig = plt.figure(figsize=(6,4.5))
+
+    for j in range(len(glo_idx[i])):
+        nid = np.where(np.unique(MorphData.LHdist_trk) == glo_idx[i][j])[0][0]
+        plt.plot(mwx_LH_pn[nid], -1/np.array(mw_Pq_LH_pn[nid]), color='tab:green', lw=2)
+    
+    plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
+    plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
+    plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
+    plt.hlines(1, 0.01, 100, ls='dashed', color='k')
+    plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
+    plt.text(10.3, 1/4-0.03, 'Ideal', fontsize=14)
+    plt.text(10.3, 7/16-0.04, '$\Theta-Solvent$', fontsize=14)
+    plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
+    plt.text(10.3, 1-0.03,'Rigid', fontsize=14)
+    plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
+    
+    plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
+    plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
+    
+    plt.xscale('log')
+    plt.ylim(0.1, 1.7)
+    plt.xlim(0.01, 10)
+    plt.xlabel("q", fontsize=17)
+    plt.xticks(fontsize=14)
+    plt.ylabel(r"$-1/\lambda$", fontsize=17)
+    plt.yticks(fontsize=14)
+    # plt.savefig(Parameter.outputdir + '/Pq_lPNN_' + str(MorphData.neuron_id[nid]) + '_pn_LH_mv_2.pdf', dpi=300, bbox_inches='tight')
+    plt.show()
+
 
 #%% 30891 moving average
 
