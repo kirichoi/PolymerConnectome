@@ -347,6 +347,22 @@ def objFuncGL(xdata, a, b):
     return y
 
 
+def tolerant_mean(arrs):
+    lens = [len(i) for i in arrs]
+    arr = np.ma.empty((np.max(lens), len(arrs)))
+    arr.mask = True
+    for idx, l in enumerate(arrs):
+        arr[:len(l), idx] = l
+    return arr.mean(axis=-1)
+
+def tolerant_std(arrs):
+    lens = [len(i) for i in arrs]
+    arr = np.ma.empty((np.max(lens), len(arrs)))
+    arr.mask = True
+    for idx, l in enumerate(arrs):
+        arr[:len(l), idx] = l
+    return arr.std(axis=-1)
+
 #%%
     
 class LengthData:
@@ -6320,7 +6336,7 @@ calyxtest_percent = (calyxtest_ncl[calyxtest_idx] - calyxtest_cl[calyxtest_idx])
 attavlist = ['tab:red', 'k', 'k', 'tab:green', 'tab:green', 'tab:red', 'tab:red', 
              'k', 'tab:green', 'k', 'k', 'k', 'k', 'k', 'tab:green', 'tab:green',
              'tab:red', 'tab:green', 'tab:red', 'tab:green', 'k', 'tab:red', 
-             'tab:orange', 'tab:green', 'tab:red', 'tab:blue', 'tab:blue', 'k',
+             'tab:red', 'tab:green', 'tab:red', 'tab:blue', 'tab:blue', 'k',
              'tab:red', 'tab:red', 'tab:blue', 'tab:blue']
 
 fig, ax = plt.subplots(3, 1, figsize=(12,8))
@@ -8589,14 +8605,6 @@ plt.show()
 
 #%% Form factor per neuron moving window (FIGURE FORM FACTOR)
 
-def tolerant_mean(arrs):
-    lens = [len(i) for i in arrs]
-    arr = np.ma.empty((np.max(lens), len(arrs)))
-    arr.mask = True
-    for idx, l in enumerate(arrs):
-        arr[:len(l), idx] = l
-    return arr.mean(axis=-1)
-
 mw_Pq_calyx_pn = []
 mw_Pq_calyx_pn_err = []
 mwx_calyx_pn = []
@@ -8798,7 +8806,7 @@ plt.show()
 
 #%% 16 moving average (FIGURE FORM FACTOR 16)186573
 
-nid = np.where(np.unique(MorphData.LHdist_trk) == 13)[0]
+nid = np.where(np.unique(MorphData.LHdist_trk) == 13)[0][0]
 
 fig = plt.figure(figsize=(6,4.5))
 
@@ -8907,8 +8915,8 @@ plt.show()
 for i in range(len(LH_glo_col_idx)):
     fig = plt.figure(figsize=(6,4.5))
 
-    for j in range(len(glo_idx[i])):
-        nid = np.where(np.unique(MorphData.LHdist_trk) == glo_idx[i][j])[0][0]
+    for j in range(len(glo_idx[LH_glo_col_idx[i]])):
+        nid = np.where(np.unique(MorphData.LHdist_trk) == glo_idx[LH_glo_col_idx[i]][j])[0][0]
         plt.plot(mwx_LH_pn[nid], -1/np.array(mw_Pq_LH_pn[nid]), color='tab:green', lw=2)
     
     plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
@@ -8930,11 +8938,121 @@ for i in range(len(LH_glo_col_idx)):
     plt.xlim(0.01, 10)
     plt.xlabel("q", fontsize=17)
     plt.xticks(fontsize=14)
-    plt.ylabel(r"$-1/\lambda$", fontsize=17)
+    plt.ylabel(r"$\nu$", fontsize=17)
     plt.yticks(fontsize=14)
+    plt.title(glo_list[LH_glo_col_idx[i]])
     # plt.savefig(Parameter.outputdir + '/Pq_lIIDd_' + str(MorphData.neuron_id[nid]) + '_pn_LH_mv_2.pdf', dpi=300, bbox_inches='tight')
     plt.show()
 
+
+#%% LH form factor of glomerulus with large inter and intra distance difference - type
+
+pher = [24, 28, 29, 31]
+attr = [42, 37]
+aver = [20, 3, 11, 4, 23]
+
+pherlist = []
+
+for i in range(len(pher)):
+    for j in range(len(glo_idx[pher[i]])):
+        nid = np.where(np.unique(MorphData.LHdist_trk) == glo_idx[pher[i]][j])[0][0]
+        pherlist.append(-1/np.array(mw_Pq_LH_pn[nid]))
+
+fig = plt.figure(figsize=(6,4.5))
+plt.plot(mwx_LH_pn[1], tolerant_mean(pherlist).data, color='tab:green', lw=2)
+plt.fill_between(mwx_LH_pn[1], 
+                 tolerant_mean(pherlist).data-np.std(mw_Pq_AL_pn, axis=0), 
+                 tolerant_mean(pherlist).data+np.std(mw_Pq_AL_pn, axis=0),
+                 alpha=0.3)
+plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
+plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1, 0.01, 100, ls='dashed', color='k')
+plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
+plt.text(10.3, 1/4-0.03, 'Ideal', fontsize=14)
+plt.text(10.3, 7/16-0.04, '$\Theta-Solvent$', fontsize=14)
+plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
+plt.text(10.3, 1-0.03,'Rigid', fontsize=14)
+plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
+
+plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
+plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
+
+plt.xscale('log')
+plt.ylim(0.1, 1.7)
+plt.xlim(0.01, 10)
+plt.xlabel("q", fontsize=17)
+plt.xticks(fontsize=14)
+plt.ylabel(r"$\nu$", fontsize=17)
+plt.yticks(fontsize=14)
+# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_' + str(MorphData.neuron_id[nid]) + '_pn_LH_mv_2.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+attrlist = []
+
+for i in range(len(attr)):
+    for j in range(len(glo_idx[attr[i]])):
+        nid = np.where(np.unique(MorphData.LHdist_trk) == glo_idx[attr[i]][j])[0][0]
+        attrlist.append(-1/np.array(mw_Pq_LH_pn[nid]))
+
+fig = plt.figure(figsize=(6,4.5))
+plt.plot(mwx_LH_pn[1], tolerant_mean(attrlist).data, color='tab:green', lw=2)
+plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
+plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1, 0.01, 100, ls='dashed', color='k')
+plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
+plt.text(10.3, 1/4-0.03, 'Ideal', fontsize=14)
+plt.text(10.3, 7/16-0.04, '$\Theta-Solvent$', fontsize=14)
+plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
+plt.text(10.3, 1-0.03,'Rigid', fontsize=14)
+plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
+
+plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
+plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
+
+plt.xscale('log')
+plt.ylim(0.1, 1.7)
+plt.xlim(0.01, 10)
+plt.xlabel("q", fontsize=17)
+plt.xticks(fontsize=14)
+plt.ylabel(r"$\nu$", fontsize=17)
+plt.yticks(fontsize=14)
+# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_' + str(MorphData.neuron_id[nid]) + '_pn_LH_mv_2.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+averlist = []
+
+for i in range(len(aver)):
+    for j in range(len(glo_idx[aver[i]])):
+        nid = np.where(np.unique(MorphData.LHdist_trk) == glo_idx[aver[i]][j])[0][0]
+        averlist.append(-1/np.array(mw_Pq_LH_pn[nid]))
+
+fig = plt.figure(figsize=(6,4.5))
+plt.plot(mwx_LH_pn[1], tolerant_mean(averlist).data, color='tab:green', lw=2)
+plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
+plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1, 0.01, 100, ls='dashed', color='k')
+plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
+plt.text(10.3, 1/4-0.03, 'Ideal', fontsize=14)
+plt.text(10.3, 7/16-0.04, '$\Theta-Solvent$', fontsize=14)
+plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
+plt.text(10.3, 1-0.03,'Rigid', fontsize=14)
+plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
+
+plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
+plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
+
+plt.xscale('log')
+plt.ylim(0.1, 1.7)
+plt.xlim(0.01, 10)
+plt.xlabel("q", fontsize=17)
+plt.xticks(fontsize=14)
+plt.ylabel(r"$\nu$", fontsize=17)
+plt.yticks(fontsize=14)
+# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_' + str(MorphData.neuron_id[nid]) + '_pn_LH_mv_2.pdf', dpi=300, bbox_inches='tight')
+plt.show()
 
 #%% LH form factor of glomerulus with large PN number
 
