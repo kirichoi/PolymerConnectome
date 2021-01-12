@@ -798,10 +798,18 @@ yex = argrelextrema(y[0], np.less)[0]
 zex = argrelextrema(z[0], np.less)[0]
 
 fig = plt.figure(figsize=(8,6))
-plt.hist(morph_dist_flat_rot[:,0], bins=int((np.max(morph_dist_flat_rot[:,0]) - np.min(morph_dist_flat_rot[:,0]))/1), color='tab:purple', alpha=0.5)
-plt.hist(np.array(ALdist_flat_rot)[:,0], bins=int((np.max(np.array(ALdist_flat_rot)[:,0]) - np.min(np.array(ALdist_flat_rot)[:,0]))/1), color='tab:blue', alpha=0.5)
-plt.hist(np.array(calyxdist_flat_rot)[:,0], bins=int((np.max(np.array(calyxdist_flat_rot)[:,0]) - np.min(np.array(calyxdist_flat_rot)[:,0]))/1), color='tab:orange', alpha=0.5)
-plt.hist(np.array(LHdist_flat_rot)[:,0], bins=int((np.max(np.array(LHdist_flat_rot)[:,0]) - np.min(np.array(LHdist_flat_rot)[:,0]))/1), color='tab:green', alpha=0.5)
+plt.hist(morph_dist_flat_rot[:,0], 
+         bins=int((np.max(morph_dist_flat_rot[:,0]) - np.min(morph_dist_flat_rot[:,0]))/1), 
+         color='tab:purple', alpha=0.5)
+plt.hist(np.array(ALdist_flat_rot)[:,0], 
+         bins=int((np.max(np.array(ALdist_flat_rot)[:,0]) - np.min(np.array(ALdist_flat_rot)[:,0]))/1), 
+         color='tab:blue', alpha=0.5)
+plt.hist(np.array(calyxdist_flat_rot)[:,0], 
+         bins=int((np.max(np.array(calyxdist_flat_rot)[:,0]) - np.min(np.array(calyxdist_flat_rot)[:,0]))/1), 
+         color='tab:orange', alpha=0.5)
+plt.hist(np.array(LHdist_flat_rot)[:,0], 
+         bins=int((np.max(np.array(LHdist_flat_rot)[:,0]) - np.min(np.array(LHdist_flat_rot)[:,0]))/1), 
+         color='tab:green', alpha=0.5)
 plt.xlabel('x Coordinates', fontsize=15)
 plt.ylabel('Count', fontsize=15)
 plt.legend(['All', 'AL', 'MB calyx', 'LH'], fontsize=13)
@@ -810,10 +818,18 @@ plt.scatter(x[1][xex[[13,27,40]]], x[0][xex[[13,27,40]]], color='tab:red')
 plt.show()
 
 fig = plt.figure(figsize=(8,6))
-plt.hist(morph_dist_flat_rot[:,1], bins=int((np.max(morph_dist_flat_rot[:,1]) - np.min(morph_dist_flat_rot[:,1]))/1), color='tab:purple', alpha=0.5)
-plt.hist(np.array(ALdist_flat_rot)[:,1], bins=int((np.max(np.array(ALdist_flat_rot)[:,1]) - np.min(np.array(ALdist_flat_rot)[:,1]))/1), color='tab:blue', alpha=0.5)
-plt.hist(np.array(calyxdist_flat_rot)[:,1], bins=int((np.max(np.array(calyxdist_flat_rot)[:,1]) - np.min(np.array(calyxdist_flat_rot)[:,1]))/1), color='tab:orange', alpha=0.5)
-plt.hist(np.array(LHdist_flat_rot)[:,1], bins=int((np.max(np.array(LHdist_flat_rot)[:,1]) - np.min(np.array(LHdist_flat_rot)[:,1]))/1), color='tab:green', alpha=0.5)
+plt.hist(morph_dist_flat_rot[:,1],
+         bins=int((np.max(morph_dist_flat_rot[:,1]) - np.min(morph_dist_flat_rot[:,1]))/1),
+         color='tab:purple', alpha=0.5)
+plt.hist(np.array(ALdist_flat_rot)[:,1], 
+         bins=int((np.max(np.array(ALdist_flat_rot)[:,1]) - np.min(np.array(ALdist_flat_rot)[:,1]))/1), 
+         color='tab:blue', alpha=0.5)
+plt.hist(np.array(calyxdist_flat_rot)[:,1], 
+         bins=int((np.max(np.array(calyxdist_flat_rot)[:,1]) - np.min(np.array(calyxdist_flat_rot)[:,1]))/1), 
+         color='tab:orange', alpha=0.5)
+plt.hist(np.array(LHdist_flat_rot)[:,1], 
+         bins=int((np.max(np.array(LHdist_flat_rot)[:,1]) - np.min(np.array(LHdist_flat_rot)[:,1]))/1),
+         color='tab:green', alpha=0.5)
 plt.xlabel('y Coordinates', fontsize=15)
 plt.ylabel('Count', fontsize=15)
 plt.legend(['All', 'AL', 'MB calyx', 'LH'], fontsize=13)
@@ -822,10 +838,18 @@ plt.scatter(y[1][yex[[9,26,46]]], y[0][yex[[9,26,46]]], color='tab:red')
 plt.show()
 
 fig = plt.figure(figsize=(8,6))
-plt.hist(morph_dist_flat_rot[:,2], bins=int((np.max(morph_dist_flat_rot[:,2]) - np.min(morph_dist_flat_rot[:,2]))/1), color='tab:purple', alpha=0.5)
-plt.hist(np.array(ALdist_flat_rot)[:,2], bins=int((np.max(np.array(ALdist_flat_rot)[:,2]) - np.min(np.array(ALdist_flat_rot)[:,2]))/1), color='tab:blue', alpha=0.5)
-plt.hist(np.array(calyxdist_flat_rot)[:,2], bins=int((np.max(np.array(calyxdist_flat_rot)[:,2]) - np.min(np.array(calyxdist_flat_rot)[:,2]))/1), color='tab:orange', alpha=0.5)
-plt.hist(np.array(LHdist_flat_rot)[:,2], bins=int((np.max(np.array(LHdist_flat_rot)[:,2]) - np.min(np.array(LHdist_flat_rot)[:,2]))/1), color='tab:green', alpha=0.5)
+plt.hist(morph_dist_flat_rot[:,2], 
+         bins=int((np.max(morph_dist_flat_rot[:,2]) - np.min(morph_dist_flat_rot[:,2]))/1), 
+         color='tab:purple', alpha=0.5)
+plt.hist(np.array(ALdist_flat_rot)[:,2], 
+         bins=int((np.max(np.array(ALdist_flat_rot)[:,2]) - np.min(np.array(ALdist_flat_rot)[:,2]))/1),
+         color='tab:blue', alpha=0.5)
+plt.hist(np.array(calyxdist_flat_rot)[:,2],
+         bins=int((np.max(np.array(calyxdist_flat_rot)[:,2]) - np.min(np.array(calyxdist_flat_rot)[:,2]))/1), 
+         color='tab:orange', alpha=0.5)
+plt.hist(np.array(LHdist_flat_rot)[:,2], 
+         bins=int((np.max(np.array(LHdist_flat_rot)[:,2]) - np.min(np.array(LHdist_flat_rot)[:,2]))/1), 
+         color='tab:green', alpha=0.5)
 plt.xlabel('z Coordinates', fontsize=15)
 plt.ylabel('Count', fontsize=15)
 plt.legend(['All', 'AL', 'MB calyx', 'LH'], fontsize=13)
@@ -962,7 +986,10 @@ for i in np.linspace(-90, 90, 19):
         zex_list_y_2.append([i, z[1][zidx], np.average(z[0][zidx]), np.std(z[0][zidx])])
         
     fig = plt.figure(figsize=(8,6))
-    plt.hist(morph_dist_flat_rot[:,2], bins=int((np.max(morph_dist_flat_rot[:,2]) - np.min(morph_dist_flat_rot[:,2]))/1), color='tab:purple', alpha=0.5)
+    plt.hist(morph_dist_flat_rot[:,2],
+             bins=int((np.max(morph_dist_flat_rot[:,2]) - np.min(morph_dist_flat_rot[:,2]))/1),
+             color='tab:purple', 
+             alpha=0.5)
     plt.vlines([refcalyx_rot[2], refLH_rot[2], refAL_rot[2]], 0, np.max(z[0]))
     plt.xlabel('z Coordinates', fontsize=15)
     plt.ylabel('Count', fontsize=15)
@@ -3480,10 +3507,12 @@ log_dens = kde.score_samples(xval.reshape((len(xval),1)))
 fig = plt.figure(figsize=(8,6))
 plt.hist(poptBcount_single_all, bins=int(len(hlist_single_count)/5), density=True)
 plt.plot(xval, np.exp(log_dens), lw=3)
-# plt.vlines(xval[np.argmax(np.exp(log_dens))], 0, 5, linestyle='--', label=str(round(xval[np.argmax(np.exp(log_dens))], 3)), color='tab:red')
-plt.vlines(np.mean(poptBcount_single_all), 0, 7.5, linestyle='--', label="Mean: " + str(round(np.mean(poptBcount_single_all), 3)), color='tab:red', lw=3)
-# plt.vlines(np.median(poptBcount_single_all), 0, 5, linestyle='--', label="Median: " + str(round(np.median(poptBcount_single_all), 3)), color='tab:green', lw=3)
-# plt.vlines(xval[np.argmax(np.exp(log_dens))], 0, 5, linestyle='--', label="Mode: " + str(round(xval[np.argmax(np.exp(log_dens))], 3)), color='tab:purple', lw=3)
+plt.vlines(np.mean(poptBcount_single_all), 
+           0, 
+           7.5, 
+           linestyle='--', 
+           label="Mean: " + str(round(np.mean(poptBcount_single_all), 3)), 
+           color='tab:red', lw=3)
 plt.ylim(0, 7.5)
 plt.legend(fontsize=13)
 #plt.tight_layout()
@@ -3620,7 +3649,13 @@ log_dens_calyx = kde_calyx.score_samples(xval_calyx.reshape((len(xval_calyx),1))
 fig = plt.figure(figsize=(8,6))
 plt.hist(poptBcount_single_all_calyx, bins=int(len(hlist_single_count_calyx)/5), density=True)
 plt.plot(xval_calyx, np.exp(log_dens_calyx), lw=3)
-plt.vlines(np.mean(poptBcount_single_all_calyx), 0, 5, linestyle='--', label="Mean: " + str(round(np.mean(poptBcount_single_all_calyx), 3)), color='tab:red', lw=3)
+plt.vlines(np.mean(poptBcount_single_all_calyx), 
+           0, 
+           5,
+           linestyle='--',
+           label="Mean: " + str(round(np.mean(poptBcount_single_all_calyx), 3)),
+           color='tab:red',
+           lw=3)
 plt.ylim(0, 4.5)
 plt.legend(fontsize=13)
 plt.xlabel("Fractal Dimension", fontsize=15)
@@ -3708,7 +3743,13 @@ log_dens_LH = kde_LH.score_samples(xval_LH.reshape((len(xval_LH),1)))
 fig = plt.figure(figsize=(8,6))
 plt.hist(poptBcount_single_all_LH, bins=int(len(hlist_single_count_LH)/5), density=True)
 plt.plot(xval_LH, np.exp(log_dens_LH), lw=3)
-plt.vlines(np.mean(poptBcount_single_all_LH), 0, 5, linestyle='--', label="Mean: " + str(round(np.mean(poptBcount_single_all_LH), 3)), color='tab:red', lw=3)
+plt.vlines(np.mean(poptBcount_single_all_LH), 
+           0, 
+           5, 
+           linestyle='--', 
+           label="Mean: " + str(round(np.mean(poptBcount_single_all_LH), 3)),
+           color='tab:red', 
+           lw=3)
 plt.ylim(0, 4)
 plt.legend(fontsize=13)
 plt.xlabel("Fractal Dimension", fontsize=15)
@@ -3796,7 +3837,13 @@ log_dens_AL = kde_AL.score_samples(xval_AL.reshape((len(xval_AL),1)))
 fig = plt.figure(figsize=(8,6))
 plt.hist(poptBcount_single_all_AL, bins=int(len(hlist_single_count_AL)/5), density=True)
 plt.plot(xval_AL, np.exp(log_dens_AL), lw=3)
-plt.vlines(np.mean(poptBcount_single_all_AL), 0, 5, linestyle='--', label="Mean: " + str(round(np.mean(poptBcount_single_all_AL), 3)), color='tab:red', lw=3)
+plt.vlines(np.mean(poptBcount_single_all_AL), 
+           0,
+           5,
+           linestyle='--', 
+           label="Mean: " + str(round(np.mean(poptBcount_single_all_AL), 3)), 
+           color='tab:red',
+           lw=3)
 plt.ylim(0, 4.5)
 plt.legend(fontsize=13)
 plt.xlabel("Fractal Dimension", fontsize=15)
@@ -5882,8 +5929,20 @@ plt.show()
 fig, ax = plt.subplots()
 x = np.arange(len(glo_list))
 width = 1.
-ax.bar(x, ALcalyx_corr_glo_avg, width, yerr=ALcalyx_corr_glo_std, label='Calyx-AL', alpha=0.5, error_kw=dict(ecolor='tab:blue', lw=1, capsize=2, capthick=1))
-ax.bar(x, ALLH_corr_glo_avg, width, yerr=ALLH_corr_glo_std, label='LH-AL', alpha=0.5, error_kw=dict(ecolor='tab:orange', lw=1, capsize=2, capthick=1))
+ax.bar(x, 
+       ALcalyx_corr_glo_avg, 
+       width, 
+       yerr=ALcalyx_corr_glo_std, 
+       label='Calyx-AL', 
+       alpha=0.5, 
+       error_kw=dict(ecolor='tab:blue', lw=1, capsize=2, capthick=1))
+ax.bar(x, 
+       ALLH_corr_glo_avg,
+       width, 
+       yerr=ALLH_corr_glo_std,
+       label='LH-AL', 
+       alpha=0.5,
+       error_kw=dict(ecolor='tab:orange', lw=1, capsize=2, capthick=1))
 ax.set_ylabel('Correlation Coefficient')
 ax.set_xticks(x)
 ax.set_xticklabels(glo_list, rotation=90, fontsize=7)
@@ -7609,8 +7668,14 @@ for i in range(len(morph_dist_LH_ep)):
 
 fig = plt.figure(figsize=(24, 16))
 ax = plt.axes(projection='3d')
-ax.scatter3D(np.array(morph_dist_calyx_ep_mean)[:,0], np.array(morph_dist_calyx_ep_mean)[:,1], np.array(morph_dist_calyx_ep_mean)[:,2], color='tab:blue')
-ax.scatter3D(np.array(morph_dist_LH_ep_mean)[:,0], np.array(morph_dist_LH_ep_mean)[:,1], np.array(morph_dist_LH_ep_mean)[:,2], color='tab:orange')
+ax.scatter3D(np.array(morph_dist_calyx_ep_mean)[:,0], 
+             np.array(morph_dist_calyx_ep_mean)[:,1], 
+             np.array(morph_dist_calyx_ep_mean)[:,2],
+             color='tab:blue')
+ax.scatter3D(np.array(morph_dist_LH_ep_mean)[:,0],
+             np.array(morph_dist_LH_ep_mean)[:,1], 
+             np.array(morph_dist_LH_ep_mean)[:,2], 
+             color='tab:orange')
 plt.show()
 
 # plt.hist(np.array(morph_dist_calyx_ep_mean)[:,0], bins=10, density=True, alpha=0.5)
@@ -7876,8 +7941,14 @@ for k in range(len(np.unique(ornlist))):
 
 fig = plt.figure(figsize=(24, 16))
 ax = plt.axes(projection='3d')
-ax.scatter3D(np.array(morph_dist_calyx_ep_mean)[:,0], np.array(morph_dist_calyx_ep_mean)[:,1], np.array(morph_dist_calyx_ep_mean)[:,2], color='tab:blue')
-ax.scatter3D(np.array(morph_dist_LH_ep_mean)[:,0], np.array(morph_dist_LH_ep_mean)[:,1], np.array(morph_dist_LH_ep_mean)[:,2], color='tab:orange')
+ax.scatter3D(np.array(morph_dist_calyx_ep_mean)[:,0], 
+             np.array(morph_dist_calyx_ep_mean)[:,1], 
+             np.array(morph_dist_calyx_ep_mean)[:,2], 
+             color='tab:blue')
+ax.scatter3D(np.array(morph_dist_LH_ep_mean)[:,0],
+             np.array(morph_dist_LH_ep_mean)[:,1], 
+             np.array(morph_dist_LH_ep_mean)[:,2],
+             color='tab:orange')
 plt.show()
 
 plt.hist(np.array(morph_dist_calyx_ep_mean)[:,0], bins=10, density=True, alpha=0.5, color='tab:blue')
@@ -8117,9 +8188,12 @@ calyx_results = np.load(r'./calyx_results_debye.npy')
 LH_results = np.load(r'./LH_results_debye.npy')
 AL_results = np.load(r'./AL_results_debye.npy')
 
-Pq_calyx = np.divide(np.sum(np.divide(np.array(calyx_results).reshape(100, len(calyx_dist_flat)), len(calyx_dist_flat)), axis=1), len(calyx_dist_flat))
-Pq_LH = np.divide(np.sum(np.divide(np.array(LH_results).reshape(100, len(LH_dist_flat)), len(LH_dist_flat)), axis=1), len(LH_dist_flat))
-Pq_AL = np.divide(np.sum(np.divide(np.array(AL_results).reshape(100, len(AL_dist_flat)), len(AL_dist_flat)), axis=1), len(AL_dist_flat))
+Pq_calyx = np.divide(np.sum(np.divide(np.array(calyx_results).reshape(100, len(calyx_dist_flat)), 
+                                      len(calyx_dist_flat)), axis=1), len(calyx_dist_flat))
+Pq_LH = np.divide(np.sum(np.divide(np.array(LH_results).reshape(100, len(LH_dist_flat)),
+                                   len(LH_dist_flat)), axis=1), len(LH_dist_flat))
+Pq_AL = np.divide(np.sum(np.divide(np.array(AL_results).reshape(100, len(AL_dist_flat)), 
+                                   len(AL_dist_flat)), axis=1), len(AL_dist_flat))
 
 d_Pq_calyx = np.gradient(np.log10(Pq_calyx[:60]), np.log10(q_range[:60]))
 d_Pq_LH = np.gradient(np.log10(Pq_LH[:60]), np.log10(q_range[:60]))
@@ -9361,7 +9435,7 @@ for i in range(len(aver_naver)):
 nidx = 8
 bidx = 0
 scaleVal = [1, 2, 5, 10]
-calyxcent = MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(BranchData.calyx_branchP[nidx][bidx])]#BranchData.branchP_dist[nidx][bidx]#[474, 218, 171]#calyxCM
+calyxcent = MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(BranchData.calyx_branchP[nidx][bidx])]
 
 cmap = cm.get_cmap('viridis', len(MorphData.calyxdist))
 
@@ -9375,7 +9449,8 @@ for s in scaleVal:
             if ((calyxcent[0] - s/2 <= MorphData.morph_dist[nidx][p][0] <= calyxcent[0] + s/2) and
                 (calyxcent[1] - s/2 <= MorphData.morph_dist[nidx][p][1] <= calyxcent[1] + s/2) and
                 (calyxcent[2] - s/2 <= MorphData.morph_dist[nidx][p][2] <= calyxcent[2] + s/2)):
-                morph_line = np.vstack((MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(MorphData.morph_parent[nidx][p])], MorphData.morph_dist[nidx][p]))
+                morph_line = np.vstack((MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(MorphData.morph_parent[nidx][p])], 
+                                        MorphData.morph_dist[nidx][p]))
                 plt.plot(morph_line[:,0], morph_line[:,1], color=cmap(nidx))
     
     plt.xlim(calyxcent[0] - s/2, calyxcent[0] + s/2)
@@ -9392,7 +9467,7 @@ for s in scaleVal:
 nidx = 8
 bidx = 2
 scaleVal = [1, 2, 5, 10]
-LHcent = MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(BranchData.LH_branchP[nidx][bidx])]#BranchData.branchP_dist[nidx][bidx]#[474, 218, 171]#LHCM
+LHcent = MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(BranchData.LH_branchP[nidx][bidx])]
 
 cmap = cm.get_cmap('viridis', len(MorphData.LHdist))
 
@@ -9406,7 +9481,8 @@ for s in scaleVal:
             if ((LHcent[0] - s/2 <= MorphData.morph_dist[nidx][p][0] <= LHcent[0] + s/2) and
                 (LHcent[1] - s/2 <= MorphData.morph_dist[nidx][p][1] <= LHcent[1] + s/2) and
                 (LHcent[2] - s/2 <= MorphData.morph_dist[nidx][p][2] <= LHcent[2] + s/2)):
-                morph_line = np.vstack((MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(MorphData.morph_parent[nidx][p])], MorphData.morph_dist[nidx][p]))
+                morph_line = np.vstack((MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(MorphData.morph_parent[nidx][p])], 
+                                        MorphData.morph_dist[nidx][p]))
                 plt.plot(morph_line[:,0], morph_line[:,1], color=cmap(nidx))
     
     plt.xlim(LHcent[0] - s/2, LHcent[0] + s/2)
@@ -9423,7 +9499,7 @@ for s in scaleVal:
 nidx = 8
 bidx = 15
 scaleVal = [1, 2, 5, 10]
-ALcent = MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(BranchData.AL_branchP[nidx][bidx])]#BranchData.branchP_dist[nidx][bidx]#[474, 218, 171]#ALCM
+ALcent = MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(BranchData.AL_branchP[nidx][bidx])]
 
 cmap = cm.get_cmap('viridis', len(MorphData.ALdist))
 
@@ -9437,7 +9513,8 @@ for s in scaleVal:
             if ((ALcent[0] - s/2 <= MorphData.morph_dist[nidx][p][0] <= ALcent[0] + s/2) and
                 (ALcent[1] - s/2 <= MorphData.morph_dist[nidx][p][1] <= ALcent[1] + s/2) and
                 (ALcent[2] - s/2 <= MorphData.morph_dist[nidx][p][2] <= ALcent[2] + s/2)):
-                morph_line = np.vstack((MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(MorphData.morph_parent[nidx][p])], MorphData.morph_dist[nidx][p]))
+                morph_line = np.vstack((MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(MorphData.morph_parent[nidx][p])], 
+                                        MorphData.morph_dist[nidx][p]))
                 plt.plot(morph_line[:,0], morph_line[:,1], color=cmap(nidx))
     
     plt.xlim(ALcent[0] - s/2, ALcent[0] + s/2)
@@ -9980,7 +10057,8 @@ for i, nidx in enumerate(nidx_list):
         if MorphData.morph_parent[nidx][p] < 0:
             pass
         else:
-            morph_line = np.vstack((MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(MorphData.morph_parent[nidx][p])], MorphData.morph_dist[nidx][p]))
+            morph_line = np.vstack((MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(MorphData.morph_parent[nidx][p])], 
+                                    MorphData.morph_dist[nidx][p]))
             ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(i), lw=0.75)
 
 ax.grid(True)
@@ -10028,7 +10106,8 @@ for i, nidx in enumerate(nidx_list):
         if MorphData.morph_parent[nidx][p] < 0:
             pass
         else:
-            morph_line = np.vstack((MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(MorphData.morph_parent[nidx][p])], MorphData.morph_dist[nidx][p]))
+            morph_line = np.vstack((MorphData.morph_dist[nidx][MorphData.morph_id[nidx].index(MorphData.morph_parent[nidx][p])], 
+                                    MorphData.morph_dist[nidx][p]))
             morph_line = rotx.apply(morph_line)
             morph_line = roty.apply(morph_line)
             morph_line = rotz.apply(morph_line)
@@ -10095,10 +10174,6 @@ log_dens = kde.score_samples(xval.reshape((len(xval),1)))
 
 fig = plt.figure(figsize=(8,6))
 plt.plot(xval, np.exp(log_dens), lw=3)
-# plt.hist(morph_dist_flat_rot[:,0], bins=int((np.max(morph_dist_flat_rot[:,0]) - np.min(morph_dist_flat_rot[:,0]))/1), color='tab:purple', alpha=0.5, density=True)
-# plt.hist(np.array(ALdist_flat_rot)[:,0], bins=int((np.max(np.array(ALdist_flat_rot)[:,0]) - np.min(np.array(ALdist_flat_rot)[:,0]))/1), color='tab:blue', alpha=0.5)
-# plt.hist(np.array(calyxdist_flat_rot)[:,0], bins=int((np.max(np.array(calyxdist_flat_rot)[:,0]) - np.min(np.array(calyxdist_flat_rot)[:,0]))/1), color='tab:orange', alpha=0.5)
-# plt.hist(np.array(LHdist_flat_rot)[:,0], bins=int((np.max(np.array(LHdist_flat_rot)[:,0]) - np.min(np.array(LHdist_flat_rot)[:,0]))/1), color='tab:green', alpha=0.5)
 # plt.xlabel('x Coordinates', fontsize=15)
 # plt.ylabel('Count', fontsize=15)
 # plt.legend(['All', 'AL', 'MB calyx', 'LH'], fontsize=13)
@@ -10114,10 +10189,6 @@ log_dens = kde.score_samples(yval.reshape((len(yval),1)))
 
 fig = plt.figure(figsize=(8,6))
 plt.plot(yval, np.exp(log_dens), lw=3)
-# plt.hist(morph_dist_flat_rot[:,1], bins=int((np.max(morph_dist_flat_rot[:,1]) - np.min(morph_dist_flat_rot[:,1]))/1), color='tab:purple', alpha=0.5)
-# plt.hist(np.array(ALdist_flat_rot)[:,1], bins=int((np.max(np.array(ALdist_flat_rot)[:,1]) - np.min(np.array(ALdist_flat_rot)[:,1]))/1), color='tab:blue', alpha=0.5)
-# plt.hist(np.array(calyxdist_flat_rot)[:,1], bins=int((np.max(np.array(calyxdist_flat_rot)[:,1]) - np.min(np.array(calyxdist_flat_rot)[:,1]))/1), color='tab:orange', alpha=0.5)
-# plt.hist(np.array(LHdist_flat_rot)[:,1], bins=int((np.max(np.array(LHdist_flat_rot)[:,1]) - np.min(np.array(LHdist_flat_rot)[:,1]))/1), color='tab:green', alpha=0.5)
 # plt.xlabel('y Coordinates', fontsize=15)
 # plt.ylabel('Count', fontsize=15)
 # plt.legend(['All', 'AL', 'MB calyx', 'LH'], fontsize=13)
@@ -10133,10 +10204,6 @@ log_dens = kde.score_samples(zval.reshape((len(zval),1)))
 
 fig = plt.figure(figsize=(8,6))
 plt.plot(zval, np.exp(log_dens), lw=3)
-# plt.hist(morph_dist_flat_rot[:,2], bins=int((np.max(morph_dist_flat_rot[:,2]) - np.min(morph_dist_flat_rot[:,2]))/1), color='tab:purple', alpha=0.5)
-# plt.hist(np.array(ALdist_flat_rot)[:,2], bins=int((np.max(np.array(ALdist_flat_rot)[:,2]) - np.min(np.array(ALdist_flat_rot)[:,2]))/1), color='tab:blue', alpha=0.5)
-# plt.hist(np.array(calyxdist_flat_rot)[:,2], bins=int((np.max(np.array(calyxdist_flat_rot)[:,2]) - np.min(np.array(calyxdist_flat_rot)[:,2]))/1), color='tab:orange', alpha=0.5)
-# plt.hist(np.array(LHdist_flat_rot)[:,2], bins=int((np.max(np.array(LHdist_flat_rot)[:,2]) - np.min(np.array(LHdist_flat_rot)[:,2]))/1), color='tab:green', alpha=0.5)
 # plt.xlabel('z Coordinates', fontsize=15)
 # plt.ylabel('Count', fontsize=15)
 # plt.legend(['All', 'AL', 'MB calyx', 'LH'], fontsize=13)
