@@ -6259,6 +6259,35 @@ plt.tight_layout()
 # plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_average_nnmetric_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
+
+
+fig, ax = plt.subplots(figsize=(6,6))
+labels = ['MB calyx', 'LH', 'AL']
+x = np.arange(len(labels))
+width = .3
+
+cmeans = [np.mean(calyxdist_cluster_u_full_flat_new), np.mean(LHdist_cluster_u_full_flat_new), np.mean(ALdist_cluster_u_full_flat_new)]
+cerr = [np.std(calyxdist_cluster_u_full_flat_new), 
+        np.std(LHdist_cluster_u_full_flat_new), 
+        np.std(ALdist_cluster_u_full_flat_new)]
+ncmeans = [np.mean(calyxdist_noncluster_u_full_flat_new), np.mean(LHdist_noncluster_u_full_flat_new), np.mean(ALdist_noncluster_u_full_flat_new)]
+ncerr = [np.std(calyxdist_noncluster_u_full_flat_new), 
+         np.std(LHdist_noncluster_u_full_flat_new), 
+         np.std(ALdist_noncluster_u_full_flat_new)]
+
+ax.bar(x - width/2, cmeans, width, yerr=cerr, capsize=5, label='Identical Glomerulus')
+ax.bar(x + width/2, ncmeans, width, yerr=ncerr, capsize=5, label='Different Glomeruli')
+ax.set_ylabel('Distance', fontsize=17)
+ax.set_xticks(x)
+ax.set_xticklabels(labels, fontsize=17)
+ax.tick_params(axis="y", labelsize=15)
+ax.legend(fontsize=15)
+#ax.set_title('Median distance within and outside cluster')
+plt.tight_layout()
+# plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_average_nnmetric_ratio_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
 fig, ax = plt.subplots(figsize=(8,6))
 labels = ['MB calyx', 'LH', 'AL']
 x = np.arange(len(labels))
@@ -9342,8 +9371,158 @@ plt.xlabel("q", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_LH_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
+
+
+#%% AL form factor of glomerulus with large inter and intra distance difference - type
+
+pher = ['DA1', 'DC3', 'DL3', 'VA1d']
+attr = ['VM2', 'VM7d', 'VM7v']
+aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3']
+
+pherlist = []
+
+for i in range(len(pher)):
+    for j in range(len(glo_idx[glo_list.index(pher[i])])):
+        nid = np.where(np.unique(MorphData.ALdist_trk) == glo_idx[glo_list.index(pher[i])][j])[0][0]
+        pherlist.append(-1/np.array(mw_Pq_AL_pn[nid]))
+
+attrlist = []
+
+for i in range(len(attr)):
+    for j in range(len(glo_idx[glo_list.index(attr[i])])):
+        nid = np.where(np.unique(MorphData.ALdist_trk) == glo_idx[glo_list.index(attr[i])][j])[0][0]
+        attrlist.append(-1/np.array(mw_Pq_AL_pn[nid]))
+
+
+averlist = []
+
+for i in range(len(aver)):
+    for j in range(len(glo_idx[glo_list.index(aver[i])])):
+        nid = np.where(np.unique(MorphData.ALdist_trk) == glo_idx[glo_list.index(aver[i])][j])[0][0]
+        averlist.append(-1/np.array(mw_Pq_AL_pn[nid]))
+
+fig = plt.figure(figsize=(6,4.5))
+plt.plot(mwx_AL_pn[0], tolerant_mean(pherlist).data, color='tab:blue', lw=2)
+plt.plot(mwx_AL_pn[0][:-1], tolerant_mean(attrlist).data, color='tab:green', lw=2)
+plt.plot(mwx_AL_pn[0], tolerant_mean(averlist).data, color='tab:red', lw=2)
+# plt.fill_between(mwx_AL_pn[1], 
+#                  tolerant_mean(pherlist).data-tolerant_std(pherlist), 
+#                  tolerant_mean(pherlist).data+tolerant_std(pherlist),
+#                  alpha=0.3,
+#                  color='tab:blue')
+# plt.fill_between(mwx_AL_pn[1], 
+#                  tolerant_mean(attrlist).data-tolerant_std(attrlist), 
+#                  tolerant_mean(attrlist).data+tolerant_std(attrlist),
+#                  alpha=0.3,
+#                  color='tab:green')
+# plt.fill_between(mwx_AL_pn[1], 
+#                  tolerant_mean(averlist).data-tolerant_std(averlist), 
+#                  tolerant_mean(averlist).data+tolerant_std(averlist),
+#                  alpha=0.3,
+#                  color='tab:red')
+plt.legend(['Pheromones', 'Attractive', 'Aversive'], fontsize=14)
+
+plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
+plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1, 0.01, 100, ls='dashed', color='k')
+plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
+plt.text(10.3, 1/4-0.03, 'Ideal', fontsize=14)
+plt.text(10.3, 7/16-0.04, '$\Theta-Solvent$', fontsize=14)
+plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
+plt.text(10.3, 1-0.03,'Rigid', fontsize=14)
+plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
+
+plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='k')
+plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='k', ls='--')
+
+plt.xscale('log')
+plt.ylim(0.1, 1.7)
+plt.xlim(0.01, 10)
+plt.xlabel("q", fontsize=17)
+plt.xticks(fontsize=14)
+plt.ylabel(r"$\nu$", fontsize=17)
+plt.yticks(fontsize=14)
+# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_AL_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+#%% calyx form factor of glomerulus with large inter and intra distance difference - type
+
+pher = ['DA1', 'DC3', 'DL3', 'VA1d']
+attr = ['VM2', 'VM7d', 'VM7v']
+aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3']
+
+pherlist = []
+
+for i in range(len(pher)):
+    for j in range(len(glo_idx[glo_list.index(pher[i])])):
+        nid = np.where(np.unique(MorphData.calyxdist_trk) == glo_idx[glo_list.index(pher[i])][j])[0][0]
+        pherlist.append(-1/np.array(mw_Pq_calyx_pn[nid]))
+
+attrlist = []
+
+for i in range(len(attr)):
+    for j in range(len(glo_idx[glo_list.index(attr[i])])):
+        nid = np.where(np.unique(MorphData.calyxdist_trk) == glo_idx[glo_list.index(attr[i])][j])[0][0]
+        attrlist.append(-1/np.array(mw_Pq_calyx_pn[nid]))
+
+
+averlist = []
+
+for i in range(len(aver)):
+    for j in range(len(glo_idx[glo_list.index(aver[i])])):
+        nid = np.where(np.unique(MorphData.calyxdist_trk) == glo_idx[glo_list.index(aver[i])][j])[0][0]
+        averlist.append(-1/np.array(mw_Pq_calyx_pn[nid]))
+
+fig = plt.figure(figsize=(6,4.5))
+plt.plot(mwx_calyx_pn[1], tolerant_mean(pherlist).data, color='tab:blue', lw=2)
+plt.plot(mwx_calyx_pn[1], tolerant_mean(attrlist).data, color='tab:green', lw=2)
+plt.plot(mwx_calyx_pn[1], tolerant_mean(averlist).data, color='tab:red', lw=2)
+# plt.fill_between(mwx_calyx_pn[1], 
+#                  tolerant_mean(pherlist).data-tolerant_std(pherlist), 
+#                  tolerant_mean(pherlist).data+tolerant_std(pherlist),
+#                  alpha=0.3,
+#                  color='tab:blue')
+# plt.fill_between(mwx_calyx_pn[1], 
+#                  tolerant_mean(attrlist).data-tolerant_std(attrlist), 
+#                  tolerant_mean(attrlist).data+tolerant_std(attrlist),
+#                  alpha=0.3,
+#                  color='tab:green')
+# plt.fill_between(mwx_calyx_pn[1], 
+#                  tolerant_mean(averlist).data-tolerant_std(averlist), 
+#                  tolerant_mean(averlist).data+tolerant_std(averlist),
+#                  alpha=0.3,
+#                  color='tab:red')
+plt.legend(['Pheromones', 'Attractive', 'Aversive'], fontsize=14)
+
+plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
+plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1, 0.01, 100, ls='dashed', color='k')
+plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
+plt.text(10.3, 1/4-0.03, 'Ideal', fontsize=14)
+plt.text(10.3, 7/16-0.04, '$\Theta-Solvent$', fontsize=14)
+plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
+plt.text(10.3, 1-0.03,'Rigid', fontsize=14)
+plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
+
+plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='k')
+plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='k', ls='--')
+
+plt.xscale('log')
+plt.ylim(0.1, 1.7)
+plt.xlim(0.01, 10)
+plt.xlabel("q", fontsize=17)
+plt.xticks(fontsize=14)
+plt.ylabel(r"$\nu$", fontsize=17)
+plt.yticks(fontsize=14)
+# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_calyx_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
 
 
 #%% LH form factor of glomerulus with large PN number
@@ -9380,7 +9559,7 @@ for i in range(len(np.argsort(glo_len)[-6:])):
     plt.show()
 
 
-#%% Neuron plot clump non-clump
+#%% Neuron plot clump non-clump LH
 
 clump_noclump = ['DL3', 'DM5']
 
@@ -9419,6 +9598,48 @@ ax.set_ylim(280, 220)
 ax.set_zlim(140, 200)
 # plt.savefig(os.path.join(Parameter.outputdir, 'neurons_LH_clump_noclump_2.png'), dpi=600, bbox_inches='tight')
 plt.show()
+
+
+#%% Neuron plot clump non-clump calyx
+
+clump_noclump = ['DL3', 'DM5']
+
+idx_all_aver = []
+for i in range(len(clump_noclump)):
+    idx_all_aver.append(glo_idx[glo_list.index(clump_noclump[i])])
+
+# for k in range(len(aver)):
+fig = plt.figure(figsize=(8, 8))
+ax = plt.axes(projection='3d')
+ax.set_box_aspect((1,1,1))
+# cmap = cm.get_cmap('jet', len(clump_noclump))
+clist = ['tab:blue', 'tab:red']
+for i in range(len(MorphData.calyxdist)):
+    glo_n = MorphData.calyxdist_trk[i]
+    isglo = [i for i, idx in enumerate(idx_all_aver) if glo_n in idx]
+    listOfPoints = MorphData.calyxdist[i]
+    if len(isglo) > 0:
+        for f in range(len(listOfPoints)-1):
+            morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=clist[isglo[0]], lw=1.)
+    else:
+        for f in range(len(listOfPoints)-1):
+            morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='gray', lw=0.25, alpha=0.25)
+ax.grid(True)
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+ax.set_xticklabels([])
+ax.set_yticklabels([])
+ax.set_zticklabels([])
+
+ax.set_xlim(500, 560)
+ax.set_ylim(280, 220)
+ax.set_zlim(160, 220)
+# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_calyx_clump_noclump_1.png'), dpi=600, bbox_inches='tight')
+plt.show()
+
 
 
 #%% Neuron plot aver non aver
