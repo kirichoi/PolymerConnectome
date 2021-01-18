@@ -6465,7 +6465,7 @@ ax[1].bar(x,
           np.divide(calyxtest_cl[calyxtest_idx[np.argsort(LHtest_percent)]],
                     calyxtest_ncl[calyxtest_idx[np.argsort(LHtest_percent)]]),
           width, capsize=5, color='tab:orange')
-ax[1].set_ylabel('Distance', fontsize=17)
+ax[1].set_ylabel('Intra/Inter Distance Ratio', fontsize=17)
 ax[1].set_xticks(x)
 ax[1].set_title('MB calyx', fontsize=21)
 ax[1].set_xticklabels([])
@@ -6486,7 +6486,7 @@ ax[2].tick_params(axis="y", labelsize=15)
 ax[2].set_xlim(x[0] - 1, x[-1] + 1)
 [t.set_color(i) for (i,t) in zip(attavlist, ax[2].xaxis.get_ticklabels())]
 plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/glo_dist_diff_per_glo_all_4.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/glo_dist_diff_per_glo_all_3.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -9273,16 +9273,16 @@ for i in range(len(LH_glo_col_idx)):
 
 #%% LH form factor of glomerulus with large inter and intra distance difference - type
 
-pher = []
-attr = ['DA1', 'DC3', 'VA1d', 'VM7d', 'VM7v']
-aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3', 'DL3']
+pher = ['DL3', 'VA1d', 'DA1', 'DC3']
+attr = ['VM2', 'VM7d', 'VM7v']
+aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3']
 
-# pherlist = []
+pherlist = []
 
-# for i in range(len(pher)):
-#     for j in range(len(glo_idx[glo_list.index(pher[i])])):
-#         nid = np.where(np.unique(MorphData.LHdist_trk) == glo_idx[glo_list.index(pher[i])][j])[0][0]
-#         pherlist.append(-1/np.array(mw_Pq_LH_pn[nid]))
+for i in range(len(pher)):
+    for j in range(len(glo_idx[glo_list.index(pher[i])])):
+        nid = np.where(np.unique(MorphData.LHdist_trk) == glo_idx[glo_list.index(pher[i])][j])[0][0]
+        pherlist.append(-1/np.array(mw_Pq_LH_pn[nid]))
 
 attrlist = []
 
@@ -9300,14 +9300,14 @@ for i in range(len(aver)):
         averlist.append(-1/np.array(mw_Pq_LH_pn[nid]))
 
 fig = plt.figure(figsize=(6,4.5))
-# plt.plot(mwx_LH_pn[1], tolerant_mean(pherlist).data, color='tab:blue', lw=2)
+plt.plot(mwx_LH_pn[1], tolerant_mean(pherlist).data, color='tab:blue', lw=2)
 plt.plot(mwx_LH_pn[1], tolerant_mean(attrlist).data, color='tab:green', lw=2)
 plt.plot(mwx_LH_pn[1], tolerant_mean(averlist).data, color='tab:red', lw=2)
-# plt.fill_between(mwx_LH_pn[1], 
-#                   tolerant_mean(pherlist).data-tolerant_std(pherlist), 
-#                   tolerant_mean(pherlist).data+tolerant_std(pherlist),
-#                   alpha=0.3,
-#                   color='tab:blue')
+plt.fill_between(mwx_LH_pn[1], 
+                  tolerant_mean(pherlist).data-tolerant_std(pherlist), 
+                  tolerant_mean(pherlist).data+tolerant_std(pherlist),
+                  alpha=0.3,
+                  color='tab:blue')
 plt.fill_between(mwx_LH_pn[1], 
                   tolerant_mean(attrlist).data-tolerant_std(attrlist), 
                   tolerant_mean(attrlist).data+tolerant_std(attrlist),
@@ -9347,22 +9347,19 @@ plt.show()
 
 #%% AL form factor of glomerulus with large inter and intra distance difference - type
 
-# pher = ['DA1', 'DC3', 'DL3', 'VA1d']
-# attr = ['VM4', 'VM5d', 'VM1', 'DA3', 'VA3', 'VM2', 'VA1v', 'VM7d', 'VM7v']
-# aver = ['DM5', 'V', 'DL1', 'DM2', 'VL2p', 'DC2', 'DA2', 'DM6', 'VA5', 'VA7m', 'VM3']
-
-attr = ['DA1', 'DC3', 'VA1d', 'VM7d', 'VM7v']
-aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3', 'DL3']
+pher = ['DL3', 'VA1d', 'DA1', 'DC3']
+attr = ['VM2', 'VM7d', 'VM7v']
+aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3']
 
 ALdist_trk_temp = copy.deepcopy(np.unique(MorphData.ALdist_trk))
 ALdist_trk_temp = np.delete(ALdist_trk_temp, 73)
 
 pherlist = []
 
-# for i in range(len(pher)):
-#     for j in range(len(glo_idx[glo_list.index(pher[i])])):
-#         nid = np.where(ALdist_trk_temp == glo_idx[glo_list.index(pher[i])][j])[0][0]
-#         pherlist.append(-1/np.array(mw_Pq_AL_pn[nid]))
+for i in range(len(pher)):
+    for j in range(len(glo_idx[glo_list.index(pher[i])])):
+        nid = np.where(ALdist_trk_temp == glo_idx[glo_list.index(pher[i])][j])[0][0]
+        pherlist.append(-1/np.array(mw_Pq_AL_pn[nid]))
 
 attrlist = []
 
@@ -9380,15 +9377,15 @@ for i in range(len(aver)):
         averlist.append(-1/np.array(mw_Pq_AL_pn[nid]))
 
 fig = plt.figure(figsize=(6,4.5))
-# plt.plot(mwx_AL_pn[0], tolerant_mean(pherlist).data, color='tab:blue', lw=2)
-plt.plot(mwx_AL_pn[0], tolerant_mean(attrlist).data, color='tab:green', lw=2)
+plt.plot(mwx_AL_pn[0], tolerant_mean(pherlist).data, color='tab:blue', lw=2)
+plt.plot(mwx_AL_pn[0][:59], tolerant_mean(attrlist).data, color='tab:green', lw=2)
 plt.plot(mwx_AL_pn[0], tolerant_mean(averlist).data, color='tab:red', lw=2)
-# plt.fill_between(mwx_AL_pn[0], 
-#                   tolerant_mean(pherlist).data-tolerant_std(pherlist), 
-#                   tolerant_mean(pherlist).data+tolerant_std(pherlist),
-#                   alpha=0.3,
-#                   color='tab:blue')
 plt.fill_between(mwx_AL_pn[0], 
+                  tolerant_mean(pherlist).data-tolerant_std(pherlist), 
+                  tolerant_mean(pherlist).data+tolerant_std(pherlist),
+                  alpha=0.3,
+                  color='tab:blue')
+plt.fill_between(mwx_AL_pn[0][:59], 
                   tolerant_mean(attrlist).data-tolerant_std(attrlist), 
                   tolerant_mean(attrlist).data+tolerant_std(attrlist),
                   alpha=0.3,
@@ -9427,22 +9424,19 @@ plt.show()
 
 #%% calyx form factor of glomerulus with large inter and intra distance difference - type
 
-# pher = ['DA1', 'DC3', 'DL3', 'VA1d']
-# attr = ['VM7d', 'VM7v']
-# aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3']
-
-attr = ['DA1', 'DC3', 'VA1d', 'VM7d', 'VM7v']
-aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3', 'DL3']
+pher = ['DL3', 'VA1d', 'DA1', 'DC3']
+attr = ['VM2', 'VM7d', 'VM7v']
+aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3']
 
 calyxdist_trk_temp = copy.deepcopy(np.unique(MorphData.calyxdist_trk))
 calyxdist_trk_temp = np.delete(calyxdist_trk_temp, [40, 41])
 
 pherlist = []
 
-# for i in range(len(pher)):
-#     for j in range(len(glo_idx[glo_list.index(pher[i])])):
-#         nid = np.where(calyxdist_trk_temp == glo_idx[glo_list.index(pher[i])][j])[0][0]
-#         pherlist.append(-1/np.array(mw_Pq_calyx_pn[nid]))
+for i in range(len(pher)):
+    for j in range(len(glo_idx[glo_list.index(pher[i])])):
+        nid = np.where(calyxdist_trk_temp == glo_idx[glo_list.index(pher[i])][j])[0][0]
+        pherlist.append(-1/np.array(mw_Pq_calyx_pn[nid]))
 
 attrlist = []
 
@@ -9460,14 +9454,14 @@ for i in range(len(aver)):
         averlist.append(-1/np.array(mw_Pq_calyx_pn[nid]))
 
 fig = plt.figure(figsize=(6,4.5))
-# plt.plot(mwx_calyx_pn[1], tolerant_mean(pherlist).data, color='tab:blue', lw=2)
+plt.plot(mwx_calyx_pn[1], tolerant_mean(pherlist).data, color='tab:blue', lw=2)
 plt.plot(mwx_calyx_pn[1], tolerant_mean(attrlist).data, color='tab:green', lw=2)
 plt.plot(mwx_calyx_pn[1], tolerant_mean(averlist).data, color='tab:red', lw=2)
-# plt.fill_between(mwx_calyx_pn[1], 
-#                   tolerant_mean(pherlist).data-tolerant_std(pherlist), 
-#                   tolerant_mean(pherlist).data+tolerant_std(pherlist),
-#                   alpha=0.3,
-#                   color='tab:blue')
+plt.fill_between(mwx_calyx_pn[1], 
+                  tolerant_mean(pherlist).data-tolerant_std(pherlist), 
+                  tolerant_mean(pherlist).data+tolerant_std(pherlist),
+                  alpha=0.3,
+                  color='tab:blue')
 plt.fill_between(mwx_calyx_pn[1], 
                   tolerant_mean(attrlist).data-tolerant_std(attrlist), 
                   tolerant_mean(attrlist).data+tolerant_std(attrlist),
