@@ -6209,7 +6209,7 @@ plt.show()
 fig, ax = plt.subplots(figsize=(6,6))
 labels = ['MB calyx', 'LH', 'AL']
 x = np.arange(len(labels))
-width = .35
+width = .4
 
 cmeans = [np.median(calyxdist_cluster_u_full_flat_new), np.median(LHdist_cluster_u_full_flat_new), np.median(ALdist_cluster_u_full_flat_new)]
 cerr = [scipy.stats.median_abs_deviation(calyxdist_cluster_u_full_flat_new, center=np.median), 
@@ -6236,7 +6236,7 @@ plt.show()
 fig, ax = plt.subplots(figsize=(6,6))
 labels = ['MB calyx', 'LH', 'AL']
 x = np.arange(len(labels))
-width = .35
+width = .4
 
 cmeans = [np.mean(calyxdist_cluster_u_full_flat_new), np.mean(LHdist_cluster_u_full_flat_new), np.mean(ALdist_cluster_u_full_flat_new)]
 cerr = [np.std(calyxdist_cluster_u_full_flat_new), 
@@ -6361,23 +6361,23 @@ plt.show()
 calyxtest_cl = []
 calyxtest_ncl = []
 for i in range(len(calyxdist_cluster_u_full_new)):
-    calyxtest_cl.append(np.median(calyxdist_cluster_u_full_new[i]))
+    calyxtest_cl.append(np.mean(calyxdist_cluster_u_full_new[i]))
 for i in range(len(calyxdist_noncluster_u_full_new)):
-    calyxtest_ncl.append(np.median(calyxdist_noncluster_u_full_new[i]))
+    calyxtest_ncl.append(np.mean(calyxdist_noncluster_u_full_new[i]))
     
 LHtest_cl = []
 LHtest_ncl = []
 for i in range(len(LHdist_cluster_u_full_new)):
-    LHtest_cl.append(np.median(LHdist_cluster_u_full_new[i]))
+    LHtest_cl.append(np.mean(LHdist_cluster_u_full_new[i]))
 for i in range(len(LHdist_noncluster_u_full_new)):
-    LHtest_ncl.append(np.median(LHdist_noncluster_u_full_new[i]))
+    LHtest_ncl.append(np.mean(LHdist_noncluster_u_full_new[i]))
 
 ALtest_cl = []
 ALtest_ncl = []
 for i in range(len(ALdist_cluster_u_full_new)):
-    ALtest_cl.append(np.median(ALdist_cluster_u_full_new[i]))
+    ALtest_cl.append(np.mean(ALdist_cluster_u_full_new[i]))
 for i in range(len(ALdist_noncluster_u_full_new)):
-    ALtest_ncl.append(np.median(ALdist_noncluster_u_full_new[i]))
+    ALtest_ncl.append(np.mean(ALdist_noncluster_u_full_new[i]))
     
 calyxtest_cl = np.nan_to_num(calyxtest_cl)
 calyxtest_ncl = np.nan_to_num(calyxtest_ncl)
