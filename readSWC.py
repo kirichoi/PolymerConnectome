@@ -363,6 +363,14 @@ def tolerant_std(arrs):
         arr[:len(l), idx] = l
     return arr.std(axis=-1)
 
+def tolerant_std_error(arrs):
+    lens = [len(i) for i in arrs]
+    arr = np.ma.empty((np.max(lens), len(arrs)))
+    arr.mask = True
+    for idx, l in enumerate(arrs):
+        arr[:len(l), idx] = l
+    return np.divide(arr.std(axis=-1), np.sqrt(len(arr)))
+
 #%%
     
 class LengthData:
@@ -9304,18 +9312,18 @@ plt.plot(mwx_LH_pn[1], tolerant_mean(pherlist).data, color='tab:blue', lw=2)
 plt.plot(mwx_LH_pn[1], tolerant_mean(attrlist).data, color='tab:green', lw=2)
 plt.plot(mwx_LH_pn[1], tolerant_mean(averlist).data, color='tab:red', lw=2)
 plt.fill_between(mwx_LH_pn[1], 
-                  tolerant_mean(pherlist).data-tolerant_std(pherlist), 
-                  tolerant_mean(pherlist).data+tolerant_std(pherlist),
+                  tolerant_mean(pherlist).data-tolerant_std_error(pherlist), 
+                  tolerant_mean(pherlist).data+tolerant_std_error(pherlist),
                   alpha=0.3,
                   color='tab:blue')
 plt.fill_between(mwx_LH_pn[1], 
-                  tolerant_mean(attrlist).data-tolerant_std(attrlist), 
-                  tolerant_mean(attrlist).data+tolerant_std(attrlist),
+                  tolerant_mean(attrlist).data-tolerant_std_error(attrlist), 
+                  tolerant_mean(attrlist).data+tolerant_std_error(attrlist),
                   alpha=0.3,
                   color='tab:green')
 plt.fill_between(mwx_LH_pn[1], 
-                  tolerant_mean(averlist).data-tolerant_std(averlist), 
-                  tolerant_mean(averlist).data+tolerant_std(averlist),
+                  tolerant_mean(averlist).data-tolerant_std_error(averlist), 
+                  tolerant_mean(averlist).data+tolerant_std_error(averlist),
                   alpha=0.3,
                   color='tab:red')
 plt.legend(['Pheromones', 'Attractive', 'Aversive'], fontsize=14)
@@ -9381,18 +9389,18 @@ plt.plot(mwx_AL_pn[0], tolerant_mean(pherlist).data, color='tab:blue', lw=2)
 plt.plot(mwx_AL_pn[0][:59], tolerant_mean(attrlist).data, color='tab:green', lw=2)
 plt.plot(mwx_AL_pn[0], tolerant_mean(averlist).data, color='tab:red', lw=2)
 plt.fill_between(mwx_AL_pn[0], 
-                  tolerant_mean(pherlist).data-tolerant_std(pherlist), 
-                  tolerant_mean(pherlist).data+tolerant_std(pherlist),
+                  tolerant_mean(pherlist).data-tolerant_std_error(pherlist), 
+                  tolerant_mean(pherlist).data+tolerant_std_error(pherlist),
                   alpha=0.3,
                   color='tab:blue')
 plt.fill_between(mwx_AL_pn[0][:59], 
-                  tolerant_mean(attrlist).data-tolerant_std(attrlist), 
-                  tolerant_mean(attrlist).data+tolerant_std(attrlist),
+                  tolerant_mean(attrlist).data-tolerant_std_error(attrlist), 
+                  tolerant_mean(attrlist).data+tolerant_std_error(attrlist),
                   alpha=0.3,
                   color='tab:green')
 plt.fill_between(mwx_AL_pn[0], 
-                  tolerant_mean(averlist).data-tolerant_std(averlist), 
-                  tolerant_mean(averlist).data+tolerant_std(averlist),
+                  tolerant_mean(averlist).data-tolerant_std_error(averlist), 
+                  tolerant_mean(averlist).data+tolerant_std_error(averlist),
                   alpha=0.3,
                   color='tab:red')
 plt.legend(['Pheromones', 'Attractive', 'Aversive'], fontsize=14)
@@ -9458,18 +9466,18 @@ plt.plot(mwx_calyx_pn[1], tolerant_mean(pherlist).data, color='tab:blue', lw=2)
 plt.plot(mwx_calyx_pn[1], tolerant_mean(attrlist).data, color='tab:green', lw=2)
 plt.plot(mwx_calyx_pn[1], tolerant_mean(averlist).data, color='tab:red', lw=2)
 plt.fill_between(mwx_calyx_pn[1], 
-                  tolerant_mean(pherlist).data-tolerant_std(pherlist), 
-                  tolerant_mean(pherlist).data+tolerant_std(pherlist),
+                  tolerant_mean(pherlist).data-tolerant_std_error(pherlist), 
+                  tolerant_mean(pherlist).data+tolerant_std_error(pherlist),
                   alpha=0.3,
                   color='tab:blue')
 plt.fill_between(mwx_calyx_pn[1], 
-                  tolerant_mean(attrlist).data-tolerant_std(attrlist), 
-                  tolerant_mean(attrlist).data+tolerant_std(attrlist),
+                  tolerant_mean(attrlist).data-tolerant_std_error(attrlist), 
+                  tolerant_mean(attrlist).data+tolerant_std_error(attrlist),
                   alpha=0.3,
                   color='tab:green')
 plt.fill_between(mwx_calyx_pn[1], 
-                  tolerant_mean(averlist).data-tolerant_std(averlist), 
-                  tolerant_mean(averlist).data+tolerant_std(averlist),
+                  tolerant_mean(averlist).data-tolerant_std_error(averlist), 
+                  tolerant_mean(averlist).data+tolerant_std_error(averlist),
                   alpha=0.3,
                   color='tab:red')
 plt.legend(['Pheromones', 'Attractive', 'Aversive'], fontsize=14)
