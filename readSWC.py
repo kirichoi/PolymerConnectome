@@ -6394,17 +6394,15 @@ ALtest_percent = (ALtest_ncl[ALtest_idx] - ALtest_cl[ALtest_idx])/ALtest_ncl[ALt
 LHtest_percent = (LHtest_ncl[LHtest_idx] - LHtest_cl[LHtest_idx])/LHtest_ncl[LHtest_idx]
 calyxtest_percent = (calyxtest_ncl[calyxtest_idx] - calyxtest_cl[calyxtest_idx])/calyxtest_ncl[calyxtest_idx]
 
-attavlist = ['tab:red', 'tab:green', 'tab:green', 'tab:green', 
-             'tab:green', 'tab:red', 'tab:red', 'k', 'k', 'tab:red', 'tab:red', 'k', 'k', 'k', 'tab:green',
-             'k', 'tab:red', 'k', 'tab:green', 'tab:green',
-             'tab:red', 'tab:green', 'tab:red', 'tab:blue', 'tab:red', 'tab:green', 'k', 'tab:blue', 
-             'tab:red', 'tab:blue', 'tab:red', 'tab:blue']
+attavlist = ['tab:red', 'tab:green', 'k', 'tab:green', 'tab:green', 'tab:red', 
+             'tab:red', 'k', 'tab:green', 'tab:red', 'k', 'k', 'k', 'k', 'tab:red', 
+             'tab:green', 'tab:red', 'tab:green', 'k', 'tab:green', 'tab:green', 
+             'tab:red', 'tab:red', 'tab:green', 'tab:red', 'tab:blue', 'tab:blue', 
+             'k', 'tab:red', 'tab:red', 'tab:blue', 'tab:blue']
 
-updatedxlabel = ['DM5', 'VM4', 'VM5d', 'VM1',  
-                 'DA3', 'V', 'DL1', 'VC3l', 'VC4', 'DM2', 'VL2p', 'VC3m', 'DL2v', 'VM5v', 'VA3',
-                 'DL2d', 'DC2', 'D', 'VM2', 'VA1v',
-                 'DM6', 'VM7v', 'VA5', 'DC3', 'DA2', 'VM7d', 'VL1', 'DA1', 
-                 'VM3', 'VA1d', 'VA7m','DL3']
+updatedxlabel = np.array(glo_list)[LHtest_idx][np.argsort(LHtest_percent)]
+
+attavdict = {updatedxlabel[i]: attavlist[i] for i in range(len(updatedxlabel))} 
 
 fig, ax = plt.subplots(3, 1, figsize=(12,8))
 x = np.arange(len(calyxtest_idx))
@@ -6440,7 +6438,7 @@ ax[2].set_xticklabels(updatedxlabel, rotation=90, fontsize=15)
 ax[2].set_yticks(np.array([0, 10, 20]))
 ax[2].tick_params(axis="y", labelsize=15)
 ax[2].set_xlim(x[0] - 1, x[-1] + 1)
-[t.set_color(i) for (i,t) in zip(attavlist, ax[2].xaxis.get_ticklabels())]
+[i.set_color(attavdict[i.get_text()]) for i in ax[2].xaxis.get_ticklabels()]
 plt.tight_layout()
 # plt.savefig(Parameter.outputdir + '/glo_dist_diff_per_glo_all_3.pdf', dpi=300, bbox_inches='tight')
 plt.show()
