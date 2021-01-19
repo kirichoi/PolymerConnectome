@@ -369,7 +369,7 @@ def tolerant_std_error(arrs):
     arr.mask = True
     for idx, l in enumerate(arrs):
         arr[:len(l), idx] = l
-    return np.divide(arr.std(axis=-1), np.sqrt(len(arr)))
+    return np.divide(arr.std(axis=-1), np.sqrt(len(arrs)))
 
 #%%
     
@@ -9282,8 +9282,11 @@ for i in range(len(LH_glo_col_idx)):
 #%% LH form factor of glomerulus with large inter and intra distance difference - type
 
 pher = ['DL3', 'VA1d', 'DA1', 'DC3']
-attr = ['VM2', 'VM7d', 'VM7v']
-aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3']
+# attr = ['VM2', 'VM7d', 'VM7v']
+# aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3']
+
+attr = ['VM2', 'VM7d', 'VM7v', 'DL3', 'VA1d', 'DA1']
+aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3', 'DC3']
 
 pherlist = []
 
@@ -9349,15 +9352,18 @@ plt.xlabel("q", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_LH_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_LH_3.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
 #%% AL form factor of glomerulus with large inter and intra distance difference - type
 
 pher = ['DL3', 'VA1d', 'DA1', 'DC3']
-attr = ['VM2', 'VM7d', 'VM7v']
-aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3']
+# attr = ['VM2', 'VM7d', 'VM7v']
+# aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3']
+
+attr = ['VM2', 'VM7d', 'VM7v', 'DL3', 'VA1d', 'DA1']
+aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3', 'DC3']
 
 ALdist_trk_temp = copy.deepcopy(np.unique(MorphData.ALdist_trk))
 ALdist_trk_temp = np.delete(ALdist_trk_temp, 73)
@@ -9386,14 +9392,14 @@ for i in range(len(aver)):
 
 fig = plt.figure(figsize=(6,4.5))
 plt.plot(mwx_AL_pn[0], tolerant_mean(pherlist).data, color='tab:blue', lw=2)
-plt.plot(mwx_AL_pn[0][:59], tolerant_mean(attrlist).data, color='tab:green', lw=2)
+plt.plot(mwx_AL_pn[0], tolerant_mean(attrlist).data, color='tab:green', lw=2)
 plt.plot(mwx_AL_pn[0], tolerant_mean(averlist).data, color='tab:red', lw=2)
 plt.fill_between(mwx_AL_pn[0], 
                   tolerant_mean(pherlist).data-tolerant_std_error(pherlist), 
                   tolerant_mean(pherlist).data+tolerant_std_error(pherlist),
                   alpha=0.3,
                   color='tab:blue')
-plt.fill_between(mwx_AL_pn[0][:59], 
+plt.fill_between(mwx_AL_pn[0], 
                   tolerant_mean(attrlist).data-tolerant_std_error(attrlist), 
                   tolerant_mean(attrlist).data+tolerant_std_error(attrlist),
                   alpha=0.3,
@@ -9426,15 +9432,18 @@ plt.xlabel("q", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_AL_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_AL_3.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
 #%% calyx form factor of glomerulus with large inter and intra distance difference - type
 
 pher = ['DL3', 'VA1d', 'DA1', 'DC3']
-attr = ['VM2', 'VM7d', 'VM7v']
-aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3']
+# attr = ['VM2', 'VM7d', 'VM7v']
+# aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3']
+
+attr = ['VM2', 'VM7d', 'VM7v', 'DL3', 'VA1d', 'DA1']
+aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3', 'DC3']
 
 calyxdist_trk_temp = copy.deepcopy(np.unique(MorphData.calyxdist_trk))
 calyxdist_trk_temp = np.delete(calyxdist_trk_temp, [40, 41])
@@ -9503,7 +9512,7 @@ plt.xlabel("q", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_calyx_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_calyx_3.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
