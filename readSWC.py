@@ -8954,7 +8954,7 @@ plt.show()
 # 147 - 62434
 # 159 - 775731
 
-nid = 159
+nid = 35
 
 calyxdist_trk_temp = copy.deepcopy(np.unique(MorphData.calyxdist_trk))
 calyxdist_trk_temp = np.delete(calyxdist_trk_temp, [40, 41])
@@ -8983,11 +8983,8 @@ plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
 # plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
 plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
-
 # plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
-
 plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
-
 
 plt.xscale('log')
 # plt.yscale('log')
@@ -8999,6 +8996,7 @@ plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
 # plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_AL_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
+
 
 fig = plt.figure(figsize=(6,4.5))
 
@@ -9016,11 +9014,8 @@ plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
 # plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
 plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
-
 # plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
-
 plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
-
 
 plt.xscale('log')
 # plt.yscale('log')
@@ -9050,11 +9045,8 @@ plt.text(10.3, 1-0.03,'Linear', fontsize=14)
 plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
 plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
-
 # plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
-
 plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
-
 
 plt.xscale('log')
 # plt.yscale('log')
@@ -9065,6 +9057,44 @@ plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
 # plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_LH_mv_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+fig = plt.figure(figsize=(8, 8))
+ax = plt.axes(projection='3d')
+ax.set_xlim(450, 600)
+ax.set_ylim(375, 225)
+ax.set_zlim(50, 200)
+tararr = np.array(MorphData.morph_dist[nid])
+somaIdx = np.where(np.array(MorphData.morph_parent[nid]) < 0)[0]
+for p in range(len(MorphData.morph_parent[nid])):
+    if MorphData.morph_parent[nid][p] < 0:
+        pass
+    else:
+        morph_line = np.vstack((MorphData.morph_dist[nid][MorphData.morph_id[nid].index(MorphData.morph_parent[nid][p])], 
+                                MorphData.morph_dist[nid][p]))
+        ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:purple', lw=0.75)
+# plt.savefig(Parameter.outputdir + '/neuron_' + str(nid) + '.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+
+morph_disttar = copy.deepcopy(MorphData.morph_dist[nid])
+morph_disttar[3259][0] = morph_disttar[3258][0]
+
+fig, ax = plt.subplots(figsize=(6, 6))
+plt.xlim(400, 580)
+plt.ylim(20, 200)
+ax.axis('off')
+
+for p in range(len(MorphData.morph_parent[nid])):
+    if MorphData.morph_parent[nid][p] < 0:
+        pass
+    else:
+        morph_line = np.vstack((morph_disttar[MorphData.morph_id[nid].index(MorphData.morph_parent[nid][p])], 
+                                morph_disttar[p]))
+        plt.plot(morph_line[:,0], morph_line[:,2], color='tab:purple', lw=0.5)
+# plt.savefig(Parameter.outputdir + '/neuron_proj_' + str(idx) + '.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
