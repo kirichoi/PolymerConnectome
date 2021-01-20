@@ -9062,9 +9062,10 @@ plt.show()
 
 fig = plt.figure(figsize=(8, 8))
 ax = plt.axes(projection='3d')
-ax.set_xlim(450, 600)
-ax.set_ylim(375, 225)
-ax.set_zlim(50, 200)
+ax.set_box_aspect((1,1,1))
+ax.set_xlim(400, 580)
+ax.set_ylim(390, 210)
+ax.set_zlim(20, 200)
 tararr = np.array(MorphData.morph_dist[nid])
 somaIdx = np.where(np.array(MorphData.morph_parent[nid]) < 0)[0]
 for p in range(len(MorphData.morph_parent[nid])):
@@ -9074,9 +9075,15 @@ for p in range(len(MorphData.morph_parent[nid])):
         morph_line = np.vstack((MorphData.morph_dist[nid][MorphData.morph_id[nid].index(MorphData.morph_parent[nid][p])], 
                                 MorphData.morph_dist[nid][p]))
         ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:purple', lw=0.75)
+ax.grid(True)
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+ax.set_xticklabels([])
+ax.set_yticklabels([])
+ax.set_zticklabels([])
 # plt.savefig(Parameter.outputdir + '/neuron_' + str(nid) + '.pdf', dpi=300, bbox_inches='tight')
 plt.show()
-
 
 
 morph_disttar = copy.deepcopy(MorphData.morph_dist[nid])
@@ -9094,7 +9101,7 @@ for p in range(len(MorphData.morph_parent[nid])):
         morph_line = np.vstack((morph_disttar[MorphData.morph_id[nid].index(MorphData.morph_parent[nid][p])], 
                                 morph_disttar[p]))
         plt.plot(morph_line[:,0], morph_line[:,2], color='tab:purple', lw=0.5)
-# plt.savefig(Parameter.outputdir + '/neuron_proj_' + str(idx) + '.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/neuron_proj_' + str(nid) + '.png', dpi=600, bbox_inches='tight')
 plt.show()
 
 
