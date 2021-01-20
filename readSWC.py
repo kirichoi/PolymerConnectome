@@ -173,7 +173,8 @@ class MorphData():
         plt.show()
         
         
-    def plotNeuron(self, idx, scale=False, cmass=False, showPoint=False, lw=1, label=True, show=True, save=False):
+    def plotNeuron(self, idx, scale=False, cmass=False, showPoint=False, lw=1, 
+                   label=True, color=False, show=True, save=False):
         """
         plot 3-D neuron morphology of a single neuron.
         
@@ -216,6 +217,10 @@ class MorphData():
                 if minval_i < minval:
                     minval = minval_i
         else:
+            if color:
+                cv = color
+            else:
+                cv = cmap(idx)
             tararr = np.array(self.morph_dist[idx])
             somaIdx = np.where(np.array(self.morph_parent[idx]) < 0)[0]
             for p in range(len(self.morph_parent[idx])):
@@ -223,10 +228,10 @@ class MorphData():
                     pass
                 else:
                     morph_line = np.vstack((self.morph_dist[idx][self.morph_id[idx].index(self.morph_parent[idx][p])], self.morph_dist[idx][p]))
-                    ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(idx), lw=lw)
+                    ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cv, lw=lw)
                     if showPoint:
-                        ax.scatter3D(self.morph_dist[idx][p][0], self.morph_dist[idx][p][1], self.morph_dist[idx][p][2], color=cmap(idx), marker='x')
-            ax.scatter3D(tararr[somaIdx,0], tararr[somaIdx,1], tararr[somaIdx,2], color=cmap(idx))
+                        ax.scatter3D(self.morph_dist[idx][p][0], self.morph_dist[idx][p][1], self.morph_dist[idx][p][2], color=cv, marker='x')
+            ax.scatter3D(tararr[somaIdx,0], tararr[somaIdx,1], tararr[somaIdx,2], color=cv)
             maxval = np.max(np.array(self.morph_dist[idx])[:,1])
             minval = np.min(np.array(self.morph_dist[idx])[:,1])
         if label:
@@ -8961,6 +8966,40 @@ nid_AL = np.where(ALdist_trk_temp == nid)[0][0]
 nid_calyx = np.where(calyxdist_trk_temp == nid)[0][0]
 nid_LH = np.where(np.unique(MorphData.LHdist_trk) == nid)[0][0]
 
+
+fig = plt.figure(figsize=(6,4.5))
+
+plt.plot(mwx_AL_pn[nid_AL], -1/np.array(mw_Pq_AL_pn[nid_AL]), color='tab:blue', lw=2)
+
+plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
+plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1, 0.01, 100, ls='dashed', color='k')
+plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
+# plt.text(10.3, 1/4-0.03, 'Ideal', fontsize=14)
+# plt.text(10.3, 7/16-0.04, '$\Theta$ Solvent', fontsize=14)
+# plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
+# plt.text(10.3, 1-0.03,'Linear', fontsize=14)
+# plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
+
+plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
+
+# plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+
+plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
+
+
+plt.xscale('log')
+# plt.yscale('log')
+plt.ylim(0.1, 1.7)
+plt.xlim(0.01, 10)
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
+plt.xticks(fontsize=14)
+plt.ylabel(r"$\nu$", fontsize=17)
+plt.yticks(fontsize=14)
+# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_AL_mv_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
 fig = plt.figure(figsize=(6,4.5))
 
 plt.plot(mwx_calyx_pn[nid_calyx], -1/np.array(mw_Pq_calyx_pn[nid_calyx]), color='tab:orange', lw=2)
@@ -8970,11 +9009,11 @@ plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
 plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
 plt.hlines(1, 0.01, 100, ls='dashed', color='k')
 plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
-plt.text(10.3, 1/4-0.03, 'Ideal', fontsize=14)
-plt.text(10.3, 7/16-0.04, '$\Theta$ Solvent', fontsize=14)
-plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
-plt.text(10.3, 1-0.03,'Linear', fontsize=14)
-plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
+# plt.text(10.3, 1/4-0.03, 'Ideal', fontsize=14)
+# plt.text(10.3, 7/16-0.04, '$\Theta$ Solvent', fontsize=14)
+# plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
+# plt.text(10.3, 1-0.03,'Linear', fontsize=14)
+# plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
 plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
 
@@ -8989,9 +9028,9 @@ plt.ylim(0.1, 1.7)
 plt.xlim(0.01, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
-plt.ylabel(r"$-1/\lambda$", fontsize=17)
+plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_calyx_mv_2.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_calyx_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -9023,44 +9062,11 @@ plt.ylim(0.1, 1.7)
 plt.xlim(0.01, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
-plt.ylabel(r"$-1/\lambda$", fontsize=17)
+plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_LH_mv_2.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_LH_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
-
-fig = plt.figure(figsize=(6,4.5))
-
-plt.plot(mwx_AL_pn[nid_AL], -1/np.array(mw_Pq_AL_pn[nid_AL]), color='tab:blue', lw=2)
-
-plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
-plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
-plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
-plt.hlines(1, 0.01, 100, ls='dashed', color='k')
-plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
-plt.text(10.3, 1/4-0.03, 'Ideal', fontsize=14)
-plt.text(10.3, 7/16-0.04, '$\Theta$ Solvent', fontsize=14)
-plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
-plt.text(10.3, 1-0.03,'Linear', fontsize=14)
-plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
-
-plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
-
-# plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
-
-plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
-
-
-plt.xscale('log')
-# plt.yscale('log')
-plt.ylim(0.1, 1.7)
-plt.xlim(0.01, 10)
-plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
-plt.xticks(fontsize=14)
-plt.ylabel(r"$-1/\lambda$", fontsize=17)
-plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_AL_mv_2.pdf', dpi=300, bbox_inches='tight')
-plt.show()
 
 #%% 30891 moving average
 
@@ -9093,7 +9099,7 @@ plt.xscale('log')
 plt.ylim(0.1, 1.7)
 plt.xlim(0.01, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel(r"$-1/\lambda$", fontsize=15)
+plt.ylabel(r"$\nu$", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_calyx_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
   
@@ -9125,7 +9131,7 @@ plt.xscale('log')
 plt.ylim(0.1, 1.7)
 plt.xlim(0.01, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel(r"$-1/\lambda$", fontsize=15)
+plt.ylabel(r"$\nu$", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_LH_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
@@ -9157,7 +9163,7 @@ plt.xscale('log')
 plt.ylim(0.1, 1.7)
 plt.xlim(0.01, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel(r"$-1/\lambda$", fontsize=15)
+plt.ylabel(r"$\nu$", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_AL_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
@@ -9193,7 +9199,7 @@ plt.xscale('log')
 plt.ylim(0.1, 1.7)
 plt.xlim(0.01, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel(r"$-1/\lambda$", fontsize=15)
+plt.ylabel(r"$\nu$", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_calyx_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
   
@@ -9225,7 +9231,7 @@ plt.xscale('log')
 plt.ylim(0.1, 1.7)
 plt.xlim(0.01, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel(r"$-1/\lambda$", fontsize=15)
+plt.ylabel(r"$\nu$", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_LH_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
@@ -9257,7 +9263,7 @@ plt.xscale('log')
 plt.ylim(0.1, 1.7)
 plt.xlim(0.01, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel(r"$-1/\lambda$", fontsize=15)
+plt.ylabel(r"$\nu$", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_AL_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
@@ -9564,7 +9570,7 @@ for i in range(len(np.argsort(glo_len)[-6:])):
     plt.xlim(0.01, 10)
     plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
     plt.xticks(fontsize=14)
-    plt.ylabel(r"$-1/\lambda$", fontsize=17)
+    plt.ylabel(r"$\nu$", fontsize=17)
     plt.yticks(fontsize=14)
     # plt.savefig(Parameter.outputdir + '/Pq_lPNN_' + str(MorphData.neuron_id[nid]) + '_pn_LH_mv_2.pdf', dpi=300, bbox_inches='tight')
     plt.show()
@@ -9877,7 +9883,7 @@ plt.ylim(0.1, 1.5)
 plt.xlim(0.01, 10)
 plt.legend(["AL", "MB calyx", "LH"], fontsize=13)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel(r"$-1/\lambda$", fontsize=15)
+plt.ylabel(r"$\nu$", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/Pq_all_pn_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
