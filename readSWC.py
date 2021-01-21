@@ -9089,7 +9089,7 @@ plt.show()
 morph_disttar = copy.deepcopy(MorphData.morph_dist[nid])
 morph_disttar[3259][0] = morph_disttar[3258][0]
 
-fig, ax = plt.subplots(figsize=(6, 6))
+fig, ax = plt.subplots(figsize=(24, 24))
 plt.xlim(400, 580)
 plt.ylim(20, 200)
 ax.axis('off')
@@ -9100,7 +9100,7 @@ for p in range(len(MorphData.morph_parent[nid])):
     else:
         morph_line = np.vstack((morph_disttar[MorphData.morph_id[nid].index(MorphData.morph_parent[nid][p])], 
                                 morph_disttar[p]))
-        plt.plot(morph_line[:,0], morph_line[:,2], color='tab:purple', lw=0.5)
+        plt.plot(morph_line[:,0], morph_line[:,2], color='k', lw=2.)
 # plt.savefig(Parameter.outputdir + '/neuron_proj_' + str(nid) + '.png', dpi=600, bbox_inches='tight')
 plt.show()
 
@@ -9639,18 +9639,19 @@ for i in range(len(MorphData.LHdist)):
         for f in range(len(listOfPoints)-1):
             morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
             ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='gray', lw=0.25, alpha=0.25)
-ax.grid(True)
-ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-ax.set_xticklabels([])
-ax.set_yticklabels([])
-ax.set_zticklabels([])
+ax.axis('off')
+# ax.grid(True)
+# ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+# ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+# ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+# ax.set_xticklabels([])
+# ax.set_yticklabels([])
+# ax.set_zticklabels([])
 
 ax.set_xlim(420, 480)
 ax.set_ylim(280, 220)
 ax.set_zlim(140, 200)
-# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_LH_clump_noclump_2.png'), dpi=600, bbox_inches='tight')
+# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_LH_clump_noclump_3.png'), dpi=600, bbox_inches='tight')
 plt.show()
 
 
@@ -9680,20 +9681,62 @@ for i in range(len(MorphData.calyxdist)):
         for f in range(len(listOfPoints)-1):
             morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
             ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='gray', lw=0.25, alpha=0.25)
-ax.grid(True)
-ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-ax.set_xticklabels([])
-ax.set_yticklabels([])
-ax.set_zticklabels([])
+ax.axis('off')
+# ax.grid(True)
+# ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+# ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+# ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+# ax.set_xticklabels([])
+# ax.set_yticklabels([])
+# ax.set_zticklabels([])
 
 ax.set_xlim(500, 560)
 ax.set_ylim(280, 220)
 ax.set_zlim(160, 220)
-# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_calyx_clump_noclump_1.png'), dpi=600, bbox_inches='tight')
+# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_calyx_clump_noclump_2.png'), dpi=600, bbox_inches='tight')
 plt.show()
 
+
+#%% Neuron plot clump non-clump AL
+
+clump_noclump = ['DL3', 'DM5']
+
+idx_all_aver = []
+for i in range(len(clump_noclump)):
+    idx_all_aver.append(glo_idx[glo_list.index(clump_noclump[i])])
+
+# for k in range(len(aver)):
+fig = plt.figure(figsize=(8, 8))
+ax = plt.axes(projection='3d')
+ax.set_box_aspect((1,1,1))
+# cmap = cm.get_cmap('jet', len(clump_noclump))
+clist = ['tab:blue', 'tab:red']
+for i in range(len(MorphData.ALdist)):
+    glo_n = MorphData.ALdist_trk[i]
+    isglo = [i for i, idx in enumerate(idx_all_aver) if glo_n in idx]
+    listOfPoints = MorphData.ALdist[i]
+    if len(isglo) > 0:
+        for f in range(len(listOfPoints)-1):
+            morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=clist[isglo[0]], lw=1.)
+    else:
+        for f in range(len(listOfPoints)-1):
+            morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='gray', lw=0.25, alpha=0.25)
+ax.axis('off')
+# ax.grid(True)
+# ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+# ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+# ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+# ax.set_xticklabels([])
+# ax.set_yticklabels([])
+# ax.set_zticklabels([])
+
+ax.set_xlim(520, 580)
+ax.set_ylim(360, 300)
+ax.set_zlim(20, 80)
+# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_AL_clump_noclump_1.png'), dpi=600, bbox_inches='tight')
+plt.show()
 
 
 #%% Neuron plot aver non aver
