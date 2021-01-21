@@ -5027,6 +5027,8 @@ glo_len = [len(arr) for arr in glo_idx]
 glo_lb = [sum(glo_len[0:i]) for i in range(len(glo_len)+1)]
 glo_lbs = np.subtract(glo_lb, glo_lb[0])
 glo_float = np.divide(glo_lbs, glo_lbs[-1])
+glo_idx_flat = [item for sublist in glo_idx for item in sublist]
+glo_idx_flat.sort()
 
 glo_list_neuron = np.repeat(glo_list, glo_len)
 glo_lb_idx = []
@@ -9739,6 +9741,42 @@ ax.set_zlim(20, 80)
 plt.show()
 
 
+#%% Neuron plot clump non-clump all
+
+clump_noclump = ['DL3', 'DM5']
+
+idx_all_aver = []
+for i in range(len(clump_noclump)):
+    idx_all_aver.append(glo_idx[glo_list.index(clump_noclump[i])])
+
+# for k in range(len(aver)):
+fig = plt.figure(figsize=(8, 8))
+ax = plt.axes(projection='3d')
+ax.set_box_aspect((1,1,1))
+# cmap = cm.get_cmap('jet', len(clump_noclump))
+clist = ['tab:blue', 'tab:red']
+for f in range(len(glo_idx_flat)):
+    glo_n = glo_idx_flat[f]
+    isglo = [i for i, idx in enumerate(idx_all_aver) if glo_n in idx]
+    listOfPoints = MorphData.morph_dist[glo_idx_flat[f]]
+    for p in range(len(MorphData.morph_parent[glo_idx_flat[f]])):
+        if MorphData.morph_parent[glo_idx_flat[f]][p] < 0:
+            pass
+        else:
+            morph_line = np.vstack((listOfPoints[MorphData.morph_id[glo_idx_flat[f]].index(MorphData.morph_parent[glo_idx_flat[f]][p])], listOfPoints[p]))
+            if len(isglo) > 0:
+                ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=clist[isglo[0]], lw=1.)
+            else:
+                ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='gray', lw=0.25, alpha=0.25)
+ax.axis('off')
+
+ax.set_xlim(440, 580)
+ax.set_ylim(350, 210)
+ax.set_zlim(30, 170)
+# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_all_clump_noclump_2.png'), dpi=600, bbox_inches='tight', transparent=True)
+plt.show()
+
+                
 #%% Neuron plot aver non aver
 
 aver_naver = ['DA2', 'VA1d']
