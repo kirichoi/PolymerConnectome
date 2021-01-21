@@ -9651,7 +9651,7 @@ ax.axis('off')
 ax.set_xlim(420, 480)
 ax.set_ylim(280, 220)
 ax.set_zlim(140, 200)
-# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_LH_clump_noclump_3.png'), dpi=600, bbox_inches='tight')
+# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_LH_clump_noclump_3.png'), dpi=600, bbox_inches='tight', transparent=True)
 plt.show()
 
 
@@ -9693,7 +9693,7 @@ ax.axis('off')
 ax.set_xlim(500, 560)
 ax.set_ylim(280, 220)
 ax.set_zlim(160, 220)
-# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_calyx_clump_noclump_2.png'), dpi=600, bbox_inches='tight')
+# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_calyx_clump_noclump_2.png'), dpi=600, bbox_inches='tight', transparent=True)
 plt.show()
 
 
@@ -9735,7 +9735,7 @@ ax.axis('off')
 ax.set_xlim(520, 580)
 ax.set_ylim(360, 300)
 ax.set_zlim(20, 80)
-# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_AL_clump_noclump_1.png'), dpi=600, bbox_inches='tight')
+# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_AL_clump_noclump_1.png'), dpi=600, bbox_inches='tight', transparent=True)
 plt.show()
 
 
