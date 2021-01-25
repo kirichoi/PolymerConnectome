@@ -6459,9 +6459,9 @@ plt.tight_layout()
 plt.show()
 
 
-fig, ax = plt.subplots(3, 1, figsize=(12,8))
+fig, ax = plt.subplots(3, 1, figsize=(11,8))
 x = np.arange(len(calyxtest_idx))
-width = .3
+width = .5
 
 ax[0].bar(x, 
           np.divide(ALtest_cl[ALtest_idx[np.argsort(LHtest_percent)]], 
@@ -6501,7 +6501,7 @@ ax[2].tick_params(axis="y", labelsize=15)
 ax[2].set_xlim(x[0] - 1, x[-1] + 1)
 [t.set_color(i) for (i,t) in zip(attavlist, ax[2].xaxis.get_ticklabels())]
 plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/glo_dist_diff_per_glo_all_3.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/glo_dist_diff_per_glo_all_4.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -8978,11 +8978,11 @@ plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
 plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
 plt.hlines(1, 0.01, 100, ls='dashed', color='k')
 plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
-# plt.text(10.3, 1/4-0.03, 'Ideal', fontsize=14)
-# plt.text(10.3, 7/16-0.04, '$\Theta$ Solvent', fontsize=14)
-# plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
-# plt.text(10.3, 1-0.03,'Linear', fontsize=14)
-# plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
+plt.text(10.3, 1/4-0.03, 'Ideal', fontsize=14)
+plt.text(10.3, 7/16-0.04, '$\Theta$ Solvent', fontsize=14)
+plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
+plt.text(10.3, 1-0.03,'Linear', fontsize=14)
+plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
 plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
 # plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
@@ -9009,11 +9009,11 @@ plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
 plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
 plt.hlines(1, 0.01, 100, ls='dashed', color='k')
 plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
-# plt.text(10.3, 1/4-0.03, 'Ideal', fontsize=14)
-# plt.text(10.3, 7/16-0.04, '$\Theta$ Solvent', fontsize=14)
-# plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
-# plt.text(10.3, 1-0.03,'Linear', fontsize=14)
-# plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
+plt.text(10.3, 1/4-0.03, 'Ideal', fontsize=14)
+plt.text(10.3, 7/16-0.04, '$\Theta$ Solvent', fontsize=14)
+plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
+plt.text(10.3, 1-0.03,'Linear', fontsize=14)
+plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
 plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
 # plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
@@ -9070,13 +9070,17 @@ ax.set_ylim(340, 220)
 ax.set_zlim(50, 170)
 tararr = np.array(MorphData.morph_dist[nid])
 somaIdx = np.where(np.array(MorphData.morph_parent[nid]) < 0)[0]
-for p in range(len(MorphData.morph_parent[nid])):
-    if MorphData.morph_parent[nid][p] < 0:
-        pass
-    else:
-        morph_line = np.vstack((MorphData.morph_dist[nid][MorphData.morph_id[nid].index(MorphData.morph_parent[nid][p])], 
-                                MorphData.morph_dist[nid][p]))
-        ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='k', lw=0.75)
+for f in range(len(glo_idx_flat)):
+    listOfPoints = MorphData.morph_dist[glo_idx_flat[f]]
+    for p in range(len(MorphData.morph_parent[glo_idx_flat[f]])):
+        if MorphData.morph_parent[glo_idx_flat[f]][p] < 0:
+            pass
+        else:
+            morph_line = np.vstack((listOfPoints[MorphData.morph_id[glo_idx_flat[f]].index(MorphData.morph_parent[glo_idx_flat[f]][p])], listOfPoints[p]))
+            if glo_idx_flat[f] == nid:
+                ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:purple', lw=1.)
+            else:
+                ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='gray', lw=0.25, alpha=0.25)
 ax.axis('off')
 # ax.grid(True)
 # ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
@@ -9085,7 +9089,7 @@ ax.axis('off')
 # ax.set_xticklabels([])
 # ax.set_yticklabels([])
 # ax.set_zticklabels([])
-# plt.savefig(Parameter.outputdir + '/neuron_' + str(nid) + '.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/neuron_' + str(nid) + '_full.png', dpi=600, bbox_inches='tight')
 plt.show()
 
 
