@@ -9065,9 +9065,6 @@ plt.show()
 fig = plt.figure(figsize=(8, 8))
 ax = plt.axes(projection='3d')
 ax.set_box_aspect((1,1,1))
-ax.set_xlim(450, 570)
-ax.set_ylim(340, 220)
-ax.set_zlim(50, 170)
 tararr = np.array(MorphData.morph_dist[nid])
 somaIdx = np.where(np.array(MorphData.morph_parent[nid]) < 0)[0]
 for f in range(len(glo_idx_flat)):
@@ -9078,10 +9075,20 @@ for f in range(len(glo_idx_flat)):
         else:
             morph_line = np.vstack((listOfPoints[MorphData.morph_id[glo_idx_flat[f]].index(MorphData.morph_parent[glo_idx_flat[f]][p])], listOfPoints[p]))
             if glo_idx_flat[f] == nid:
-                ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:purple', lw=1.)
+                pass
             else:
                 ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='gray', lw=0.25, alpha=0.25)
+listOfPoints = MorphData.morph_dist[nid]
+for p in range(len(MorphData.morph_parent[nid])):
+    if MorphData.morph_parent[nid][p] < 0:
+        pass
+    else:
+        morph_line = np.vstack((listOfPoints[MorphData.morph_id[nid].index(MorphData.morph_parent[nid][p])], listOfPoints[p]))
+        ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:red', lw=1.)
 ax.axis('off')
+ax.set_xlim(440, 580)
+ax.set_ylim(350, 210)
+ax.set_zlim(30, 170)
 # ax.grid(True)
 # ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
 # ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
@@ -9089,7 +9096,7 @@ ax.axis('off')
 # ax.set_xticklabels([])
 # ax.set_yticklabels([])
 # ax.set_zticklabels([])
-# plt.savefig(Parameter.outputdir + '/neuron_' + str(nid) + '_full.png', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/neuron_' + str(nid) + '_full.png', dpi=600, bbox_inches='tight', transparent=True)
 plt.show()
 
 
@@ -9111,6 +9118,53 @@ for p in range(len(MorphData.morph_parent[nid])):
 # plt.savefig(Parameter.outputdir + '/neuron_proj_' + str(nid) + '.png', dpi=600, bbox_inches='tight')
 plt.show()
 
+
+LHnid = np.where(np.array(MorphData.LHdist_trk) == nid)[0]
+
+fig, ax = plt.subplots(figsize=(8,8))
+ax.axis('off')
+
+for i in range(len(LHnid)):
+    listOfPoints = MorphData.LHdist[LHnid[i]]
+    for f in range(len(listOfPoints)-1):
+        morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+        plt.plot(morph_line[:,0], morph_line[:,2], color='tab:green', lw=2)
+ax.set_xlim(400, 460)
+ax.set_ylim(135, 195)
+# plt.savefig(Parameter.outputdir + '/neuron_proj_' + str(nid) + '_LH.png', dpi=600, bbox_inches='tight', transparent=True)
+plt.show()
+
+
+ALnid = np.where(np.array(MorphData.ALdist_trk) == nid)[0]
+
+fig, ax = plt.subplots(figsize=(8,8))
+ax.axis('off')
+
+for i in range(len(ALnid)):
+    listOfPoints = MorphData.ALdist[ALnid[i]]
+    for f in range(len(listOfPoints)-1):
+        morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+        plt.plot(morph_line[:,0], morph_line[:,2], color='tab:blue', lw=2)
+ax.set_xlim(525, 585)
+ax.set_ylim(25, 85)
+# plt.savefig(Parameter.outputdir + '/neuron_proj_' + str(nid) + '_AL.png', dpi=600, bbox_inches='tight', transparent=True)
+plt.show()
+
+
+calyxnid = np.where(np.array(MorphData.calyxdist_trk) == nid)[0]
+
+fig, ax = plt.subplots(figsize=(8,8))
+ax.axis('off')
+
+for i in range(len(calyxnid)):
+    listOfPoints = MorphData.calyxdist[calyxnid[i]]
+    for f in range(len(listOfPoints)-1):
+        morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+        plt.plot(morph_line[:,0], morph_line[:,2], color='tab:orange', lw=2)
+ax.set_xlim(480, 540)
+ax.set_ylim(140, 200)
+# plt.savefig(Parameter.outputdir + '/neuron_proj_' + str(nid) + '_calyx.png', dpi=600, bbox_inches='tight', transparent=True)
+plt.show()
 
 #%% 30891 moving average
 
@@ -9763,22 +9817,34 @@ clist = ['tab:blue', 'tab:red']
 for f in range(len(glo_idx_flat)):
     glo_n = glo_idx_flat[f]
     isglo = [i for i, idx in enumerate(idx_all_aver) if glo_n in idx]
-    listOfPoints = MorphData.morph_dist[glo_idx_flat[f]]
-    for p in range(len(MorphData.morph_parent[glo_idx_flat[f]])):
-        if MorphData.morph_parent[glo_idx_flat[f]][p] < 0:
+    listOfPoints = MorphData.morph_dist[glo_n]
+    for p in range(len(MorphData.morph_parent[glo_n])):
+        if MorphData.morph_parent[glo_n][p] < 0:
             pass
         else:
-            morph_line = np.vstack((listOfPoints[MorphData.morph_id[glo_idx_flat[f]].index(MorphData.morph_parent[glo_idx_flat[f]][p])], listOfPoints[p]))
+            morph_line = np.vstack((listOfPoints[MorphData.morph_id[glo_n].index(MorphData.morph_parent[glo_n][p])], listOfPoints[p]))
             if len(isglo) > 0:
-                ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=clist[isglo[0]], lw=1.)
+                pass
             else:
                 ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='gray', lw=0.25, alpha=0.25)
+                
+for f in range(len(idx_all_aver)):
+    for j in range(len(idx_all_aver[f])):
+        glo_n = idx_all_aver[f][j]
+        isglo = [i for i, idx in enumerate(idx_all_aver) if glo_n in idx]
+        listOfPoints = MorphData.morph_dist[glo_n]
+        for p in range(len(MorphData.morph_parent[glo_n])):
+            if MorphData.morph_parent[glo_n][p] < 0:
+                pass
+            else:
+                morph_line = np.vstack((listOfPoints[MorphData.morph_id[glo_n].index(MorphData.morph_parent[glo_n][p])], listOfPoints[p]))
+                ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=clist[isglo[0]], lw=1.)
 ax.axis('off')
 
 ax.set_xlim(440, 580)
 ax.set_ylim(350, 210)
 ax.set_zlim(30, 170)
-# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_all_clump_noclump_2.png'), dpi=600, bbox_inches='tight', transparent=True)
+# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_all_clump_noclump_3.png'), dpi=600, bbox_inches='tight', transparent=True)
 plt.show()
 
                 
