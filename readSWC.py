@@ -8193,51 +8193,62 @@ plt.xscale('log')
 # plt.yscale('log')
 plt.show()
 
-#%% form factor per neurite
+#%% neurite collection
 
 un_calyx = np.unique(MorphData.calyxdist_trk)
 un_LH = np.unique(MorphData.LHdist_trk)
 un_AL = np.unique(MorphData.ALdist_trk)
 
 ALdist_short = []
+ALdist_short_flat = []
+un_AL_short = []
 
 for i in un_AL:
-    ALseg_short = np.where(np.array(LengthData.length_AL[i]) < 1)[0]
-    temp = np.array(MorphData.ALdist_per_n[i])[ALseg_short]
-    ALdist_short.append([item for sublist in temp for item in sublist])
-
-ALdist_short_flat = [item for sublist in ALdist_short for item in sublist]
+    ALseg_short = np.where(np.array(LengthData.length_AL[i]) <= 3)[0]
+    if len(ALseg_short) > 0:
+        temp = np.array(MorphData.ALdist_per_n[i])[ALseg_short]
+        ALdist_short_flat.append([item for sublist in temp for item in sublist])
+        ALdist_short.append(temp)
+        un_AL_short.append(i)
 
 calyxdist_short = []
+calyxdist_short_flat = []
+un_calyx_short = []
 
 for i in un_calyx:
-    calyxseg_short = np.where(np.array(LengthData.length_calyx[i]) < 1)[0]
-    temp = np.array(MorphData.calyxdist_per_n[i])[calyxseg_short]
-    calyxdist_short.append([item for sublist in temp for item in sublist])
-
-calyxdist_short_flat = [item for sublist in calyxdist_short for item in sublist]
+    calyxseg_short = np.where(np.array(LengthData.length_calyx[i]) <= 3)[0]
+    if len(calyxseg_short) > 0:
+        temp = np.array(MorphData.calyxdist_per_n[i])[calyxseg_short]
+        calyxdist_short_flat.append([item for sublist in temp for item in sublist])
+        calyxdist_short.append(temp)
+        un_calyx_short.append(i)
 
 LHdist_short = []
+LHdist_short_flat = []
+un_LH_short = []
 
 for i in un_LH:
-    LHseg_short = np.where(np.array(LengthData.length_LH[i]) < 1)[0]
-    temp = np.array(MorphData.LHdist_per_n[i])[LHseg_short]
-    LHdist_short.append([item for sublist in temp for item in sublist])
+    LHseg_short = np.where(np.array(LengthData.length_LH[i]) <= 3)[0]
+    if len(LHseg_short) > 0:
+        temp = np.array(MorphData.LHdist_per_n[i])[LHseg_short]
+        LHdist_short_flat.append([item for sublist in temp for item in sublist])
+        LHdist_short.append(temp)
+        un_LH_short.append(i)
 
-LHdist_short_flat = [item for sublist in LHdist_short for item in sublist]
+
+#%% form factor per neurite
 
 q_range = np.logspace(-2,3,100)
 
-Pq_calyx_nt = np.empty((len(q_range), len(un_calyx)))
-Pq_LH_nt = np.empty((len(q_range), len(un_LH)))
-Pq_AL_nt = np.empty((len(q_range), len(un_AL)))
+Pq_calyx_nt = np.empty((len(q_range), len(un_calyx_short)))
+Pq_LH_nt = np.empty((len(q_range), len(un_LH_short)))
+Pq_AL_nt = np.empty((len(q_range), len(un_AL_short)))
 
 t13 = time.time()
 
 for q in range(len(q_range)):
-    for i in range(len(un_calyx)):
-        idx = np.where(MorphData.calyxdist_trk == un_calyx[i])[0]
-        tarval = np.array(MorphData.calyxdist)[idx]
+    for i in range(len(un_calyx_short)):
+        tarval = calyxdist_short[i]
         calyxdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
         calyxdist_per_n_flat_t = np.unique(calyxdist_per_n_flat_t, axis=0)
         qrvec = q_range[q]*scipy.spatial.distance.cdist(calyxdist_per_n_flat_t, calyxdist_per_n_flat_t)
@@ -8247,9 +8258,8 @@ for q in range(len(q_range)):
 np.save(r'./Pq_calyx_neurite.npy', Pq_calyx_nt)
 
 for q in range(len(q_range)):
-    for i in range(len(un_LH)):
-        idx = np.where(MorphData.LHdist_trk == un_LH[i])[0]
-        tarval = np.array(MorphData.LHdist)[idx]
+    for i in range(len(un_LH_short)):
+        tarval = LHdist_short[i]
         LHdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
         LHdist_per_n_flat_t = np.unique(LHdist_per_n_flat_t, axis=0)
         qrvec = q_range[q]*scipy.spatial.distance.cdist(LHdist_per_n_flat_t, LHdist_per_n_flat_t)
@@ -8259,9 +8269,8 @@ for q in range(len(q_range)):
 np.save(r'./Pq_LH.npy_neurite', Pq_LH_nt)
 
 for q in range(len(q_range)):
-    for i in range(len(un_AL)):
-        idx = np.where(MorphData.ALdist_trk == un_AL[i])[0]
-        tarval = np.array(MorphData.ALdist)[idx]
+    for i in range(len(un_AL_short)):
+        tarval = ALdist_short[i]
         ALdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
         ALdist_per_n_flat_t = np.unique(ALdist_per_n_flat_t, axis=0)
         qrvec = q_range[q]*scipy.spatial.distance.cdist(ALdist_per_n_flat_t, ALdist_per_n_flat_t)
