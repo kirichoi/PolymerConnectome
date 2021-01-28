@@ -8257,15 +8257,19 @@ for i in un_AL:
     ALdist_short.append(ALdist_short_1)
 
 ALdist_short_flat = []
-length_AL_short_flat = [item for sublist in length_AL_short for item in sublist]
+length_AL_short_flat = np.array([item for sublist in length_AL_short for item in sublist])
+length_AL_short_flat = length_AL_short_flat[np.nonzero(length_AL_short_flat)[0]]
 
 for i in range(len(ALdist_short)):
     for j in range(len(ALdist_short[i])):
         ALdist_short_flat.append(np.unique([item for sublist in ALdist_short[i][j] for item in sublist], axis=0))
         
+rGy_AL_short_flat = utils.radiusOfGyration(ALdist_short_flat)[0]
+
 
 calyxdist_short = []
 un_calyx_short = []
+length_calyx_short = []
 
 for i in un_calyx:
     calyxseg_short = np.where(np.array(LengthData.length_calyx[i]) <= 3)[0]
@@ -8301,18 +8305,24 @@ for i in un_calyx:
             parent_trk_temp_red_u = np.unique([item for sublist in parent_trk_temp_red for item in sublist])
             if len(parent_trk_temp_red_u) > 19:
                 calyxdist_short_1.append(dtemp[parent_trk_temp_red_u])
+                length_calyx_short.append(np.array(LengthData.length_calyx[i])[calyxseg_short][parent_trk_temp_red_u])
     
     calyxdist_short.append(calyxdist_short_1)
 
 calyxdist_short_flat = []
+length_calyx_short_flat = np.array([item for sublist in length_calyx_short for item in sublist])
+length_calyx_short_flat = length_calyx_short_flat[np.nonzero(length_calyx_short_flat)[0]]
 
 for i in range(len(calyxdist_short)):
     for j in range(len(calyxdist_short[i])):
         calyxdist_short_flat.append(np.unique([item for sublist in calyxdist_short[i][j] for item in sublist], axis=0))
     
+rGy_calyx_short_flat = utils.radiusOfGyration(calyxdist_short_flat)[0]
+    
 
 LHdist_short = []
 un_LH_short = []
+length_LH_short = []
 
 for i in un_LH:
     LHseg_short = np.where(np.array(LengthData.length_LH[i]) <= 3)[0]
@@ -8348,15 +8358,19 @@ for i in un_LH:
             parent_trk_temp_red_u = np.unique([item for sublist in parent_trk_temp_red for item in sublist])
             if len(parent_trk_temp_red_u) > 19:
                 LHdist_short_1.append(dtemp[parent_trk_temp_red_u])
+                length_LH_short.append(np.array(LengthData.length_LH[i])[LHseg_short][parent_trk_temp_red_u])
     
     LHdist_short.append(LHdist_short_1)
 
 LHdist_short_flat = []
+length_LH_short_flat = np.array([item for sublist in length_LH_short for item in sublist])
+length_LH_short_flat = length_LH_short_flat[np.nonzero(length_LH_short_flat)[0]]
 
 for i in range(len(LHdist_short)):
     for j in range(len(LHdist_short[i])):
         LHdist_short_flat.append(np.unique([item for sublist in LHdist_short[i][j] for item in sublist], axis=0))
-
+        
+rGy_LH_short_flat = utils.radiusOfGyration(LHdist_short_flat)[0]
 
 #%% form factor per neurite
 
@@ -9319,7 +9333,7 @@ plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 plt.xscale('log')
 # plt.yscale('log')
 plt.ylim(0.1, 1.7)
-plt.xlim(0.01, 10)
+plt.xlim(0.01, 100)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
@@ -9356,7 +9370,7 @@ plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 plt.xscale('log')
 # plt.yscale('log')
 plt.ylim(0.1, 1.7)
-plt.xlim(0.01, 10)
+plt.xlim(0.01, 100)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
@@ -9393,7 +9407,7 @@ plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 plt.xscale('log')
 # plt.yscale('log')
 plt.ylim(0.1, 1.7)
-plt.xlim(0.01, 10)
+plt.xlim(0.01, 100)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
