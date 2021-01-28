@@ -8215,59 +8215,160 @@ un_LH = np.unique(MorphData.LHdist_trk)
 un_AL = np.unique(MorphData.ALdist_trk)
 
 ALdist_short = []
-ALdist_short_flat = []
 un_AL_short = []
+length_AL_short = []
 
 for i in un_AL:
     ALseg_short = np.where(np.array(LengthData.length_AL[i]) <= 3)[0]
     if len(ALseg_short) > 0:
-        temp = np.array(MorphData.ALdist_per_n[i])[ALseg_short]
-        ALdist_short_flat.append([item for sublist in temp for item in sublist])
-        ALdist_short.append(temp)
+        btemp = np.array(BranchData.AL_branchTrk[i], dtype=object)[ALseg_short]
+        dtemp = np.array(MorphData.ALdist_per_n[i], dtype=object)[ALseg_short]
         un_AL_short.append(i)
+        tempi = [tf[0] for tf in btemp]
+        tempf = [tf[-1] for tf in btemp]
+        int_AL_endP = list(set([item for sublist in btemp for item in sublist]) & set(BranchData.AL_endP[i]))
+        dtemp1 = []
+        ALdist_short_1 = []
+        for j in range(len(int_AL_endP)):
+            lhs = tempi.index(int_AL_endP[j])
+            rhs = tempf[lhs]
+            test_temp2 = []
+            test_temp2.append(lhs)
+            stop = False
+            while stop == False:
+                try:
+                    lhs = tempi.index(rhs)
+                    rhs = tempf[lhs]
+                    test_temp2.append(lhs)
+                except:
+                    stop = True
+            if len(test_temp2) >= 3:
+                dtemp1.append(test_temp2)
+                
+        parent_trk_temp = [tf[-1] for tf in dtemp1]
+        unique_parent_trk_temp = list(set(parent_trk_temp))
+        for k in range(len(unique_parent_trk_temp)):
+            parent_trk_temp_red = np.array(dtemp1, dtype=object)[np.where(np.array(parent_trk_temp) == unique_parent_trk_temp[k])[0]]
+            parent_trk_temp_red_u = np.unique([item for sublist in parent_trk_temp_red for item in sublist])
+            if len(parent_trk_temp_red_u) > 19:
+                ALdist_short_1.append(dtemp[parent_trk_temp_red_u])
+                length_AL_short.append(np.array(LengthData.length_AL[i])[ALseg_short][parent_trk_temp_red_u])
+    
+    ALdist_short.append(ALdist_short_1)
+
+ALdist_short_flat = []
+length_AL_short_flat = [item for sublist in length_AL_short for item in sublist]
+
+for i in range(len(ALdist_short)):
+    for j in range(len(ALdist_short[i])):
+        ALdist_short_flat.append(np.unique([item for sublist in ALdist_short[i][j] for item in sublist], axis=0))
+        
 
 calyxdist_short = []
-calyxdist_short_flat = []
 un_calyx_short = []
 
 for i in un_calyx:
     calyxseg_short = np.where(np.array(LengthData.length_calyx[i]) <= 3)[0]
     if len(calyxseg_short) > 0:
-        temp = np.array(MorphData.calyxdist_per_n[i])[calyxseg_short]
-        btemp = np.array(BranchData.calyx_branchTrk[i])[calyxseg_short]
+        btemp = np.array(BranchData.calyx_branchTrk[i], dtype=object)[calyxseg_short]
+        dtemp = np.array(MorphData.calyxdist_per_n[i], dtype=object)[calyxseg_short]
+        un_calyx_short.append(i)
         tempi = [tf[0] for tf in btemp]
         tempf = [tf[-1] for tf in btemp]
-        
-        calyxdist_short_flat.append([item for sublist in temp for item in sublist])
-        calyxdist_short.append(temp)
-        un_calyx_short.append(i)
+        int_calyx_endP = list(set([item for sublist in btemp for item in sublist]) & set(BranchData.calyx_endP[i]))
+        dtemp1 = []
+        calyxdist_short_1 = []
+        for j in range(len(int_calyx_endP)):
+            lhs = tempi.index(int_calyx_endP[j])
+            rhs = tempf[lhs]
+            test_temp2 = []
+            test_temp2.append(lhs)
+            stop = False
+            while stop == False:
+                try:
+                    lhs = tempi.index(rhs)
+                    rhs = tempf[lhs]
+                    test_temp2.append(lhs)
+                except:
+                    stop = True
+            if len(test_temp2) >= 3:
+                dtemp1.append(test_temp2)
+                
+        parent_trk_temp = [tf[-1] for tf in dtemp1]
+        unique_parent_trk_temp = list(set(parent_trk_temp))
+        for k in range(len(unique_parent_trk_temp)):
+            parent_trk_temp_red = np.array(dtemp1, dtype=object)[np.where(np.array(parent_trk_temp) == unique_parent_trk_temp[k])[0]]
+            parent_trk_temp_red_u = np.unique([item for sublist in parent_trk_temp_red for item in sublist])
+            if len(parent_trk_temp_red_u) > 19:
+                calyxdist_short_1.append(dtemp[parent_trk_temp_red_u])
+    
+    calyxdist_short.append(calyxdist_short_1)
+
+calyxdist_short_flat = []
+
+for i in range(len(calyxdist_short)):
+    for j in range(len(calyxdist_short[i])):
+        calyxdist_short_flat.append(np.unique([item for sublist in calyxdist_short[i][j] for item in sublist], axis=0))
+    
 
 LHdist_short = []
-LHdist_short_flat = []
 un_LH_short = []
 
 for i in un_LH:
     LHseg_short = np.where(np.array(LengthData.length_LH[i]) <= 3)[0]
     if len(LHseg_short) > 0:
-        temp = np.array(MorphData.LHdist_per_n[i])[LHseg_short]
-        LHdist_short_flat.append([item for sublist in temp for item in sublist])
-        LHdist_short.append(temp)
+        btemp = np.array(BranchData.LH_branchTrk[i], dtype=object)[LHseg_short]
+        dtemp = np.array(MorphData.LHdist_per_n[i], dtype=object)[LHseg_short]
         un_LH_short.append(i)
+        tempi = [tf[0] for tf in btemp]
+        tempf = [tf[-1] for tf in btemp]
+        int_LH_endP = list(set([item for sublist in btemp for item in sublist]) & set(BranchData.LH_endP[i]))
+        dtemp1 = []
+        LHdist_short_1 = []
+        for j in range(len(int_LH_endP)):
+            lhs = tempi.index(int_LH_endP[j])
+            rhs = tempf[lhs]
+            test_temp2 = []
+            test_temp2.append(lhs)
+            stop = False
+            while stop == False:
+                try:
+                    lhs = tempi.index(rhs)
+                    rhs = tempf[lhs]
+                    test_temp2.append(lhs)
+                except:
+                    stop = True
+            if len(test_temp2) >= 3:
+                dtemp1.append(test_temp2)
+                
+        parent_trk_temp = [tf[-1] for tf in dtemp1]
+        unique_parent_trk_temp = list(set(parent_trk_temp))
+        for k in range(len(unique_parent_trk_temp)):
+            parent_trk_temp_red = np.array(dtemp1, dtype=object)[np.where(np.array(parent_trk_temp) == unique_parent_trk_temp[k])[0]]
+            parent_trk_temp_red_u = np.unique([item for sublist in parent_trk_temp_red for item in sublist])
+            if len(parent_trk_temp_red_u) > 19:
+                LHdist_short_1.append(dtemp[parent_trk_temp_red_u])
+    
+    LHdist_short.append(LHdist_short_1)
+
+LHdist_short_flat = []
+
+for i in range(len(LHdist_short)):
+    for j in range(len(LHdist_short[i])):
+        LHdist_short_flat.append(np.unique([item for sublist in LHdist_short[i][j] for item in sublist], axis=0))
 
 
 #%% form factor per neurite
 
 q_range = np.logspace(-2,3,100)
 
-Pq_calyx_nt = np.empty((len(q_range), len(un_calyx_short)))
-Pq_LH_nt = np.empty((len(q_range), len(un_LH_short)))
-Pq_AL_nt = np.empty((len(q_range), len(un_AL_short)))
+Pq_calyx_nt = np.empty((len(q_range), len(calyxdist_short_flat)))
+Pq_LH_nt = np.empty((len(q_range), len(LHdist_short_flat)))
+Pq_AL_nt = np.empty((len(q_range), len(ALdist_short_flat)))
 
 for q in range(len(q_range)):
-    for i in range(len(un_calyx_short)):
-        tarval = calyxdist_short[i]
-        calyxdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
-        calyxdist_per_n_flat_t = np.unique(calyxdist_per_n_flat_t, axis=0)
+    for i in range(len(calyxdist_short_flat)):
+        calyxdist_per_n_flat_t = calyxdist_short_flat[i]
         qrvec = q_range[q]*scipy.spatial.distance.cdist(calyxdist_per_n_flat_t, calyxdist_per_n_flat_t)
         qrvec = qrvec[np.triu_indices_from(qrvec, k=1)]
         Pq_calyx_nt[q][i] = np.divide(np.divide(2*np.sum(np.sin(qrvec)/qrvec), len(calyxdist_per_n_flat_t)), len(calyxdist_per_n_flat_t))
@@ -8275,10 +8376,8 @@ for q in range(len(q_range)):
 np.save(r'./Pq_calyx_neurite.npy', Pq_calyx_nt)
 
 for q in range(len(q_range)):
-    for i in range(len(un_LH_short)):
-        tarval = LHdist_short[i]
-        LHdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
-        LHdist_per_n_flat_t = np.unique(LHdist_per_n_flat_t, axis=0)
+    for i in range(len(LHdist_short_flat)):
+        LHdist_per_n_flat_t = LHdist_short_flat[i]
         qrvec = q_range[q]*scipy.spatial.distance.cdist(LHdist_per_n_flat_t, LHdist_per_n_flat_t)
         qrvec = qrvec[np.triu_indices_from(qrvec, k=1)]
         Pq_LH_nt[q][i] = np.divide(np.divide(2*np.sum(np.sin(qrvec)/qrvec), len(LHdist_per_n_flat_t)), len(LHdist_per_n_flat_t))
@@ -8286,17 +8385,13 @@ for q in range(len(q_range)):
 np.save(r'./Pq_LH_neurite.npy', Pq_LH_nt)
 
 for q in range(len(q_range)):
-    for i in range(len(un_AL_short)):
-        tarval = ALdist_short[i]
-        ALdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
-        ALdist_per_n_flat_t = np.unique(ALdist_per_n_flat_t, axis=0)
+    for i in range(len(ALdist_short_flat)):
+        ALdist_per_n_flat_t = ALdist_short_flat[i]
         qrvec = q_range[q]*scipy.spatial.distance.cdist(ALdist_per_n_flat_t, ALdist_per_n_flat_t)
         qrvec = qrvec[np.triu_indices_from(qrvec, k=1)]
         Pq_AL_nt[q][i] = np.divide(np.divide(2*np.sum(np.sin(qrvec)/qrvec), len(ALdist_per_n_flat_t)), len(ALdist_per_n_flat_t))
 
 np.save(r'./Pq_AL_neurite.npy', Pq_AL_nt)
-
-print(time.time() - t13)
 
 plt.plot(q_range, np.average(Pq_calyx_nt, axis=1))
 plt.xscale('log')
