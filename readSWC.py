@@ -490,6 +490,9 @@ for f in range(len(fp)):
     LH_branchP_temp = []
     AL_branchTrk_temp = []
     AL_branchP_temp = []
+    calyx_endP_temp = []
+    LH_endP_temp = []
+    AL_endP_temp = []
     
     for bp in range(len(bPoint)):
         if bPoint[bp] != scall:
@@ -544,6 +547,8 @@ for f in range(len(fp)):
                     length_calyx_per_n.append(dist)
                     calyx_branchTrk_temp.append(neu_branchTrk_temp)
                     calyx_branchP_temp.append(list(set(neu_branchTrk_temp) & set(branchInd)))
+                    if bPoint[bp] in list_end:
+                        calyx_endP_temp.append(bPoint[bp])
                 # elif ((np.array(branch_dist_temp2_rot)[:,0] < 353.95).all() and (np.array(branch_dist_temp2_rot)[:,1] > 190.71).all() and
                 #       (np.array(branch_dist_temp2_rot)[:,1] < 272.91).all() and (np.array(branch_dist_temp2_rot)[:,2] > 278.76).all() and
                 #       (np.array(branch_dist_temp2_rot)[:,2] < 345.93).all()):
@@ -556,6 +561,8 @@ for f in range(len(fp)):
                     length_LH_per_n.append(dist)
                     LH_branchTrk_temp.append(neu_branchTrk_temp)
                     LH_branchP_temp.append(list(set(neu_branchTrk_temp) & set(branchInd)))
+                    if bPoint[bp] in list_end:
+                        LH_endP_temp.append(bPoint[bp])
                 # elif ((np.array(branch_dist_temp2_rot)[:,0] > 426.14).all() and (np.array(branch_dist_temp2_rot)[:,0] < 533.42).all() and 
                 #       (np.array(branch_dist_temp2_rot)[:,1] > 272.91).all() and (np.array(branch_dist_temp2_rot)[:,1] < 361.12).all() and
                 #       (np.array(branch_dist_temp2_rot2)[:,2] < -77.84).all()):
@@ -568,6 +575,8 @@ for f in range(len(fp)):
                     length_AL_per_n.append(dist)
                     AL_branchTrk_temp.append(neu_branchTrk_temp)
                     AL_branchP_temp.append(list(set(neu_branchTrk_temp) & set(branchInd)))
+                    if bPoint[bp] in list_end:
+                        AL_endP_temp.append(bPoint[bp])
                 
     BranchData.branchTrk.append(neu_branchTrk)
     BranchData.branch_dist.append(branch_dist_temp1)
@@ -585,6 +594,9 @@ for f in range(len(fp)):
     BranchData.LH_branchP.append(np.unique([item for sublist in LH_branchP_temp for item in sublist]).tolist())
     BranchData.AL_branchTrk.append(AL_branchTrk_temp)
     BranchData.AL_branchP.append(np.unique([item for sublist in AL_branchP_temp for item in sublist]).tolist())
+    BranchData.calyx_endP.append(calyx_endP_temp)
+    BranchData.LH_endP.append(LH_endP_temp)
+    BranchData.AL_endP.append(AL_endP_temp)
     
     for ep in range(len(list_end)):
         neu_indBranchTrk_temp = []
