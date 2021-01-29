@@ -8446,6 +8446,10 @@ calyx_length_temp = np.array([item for sublist in LengthData.length_calyx for it
 LH_length_temp = np.array([item for sublist in LengthData.length_LH for item in sublist])
 AL_length_temp = np.array([item for sublist in LengthData.length_AL for item in sublist])
 
+calyx_q_idx = np.where(q_range < 2*np.pi/np.percentile(calyx_length_temp, 2))[0][-1]
+LH_q_idx = np.where(q_range < 2*np.pi/np.percentile(LH_length_temp, 2))[0][-1]
+AL_q_idx = np.where(q_range < 2*np.pi/np.percentile(AL_length_temp, 2))[0][-1]
+
 rgy_calyx_full = utils.radiusOfGyration(np.array([calyx_dist_flat]))
 rgy_LH_full = utils.radiusOfGyration(np.array([LH_dist_flat]))
 rgy_AL_full = utils.radiusOfGyration(np.array([AL_dist_flat]))
@@ -8485,11 +8489,6 @@ poptD_Pq_AL, pcovD_Pq_AL = scipy.optimize.curve_fit(objFuncGL,
 perrD_Pq_AL = np.sqrt(np.diag(pcovD_Pq_AL))
 
 fitYD_Pq_AL = objFuncPpow(q_range[q_range_fit_AL], poptD_Pq_AL[0], poptD_Pq_AL[1])
-
-
-calyx_q_idx = np.where(q_range < 2*np.pi/np.percentile(calyx_length_temp, 2))[0][-1]
-LH_q_idx = np.where(q_range < 2*np.pi/np.percentile(LH_length_temp, 2))[0][-1]
-AL_q_idx = np.where(q_range < 2*np.pi/np.percentile(AL_length_temp, 2))[0][-1]
 
 
 fig = plt.figure(figsize=(8,6))
@@ -8772,6 +8771,18 @@ plt.show()
 #%% form factor per neuron plotting
 
 q_range = np.logspace(-2,3,100)
+
+calyx_length_temp = np.array([item for sublist in LengthData.length_calyx for item in sublist])
+LH_length_temp = np.array([item for sublist in LengthData.length_LH for item in sublist])
+AL_length_temp = np.array([item for sublist in LengthData.length_AL for item in sublist])
+
+calyx_q_idx = np.where(q_range < 2*np.pi/np.percentile(calyx_length_temp, 2))[0][-1]
+LH_q_idx = np.where(q_range < 2*np.pi/np.percentile(LH_length_temp, 2))[0][-1]
+AL_q_idx = np.where(q_range < 2*np.pi/np.percentile(AL_length_temp, 2))[0][-1]
+
+rgy_calyx_full = utils.radiusOfGyration(np.array([calyx_dist_flat]))
+rgy_LH_full = utils.radiusOfGyration(np.array([LH_dist_flat]))
+rgy_AL_full = utils.radiusOfGyration(np.array([AL_dist_flat]))
 
 Pq_calyx_pn = np.load(r'./Pq_calyx.npy')
 Pq_LH_pn = np.load(r'./Pq_LH.npy')
@@ -9177,6 +9188,18 @@ plt.show()
 
 q_range = np.logspace(-2,3,100)
 
+calyx_length_temp = np.array([item for sublist in LengthData.length_calyx for item in sublist])
+LH_length_temp = np.array([item for sublist in LengthData.length_LH for item in sublist])
+AL_length_temp = np.array([item for sublist in LengthData.length_AL for item in sublist])
+
+calyx_q_idx = np.where(q_range < 2*np.pi/np.percentile(calyx_length_temp, 2))[0][-1]
+LH_q_idx = np.where(q_range < 2*np.pi/np.percentile(LH_length_temp, 2))[0][-1]
+AL_q_idx = np.where(q_range < 2*np.pi/np.percentile(AL_length_temp, 2))[0][-1]
+
+rgy_calyx_full = utils.radiusOfGyration(np.array([calyx_dist_flat]))
+rgy_LH_full = utils.radiusOfGyration(np.array([LH_dist_flat]))
+rgy_AL_full = utils.radiusOfGyration(np.array([AL_dist_flat]))
+
 Pq_calyx_pnn = np.load(r'./Pq_calyx_neurite.npy')
 Pq_LH_pnn = np.load(r'./Pq_LH_neurite.npy')
 Pq_AL_pnn = np.load(r'./Pq_AL_neurite.npy')
@@ -9323,17 +9346,18 @@ plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
 plt.text(10.3, 1-0.03,'Linear', fontsize=14)
 plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
-plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
+plt.vlines(2*np.pi/np.average(length_calyx_short_flat), 1e-6, 10, color='tab:orange')
 
 # plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
 
-plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
+# plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
+plt.vlines(1/np.average(rGy_calyx_short_flat), 1e-6, 10, color='tab:orange', ls='--')
 
 
 plt.xscale('log')
 # plt.yscale('log')
 plt.ylim(0.1, 1.7)
-plt.xlim(0.01, 100)
+plt.xlim(0.1, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
@@ -9360,17 +9384,18 @@ plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
 plt.text(10.3, 1-0.03,'Linear', fontsize=14)
 plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
-plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
+plt.vlines(2*np.pi/np.average(length_LH_short_flat), 1e-6, 10, color='tab:green')
 
 # plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
 
-plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
+# plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
+plt.vlines(1/np.average(rGy_LH_short_flat), 1e-6, 10, color='tab:green', ls='--')
 
 
 plt.xscale('log')
 # plt.yscale('log')
 plt.ylim(0.1, 1.7)
-plt.xlim(0.01, 100)
+plt.xlim(0.1, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
@@ -9397,17 +9422,18 @@ plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
 plt.text(10.3, 1-0.03,'Linear', fontsize=14)
 plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
-plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
+plt.vlines(2*np.pi/np.average(length_AL_short_flat), 1e-6, 10, color='tab:blue')
 
 # plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
 
-plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
+# plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
+plt.vlines(1/np.average(rGy_AL_short_flat), 1e-6, 10, color='tab:blue', ls='--')
 
 
 plt.xscale('log')
 # plt.yscale('log')
 plt.ylim(0.1, 1.7)
-plt.xlim(0.01, 100)
+plt.xlim(0.1, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
