@@ -8882,6 +8882,8 @@ fig = plt.figure(figsize=(8,6))
 for i in range(len(Pq_AL_pn)):
     plt.plot(q_range[:AL_q_idx], Pq_AL_pn[:AL_q_idx,i], marker='.', color='tab:blue', alpha=0.5)
 
+plt.plot(q_range[:AL_q_idx], np.average(Pq_AL_pn[:AL_q_idx],axis=1), color='k', lw=2)
+
 plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
 
 # plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
@@ -8909,13 +8911,15 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-4, 10)
 plt.xlim(0.8e-2, 1e2)
-# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_AL_full_1.png', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_AL_full_2.png', dpi=600, bbox_inches='tight')
 plt.show()
 
 
 fig = plt.figure(figsize=(8,6))
 for i in range(len(Pq_AL_pn)):
     plt.plot(q_range[:LH_q_idx], Pq_LH_pn[:LH_q_idx,i], marker='.', color='tab:green', alpha=0.5)
+
+plt.plot(q_range[:LH_q_idx], np.average(Pq_LH_pn[:LH_q_idx],axis=1), color='k', lw=2)
 
 plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
 
@@ -8944,13 +8948,15 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-4, 10)
 plt.xlim(0.8e-2, 1e2)
-# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_LH_full_1.png', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_LH_full_2.png', dpi=600, bbox_inches='tight')
 plt.show()
 
 
 fig = plt.figure(figsize=(8,6))
 for i in range(len(Pq_AL_pn)):
     plt.plot(q_range[:calyx_q_idx], Pq_calyx_pn[:calyx_q_idx,i], marker='.', color='tab:orange', alpha=0.5)
+
+plt.plot(q_range[:calyx_q_idx], np.average(Pq_calyx_pn[:calyx_q_idx],axis=1), color='k', lw=2)
 
 plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
 
@@ -8979,7 +8985,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-4, 10)
 plt.xlim(0.8e-2, 1e2)
-# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_calyx_full_1.png', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_calyx_full_2.png', dpi=600, bbox_inches='tight')
 plt.show()
 
 
@@ -9340,11 +9346,11 @@ plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
 plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
 plt.hlines(1, 0.01, 100, ls='dashed', color='k')
 plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
-plt.text(10.3, 1/4-0.03, 'Ideal', fontsize=14)
-plt.text(10.3, 7/16-0.04, '$\Theta$ Solvent', fontsize=14)
-plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
-plt.text(10.3, 1-0.03,'Linear', fontsize=14)
-plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
+# plt.text(10.3, 1/4-0.03, 'Ideal', fontsize=14)
+# plt.text(10.3, 7/16-0.04, '$\Theta$ Solvent', fontsize=14)
+# plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
+# plt.text(10.3, 1-0.03,'Linear', fontsize=14)
+# plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
 plt.vlines(2*np.pi/np.average(length_calyx_short_flat), 1e-6, 10, color='tab:orange')
 
@@ -9360,8 +9366,8 @@ plt.ylim(0.1, 1.7)
 plt.xlim(0.1, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
-plt.ylabel(r"$\nu$", fontsize=17)
-plt.yticks(fontsize=14)
+# plt.ylabel(r"$\nu$", fontsize=17)
+plt.yticks([])
 # plt.savefig(Parameter.outputdir + '/Pq_all_pn_calyx_neurite_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
   
@@ -9398,8 +9404,8 @@ plt.ylim(0.1, 1.7)
 plt.xlim(0.1, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
-plt.ylabel(r"$\nu$", fontsize=17)
-plt.yticks(fontsize=14)
+# plt.ylabel(r"$\nu$", fontsize=17)
+plt.yticks([])
 # plt.savefig(Parameter.outputdir + '/Pq_all_pn_LH_neurite_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
@@ -9416,11 +9422,11 @@ plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
 plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
 plt.hlines(1, 0.01, 100, ls='dashed', color='k')
 plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
-plt.text(10.3, 1/4-0.03, 'Ideal', fontsize=14)
-plt.text(10.3, 7/16-0.04, '$\Theta$ Solvent', fontsize=14)
-plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
-plt.text(10.3, 1-0.03,'Linear', fontsize=14)
-plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
+# plt.text(10.3, 1/4-0.03, 'Ideal', fontsize=14)
+# plt.text(10.3, 7/16-0.04, '$\Theta$ Solvent', fontsize=14)
+# plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
+# plt.text(10.3, 1-0.03,'Linear', fontsize=14)
+# plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
 plt.vlines(2*np.pi/np.average(length_AL_short_flat), 1e-6, 10, color='tab:blue')
 
