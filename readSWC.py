@@ -9447,6 +9447,76 @@ plt.yticks(fontsize=14)
 # plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_neurite_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
+#%% neurite morphology SAW (50) vs theta (21)
+
+calyxdist_short_ind = []
+for i in range(len(calyxdist_short)):
+    for j in range(len(calyxdist_short[i])):
+        calyxdist_short_ind.append(calyxdist_short[i][j])
+
+
+fig, ax = plt.subplots(figsize=(8,8))
+ax.axis('off')
+
+for i in range(len(calyxdist_short_ind[21])):
+    listOfPoints = calyxdist_short_ind[21][i]
+    for f in range(len(listOfPoints)-1):
+        morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+        plt.plot(morph_line[:,0], morph_line[:,2], color='tab:orange', lw=2)
+ax.set_xlim(491, 497)
+ax.set_ylim(170, 176)
+# plt.savefig(Parameter.outputdir + '/neurite_proj_21_calyx.png', dpi=600, bbox_inches='tight', transparent=True)
+plt.show()
+
+fig, ax = plt.subplots(figsize=(8,8))
+ax = plt.axes(projection='3d')
+ax.set_box_aspect((1,1,1))
+ax.axis('off')
+
+for i in range(len(calyxdist_short_ind[21])):
+    listOfPoints = calyxdist_short_ind[21][i]
+    for f in range(len(listOfPoints)-1):
+        morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+        plt.plot(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:orange', lw=2)
+ax.set_xlim(492, 496)
+ax.set_ylim(215, 211)
+ax.set_zlim(171, 175)
+# plt.savefig(Parameter.outputdir + '/neurite_21_calyx.png', dpi=600, bbox_inches='tight', transparent=True)
+plt.show()
+
+
+fig, ax = plt.subplots(figsize=(8,8))
+ax.axis('off')
+
+for i in range(len(calyxdist_short_ind[50])):
+    listOfPoints = calyxdist_short_ind[50][i]
+    for f in range(len(listOfPoints)-1):
+        morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+        plt.plot(morph_line[:,0], morph_line[:,2], color='tab:orange', lw=2)
+ax.set_xlim(492.5, 498.5)
+ax.set_ylim(180.5, 186.5)
+# plt.savefig(Parameter.outputdir + '/neurite_proj_50_calyx.png', dpi=600, bbox_inches='tight', transparent=True)
+plt.show()
+
+
+fig, ax = plt.subplots(figsize=(8,8))
+ax = plt.axes(projection='3d')
+ax.set_box_aspect((1,1,1))
+ax.axis('off')
+
+for i in range(len(calyxdist_short_ind[50])):
+    listOfPoints = calyxdist_short_ind[50][i]
+    for f in range(len(listOfPoints)-1):
+        morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+        plt.plot(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:orange', lw=2)
+ax.set_xlim(493.5, 497.5)
+ax.set_ylim(241, 237)
+ax.set_zlim(181.5, 185.5)
+# plt.savefig(Parameter.outputdir + '/neurite_50_calyx.png', dpi=600, bbox_inches='tight', transparent=True)
+plt.show()
+
+
+
 
 #%% 16 moving average (FIGURE FORM FACTOR 16)186573
 # 35 - 24726
