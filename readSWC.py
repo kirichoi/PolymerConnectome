@@ -9337,8 +9337,15 @@ for j in range(len(Pq_AL_pnn[0])):
 fig = plt.figure(figsize=(6,4.5))
 
 for i in range(len(mw_Pq_calyx_pnn)):
-    plt.plot(mwx_calyx_pn[i], -1/np.array(mw_Pq_calyx_pnn[i]), color='tab:orange', lw=2, alpha=0.5)
+    if i == 21:
+        pass
+    elif i ==48:
+        pass
+    else:
+        plt.plot(mwx_calyx_pn[i], -1/np.array(mw_Pq_calyx_pnn[i]), color='tab:orange', lw=2, alpha=0.5)
 
+plt.plot(mwx_calyx_pn[48], -1/np.array(mw_Pq_calyx_pnn[48]), color='tab:red', lw=2)
+plt.plot(mwx_calyx_pn[21], -1/np.array(mw_Pq_calyx_pnn[21]), color='tab:purple', lw=2)
 plt.plot(mwx_calyx_pn[0], -1/tolerant_mean(mw_Pq_calyx_pnn).data, color='k', lw=2)
 
 plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
@@ -9363,14 +9370,14 @@ plt.vlines(1/np.average(rGy_calyx_short_flat), 1e-6, 10, color='tab:orange', ls=
 plt.xscale('log')
 # plt.yscale('log')
 plt.ylim(0.1, 1.7)
-plt.xlim(0.1, 10)
+plt.xlim(0.01, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 # plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks([])
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_calyx_neurite_mv_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_calyx_neurite_mv_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
-  
+
 
 fig = plt.figure(figsize=(6,4.5))
 
@@ -9401,12 +9408,12 @@ plt.vlines(1/np.average(rGy_LH_short_flat), 1e-6, 10, color='tab:green', ls='--'
 plt.xscale('log')
 # plt.yscale('log')
 plt.ylim(0.1, 1.7)
-plt.xlim(0.1, 10)
+plt.xlim(0.01, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 # plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks([])
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_LH_neurite_mv_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_LH_neurite_mv_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -9439,13 +9446,49 @@ plt.vlines(1/np.average(rGy_AL_short_flat), 1e-6, 10, color='tab:blue', ls='--')
 plt.xscale('log')
 # plt.yscale('log')
 plt.ylim(0.1, 1.7)
-plt.xlim(0.1, 10)
+plt.xlim(0.01, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_neurite_mv_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_neurite_mv_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
+
+#%% neurite difference plot
+
+AL_rgy_arg = np.argmin(np.abs(mwx_AL_pn[0] - 1/np.average(rGy_AL_short_flat)))
+LH_rgy_arg = np.argmin(np.abs(mwx_LH_pn[1] - 1/np.average(rGy_LH_short_flat)))
+calyx_rgy_arg = np.argmin(np.abs(mwx_calyx_pn[0] - 1/np.average(rGy_calyx_short_flat)))
+
+AL_data = -1/tolerant_mean(mw_Pq_AL_pnn).data
+LH_data = -1/tolerant_mean(mw_Pq_LH_pnn).data
+calyx_data = -1/tolerant_mean(mw_Pq_calyx_pnn).data
+
+AL_diff_n = len(AL_data) - AL_rgy_arg
+LH_diff_n = len(LH_data) - LH_rgy_arg
+calyx_diff_n = len(calyx_data) - calyx_rgy_arg
+
+
+fig = plt.figure(figsize=(6,4.5))
+
+# plt.plot(calyx_data[calyx_rgy_arg:calyx_rgy_arg+min(calyx_diff_n,AL_diff_n)] - AL_data[AL_rgy_arg:AL_rgy_arg+min(calyx_diff_n,AL_diff_n)])
+# plt.plot(calyx_data[calyx_rgy_arg:calyx_rgy_arg+min(calyx_diff_n,LH_diff_n)] - LH_data[LH_rgy_arg:LH_rgy_arg+min(calyx_diff_n,LH_diff_n)])
+# plt.plot(calyx_data[LH_rgy_arg:LH_rgy_arg+min(LH_diff_n,AL_diff_n)] - AL_data[AL_rgy_arg:AL_rgy_arg+min(LH_diff_n,AL_diff_n)])
+
+plt.plot(mwx_AL_pn[0][:-1], np.diff(AL_data))
+plt.plot(mwx_LH_pn[1][:-1], np.diff(LH_data))
+plt.plot(mwx_calyx_pn[0][:-1], np.diff(calyx_data))
+
+plt.xscale('log')
+# plt.ylim(0.1, 1.7)
+# plt.xlim(0.01, 10)
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
+plt.xticks(fontsize=14)
+plt.ylabel(r"$\nu$", fontsize=17)
+plt.yticks(fontsize=14)
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_neurite_mv_2.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
 
 #%% neurite morphology SAW (50) vs theta (21)
 
@@ -9462,7 +9505,7 @@ for i in range(len(calyxdist_short_ind[21])):
     listOfPoints = calyxdist_short_ind[21][i]
     for f in range(len(listOfPoints)-1):
         morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
-        plt.plot(morph_line[:,0], morph_line[:,2], color='tab:orange', lw=2)
+        plt.plot(morph_line[:,0], morph_line[:,2], color='tab:purple', lw=2)
 ax.set_xlim(491, 497)
 ax.set_ylim(170, 176)
 # plt.savefig(Parameter.outputdir + '/neurite_proj_21_calyx.png', dpi=600, bbox_inches='tight', transparent=True)
@@ -9477,7 +9520,7 @@ for i in range(len(calyxdist_short_ind[21])):
     listOfPoints = calyxdist_short_ind[21][i]
     for f in range(len(listOfPoints)-1):
         morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
-        plt.plot(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:orange', lw=2)
+        plt.plot(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:purple', lw=2)
 ax.set_xlim(492, 496)
 ax.set_ylim(215, 211)
 ax.set_zlim(171, 175)
@@ -9492,7 +9535,7 @@ for i in range(len(calyxdist_short_ind[50])):
     listOfPoints = calyxdist_short_ind[50][i]
     for f in range(len(listOfPoints)-1):
         morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
-        plt.plot(morph_line[:,0], morph_line[:,2], color='tab:orange', lw=2)
+        plt.plot(morph_line[:,0], morph_line[:,2], color='tab:red', lw=2)
 ax.set_xlim(492.5, 498.5)
 ax.set_ylim(180.5, 186.5)
 # plt.savefig(Parameter.outputdir + '/neurite_proj_50_calyx.png', dpi=600, bbox_inches='tight', transparent=True)
@@ -9508,7 +9551,7 @@ for i in range(len(calyxdist_short_ind[50])):
     listOfPoints = calyxdist_short_ind[50][i]
     for f in range(len(listOfPoints)-1):
         morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
-        plt.plot(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:orange', lw=2)
+        plt.plot(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:red', lw=2)
 ax.set_xlim(493.5, 497.5)
 ax.set_ylim(241, 237)
 ax.set_zlim(181.5, 185.5)
