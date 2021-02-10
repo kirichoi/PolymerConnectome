@@ -8518,10 +8518,10 @@ plt.plot(q_range[10:17], line2[10:17], lw=2, color='k')
 plt.plot(q_range[19:27], line3[19:27], lw=2, color='k')
 plt.plot(q_range[38:48], line4[38:48], lw=2, color='k')
 
-plt.text(0.15, 4e-5, r'$\lambda = \dfrac{7}{16}$', fontsize=13)
-plt.text(0.02, 9e-3, r'$\lambda = \dfrac{1}{4}$', fontsize=13)
-plt.text(0.07, 4e-4, r'$\lambda = \dfrac{1}{2}$', fontsize=13)
-plt.text(.8, 0.6e-5, r'$\lambda = 1$', fontsize=13)
+plt.text(0.15, 4e-5, r'$\nu = \dfrac{7}{16}$', fontsize=13)
+plt.text(0.02, 9e-3, r'$\nu = \dfrac{1}{4}$', fontsize=13)
+plt.text(0.07, 4e-4, r'$\nu = \dfrac{1}{2}$', fontsize=13)
+plt.text(.8, 0.6e-5, r'$\nu = 1$', fontsize=13)
 
 plt.xscale('log')
 plt.yscale('log')
@@ -8529,7 +8529,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-6, 10)
 plt.legend(['AL', 'MB calyx', 'LH'], fontsize=13)
-# plt.savefig(Parameter.outputdir + '/Pq_neuropil_3.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_neuropil_4.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -8882,7 +8882,7 @@ fig = plt.figure(figsize=(8,6))
 for i in range(len(Pq_AL_pn)):
     plt.plot(q_range[:AL_q_idx], Pq_AL_pn[:AL_q_idx,i], marker='.', color='tab:blue', alpha=0.5)
 
-plt.plot(q_range[:AL_q_idx], np.average(Pq_AL_pn[:AL_q_idx],axis=1), color='k', lw=2)
+# plt.plot(q_range[:AL_q_idx], np.average(Pq_AL_pn[:AL_q_idx],axis=1), color='k', lw=2)
 
 plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
 
@@ -8901,9 +8901,9 @@ plt.plot(q_range[28:36], line3[28:36], lw=2, color='k')
 plt.plot(q_range[38:48], line4[38:48], lw=2, color='k')
 
 # plt.text(0.025, 7e-3, r'$\lambda = \dfrac{1}{4}$', fontsize=13)
-plt.text(0.05, 0.8e-2, r'$\lambda = \dfrac{7}{16}$', fontsize=13)
-plt.text(0.16, 0.8e-3, r'$\lambda = \dfrac{1}{2}$', fontsize=13)
-plt.text(0.7, 1.5e-4, r'$\lambda = 1$', fontsize=13)
+plt.text(0.05, 0.8e-2, r'$\nu = \dfrac{7}{16}$', fontsize=13)
+plt.text(0.16, 0.8e-3, r'$\nu = \dfrac{1}{2}$', fontsize=13)
+plt.text(0.7, 1.5e-4, r'$\nu = 1$', fontsize=13)
 
 plt.xscale('log')
 plt.yscale('log')
@@ -8911,7 +8911,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-4, 10)
 plt.xlim(0.8e-2, 1e2)
-# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_AL_full_2.png', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_AL_full_3.png', dpi=600, bbox_inches='tight')
 plt.show()
 
 
@@ -8919,7 +8919,7 @@ fig = plt.figure(figsize=(8,6))
 for i in range(len(Pq_AL_pn)):
     plt.plot(q_range[:LH_q_idx], Pq_LH_pn[:LH_q_idx,i], marker='.', color='tab:green', alpha=0.5)
 
-plt.plot(q_range[:LH_q_idx], np.average(Pq_LH_pn[:LH_q_idx],axis=1), color='k', lw=2)
+# plt.plot(q_range[:LH_q_idx], np.average(Pq_LH_pn[:LH_q_idx],axis=1), color='k', lw=2)
 
 plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
 
@@ -8938,9 +8938,9 @@ plt.plot(q_range[28:36], line3[28:36], lw=2, color='k')
 plt.plot(q_range[38:48], line4[38:48], lw=2, color='k')
 
 # plt.text(0.025, 7e-3, r'$\lambda = \dfrac{1}{4}$', fontsize=13)
-plt.text(0.05, 0.8e-2, r'$\lambda = \dfrac{7}{16}$', fontsize=13)
-plt.text(0.16, 0.8e-3, r'$\lambda = \dfrac{1}{2}$', fontsize=13)
-plt.text(0.7, 1.5e-4, r'$\lambda = 1$', fontsize=13)
+plt.text(0.05, 0.8e-2, r'$\nu = \dfrac{7}{16}$', fontsize=13)
+plt.text(0.16, 0.8e-3, r'$\nu = \dfrac{1}{2}$', fontsize=13)
+plt.text(0.7, 1.5e-4, r'$\nu = 1$', fontsize=13)
 
 plt.xscale('log')
 plt.yscale('log')
@@ -8948,7 +8948,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-4, 10)
 plt.xlim(0.8e-2, 1e2)
-# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_LH_full_2.png', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_LH_full_3.png', dpi=600, bbox_inches='tight')
 plt.show()
 
 
@@ -8956,7 +8956,7 @@ fig = plt.figure(figsize=(8,6))
 for i in range(len(Pq_AL_pn)):
     plt.plot(q_range[:calyx_q_idx], Pq_calyx_pn[:calyx_q_idx,i], marker='.', color='tab:orange', alpha=0.5)
 
-plt.plot(q_range[:calyx_q_idx], np.average(Pq_calyx_pn[:calyx_q_idx],axis=1), color='k', lw=2)
+# plt.plot(q_range[:calyx_q_idx], np.average(Pq_calyx_pn[:calyx_q_idx],axis=1), color='k', lw=2)
 
 plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
 
@@ -8975,9 +8975,9 @@ plt.plot(q_range[28:36], line3[28:36], lw=2, color='k')
 plt.plot(q_range[38:48], line4[38:48], lw=2, color='k')
 
 # plt.text(0.025, 7e-3, r'$\lambda = \dfrac{1}{4}$', fontsize=13)
-plt.text(0.05, 0.8e-2, r'$\lambda = \dfrac{7}{16}$', fontsize=13)
-plt.text(0.16, 0.8e-3, r'$\lambda = \dfrac{1}{2}$', fontsize=13)
-plt.text(0.7, 1.5e-4, r'$\lambda = 1$', fontsize=13)
+plt.text(0.05, 0.8e-2, r'$\nu = \dfrac{7}{16}$', fontsize=13)
+plt.text(0.16, 0.8e-3, r'$\nu = \dfrac{1}{2}$', fontsize=13)
+plt.text(0.7, 1.5e-4, r'$\nu = 1$', fontsize=13)
 
 plt.xscale('log')
 plt.yscale('log')
@@ -8985,7 +8985,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-4, 10)
 plt.xlim(0.8e-2, 1e2)
-# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_calyx_full_2.png', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_calyx_full_3.png', dpi=600, bbox_inches='tight')
 plt.show()
 
 
