@@ -8623,6 +8623,8 @@ plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 
+plt.axvspan(0.24, 0.64, alpha=0.25, color='tab:blue')
+
 plt.xscale('log')
 # plt.yscale('log')
 plt.ylim(0.1, 1.5)
@@ -8633,7 +8635,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_all_mv_5.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_mv_6.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
