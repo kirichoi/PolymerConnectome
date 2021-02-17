@@ -8496,9 +8496,9 @@ plt.plot(q_range[:AL_q_idx], Pq_AL[:AL_q_idx], marker='.', color='tab:blue')
 plt.plot(q_range[:calyx_q_idx], Pq_calyx[:calyx_q_idx], marker='.', color='tab:orange')
 plt.plot(q_range[:LH_q_idx], Pq_LH[:LH_q_idx], marker='.', color='tab:green')
 
-plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
-plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
-plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
+plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue')
+plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange')
+plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green')
 
 # plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
 # plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
@@ -8529,7 +8529,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-6, 10)
 plt.legend(['AL', 'MB calyx', 'LH'], fontsize=13)
-# plt.savefig(Parameter.outputdir + '/Pq_neuropil_4.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_neuropil_5.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -8611,9 +8611,9 @@ plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
 plt.text(10.3, 1-0.03,'Linear', fontsize=14)
 plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
-plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
-plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
-plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
+plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue')
+plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange')
+plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green')
 
 # plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
 # plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
@@ -8635,7 +8635,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_all_mv_6.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_mv_7.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -8886,7 +8886,7 @@ for i in range(len(Pq_AL_pn)):
 
 # plt.plot(q_range[:AL_q_idx], np.average(Pq_AL_pn[:AL_q_idx],axis=1), color='k', lw=2)
 
-plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
+plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue')
 
 # plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
 
@@ -8913,7 +8913,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-4, 10)
 plt.xlim(0.8e-2, 1e2)
-# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_AL_full_3.png', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_AL_full_4.png', dpi=600, bbox_inches='tight')
 plt.show()
 
 
@@ -8923,7 +8923,7 @@ for i in range(len(Pq_AL_pn)):
 
 # plt.plot(q_range[:LH_q_idx], np.average(Pq_LH_pn[:LH_q_idx],axis=1), color='k', lw=2)
 
-plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
+plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green')
 
 # plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
 
@@ -8950,7 +8950,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-4, 10)
 plt.xlim(0.8e-2, 1e2)
-# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_LH_full_3.png', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_LH_full_4.png', dpi=600, bbox_inches='tight')
 plt.show()
 
 
@@ -8960,7 +8960,7 @@ for i in range(len(Pq_AL_pn)):
 
 # plt.plot(q_range[:calyx_q_idx], np.average(Pq_calyx_pn[:calyx_q_idx],axis=1), color='k', lw=2)
 
-plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
+plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange')
 
 # plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
 
@@ -8987,7 +8987,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-4, 10)
 plt.xlim(0.8e-2, 1e2)
-# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_calyx_full_3.png', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_calyx_full_4.png', dpi=600, bbox_inches='tight')
 plt.show()
 
 
@@ -9099,7 +9099,7 @@ plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
 plt.text(10.3, 1-0.03,'Linear', fontsize=14)
 plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
-plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
+plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange')
 
 # plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
 
@@ -9114,7 +9114,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_calyx_mv_5.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_calyx_mv_6.pdf', dpi=300, bbox_inches='tight')
 plt.show()
   
 
@@ -9136,7 +9136,7 @@ plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
 plt.text(10.3, 1-0.03,'Linear', fontsize=14)
 plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
-plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
+plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green')
 
 # plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
 
@@ -9151,7 +9151,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_LH_mv_5.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_LH_mv_6.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -9173,7 +9173,7 @@ plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
 plt.text(10.3, 1-0.03,'Linear', fontsize=14)
 plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
-plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
+plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue')
 
 # plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
 
@@ -9188,7 +9188,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_mv_5.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_mv_6.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -9361,12 +9361,12 @@ plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
 plt.text(10.3, 1-0.03,'Linear', fontsize=14)
 plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
-plt.vlines(2*np.pi/np.average(length_calyx_short_flat), 1e-6, 10, color='tab:orange')
+plt.vlines(2*np.pi/np.median(length_calyx_short_flat), 1e-6, 10, color='tab:orange')
 
 # plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
 
 # plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
-plt.vlines(1/np.average(rGy_calyx_short_flat), 1e-6, 10, color='tab:orange', ls='--')
+plt.vlines(1/np.median(rGy_calyx_short_flat), 1e-6, 10, color='tab:orange', ls='--')
 
 
 plt.xscale('log')
@@ -9377,7 +9377,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_calyx_neurite_mv_4.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_calyx_neurite_mv_5.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -9399,12 +9399,12 @@ plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
 plt.text(10.3, 1-0.03,'Linear', fontsize=14)
 plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
-plt.vlines(2*np.pi/np.average(length_LH_short_flat), 1e-6, 10, color='tab:green')
+plt.vlines(2*np.pi/np.median(length_LH_short_flat), 1e-6, 10, color='tab:green')
 
 # plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
 
 # plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
-plt.vlines(1/np.average(rGy_LH_short_flat), 1e-6, 10, color='tab:green', ls='--')
+plt.vlines(1/np.median(rGy_LH_short_flat), 1e-6, 10, color='tab:green', ls='--')
 
 
 plt.xscale('log')
@@ -9415,7 +9415,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_LH_neurite_mv_4.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_LH_neurite_mv_5.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -9437,12 +9437,12 @@ plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
 plt.text(10.3, 1-0.03,'Linear', fontsize=14)
 plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
-plt.vlines(2*np.pi/np.average(length_AL_short_flat), 1e-6, 10, color='tab:blue')
+plt.vlines(2*np.pi/np.median(length_AL_short_flat), 1e-6, 10, color='tab:blue')
 
 # plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
 
 # plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
-plt.vlines(1/np.average(rGy_AL_short_flat), 1e-6, 10, color='tab:blue', ls='--')
+plt.vlines(1/np.median(rGy_AL_short_flat), 1e-6, 10, color='tab:blue', ls='--')
 
 
 plt.xscale('log')
@@ -9453,7 +9453,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_neurite_mv_4.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_neurite_mv_5.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 #%% neurite difference plot
@@ -9508,9 +9508,35 @@ for i in range(len(calyxdist_short_ind[21])):
     for f in range(len(listOfPoints)-1):
         morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
         plt.plot(morph_line[:,0], morph_line[:,2], color='tab:purple', lw=2)
-ax.set_xlim(491, 497)
-ax.set_ylim(170, 176)
-# plt.savefig(Parameter.outputdir + '/neurite_proj_21_calyx.png', dpi=600, bbox_inches='tight', transparent=True)
+ax.set_xlim(491.5, 496.5)
+ax.set_ylim(170.5, 175.5)
+# plt.savefig(Parameter.outputdir + '/neurite_proj_21_calyx_xz.png', dpi=600, bbox_inches='tight', transparent=True)
+plt.show()
+
+fig, ax = plt.subplots(figsize=(8,8))
+ax.axis('off')
+
+for i in range(len(calyxdist_short_ind[21])):
+    listOfPoints = calyxdist_short_ind[21][i]
+    for f in range(len(listOfPoints)-1):
+        morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+        plt.plot(morph_line[:,0], morph_line[:,1], color='tab:purple', lw=2)
+ax.set_xlim(491.5, 496.5)
+ax.set_ylim(215.5, 210.5)
+# plt.savefig(Parameter.outputdir + '/neurite_proj_21_calyx_xy.png', dpi=600, bbox_inches='tight', transparent=True)
+plt.show()
+
+fig, ax = plt.subplots(figsize=(8,8))
+ax.axis('off')
+
+for i in range(len(calyxdist_short_ind[21])):
+    listOfPoints = calyxdist_short_ind[21][i]
+    for f in range(len(listOfPoints)-1):
+        morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+        plt.plot(morph_line[:,1], morph_line[:,2], color='tab:purple', lw=2)
+ax.set_xlim(215.5, 210.5)
+ax.set_ylim(170.5, 175.5)
+# plt.savefig(Parameter.outputdir + '/neurite_proj_21_calyx_yz.png', dpi=600, bbox_inches='tight', transparent=True)
 plt.show()
 
 fig, ax = plt.subplots(figsize=(8,8))
@@ -9538,11 +9564,36 @@ for i in range(len(calyxdist_short_ind[50])):
     for f in range(len(listOfPoints)-1):
         morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
         plt.plot(morph_line[:,0], morph_line[:,2], color='tab:red', lw=2)
-ax.set_xlim(492.5, 498.5)
-ax.set_ylim(180.5, 186.5)
-# plt.savefig(Parameter.outputdir + '/neurite_proj_50_calyx.png', dpi=600, bbox_inches='tight', transparent=True)
+ax.set_xlim(493, 498)
+ax.set_ylim(181, 186)
+# plt.savefig(Parameter.outputdir + '/neurite_proj_50_calyx_xz.png', dpi=600, bbox_inches='tight', transparent=True)
 plt.show()
 
+fig, ax = plt.subplots(figsize=(8,8))
+ax.axis('off')
+
+for i in range(len(calyxdist_short_ind[50])):
+    listOfPoints = calyxdist_short_ind[50][i]
+    for f in range(len(listOfPoints)-1):
+        morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+        plt.plot(morph_line[:,0], morph_line[:,1], color='tab:red', lw=2)
+ax.set_xlim(493, 498)
+ax.set_ylim(241.5, 236.5)
+# plt.savefig(Parameter.outputdir + '/neurite_proj_50_calyx_xy.png', dpi=600, bbox_inches='tight', transparent=True)
+plt.show()
+
+fig, ax = plt.subplots(figsize=(8,8))
+ax.axis('off')
+
+for i in range(len(calyxdist_short_ind[50])):
+    listOfPoints = calyxdist_short_ind[50][i]
+    for f in range(len(listOfPoints)-1):
+        morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+        plt.plot(morph_line[:,1], morph_line[:,2], color='tab:red', lw=2)
+ax.set_xlim(242.5, 235.5)
+ax.set_ylim(181, 186)
+# plt.savefig(Parameter.outputdir + '/neurite_proj_50_calyx_yz.png', dpi=600, bbox_inches='tight', transparent=True)
+plt.show()
 
 fig, ax = plt.subplots(figsize=(8,8))
 ax = plt.axes(projection='3d')
@@ -9585,6 +9636,12 @@ nid_AL = np.where(ALdist_trk_temp == nid)[0][0]
 nid_calyx = np.where(calyxdist_trk_temp == nid)[0][0]
 nid_LH = np.where(np.unique(MorphData.LHdist_trk) == nid)[0][0]
 
+rGy_calyx_new = copy.deepcopy(rGy_calyx)
+rGy_calyx_new = np.delete(rGy_calyx_new, 73)
+
+rGy_AL_new = copy.deepcopy(rGy_AL)
+rGy_AL_new = np.delete(rGy_AL_new, [40, 41])
+
 
 fig = plt.figure(figsize=(6,4.5))
 
@@ -9601,9 +9658,9 @@ plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
 plt.text(10.3, 1-0.03,'Linear', fontsize=14)
 plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
-plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
+plt.vlines(2*np.pi/np.median(LengthData.length_AL[nid]), 1e-6, 10, color='tab:blue')
 # plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
-plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
+plt.vlines(1/rGy_AL_new[nid_AL], 1e-6, 10, color='tab:blue', ls='--')
 
 plt.xscale('log')
 # plt.yscale('log')
@@ -9613,7 +9670,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_AL_mv_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_AL_mv_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -9632,9 +9689,9 @@ plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
 plt.text(10.3, 1-0.03,'Linear', fontsize=14)
 plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
-plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
+plt.vlines(2*np.pi/np.median(LengthData.length_calyx[nid]), 1e-6, 10, color='tab:orange')
 # plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
-plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
+plt.vlines(1/rGy_calyx_new[nid_calyx], 1e-6, 10, color='tab:orange', ls='--')
 
 plt.xscale('log')
 # plt.yscale('log')
@@ -9644,7 +9701,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_calyx_mv_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_calyx_mv_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -9663,9 +9720,9 @@ plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
 plt.text(10.3, 1-0.03,'Linear', fontsize=14)
 plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
-plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
+plt.vlines(2*np.pi/np.median(LengthData.length_LH[nid]), 1e-6, 10, color='tab:green')
 # plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
-plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
+plt.vlines(1/rGy_LH[nid_AL], 1e-6, 10, color='tab:green', ls='--')
 
 plt.xscale('log')
 # plt.yscale('log')
@@ -9675,10 +9732,10 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_LH_mv_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_LH_mv_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
-
+#%%
 fig = plt.figure(figsize=(8, 8))
 ax = plt.axes(projection='3d')
 ax.set_box_aspect((1,1,1))
@@ -10081,7 +10138,7 @@ plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
 plt.text(10.3, 1-0.03,'Linear', fontsize=14)
 plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
-plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='k')
+plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='k')
 plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='k', ls='--')
 
 plt.xscale('log')
@@ -10091,7 +10148,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 # plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks([])
-# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_LH_4.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_LH_5.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -10161,7 +10218,7 @@ plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
 # plt.text(10.3, 1-0.03,'Linear', fontsize=14)
 # plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
-plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='k')
+plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='k')
 plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='k', ls='--')
 
 plt.xscale('log')
@@ -10171,7 +10228,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_AL_4.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_AL_5.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -10210,20 +10267,20 @@ for i in range(len(aver)):
         averlist.append(-1/np.array(mw_Pq_calyx_pn[nid]))
 
 fig = plt.figure(figsize=(6,4.5))
-plt.plot(mwx_calyx_pn[1], tolerant_mean(pherlist).data, color='tab:blue', lw=2)
-plt.plot(mwx_calyx_pn[1], tolerant_mean(attrlist).data, color='tab:green', lw=2)
-plt.plot(mwx_calyx_pn[1], tolerant_mean(averlist).data, color='tab:red', lw=2)
-plt.fill_between(mwx_calyx_pn[1], 
+plt.plot(mwx_calyx_pn[0], tolerant_mean(pherlist).data, color='tab:blue', lw=2)
+plt.plot(mwx_calyx_pn[0], tolerant_mean(attrlist).data, color='tab:green', lw=2)
+plt.plot(mwx_calyx_pn[0], tolerant_mean(averlist).data, color='tab:red', lw=2)
+plt.fill_between(mwx_calyx_pn[0], 
                   tolerant_mean(pherlist).data-tolerant_std_error(pherlist), 
                   tolerant_mean(pherlist).data+tolerant_std_error(pherlist),
                   alpha=0.3,
                   color='tab:blue')
-plt.fill_between(mwx_calyx_pn[1], 
+plt.fill_between(mwx_calyx_pn[0], 
                   tolerant_mean(attrlist).data-tolerant_std_error(attrlist), 
                   tolerant_mean(attrlist).data+tolerant_std_error(attrlist),
                   alpha=0.3,
                   color='tab:green')
-plt.fill_between(mwx_calyx_pn[1], 
+plt.fill_between(mwx_calyx_pn[0], 
                   tolerant_mean(averlist).data-tolerant_std_error(averlist), 
                   tolerant_mean(averlist).data+tolerant_std_error(averlist),
                   alpha=0.3,
@@ -10241,7 +10298,7 @@ plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
 # plt.text(10.3, 1-0.03,'Linear', fontsize=14)
 # plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
-plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='k')
+plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='k')
 plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='k', ls='--')
 
 plt.xscale('log')
@@ -10251,7 +10308,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 # plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks([])
-# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_calyx_4.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_calyx_5.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
