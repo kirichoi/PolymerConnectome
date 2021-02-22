@@ -8787,7 +8787,7 @@ plt.show()
 
 
 fig = plt.figure(figsize=(8,6))
-for i in range(np.shape(Pq_AL_glo)[1]):
+for i in range(len(Pq_AL_glo[0])):
     plt.plot(q_range[:AL_q_idx], Pq_AL_glo[:AL_q_idx,i], color='tab:blue', alpha=0.5)
 
 # plt.plot(q_range[:AL_q_idx], np.average(Pq_AL_glo[:AL_q_idx],axis=1), color='k', lw=2)
@@ -8824,7 +8824,7 @@ plt.show()
 
 
 fig = plt.figure(figsize=(8,6))
-for i in range(len(Pq_AL_glo)):
+for i in range(len(Pq_LH_glo[0])):
     plt.plot(q_range[:LH_q_idx], Pq_LH_glo[:LH_q_idx,i], color='tab:green', alpha=0.5)
 
 # plt.plot(q_range[:LH_q_idx], np.average(Pq_LH_glo[:LH_q_idx],axis=1), color='k', lw=2)
@@ -8861,7 +8861,7 @@ plt.show()
 
 
 fig = plt.figure(figsize=(8,6))
-for i in range(len(Pq_AL_glo)):
+for i in range(len(Pq_calyx_glo[0])):
     plt.plot(q_range[:calyx_q_idx], Pq_calyx_glo[:calyx_q_idx,i], color='tab:orange', alpha=0.5)
 
 # plt.plot(q_range[:calyx_q_idx], np.average(Pq_calyx_glo[:calyx_q_idx],axis=1), color='k', lw=2)
