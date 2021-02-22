@@ -9590,7 +9590,7 @@ for i in range(len(calyxdist_short_ind[50])):
     for f in range(len(listOfPoints)-1):
         morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
         plt.plot(morph_line[:,1], morph_line[:,2], color='tab:red', lw=2)
-ax.set_xlim(242.5, 235.5)
+ax.set_xlim(241.5, 236.5)
 ax.set_ylim(181, 186)
 # plt.savefig(Parameter.outputdir + '/neurite_proj_50_calyx_yz.png', dpi=600, bbox_inches='tight', transparent=True)
 plt.show()
