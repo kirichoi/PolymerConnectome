@@ -8492,9 +8492,9 @@ fitYD_Pq_AL = objFuncPpow(q_range[q_range_fit_AL], poptD_Pq_AL[0], poptD_Pq_AL[1
 
 
 fig = plt.figure(figsize=(8,6))
-plt.plot(q_range[:AL_q_idx], Pq_AL[:AL_q_idx], marker='.', color='tab:blue')
-plt.plot(q_range[:calyx_q_idx], Pq_calyx[:calyx_q_idx], marker='.', color='tab:orange')
-plt.plot(q_range[:LH_q_idx], Pq_LH[:LH_q_idx], marker='.', color='tab:green')
+plt.plot(q_range[:AL_q_idx], Pq_AL[:AL_q_idx], color='tab:blue')
+plt.plot(q_range[:calyx_q_idx], Pq_calyx[:calyx_q_idx], color='tab:orange')
+plt.plot(q_range[:LH_q_idx], Pq_LH[:LH_q_idx], color='tab:green')
 
 plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue')
 plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange')
@@ -8529,7 +8529,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-6, 10)
 plt.legend(['AL', 'MB calyx', 'LH'], fontsize=13)
-# plt.savefig(Parameter.outputdir + '/Pq_neuropil_5.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_neuropil_6.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -9050,10 +9050,9 @@ plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
 plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue')
 
-# plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:red')
 
 plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
-
 
 plt.xscale('log')
 # plt.yscale('log')
@@ -9067,6 +9066,47 @@ plt.yticks(fontsize=14)
 plt.show()
 
 
+#%% nu vs D
+
+Dval = np.divide(ALtest_cl[ALtest_idx[np.argsort(LHtest_percent)]], 
+                 ALtest_ncl[ALtest_idx[np.argsort(LHtest_percent)]])
+
+glo_vol_ref = np.array([1269, 2382, 2728/2, 2097, 1509, 2267, 3438, 2728/2, 629,
+                        3989, 1588, 2591, 1628, 2362, 2241, 1886, 1415, 5347,
+                        1170, 1551, 1296, 1630, 1439, 1578, 1126, 1743, 4738, 
+                        4729, 1187, 1898, 4433, 615])
+
+glo_dm_ref = 2*np.power(3/(4*np.pi)*glo_vol_ref, 1/3)
+
+glo_q_ref = 2*np.pi/glo_dm_ref
+
+NUval = np.empty(len(Dval))
+
+for i in range(len(Dval)):
+    glo_idx_temp = glo_list.index(updatedxlabel[i])
+    idx_temp = np.argmin(np.abs(mwx_AL_glo[glo_idx_temp] - glo_q_ref[i]))
+    NUval[i] = (-1/np.array(mw_Pq_AL_glo[glo_idx_temp])[idx_temp])
+
+
+pher = ['DL3', 'VA1d', 'DA1', 'DC3']
+attr = ['VM2', 'VM7d', 'VM7v', 'DL3', 'VA1d', 'DA1']
+aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3', 'DC3']
+
+idxattr = []
+for i in range(len(attr)):
+    idxattr.append(np.where(updatedxlabel == attr[i])[0][0])
+
+idxaver = []
+for i in range(len(aver)):
+    idxaver.append(np.where(updatedxlabel == aver[i])[0][0])
+
+fig = plt.figure(figsize=(6,4.5))
+plt.scatter(Dval, NUval)
+plt.scatter(Dval[idxattr], NUval[idxattr], color='tab:green')
+plt.scatter(Dval[idxaver], NUval[idxaver], color='tab:red')
+plt.xlabel("Intra/Inter Distance Ratio", fontsize=17)
+plt.ylabel(r"$\nu$", fontsize=17)
+plt.show()
 
 #%% form factor per neuron plotting
 
@@ -9090,93 +9130,6 @@ Pq_AL_pn = np.load(r'./Pq_AL.npy')
 
 Pq_calyx_pn = np.delete(Pq_calyx_pn, [40, 41], 1)
 Pq_AL_pn = np.delete(Pq_AL_pn, 73, 1)
-
-fig = plt.figure(figsize=(8,6))
-plt.plot(np.tile(q_range[:60], (np.shape(Pq_calyx_pn)[1],1)).T, Pq_calyx_pn[:60])
-
-plt.xscale('log')
-plt.yscale('log')
-plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("F(q)", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/Pq_calyx_pn_1.pdf', dpi=300, bbox_inches='tight')
-plt.show()
-
-fig = plt.figure(figsize=(8,6))
-plt.plot(np.tile(q_range[:60], (np.shape(Pq_LH_pn)[1],1)).T, Pq_LH_pn[:60])
-
-plt.xscale('log')
-plt.yscale('log')
-plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("F(q)", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/Pq_LH_pn_1.pdf', dpi=300, bbox_inches='tight')
-plt.show()
-
-fig = plt.figure(figsize=(8,6))
-plt.plot(np.tile(q_range[:60], (np.shape(Pq_AL_pn)[1],1)).T, Pq_AL_pn[:60])
-
-plt.xscale('log')
-plt.yscale('log')
-plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("F(q)", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/Pq_AL_pn_1.pdf', dpi=300, bbox_inches='tight')
-plt.show()
-
-# calyx_q_idx = len(q_range)
-# LH_q_idx = len(q_range)
-# AL_q_idx = len(q_range)
-
-
-fig = plt.figure(figsize=(8,6))
-plt.plot(q_range[:calyx_q_idx], np.average(Pq_calyx_pn, axis=1)[:calyx_q_idx], color='tab:orange')
-plt.plot(q_range[:calyx_q_idx], Pq_calyx[:calyx_q_idx], color='tab:orange')
-plt.fill_between(q_range[:calyx_q_idx], 
-                 np.average(Pq_calyx_pn, axis=1)[:calyx_q_idx]+np.std(Pq_calyx_pn, axis=1)[:calyx_q_idx],
-                 np.average(Pq_calyx_pn, axis=1)[:calyx_q_idx]-np.std(Pq_calyx_pn, axis=1)[:calyx_q_idx],
-                 alpha=0.3, 
-                 color='tab:orange')
-
-plt.xscale('log')
-plt.yscale('log')
-plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("F(q)", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/Pq_calyx_pn_avg_1.pdf', dpi=300, bbox_inches='tight')
-plt.show()
-
-
-
-fig = plt.figure(figsize=(8,6))
-plt.plot(q_range[:LH_q_idx], np.average(Pq_LH_pn, axis=1)[:LH_q_idx], color='tab:green')
-plt.plot(q_range[:LH_q_idx], Pq_LH[:LH_q_idx], color='tab:green')
-plt.fill_between(q_range[:LH_q_idx], 
-                 np.average(Pq_LH_pn, axis=1)[:LH_q_idx]+np.std(Pq_LH_pn, axis=1)[:LH_q_idx],
-                 np.average(Pq_LH_pn, axis=1)[:LH_q_idx]-np.std(Pq_LH_pn, axis=1)[:LH_q_idx],
-                 alpha=0.3,
-                 color='tab:green')
-
-plt.xscale('log')
-plt.yscale('log')
-plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("F(q)", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/Pq_LH_pn_avg_1.pdf', dpi=300, bbox_inches='tight')
-plt.show()
-
-
-fig = plt.figure(figsize=(8,6))
-plt.plot(q_range[:AL_q_idx], np.average(Pq_AL_pn, axis=1)[:AL_q_idx], color='tab:blue')
-plt.plot(q_range[:AL_q_idx], Pq_AL[:AL_q_idx], color='tab:blue')
-plt.fill_between(q_range[:AL_q_idx], 
-                 np.average(Pq_AL_pn, axis=1)[:AL_q_idx]+np.std(Pq_AL_pn, axis=1)[:AL_q_idx],
-                 np.average(Pq_AL_pn, axis=1)[:AL_q_idx]-np.std(Pq_AL_pn, axis=1)[:AL_q_idx],
-                 alpha=0.3, 
-                 color='tab:blue')
-
-plt.xscale('log')
-plt.yscale('log')
-plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("F(q)", fontsize=15)
-# plt.savefig(Parameter.outputdir + '/Pq_AL_pn_avg_1.pdf', dpi=300, bbox_inches='tight')
-plt.show()
-
 
 fig = plt.figure(figsize=(8,6))
 for i in range(len(Pq_AL_pn[0])):
@@ -9211,7 +9164,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-4, 10)
 plt.xlim(0.8e-2, 1e2)
-# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_AL_full_4.png', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_AL_full_5.png', dpi=600, bbox_inches='tight')
 plt.show()
 
 
@@ -9248,7 +9201,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-4, 10)
 plt.xlim(0.8e-2, 1e2)
-# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_LH_full_4.png', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_LH_full_5.png', dpi=600, bbox_inches='tight')
 plt.show()
 
 
@@ -9285,7 +9238,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-4, 10)
 plt.xlim(0.8e-2, 1e2)
-# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_calyx_full_4.png', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_calyx_full_5.png', dpi=600, bbox_inches='tight')
 plt.show()
 
 
