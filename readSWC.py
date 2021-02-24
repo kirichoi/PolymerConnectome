@@ -9460,6 +9460,145 @@ plt.show()
 
 #%% neuron projection within neuropil or two neuropils
 
+un_calyx_tr = np.delete(un_calyx, [40, 41], 0)
+un_AL_tr = np.delete(un_AL, 73, 0)
+un_LH_tr = un_LH
+
+set1 = set(un_calyx_tr)
+set2 = set(un_LH)
+set3 = set(un_AL_tr)
+  
+set12 = set1.intersection(set2)
+set123 = set12.intersection(set3)
+  
+set123 = list(set123)
+
+un_calyx_nP = np.setdiff1d(un_calyx_tr, set123)
+un_LH_nP = np.setdiff1d(un_LH, set123)
+un_AL_nP = np.setdiff1d(un_AL_tr, set123)
+
+un_calyx_nUG = np.setdiff1d(un_calyx_tr, glo_idx_flat)
+un_LH_nUG = np.setdiff1d(un_LH, glo_idx_flat)
+un_AL_nUG = np.setdiff1d(un_AL_tr, glo_idx_flat)
+
+un_calyx_MG = np.setdiff1d(un_calyx_nUG, un_calyx_nP)
+un_LH_MG = np.setdiff1d(un_LH_nUG, un_LH_nP)
+un_AL_MG = np.setdiff1d(un_AL_nUG, un_AL_nP)
+
+
+
+un_AL_nUG_right_hem = [0, 14, 16, 73]
+un_AL_nUG_calyx = [26, 135]
+un_AL_nUG_LH = [93, 94, 136, 149]
+un_AL_nUG_MG = [70, 71, 97, 114, 115, 138, 139]
+
+
+
+
+fig = plt.figure(figsize=(8,6))
+for i in range(len(un_AL_nUG_calyx)):
+    idx_temp = np.where(un_AL_tr == un_AL_nUG_calyx[i])[0]
+    plt.plot(q_range[:AL_q_idx], Pq_AL_pn[:AL_q_idx,idx_temp], color='tab:blue', alpha=0.5)
+
+# plt.plot(q_range[:AL_q_idx], np.average(Pq_AL_pn[:AL_q_idx],axis=1), color='k', lw=2)
+
+plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue')
+
+# plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+
+plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
+
+line1 = 1/7500*np.power(q_range, -16/7)
+# line2 = 1/1000000*np.power(q_range, -4/1)
+line3 = 1/5000*np.power(q_range, -2/1)
+line4 = 1/2500*np.power(q_range, -1)
+
+# plt.plot(q_range[10:17], line2[10:17], lw=2, color='k')
+plt.plot(q_range[19:27], line1[19:27], lw=2, color='k')
+plt.plot(q_range[28:36], line3[28:36], lw=2, color='k')
+plt.plot(q_range[38:48], line4[38:48], lw=2, color='k')
+
+# plt.text(0.025, 7e-3, r'$\nu = \dfrac{1}{4}$', fontsize=13)
+plt.text(0.05, 0.8e-2, r'$\nu = \dfrac{7}{16}$', fontsize=13)
+plt.text(0.16, 0.8e-3, r'$\nu = \dfrac{1}{2}$', fontsize=13)
+plt.text(0.7, 1.5e-4, r'$\nu = 1$', fontsize=13)
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
+plt.ylabel("F(q)", fontsize=15)
+plt.ylim(1e-4, 10)
+plt.xlim(0.8e-2, 1e2)
+# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_AL_full_5.png', dpi=600, bbox_inches='tight')
+plt.show()
+
+mw_Pq_AL_pn = []
+mw_Pq_AL_pn_err = []
+mwx_AL_pn = []
+shiftN = 15
+
+for j in range(len(un_AL_nUG_calyx)):
+    mw_Pq_AL_pn_temp = []
+    mw_Pq_AL_pn_err_temp = []
+    mwx_AL_pn_temp = []
+    
+    idx_temp = np.where(un_AL_tr == un_AL_nUG_calyx[j])[0]
+    
+    Pq_AL_posidx = np.where(Pq_AL_pn[:,idx_temp] > 0)[0]
+    
+    AL_q_idx_new = Pq_AL_posidx[Pq_AL_posidx < AL_q_idx]
+    
+    for i in range(len(AL_q_idx_new) - shiftN):
+        mwx_AL_pn_temp.append(np.average(q_range[AL_q_idx_new][i:i+shiftN]))
+        
+        poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
+                                                    np.log10(q_range[AL_q_idx_new][i:i+shiftN]), 
+                                                    np.log10(Pq_AL_pn[AL_q_idx_new,idx_temp][i:i+shiftN]), 
+                                                    p0=[1., 0.], 
+                                                    maxfev=100000)
+        mw_Pq_AL_pn_temp.append(poptmxc[0])
+        mw_Pq_AL_pn_err_temp.append(np.sqrt(np.diag(pcovmxc))[0])
+    
+    mw_Pq_AL_pn.append(mw_Pq_AL_pn_temp)
+    mw_Pq_AL_pn_err.append(mw_Pq_AL_pn_err_temp)
+    mwx_AL_pn.append(mwx_AL_pn_temp)
+
+
+fig = plt.figure(figsize=(6,4.5))
+
+for i in range(len(mw_Pq_AL_pn)):
+    plt.plot(mwx_AL_pn[i], -1/np.array(mw_Pq_AL_pn[i]), color='tab:blue', lw=2, alpha=0.5)
+
+plt.plot(mwx_AL_pn[1], -1/tolerant_mean(mw_Pq_AL_pn).data, color='k', lw=2)
+
+plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
+plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1/2, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1, 0.01, 100, ls='dashed', color='k')
+plt.hlines(3/5, 0.01, 100, ls='dashed', color='k')
+plt.text(10.3, 1/4-0.03, 'Ideal', fontsize=14)
+plt.text(10.3, 7/16-0.04, '$\Theta$ Solvent', fontsize=14)
+plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
+plt.text(10.3, 1-0.03,'Linear', fontsize=14)
+plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
+
+plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue')
+
+# plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+
+plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
+
+
+plt.xscale('log')
+# plt.yscale('log')
+plt.ylim(0.1, 1.7)
+plt.xlim(0.01, 10)
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
+plt.xticks(fontsize=14)
+plt.ylabel(r"$\nu$", fontsize=17)
+plt.yticks(fontsize=14)
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_mv_6.pdf', dpi=300, bbox_inches='tight')
+plt.show()
 
 
 #%% form factor per neurite plotting
