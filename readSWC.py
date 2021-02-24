@@ -9050,7 +9050,7 @@ plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
 plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue')
 
-plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:red')
+# plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:red')
 
 plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 
@@ -9085,12 +9085,13 @@ NUval = np.empty(len(Dval))
 for i in range(len(Dval)):
     glo_idx_temp = glo_list.index(updatedxlabel[i])
     idx_temp = np.argmin(np.abs(mwx_AL_glo[glo_idx_temp] - glo_q_ref[i]))
-    NUval[i] = (-1/np.array(mw_Pq_AL_glo[glo_idx_temp])[idx_temp])
-
+    NUval[i] = -1/np.array(mw_Pq_AL_glo[glo_idx_temp])[idx_temp]
 
 pher = ['DL3', 'VA1d', 'DA1', 'DC3']
-attr = ['VM2', 'VM7d', 'VM7v', 'DL3', 'VA1d', 'DA1']
-aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3', 'DC3']
+attr = ['VM4', 'VM5d', 'VM1', 'DA3', 'VA3', 'VA1v', 'VM2', 'VM7v', 'VM7d', 'DL3', 'VA1d', 'DA1']
+        #'VM2', 'VM7d', 'VM7v', 'DL3', 'VA1d', 'DA1'
+aver = ['DM5', 'DL1', 'V', 'VL2p', 'DM2', 'DC2', 'DA2', 'DM6', 'VA5', 'VA7m', 'VM3', 'DL3']
+        #'DA2', 'DM6', 'VA5', 'VA7m', 'VM3', 'DC3'
 
 idxattr = []
 for i in range(len(attr)):
@@ -9104,9 +9105,24 @@ fig = plt.figure(figsize=(6,4.5))
 plt.scatter(Dval, NUval)
 plt.scatter(Dval[idxattr], NUval[idxattr], color='tab:green')
 plt.scatter(Dval[idxaver], NUval[idxaver], color='tab:red')
+plt.ylim(0.0, 1)
+plt.xlim(0.0, 1.5)
 plt.xlabel("Intra/Inter Distance Ratio", fontsize=17)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.show()
+
+#%% nu vs vol
+
+fig = plt.figure(figsize=(6,4.5))
+plt.scatter(glo_vol_ref, NUval)
+plt.scatter(glo_vol_ref[idxattr], NUval[idxattr], color='tab:green')
+plt.scatter(glo_vol_ref[idxaver], NUval[idxaver], color='tab:red')
+# plt.ylim(0.0, 1)
+# plt.xlim(0.0, 1.5)
+plt.xlabel("Intra/Inter Distance Ratio", fontsize=17)
+plt.ylabel(r"$\nu$", fontsize=17)
+plt.show()
+
 
 #%% form factor per neuron plotting
 
@@ -9441,6 +9457,9 @@ plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
 # plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_mv_6.pdf', dpi=300, bbox_inches='tight')
 plt.show()
+
+#%% neuron projection within neuropil or two neuropils
+
 
 
 #%% form factor per neurite plotting
