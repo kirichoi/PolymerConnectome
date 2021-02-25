@@ -9485,19 +9485,27 @@ un_calyx_MG = np.setdiff1d(un_calyx_nUG, un_calyx_nP)
 un_LH_MG = np.setdiff1d(un_LH_nUG, un_LH_nP)
 un_AL_MG = np.setdiff1d(un_AL_nUG, un_AL_nP)
 
-
+un_calyx_nUG_right_hem = [0, 14, 16, 73]
+un_calyx_nUG_SG = [1, 2, 3, 7, 9, 10, 17, 40, 45, 48, 49, 58, 61, 65, 88, 89, 100, 154, 157, 160]
+un_calyx_nUG_LH = [4, 47, 103, 143]
+un_calyx_nUG_AL = [26, 135]
+un_calyx_nUG_MG = [70, 71, 93, 94, 97, 114, 115, 138, 139, 149]
 
 un_AL_nUG_right_hem = [0, 14, 16, 73]
 un_AL_nUG_calyx = [26, 135]
-un_AL_nUG_LH = [93, 94, 136, 149]
-un_AL_nUG_MG = [70, 71, 97, 114, 115, 138, 139]
+un_AL_nUG_LH = [136]
+un_AL_nUG_MG = [70, 71, 93, 94, 97, 114, 115, 138, 139, 149]
 
-
+un_LH_nUG_right_hem = [0, 14, 16, 73]
+un_LH_nUG_SG = [42]
+un_LH_nUG_calyx = [4, 47, 103, 143]
+un_LH_nUG_AL = [136]
+un_LH_nUG_MG = [70, 71, 93, 94, 97, 114, 115, 138, 139, 149]
 
 
 fig = plt.figure(figsize=(8,6))
-for i in range(len(un_AL_nUG_calyx)):
-    idx_temp = np.where(un_AL_tr == un_AL_nUG_calyx[i])[0]
+for i in range(len(un_AL_nUG_MG)):
+    idx_temp = np.where(un_AL_tr == un_AL_nUG_MG[i])[0]
     plt.plot(q_range[:AL_q_idx], Pq_AL_pn[:AL_q_idx,idx_temp], color='tab:blue', alpha=0.5)
 
 # plt.plot(q_range[:AL_q_idx], np.average(Pq_AL_pn[:AL_q_idx],axis=1), color='k', lw=2)
@@ -9537,12 +9545,12 @@ mw_Pq_AL_pn_err = []
 mwx_AL_pn = []
 shiftN = 15
 
-for j in range(len(un_AL_nUG_calyx)):
+for j in range(len(un_AL_nUG_MG)):
     mw_Pq_AL_pn_temp = []
     mw_Pq_AL_pn_err_temp = []
     mwx_AL_pn_temp = []
     
-    idx_temp = np.where(un_AL_tr == un_AL_nUG_calyx[j])[0]
+    idx_temp = np.where(un_AL_tr == un_AL_nUG_MG[j])[0]
     
     Pq_AL_posidx = np.where(Pq_AL_pn[:,idx_temp] > 0)[0]
     
@@ -9567,9 +9575,9 @@ for j in range(len(un_AL_nUG_calyx)):
 fig = plt.figure(figsize=(6,4.5))
 
 for i in range(len(mw_Pq_AL_pn)):
-    plt.plot(mwx_AL_pn[i], -1/np.array(mw_Pq_AL_pn[i]), color='tab:blue', lw=2, alpha=0.5)
+    plt.plot(mwx_AL_pn[i], -1/np.array(mw_Pq_AL_pn[i]), color='tab:orange', lw=2, alpha=0.5)
 
-plt.plot(mwx_AL_pn[1], -1/tolerant_mean(mw_Pq_AL_pn).data, color='k', lw=2)
+plt.plot(mwx_AL_pn[0], -1/tolerant_mean(mw_Pq_AL_pn).data, color='k', lw=2)
 
 plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
 plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
@@ -9582,11 +9590,11 @@ plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
 plt.text(10.3, 1-0.03,'Linear', fontsize=14)
 plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
-plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue')
+plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:orange')
 
 # plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
 
-plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
+plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:orange', ls='--')
 
 
 plt.xscale('log')
@@ -9599,7 +9607,6 @@ plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
 # plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_mv_6.pdf', dpi=300, bbox_inches='tight')
 plt.show()
-
 
 #%% form factor per neurite plotting
 
