@@ -9119,7 +9119,7 @@ plt.scatter(glo_vol_ref[idxattr], NUval[idxattr], color='tab:green')
 plt.scatter(glo_vol_ref[idxaver], NUval[idxaver], color='tab:red')
 # plt.ylim(0.0, 1)
 # plt.xlim(0.0, 1.5)
-plt.xlabel("Intra/Inter Distance Ratio", fontsize=17)
+plt.xlabel("Volume", fontsize=17)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.show()
 
@@ -9504,17 +9504,17 @@ un_LH_nUG_MG = [70, 71, 93, 94, 97, 114, 115, 138, 139, 149]
 
 
 fig = plt.figure(figsize=(8,6))
-for i in range(len(un_AL_nUG_MG)):
-    idx_temp = np.where(un_AL_tr == un_AL_nUG_MG[i])[0]
-    plt.plot(q_range[:AL_q_idx], Pq_AL_pn[:AL_q_idx,idx_temp], color='tab:blue', alpha=0.5)
+for i in range(len(un_calyx_nUG_MG)):
+    idx_temp = np.where(un_calyx_tr == un_calyx_nUG_MG[i])[0]
+    plt.plot(q_range[:calyx_q_idx], Pq_calyx_pn[:calyx_q_idx,idx_temp], color='tab:orange', alpha=0.5)
 
-# plt.plot(q_range[:AL_q_idx], np.average(Pq_AL_pn[:AL_q_idx],axis=1), color='k', lw=2)
+# plt.plot(q_range[:calyx_q_idx], np.average(Pq_calyx_pn[:calyx_q_idx],axis=1), color='k', lw=2)
 
-plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue')
+plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange')
 
-# plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+# plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
 
-plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
+plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 
 line1 = 1/7500*np.power(q_range, -16/7)
 # line2 = 1/1000000*np.power(q_range, -4/1)
@@ -9537,47 +9537,47 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-4, 10)
 plt.xlim(0.8e-2, 1e2)
-# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_AL_full_5.png', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_calyx_full_5.png', dpi=600, bbox_inches='tight')
 plt.show()
 
-mw_Pq_AL_pn = []
-mw_Pq_AL_pn_err = []
-mwx_AL_pn = []
+mw_Pq_calyx_pn = []
+mw_Pq_calyx_pn_err = []
+mwx_calyx_pn = []
 shiftN = 15
 
-for j in range(len(un_AL_nUG_MG)):
-    mw_Pq_AL_pn_temp = []
-    mw_Pq_AL_pn_err_temp = []
-    mwx_AL_pn_temp = []
+for j in range(len(un_calyx_nUG_MG)):
+    mw_Pq_calyx_pn_temp = []
+    mw_Pq_calyx_pn_err_temp = []
+    mwx_calyx_pn_temp = []
     
-    idx_temp = np.where(un_AL_tr == un_AL_nUG_MG[j])[0]
+    idx_temp = np.where(un_calyx_tr == un_calyx_nUG_MG[j])[0]
     
-    Pq_AL_posidx = np.where(Pq_AL_pn[:,idx_temp] > 0)[0]
+    Pq_calyx_posidx = np.where(Pq_calyx_pn[:,idx_temp] > 0)[0]
     
-    AL_q_idx_new = Pq_AL_posidx[Pq_AL_posidx < AL_q_idx]
+    calyx_q_idx_new = Pq_calyx_posidx[Pq_calyx_posidx < calyx_q_idx]
     
-    for i in range(len(AL_q_idx_new) - shiftN):
-        mwx_AL_pn_temp.append(np.average(q_range[AL_q_idx_new][i:i+shiftN]))
+    for i in range(len(calyx_q_idx_new) - shiftN):
+        mwx_calyx_pn_temp.append(np.average(q_range[calyx_q_idx_new][i:i+shiftN]))
         
         poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                    np.log10(q_range[AL_q_idx_new][i:i+shiftN]), 
-                                                    np.log10(Pq_AL_pn[AL_q_idx_new,idx_temp][i:i+shiftN]), 
+                                                    np.log10(q_range[calyx_q_idx_new][i:i+shiftN]), 
+                                                    np.log10(Pq_calyx_pn[calyx_q_idx_new,idx_temp][i:i+shiftN]), 
                                                     p0=[1., 0.], 
                                                     maxfev=100000)
-        mw_Pq_AL_pn_temp.append(poptmxc[0])
-        mw_Pq_AL_pn_err_temp.append(np.sqrt(np.diag(pcovmxc))[0])
+        mw_Pq_calyx_pn_temp.append(poptmxc[0])
+        mw_Pq_calyx_pn_err_temp.append(np.sqrt(np.diag(pcovmxc))[0])
     
-    mw_Pq_AL_pn.append(mw_Pq_AL_pn_temp)
-    mw_Pq_AL_pn_err.append(mw_Pq_AL_pn_err_temp)
-    mwx_AL_pn.append(mwx_AL_pn_temp)
+    mw_Pq_calyx_pn.append(mw_Pq_calyx_pn_temp)
+    mw_Pq_calyx_pn_err.append(mw_Pq_calyx_pn_err_temp)
+    mwx_calyx_pn.append(mwx_calyx_pn_temp)
 
 
 fig = plt.figure(figsize=(6,4.5))
 
-for i in range(len(mw_Pq_AL_pn)):
-    plt.plot(mwx_AL_pn[i], -1/np.array(mw_Pq_AL_pn[i]), color='tab:orange', lw=2, alpha=0.5)
+for i in range(len(mw_Pq_calyx_pn)):
+    plt.plot(mwx_calyx_pn[i], -1/np.array(mw_Pq_calyx_pn[i]), color='tab:orange', lw=2, alpha=0.5)
 
-plt.plot(mwx_AL_pn[0], -1/tolerant_mean(mw_Pq_AL_pn).data, color='k', lw=2)
+plt.plot(mwx_calyx_pn[2], -1/tolerant_mean(mw_Pq_calyx_pn).data, color='k', lw=2)
 
 plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
 plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
@@ -9590,11 +9590,11 @@ plt.text(10.3, 1/2-0.02, 'Random', fontsize=14)
 plt.text(10.3, 1-0.03,'Linear', fontsize=14)
 plt.text(10.3, 3/5-0.03,'SAW', fontsize=14)
 
-plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:orange')
+plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange')
 
-# plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+# plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
 
-plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:orange', ls='--')
+plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 
 
 plt.xscale('log')
@@ -9605,7 +9605,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_mv_6.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_calyx_mv_6.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 #%% form factor per neurite plotting
