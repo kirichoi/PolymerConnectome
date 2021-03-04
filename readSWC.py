@@ -9104,12 +9104,13 @@ for i in range(len(aver)):
 
 fig = plt.figure(figsize=(6,4.5))
 plt.scatter(Dval, NUval)
+# plt.scatter(Dval, glo_vol_ref)
 plt.scatter(Dval[idxattr], NUval[idxattr], color='tab:green')
 plt.scatter(Dval[idxaver], NUval[idxaver], color='tab:red')
-plt.ylim(0.0, 1)
-plt.xlim(0.0, 1.5)
+# plt.ylim(0.0, 1)
+# plt.xlim(0.0, 1.5)
 plt.xlabel("Intra/Inter Distance Ratio", fontsize=17)
-plt.ylabel(r"$\nu$", fontsize=17)
+# plt.ylabel(r"Volume ($\mu m^{3}$)", fontsize=17)
 plt.show()
 
 #%% nu vs vol
@@ -9885,40 +9886,7 @@ plt.yticks(fontsize=14)
 # plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_neurite_mv_6.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
-#%% neurite difference plot
-
-AL_rgy_arg = np.argmin(np.abs(mwx_AL_pn[0] - 1/np.average(rGy_AL_short_flat)))
-LH_rgy_arg = np.argmin(np.abs(mwx_LH_pn[1] - 1/np.average(rGy_LH_short_flat)))
-calyx_rgy_arg = np.argmin(np.abs(mwx_calyx_pn[0] - 1/np.average(rGy_calyx_short_flat)))
-
-AL_data = -1/tolerant_mean(mw_Pq_AL_pnn).data
-LH_data = -1/tolerant_mean(mw_Pq_LH_pnn).data
-calyx_data = -1/tolerant_mean(mw_Pq_calyx_pnn).data
-
-AL_diff_n = len(AL_data) - AL_rgy_arg
-LH_diff_n = len(LH_data) - LH_rgy_arg
-calyx_diff_n = len(calyx_data) - calyx_rgy_arg
-
-
-fig = plt.figure(figsize=(6,4.5))
-
-# plt.plot(calyx_data[calyx_rgy_arg:calyx_rgy_arg+min(calyx_diff_n,AL_diff_n)] - AL_data[AL_rgy_arg:AL_rgy_arg+min(calyx_diff_n,AL_diff_n)])
-# plt.plot(calyx_data[calyx_rgy_arg:calyx_rgy_arg+min(calyx_diff_n,LH_diff_n)] - LH_data[LH_rgy_arg:LH_rgy_arg+min(calyx_diff_n,LH_diff_n)])
-# plt.plot(calyx_data[LH_rgy_arg:LH_rgy_arg+min(LH_diff_n,AL_diff_n)] - AL_data[AL_rgy_arg:AL_rgy_arg+min(LH_diff_n,AL_diff_n)])
-
-plt.plot(mwx_AL_pn[0][:-1], np.diff(AL_data))
-plt.plot(mwx_LH_pn[1][:-1], np.diff(LH_data))
-plt.plot(mwx_calyx_pn[0][:-1], np.diff(calyx_data))
-
-plt.xscale('log')
-# plt.ylim(0.1, 1.7)
-# plt.xlim(0.01, 10)
-plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
-plt.xticks(fontsize=14)
-plt.ylabel(r"$\nu$", fontsize=17)
-plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_neurite_mv_2.pdf', dpi=300, bbox_inches='tight')
-plt.show()
+#%% neurite distance statistics
 
 
 #%% neurite morphology SAW (50) vs theta (21)
@@ -10040,8 +10008,28 @@ ax.set_zlim(181.5, 185.5)
 # plt.savefig(Parameter.outputdir + '/neurite_50_calyx.png', dpi=600, bbox_inches='tight', transparent=True)
 plt.show()
 
+#%% Neurite morphology AL
 
+ALdist_short_ind = []
+for i in range(len(ALdist_short)):
+    for j in range(len(ALdist_short[i])):
+        ALdist_short_ind.append(ALdist_short[i][j])
 
+fig, ax = plt.subplots(figsize=(8,8))
+ax = plt.axes(projection='3d')
+ax.set_box_aspect((1,1,1))
+ax.axis('off')
+
+for i in range(len(ALdist_short_ind[4])):
+    listOfPoints = ALdist_short_ind[4][i]
+    for f in range(len(listOfPoints)-1):
+        morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+        plt.plot(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:purple', lw=2)
+ax.set_xlim(515, 520)
+ax.set_ylim(330, 325)
+ax.set_zlim(71, 76)
+# plt.savefig(Parameter.outputdir + '/neurite_21_AL.png', dpi=600, bbox_inches='tight', transparent=True)
+plt.show()
 
 #%% 16 moving average (FIGURE FORM FACTOR 16)186573
 # 35 - 24726
