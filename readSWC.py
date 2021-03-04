@@ -9104,13 +9104,12 @@ for i in range(len(aver)):
 
 fig = plt.figure(figsize=(6,4.5))
 plt.scatter(Dval, NUval)
-# plt.scatter(Dval, glo_vol_ref)
 plt.scatter(Dval[idxattr], NUval[idxattr], color='tab:green')
 plt.scatter(Dval[idxaver], NUval[idxaver], color='tab:red')
 # plt.ylim(0.0, 1)
 # plt.xlim(0.0, 1.5)
 plt.xlabel("Intra/Inter Distance Ratio", fontsize=17)
-# plt.ylabel(r"Volume ($\mu m^{3}$)", fontsize=17)
+plt.ylabel(r"$\nu$", fontsize=17)
 plt.show()
 
 #%% nu vs vol
@@ -9121,7 +9120,7 @@ plt.scatter(glo_vol_ref[idxattr], NUval[idxattr], color='tab:green')
 plt.scatter(glo_vol_ref[idxaver], NUval[idxaver], color='tab:red')
 # plt.ylim(0.0, 1)
 # plt.xlim(0.0, 1.5)
-plt.xlabel("Volume", fontsize=17)
+plt.xlabel("Volume ($\mu m^{3}$)", fontsize=17)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.show()
 
@@ -9887,6 +9886,63 @@ plt.yticks(fontsize=14)
 plt.show()
 
 #%% neurite distance statistics
+
+neurite_CM_AL = []
+
+for i in range(len(ALdist_short)):
+    neurite_CM_temp = []
+    for j in range(len(ALdist_short[i])):
+        temp = [item for sublist in ALdist_short[i][j] for item in sublist]
+        neurite_CM_temp.append(np.average(temp, axis=0))
+    neurite_CM_AL.append(neurite_CM_temp)
+
+neurite_CM_AL_dist = []
+
+for i in range(len(neurite_CM_AL)):
+    if len(neurite_CM_AL[i]) > 0:
+        disttemp = scipy.spatial.distance.cdist(neurite_CM_AL[i], neurite_CM_AL[i])
+        neurite_CM_AL_dist.append(disttemp[np.triu_indices_from(disttemp, k=1)])
+    else:
+        neurite_CM_AL_dist.append([])
+
+
+neurite_CM_LH = []
+
+for i in range(len(LHdist_short)):
+    neurite_CM_temp = []
+    for j in range(len(LHdist_short[i])):
+        temp = [item for sublist in LHdist_short[i][j] for item in sublist]
+        neurite_CM_temp.append(np.average(temp, axis=0))
+    neurite_CM_LH.append(neurite_CM_temp)
+
+neurite_CM_LH_dist = []
+
+for i in range(len(neurite_CM_LH)):
+    if len(neurite_CM_LH[i]) > 0:
+        disttemp = scipy.spatial.distance.cdist(neurite_CM_LH[i], neurite_CM_LH[i])
+        neurite_CM_LH_dist.append(disttemp[np.triu_indices_from(disttemp, k=1)])
+    else:
+        neurite_CM_LH_dist.append([])
+
+neurite_CM_calyx = []
+
+for i in range(len(calyxdist_short)):
+    neurite_CM_temp = []
+    for j in range(len(calyxdist_short[i])):
+        temp = [item for sublist in calyxdist_short[i][j] for item in sublist]
+        neurite_CM_temp.append(np.average(temp, axis=0))
+    neurite_CM_calyx.append(neurite_CM_temp)
+
+neurite_CM_calyx_dist = []
+
+for i in range(len(neurite_CM_calyx)):
+    if len(neurite_CM_calyx[i]) > 0:
+        disttemp = scipy.spatial.distance.cdist(neurite_CM_calyx[i], neurite_CM_calyx[i])
+        neurite_CM_calyx_dist.append(disttemp[np.triu_indices_from(disttemp, k=1)])
+    else:
+        neurite_CM_calyx_dist.append([])
+
+
 
 
 #%% neurite morphology SAW (50) vs theta (21)
