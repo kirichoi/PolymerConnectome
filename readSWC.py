@@ -9068,8 +9068,8 @@ plt.show()
 
 #%% nu vs D
 
-Dval = np.divide(LHtest_cl[LHtest_idx[np.argsort(LHtest_percent)]], 
-                 LHtest_ncl[LHtest_idx[np.argsort(LHtest_percent)]])
+Dval = np.divide(ALtest_cl[ALtest_idx[np.argsort(LHtest_percent)]], 
+                 ALtest_ncl[ALtest_idx[np.argsort(LHtest_percent)]])
 
 glo_vol_ref = np.array([1269, 2382, 2728/2, 2097, 1509, 2267, 3438, 2728/2, 629,
                         3989, 1588, 2591, 1628, 2362, 2241, 1886, 1415, 5347,
@@ -9124,6 +9124,80 @@ plt.xlabel("Volume ($\mu m^{3}$)", fontsize=17)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.show()
 
+
+#%% vol vs D
+
+fig = plt.figure(figsize=(6,4.5))
+plt.scatter(glo_vol_ref, Dval)
+plt.scatter(glo_vol_ref[idxattr], Dval[idxattr], color='tab:green')
+plt.scatter(glo_vol_ref[idxaver], Dval[idxaver], color='tab:red')
+# plt.ylim(0.0, 1)
+# plt.xlim(0.0, 1.5)
+plt.xlabel("Volume ($\mu m^{3}$)", fontsize=17)
+plt.ylabel(r"Intra/Inter Distance Ratio", fontsize=17)
+plt.show()
+
+
+#%% vol vs Total contour length
+
+glo_AL_length_total = np.empty(len(glo_idx))
+
+for i in range(len(glo_idx)):
+    temp = 0
+    for j in range(len(glo_idx[i])):
+        idx = np.where(un_AL == glo_idx[i][j])[0][0]
+        temp += LengthData.length_AL_total[idx]
+    glo_AL_length_total[i] = temp
+
+fig = plt.figure(figsize=(6,4.5))
+plt.scatter(glo_vol_ref, glo_AL_length_total[ALtest_idx][np.argsort(LHtest_percent)])
+plt.scatter(glo_vol_ref[idxattr], glo_AL_length_total[ALtest_idx][np.argsort(LHtest_percent)][idxattr], color='tab:green')
+plt.scatter(glo_vol_ref[idxaver], glo_AL_length_total[ALtest_idx][np.argsort(LHtest_percent)][idxaver], color='tab:red')
+# plt.ylim(0.0, 1)
+# plt.xlim(0.0, 1.5)
+plt.xlabel("Volume ($\mu m^{3}$)", fontsize=17)
+plt.ylabel(r"Total contour length", fontsize=17)
+plt.show()
+
+
+glo_LH_length_total = np.empty(len(glo_idx))
+
+for i in range(len(glo_idx)):
+    temp = 0
+    for j in range(len(glo_idx[i])):
+        idx = np.where(un_LH == glo_idx[i][j])[0][0]
+        temp += LengthData.length_LH_total[idx]
+    glo_LH_length_total[i] = temp
+
+fig = plt.figure(figsize=(6,4.5))
+plt.scatter(glo_vol_ref, glo_LH_length_total[LHtest_idx][np.argsort(LHtest_percent)])
+plt.scatter(glo_vol_ref[idxattr], glo_LH_length_total[LHtest_idx][np.argsort(LHtest_percent)][idxattr], color='tab:green')
+plt.scatter(glo_vol_ref[idxaver], glo_LH_length_total[LHtest_idx][np.argsort(LHtest_percent)][idxaver], color='tab:red')
+# plt.ylim(0.0, 1)
+# plt.xlim(0.0, 1.5)
+plt.xlabel("Volume ($\mu m^{3}$)", fontsize=17)
+plt.ylabel(r"Total contour length", fontsize=17)
+plt.show()
+
+
+glo_calyx_length_total = np.empty(len(glo_idx))
+
+for i in range(len(glo_idx)):
+    temp = 0
+    for j in range(len(glo_idx[i])):
+        idx = np.where(un_calyx == glo_idx[i][j])[0][0]
+        temp += LengthData.length_calyx_total[idx]
+    glo_calyx_length_total[i] = temp
+
+fig = plt.figure(figsize=(6,4.5))
+plt.scatter(glo_vol_ref, glo_calyx_length_total[calyxtest_idx][np.argsort(LHtest_percent)])
+plt.scatter(glo_vol_ref[idxattr], glo_calyx_length_total[calyxtest_idx][np.argsort(LHtest_percent)][idxattr], color='tab:green')
+plt.scatter(glo_vol_ref[idxaver], glo_calyx_length_total[calyxtest_idx][np.argsort(LHtest_percent)][idxaver], color='tab:red')
+# plt.ylim(0.0, 1)
+# plt.xlim(0.0, 1.5)
+plt.xlabel("Volume ($\mu m^{3}$)", fontsize=17)
+plt.ylabel(r"Total contour length", fontsize=17)
+plt.show()
 
 #%% form factor per neuron plotting
 
