@@ -9972,7 +9972,7 @@ plt.yticks(fontsize=14)
 # plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_neurite_mv_7.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
-#%% neurite distance statistics
+#%% neurite distance statistics per neuropil and per neuron
 
 neurite_CM_AL = []
 
@@ -9983,6 +9983,12 @@ for i in range(len(ALdist_short)):
         neurite_CM_temp.append(np.average(temp, axis=0))
     neurite_CM_AL.append(neurite_CM_temp)
 
+neurite_CM_AL_flat = [item for sublist in neurite_CM_AL for item in sublist]
+
+neurite_CM_AL_flat_dist = scipy.spatial.distance.cdist(neurite_CM_AL_flat, neurite_CM_AL_flat)
+
+neurite_CM_AL_flat_dist = neurite_CM_AL_flat_dist[np.triu_indices_from(neurite_CM_AL_flat_dist, k=1)]
+
 neurite_CM_AL_dist = []
 
 for i in range(len(neurite_CM_AL)):
@@ -9991,6 +9997,8 @@ for i in range(len(neurite_CM_AL)):
         neurite_CM_AL_dist.append(disttemp[np.triu_indices_from(disttemp, k=1)])
     else:
         neurite_CM_AL_dist.append([])
+
+neurite_CM_AL_dist_flat = [item for sublist in neurite_CM_AL_dist for item in sublist]
 
 
 neurite_CM_LH = []
@@ -10001,6 +10009,12 @@ for i in range(len(LHdist_short)):
         temp = [item for sublist in LHdist_short[i][j] for item in sublist]
         neurite_CM_temp.append(np.average(temp, axis=0))
     neurite_CM_LH.append(neurite_CM_temp)
+    
+neurite_CM_LH_flat = [item for sublist in neurite_CM_LH for item in sublist]
+
+neurite_CM_LH_flat_dist = scipy.spatial.distance.cdist(neurite_CM_LH_flat, neurite_CM_LH_flat)
+
+neurite_CM_LH_flat_dist = neurite_CM_LH_flat_dist[np.triu_indices_from(neurite_CM_LH_flat_dist, k=1)]
 
 neurite_CM_LH_dist = []
 
@@ -10011,6 +10025,9 @@ for i in range(len(neurite_CM_LH)):
     else:
         neurite_CM_LH_dist.append([])
 
+neurite_CM_LH_dist_flat = [item for sublist in neurite_CM_LH_dist for item in sublist]
+
+
 neurite_CM_calyx = []
 
 for i in range(len(calyxdist_short)):
@@ -10020,6 +10037,12 @@ for i in range(len(calyxdist_short)):
         neurite_CM_temp.append(np.average(temp, axis=0))
     neurite_CM_calyx.append(neurite_CM_temp)
 
+neurite_CM_calyx_flat = [item for sublist in neurite_CM_calyx for item in sublist]
+
+neurite_CM_calyx_flat_dist = scipy.spatial.distance.cdist(neurite_CM_calyx_flat, neurite_CM_calyx_flat)
+
+neurite_CM_calyx_flat_dist = neurite_CM_calyx_flat_dist[np.triu_indices_from(neurite_CM_calyx_flat_dist, k=1)]
+
 neurite_CM_calyx_dist = []
 
 for i in range(len(neurite_CM_calyx)):
@@ -10028,6 +10051,17 @@ for i in range(len(neurite_CM_calyx)):
         neurite_CM_calyx_dist.append(disttemp[np.triu_indices_from(disttemp, k=1)])
     else:
         neurite_CM_calyx_dist.append([])
+
+neurite_CM_calyx_dist_flat = [item for sublist in neurite_CM_calyx_dist for item in sublist]
+
+
+print(np.median(neurite_CM_AL_dist_flat))
+print(np.median(neurite_CM_LH_dist_flat))
+print(np.median(neurite_CM_calyx_dist_flat))
+
+print(np.median(neurite_CM_AL_flat_dist))
+print(np.median(neurite_CM_LH_flat_dist))
+print(np.median(neurite_CM_calyx_flat_dist))
 
 
 
