@@ -8979,7 +8979,7 @@ plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 
 plt.xscale('log')
 # plt.yscale('log')
-plt.ylim(0.1, 1.7)
+plt.ylim(0.1, 1.2)
 plt.xlim(0.01, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
@@ -9014,7 +9014,7 @@ plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 
 plt.xscale('log')
 # plt.yscale('log')
-plt.ylim(0.1, 1.7)
+plt.ylim(0.1, 1.2)
 plt.xlim(0.01, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
@@ -9048,7 +9048,7 @@ plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 
 plt.xscale('log')
 # plt.yscale('log')
-plt.ylim(0.1, 1.7)
+plt.ylim(0.1, 1.2)
 plt.xlim(0.01, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
@@ -9557,7 +9557,7 @@ plt.yticks(fontsize=14)
 plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_mv_8.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
-#%% neuron projection within neuropil or two neuropils
+#%% Neuron projection within neuropil or two neuropils
 
 un_calyx_tr = np.delete(un_calyx, [40, 41], 0)
 un_AL_tr = np.delete(un_AL, 73, 0)
@@ -9702,14 +9702,85 @@ plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 
 plt.xscale('log')
 # plt.yscale('log')
-plt.ylim(0.1, 1.7)
+plt.ylim(0.1, 1.2)
 plt.xlim(0.01, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_mv_6.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_MG_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
+
+
+
+mw_Pq_LH_pn = []
+mw_Pq_LH_pn_err = []
+mwx_LH_pn = []
+shiftN = 15
+
+for j in range(len(un_LH_nUG_MG)):
+    mw_Pq_LH_pn_temp = []
+    mw_Pq_LH_pn_err_temp = []
+    mwx_LH_pn_temp = []
+    
+    idx_temp = np.where(un_LH_tr == un_LH_nUG_MG[j])[0]
+    
+    Pq_LH_posidx = np.where(Pq_LH_pn[:,idx_temp] > 0)[0]
+    
+    LH_q_idx_new = Pq_LH_posidx[Pq_LH_posidx < LH_q_idx]
+    
+    for i in range(len(LH_q_idx_new) - shiftN):
+        mwx_LH_pn_temp.append(np.average(q_range[LH_q_idx_new][i:i+shiftN]))
+        
+        poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
+                                                    np.log10(q_range[LH_q_idx_new][i:i+shiftN]), 
+                                                    np.log10(Pq_LH_pn[LH_q_idx_new,idx_temp][i:i+shiftN]), 
+                                                    p0=[1., 0.], 
+                                                    maxfev=100000)
+        mw_Pq_LH_pn_temp.append(poptmxc[0])
+        mw_Pq_LH_pn_err_temp.append(np.sqrt(np.diag(pcovmxc))[0])
+    
+    mw_Pq_LH_pn.append(mw_Pq_LH_pn_temp)
+    mw_Pq_LH_pn_err.append(mw_Pq_LH_pn_err_temp)
+    mwx_LH_pn.append(mwx_LH_pn_temp)
+
+
+fig = plt.figure(figsize=(6,4.5))
+
+for i in range(len(mw_Pq_LH_pn)):
+    plt.plot(mwx_LH_pn[i], -1/np.array(mw_Pq_LH_pn[i]), color='tab:green', lw=2, alpha=0.5)
+
+xmax = max(mwx_LH_pn, key = len)
+
+plt.plot(xmax, -1/tolerant_mean(mw_Pq_LH_pn).data, color='k', lw=2)
+
+plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
+plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
+plt.hlines(1, 0.01, 100, ls='dashed', color='k')
+plt.hlines(0.388, 0.01, 100, ls='dashed', color='k')
+plt.text(10.3, 1/4-0.02, 'Ideal', fontsize=14)
+plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
+plt.text(10.3, 1-0.02,'Linear', fontsize=14)
+plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
+
+plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green')
+
+# plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+
+plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
+
+
+plt.xscale('log')
+# plt.yscale('log')
+plt.ylim(0.1, 1.2)
+plt.xlim(0.01, 10)
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
+plt.xticks(fontsize=14)
+plt.ylabel(r"$\nu$", fontsize=17)
+plt.yticks(fontsize=14)
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_LH_MG_mv_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
 
 #%% form factor per neurite plotting
 
@@ -10460,7 +10531,7 @@ plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 
 plt.xscale('log')
 # plt.yscale('log')
-plt.ylim(0.1, 1.7)
+plt.ylim(0.1, 1.2)
 plt.xlim(0.01, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel(r"$\nu$", fontsize=15)
@@ -10490,7 +10561,7 @@ plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 
 plt.xscale('log')
 # plt.yscale('log')
-plt.ylim(0.1, 1.7)
+plt.ylim(0.1, 1.2)
 plt.xlim(0.01, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel(r"$\nu$", fontsize=15)
@@ -10520,7 +10591,7 @@ plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 
 plt.xscale('log')
 # plt.yscale('log')
-plt.ylim(0.1, 1.7)
+plt.ylim(0.1, 1.2)
 plt.xlim(0.01, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel(r"$\nu$", fontsize=15)
@@ -10554,7 +10625,7 @@ plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 
 plt.xscale('log')
 # plt.yscale('log')
-plt.ylim(0.1, 1.7)
+plt.ylim(0.1, 1.2)
 plt.xlim(0.01, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel(r"$\nu$", fontsize=15)
@@ -10584,7 +10655,7 @@ plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 
 plt.xscale('log')
 # plt.yscale('log')
-plt.ylim(0.1, 1.7)
+plt.ylim(0.1, 1.2)
 plt.xlim(0.01, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel(r"$\nu$", fontsize=15)
@@ -10614,7 +10685,7 @@ plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 
 plt.xscale('log')
 # plt.yscale('log')
-plt.ylim(0.1, 1.7)
+plt.ylim(0.1, 1.2)
 plt.xlim(0.01, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel(r"$\nu$", fontsize=15)
@@ -10644,7 +10715,7 @@ for i in range(len(LH_glo_col_idx)):
     plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
     
     plt.xscale('log')
-    plt.ylim(0.1, 1.7)
+    plt.ylim(0.1, 1.2)
     plt.xlim(0.01, 10)
     plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
     plt.xticks(fontsize=14)
@@ -10913,7 +10984,7 @@ for i in range(len(np.argsort(glo_len)[-6:])):
     plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
     
     plt.xscale('log')
-    plt.ylim(0.1, 1.7)
+    plt.ylim(0.1, 1.2)
     plt.xlim(0.01, 10)
     plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
     plt.xticks(fontsize=14)
