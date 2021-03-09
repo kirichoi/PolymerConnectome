@@ -9566,10 +9566,10 @@ un_LH_tr = un_LH
 set1 = set(un_calyx_tr)
 set2 = set(un_LH)
 set3 = set(un_AL_tr)
-  
+
 set12 = set1.intersection(set2)
 set123 = set12.intersection(set3)
-  
+
 set123 = list(set123)
 
 un_calyx_nP = np.setdiff1d(un_calyx_tr, set123)
@@ -10264,20 +10264,137 @@ for i in range(len(ALdist_short)):
         ALdist_short_ind.append(ALdist_short[i][j])
 
 fig, ax = plt.subplots(figsize=(8,8))
+# ax = plt.axes(projection='3d')
+# ax.set_box_aspect((1,1,1))
+ax.axis('off')
+
+for i in range(len(ALdist_short_ind[3])):
+    listOfPoints = ALdist_short_ind[3][i]
+    for f in range(len(listOfPoints)-1):
+        morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+        plt.plot(morph_line[:,0], morph_line[:,1], color='tab:blue', lw=2)
+# ax.set_xlim(515, 520)
+# ax.set_ylim(330, 325)
+# ax.set_zlim(71, 76)
+# plt.savefig(Parameter.outputdir + '/neurite_21_AL.png', dpi=600, bbox_inches='tight', transparent=True)
+plt.show()
+
+#%% Neurite morphology LH
+
+LHdist_short_ind = []
+for i in range(len(LHdist_short)):
+    for j in range(len(LHdist_short[i])):
+        LHdist_short_ind.append(LHdist_short[i][j])
+
+fig, ax = plt.subplots(figsize=(8,8))
+# ax = plt.axes(projection='3d')
+# ax.set_box_aspect((1,1,1))
+ax.axis('off')
+
+for i in range(len(LHdist_short_ind[7])):
+    listOfPoints = LHdist_short_ind[7][i]
+    for f in range(len(listOfPoints)-1):
+        morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+        plt.plot(morph_line[:,0], morph_line[:,2], color='tab:green', lw=2)
+# ax.set_xlim(439, 444)
+# ax.set_ylim(227, 232)
+# ax.set_zlim(151, 156)
+# plt.savefig(Parameter.outputdir + '/neurite_21_LH.png', dpi=600, bbox_inches='tight', transparent=True)
+plt.show()
+
+#%% Neurite morphology comparison
+
+idx = 6
+
+fig = plt.figure(figsize=(8, 8))
 ax = plt.axes(projection='3d')
 ax.set_box_aspect((1,1,1))
 ax.axis('off')
 
-for i in range(len(ALdist_short_ind[4])):
-    listOfPoints = ALdist_short_ind[4][i]
+for i in range(len(MorphData.calyxdist_per_n[idx])):
+    listOfPoints = MorphData.calyxdist_per_n[idx][i]
     for f in range(len(listOfPoints)-1):
         morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
-        plt.plot(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:purple', lw=2)
-ax.set_xlim(515, 520)
-ax.set_ylim(330, 325)
-ax.set_zlim(71, 76)
-# plt.savefig(Parameter.outputdir + '/neurite_21_AL.png', dpi=600, bbox_inches='tight', transparent=True)
+        ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:red')
+# plt.savefig(Parameter.outputdir + '/neurite_comp_calyx_' + str(idx) + '_1.png', dpi=600, bbox_inches='tight', transparent=True)
 plt.show()
+
+xran = ax.get_xlim()
+yran = ax.get_ylim()
+zran = ax.get_zlim()
+
+
+calyxdist_short_ind = []
+for i in range(len(calyxdist_short[np.where(un_calyx == idx)[0][0]])):
+    for j in range(len(calyxdist_short[np.where(un_calyx == idx)[0][0]][i])):
+        calyxdist_short_ind.append(calyxdist_short[np.where(un_calyx == idx)[0][0]][i][j])
+
+fig, ax = plt.subplots(figsize=(8,8))
+ax = plt.axes(projection='3d')
+ax.set_box_aspect((1,1,1))
+ax.axis('off')
+ax.set_xlim(xran)
+ax.set_ylim(yran)
+ax.set_zlim(zran)
+
+for i in range(len(calyxdist_short_ind)):
+    listOfPoints = calyxdist_short_ind[i]
+    for f in range(len(listOfPoints)-1):
+        morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+        ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:red')
+# ax.set_xlim(515, 520)
+# ax.set_ylim(330, 325)
+# ax.set_zlim(71, 76)
+# plt.savefig(Parameter.outputdir + '/neurite_comp_calyx_' + str(idx) + '_2.png', dpi=600, bbox_inches='tight', transparent=True)
+plt.show()
+
+#%%
+
+idx = 6
+
+fig = plt.figure(figsize=(8, 8))
+ax = plt.axes(projection='3d')
+ax.set_box_aspect((1,1,1))
+ax.axis('off')
+
+for i in range(len(MorphData.LHdist_per_n[idx])):
+    listOfPoints = MorphData.LHdist_per_n[idx][i]
+    for f in range(len(listOfPoints)-1):
+        morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+        ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:red')
+# plt.savefig(Parameter.outputdir + '/neurite_comp_LH_' + str(idx) + '_1.png', dpi=600, bbox_inches='tight', transparent=True)
+plt.show()
+
+xran = ax.get_xlim()
+yran = ax.get_ylim()
+zran = ax.get_zlim()
+
+
+LHdist_short_ind = []
+for i in range(len(LHdist_short[np.where(un_LH == idx)[0][0]])):
+    for j in range(len(LHdist_short[np.where(un_LH == idx)[0][0]][i])):
+        LHdist_short_ind.append(LHdist_short[np.where(un_LH == idx)[0][0]][i][j])
+
+fig, ax = plt.subplots(figsize=(8,8))
+ax = plt.axes(projection='3d')
+ax.set_box_aspect((1,1,1))
+ax.axis('off')
+ax.set_xlim(xran)
+ax.set_ylim(yran)
+ax.set_zlim(zran)
+
+for i in range(len(LHdist_short_ind)):
+    listOfPoints = LHdist_short_ind[i]
+    for f in range(len(listOfPoints)-1):
+        morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+        ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:red')
+# ax.set_xlim(515, 520)
+# ax.set_ylim(330, 325)
+# ax.set_zlim(71, 76)
+# plt.savefig(Parameter.outputdir + '/neurite_comp_LH_' + str(idx) + '_2.png', dpi=600, bbox_inches='tight', transparent=True)
+plt.show()
+
+
 
 #%% 16 moving average (FIGURE FORM FACTOR 16)186573
 # 35 - 24726
