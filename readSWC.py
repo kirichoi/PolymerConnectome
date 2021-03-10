@@ -12308,11 +12308,20 @@ l_p = []
 for i in range(len(BranchData.branch_dist)):
     temp = []
     for j in range(len(BranchData.branch_dist[i])):
-        val = scipy.optimize.fsolve(plength, 1, args=(LengthData.length_branch_ee[i][j], LengthData.length_branch[i][j]), full_output=True)
+        val = scipy.optimize.fsolve(plength, 0.1, args=(LengthData.length_branch_ee[i][j], LengthData.length_branch[i][j]), full_output=True)
         if val[2] != 1:
-            temp.append([])
+            temp.append(0)
         else:
-            temp.append(val[0])
+            temp.append(val[0][0])
     l_p.append(temp)
 
+l_p_flat = [item for sublist in l_p for item in sublist]
 
+LengthData.length_branch_ee_flat = [item for sublist in LengthData.length_branch_ee for item in sublist]
+
+fig = plt.figure(figsize=(6, 4))
+plt.scatter(LengthData.length_branch_ee_flat, LengthData.length_branch_flat, marker='.')
+plt.plot(np.arange(150), np.arange(150), color='tab:red')
+plt.xlabel('End-to-end Distance', fontsize=15)
+plt.ylabel('Contour Distance', fontsize=15)
+plt.show()
