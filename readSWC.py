@@ -12291,3 +12291,28 @@ ax.set_zticklabels([])
 plt.show()
 
 
+#%% Persistence length
+
+LengthData.length_branch_ee = []
+
+for i in range(len(BranchData.branch_dist)):
+    temp = []
+    for j in range(len(BranchData.branch_dist[i])):
+        temp.append(np.max(scipy.spatial.distance.cdist(BranchData.branch_dist[i][j], BranchData.branch_dist[i][j])))
+    LengthData.length_branch_ee.append(temp)
+
+def plength(l, R, R_max):
+    return np.square(R) - (2*l*R_max - 2*np.square(l)*(1 - np.exp(-R_max/l)))
+
+l_p = []
+for i in range(len(BranchData.branch_dist)):
+    temp = []
+    for j in range(len(BranchData.branch_dist[i])):
+        val = scipy.optimize.fsolve(plength, 1, args=(LengthData.length_branch_ee[i][j], LengthData.length_branch[i][j]), full_output=True)
+        if val[2] != 1:
+            temp.append([])
+        else:
+            temp.append(val[0])
+    l_p.append(temp)
+
+
