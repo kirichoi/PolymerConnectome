@@ -12302,17 +12302,17 @@ for i in range(len(BranchData.branch_dist)):
     LengthData.length_branch_ee.append(temp)
 
 def plength(l, R, R_max):
-    return np.square(R) - (2*l*R_max - 2*np.square(l)*(1 - np.exp(-R_max/l)))
+    return np.abs(np.square(R) - (2*l*R_max - 2*np.square(l)*(1 - np.exp(-R_max/l))))
 
 l_p = []
 for i in range(len(BranchData.branch_dist)):
     temp = []
     for j in range(len(BranchData.branch_dist[i])):
-        val = scipy.optimize.fsolve(plength, 0.1, args=(LengthData.length_branch_ee[i][j], LengthData.length_branch[i][j]), full_output=True)
-        if val[2] != 1:
-            temp.append(0)
+        res = scipy.optimize.differential_evolution(plength, bounds=[(0, 10000)], args=(LengthData.length_branch_ee[i][j], LengthData.length_branch[i][j]))
+        if res.success:
+            temp.append(res.x[0])
         else:
-            temp.append(val[0][0])
+            temp.append(0)
     l_p.append(temp)
 
 l_p_flat = [item for sublist in l_p for item in sublist]
@@ -12322,6 +12322,32 @@ LengthData.length_branch_ee_flat = [item for sublist in LengthData.length_branch
 fig = plt.figure(figsize=(6, 4))
 plt.scatter(LengthData.length_branch_ee_flat, LengthData.length_branch_flat, marker='.')
 plt.plot(np.arange(150), np.arange(150), color='tab:red')
-plt.xlabel('End-to-end Distance', fontsize=15)
-plt.ylabel('Contour Distance', fontsize=15)
+plt.xlabel('End-to-end Length', fontsize=15)
+plt.ylabel('Contour Length', fontsize=15)
 plt.show()
+
+length_branch_max = []
+length_branch_ee_max = []
+
+for i in range(len(LengthData.length_branch)):
+    length_branch_max.append(np.max(LengthData.length_branch[i]))
+    maxidx = np.argmax(LengthData.length_branch[i])
+    length_branch_ee_max.append(LengthData.length_branch_ee[i][maxidx])
+
+fig = plt.figure(figsize=(6, 4))
+plt.scatter(length_branch_ee_max, length_branch_max, marker='.')
+plt.plot(np.arange(150), np.arange(150), color='tab:red')
+plt.xlabel('End-to-end Length', fontsize=15)
+plt.ylabel('Contour Length', fontsize=15)
+plt.show()
+
+
+
+l_p_max = []
+for i in range(len(length_branch_max)):
+    res = scipy.optimize.differential_evolution(plength, bounds=[(0, 10000)], args=(length_branch_ee_max[i], length_branch_max[i]))
+    if res.success:
+        l_p_max.append(res.x[0])
+    else:
+        l_p_max.append(0)
+
