@@ -12310,7 +12310,7 @@ for i in range(len(BranchData.branch_dist)):
     LengthData.length_branch_ee.append(temp)
 
 def plength(l, R, R_max):
-    return np.abs(np.square(R) - (2*l*R_max - 2*np.square(l)*(1 - np.exp(-R_max/l))))
+    return np.abs(np.mean(np.square(R)) - (2*l*R_max - 2*np.square(l)*(1 - np.exp(-R_max/l))))
 
 l_p = []
 for i in range(len(BranchData.branch_dist)):
@@ -12363,5 +12363,88 @@ l_p_max = np.delete(l_p_max, 41)
 
 #%% Persistence length V2
 
-np.mean(LengthData.length_AL)
+def plength(l, MSR, R_max):
+    return np.abs(MSR - (2*l*R_max - 2*np.square(l)*(1 - np.exp(-R_max/l))))
+
+length_AL_mean = np.mean(LengthData.length_AL_flat)
+length_LH_mean = np.mean(LengthData.length_LH_flat)
+length_calyx_mean = np.mean(LengthData.length_calyx_flat)
+
+AL_longer_idx = np.where(LengthData.length_AL_flat > length_AL_mean)[0]
+LH_longer_idx = np.where(LengthData.length_LH_flat > length_LH_mean)[0]
+calyx_longer_idx = np.where(LengthData.length_calyx_flat > length_calyx_mean)[0]
+
+AL_e2e_sampled = []
+AL_cont_sampled = []
+AL_sampe2eidx_list = []
+LH_e2e_sampled = []
+LH_cont_sampled = []
+LH_sampe2eidx_list = []
+calyx_e2e_sampled = []
+calyx_cont_sampled = []
+calyx_sampe2eidx_list = []
+
+for i in range(len(AL_longer_idx)):
+    AL_e2e_sampled_temp = []
+    consdiff = np.diff(MorphData.ALdist[AL_longer_idx[i]], axis=0)
+    if len(consdiff) > 1:
+        consdist = np.sqrt(np.sum(np.square(consdiff),1))
+        for j in range(len(consdist)-1):
+            maxidx = np.where(np.cumsum(consdist[j:]) > length_AL_mean)[0]
+            if len(maxidx) > 0:
+                AL_e2e_sampled_temp.append((j,maxidx[0]+j+1))
+        
+        sampidx = np.random.choice(len(AL_e2e_sampled_temp))
+        
+        sampe2eidx = AL_e2e_sampled_temp[sampidx]
+        AL_sampe2eidx_list.append(sampe2eidx)
+        
+        e2edist = np.linalg.norm(np.subtract(MorphData.ALdist[AL_longer_idx[i]][sampe2eidx[0]],
+                                             MorphData.ALdist[AL_longer_idx[i]][sampe2eidx[1]]))
+        AL_e2e_sampled.append(e2edist)
+        AL_cont_sampled.append(np.sum(consdist[sampe2eidx[0]:sampe2eidx[1]]))
+
+for i in range(len(LH_longer_idx)):
+    LH_e2e_sampled_temp = []
+    consdiff = np.diff(MorphData.LHdist[LH_longer_idx[i]], axis=0)
+    if len(consdiff) > 1:
+        consdist = np.sqrt(np.sum(np.square(consdiff),1))
+        for j in range(len(consdist)-1):
+            maxidx = np.where(np.cumsum(consdist[j:]) > length_LH_mean)[0]
+            if len(maxidx) > 0:
+                LH_e2e_sampled_temp.append((j,maxidx[0]+j+1))
+        
+        sampidx = np.random.choice(len(LH_e2e_sampled_temp))
+        
+        sampe2eidx = LH_e2e_sampled_temp[sampidx]
+        LH_sampe2eidx_list.append(sampe2eidx)
+        
+        e2edist = np.linalg.norm(np.subtract(MorphData.LHdist[LH_longer_idx[i]][sampe2eidx[0]],
+                                             MorphData.LHdist[LH_longer_idx[i]][sampe2eidx[1]]))
+        LH_e2e_sampled.append(e2edist)
+        LH_cont_sampled.append(np.sum(consdist[sampe2eidx[0]:sampe2eidx[1]]))
+
+for i in range(len(calyx_longer_idx)):
+    calyx_e2e_sampled_temp = []
+    consdiff = np.diff(MorphData.calyxdist[calyx_longer_idx[i]], axis=0)
+    if len(consdiff) > 1:
+        consdist = np.sqrt(np.sum(np.square(consdiff),1))
+        for j in range(len(consdist)-1):
+            maxidx = np.where(np.cumsum(consdist[j:]) > length_calyx_mean)[0]
+            if len(maxidx) > 0:
+                calyx_e2e_sampled_temp.append((j,maxidx[0]+j+1))
+        
+        sampidx = np.random.choice(len(calyx_e2e_sampled_temp))
+        
+        sampe2eidx = calyx_e2e_sampled_temp[sampidx]
+        calyx_sampe2eidx_list.append(sampe2eidx)
+        
+        e2edist = np.linalg.norm(np.subtract(MorphData.calyxdist[calyx_longer_idx[i]][sampe2eidx[0]],
+                                             MorphData.calyxdist[calyx_longer_idx[i]][sampe2eidx[1]]))
+        calyx_e2e_sampled.append(e2edist)
+        calyx_cont_sampled.append(np.sum(consdist[sampe2eidx[0]:sampe2eidx[1]]))
+
+res_AL = scipy.optimize.differential_evolution(plength, bounds=[(0, 100)], args=(np.mean(np.square(AL_e2e_sampled)), np.mean(AL_cont_sampled)))#length_AL_mean))
+res_LH = scipy.optimize.differential_evolution(plength, bounds=[(0, 100)], args=(np.mean(np.square(LH_e2e_sampled)), np.mean(LH_cont_sampled)))#length_LH_mean))
+res_calyx = scipy.optimize.differential_evolution(plength, bounds=[(0, 100)], args=(np.mean(np.square(calyx_e2e_sampled)), np.mean(calyx_cont_sampled)))#length_calyx_mean))
 
