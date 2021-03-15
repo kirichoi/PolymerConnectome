@@ -12366,13 +12366,11 @@ l_p_max = np.delete(l_p_max, 41)
 def plength(l, MSR, R_max):
     return np.abs(MSR - (2*l*R_max - 2*np.square(l)*(1 - np.exp(-R_max/l))))
 
+q_range = np.logspace(-1, 1, 100)[25:90]
+
 length_AL_mean = np.mean(LengthData.length_AL_flat)
 length_LH_mean = np.mean(LengthData.length_LH_flat)
 length_calyx_mean = np.mean(LengthData.length_calyx_flat)
-
-AL_longer_idx = np.where(LengthData.length_AL_flat > length_AL_mean)[0]
-LH_longer_idx = np.where(LengthData.length_LH_flat > length_LH_mean)[0]
-calyx_longer_idx = np.where(LengthData.length_calyx_flat > length_calyx_mean)[0]
 
 AL_e2e_sampled = []
 AL_cont_sampled = []
@@ -12384,67 +12382,142 @@ calyx_e2e_sampled = []
 calyx_cont_sampled = []
 calyx_sampe2eidx_list = []
 
-for i in range(len(AL_longer_idx)):
-    AL_e2e_sampled_temp = []
-    consdiff = np.diff(MorphData.ALdist[AL_longer_idx[i]], axis=0)
-    if len(consdiff) > 1:
-        consdist = np.sqrt(np.sum(np.square(consdiff),1))
-        for j in range(len(consdist)-1):
-            maxidx = np.where(np.cumsum(consdist[j:]) > length_AL_mean)[0]
-            if len(maxidx) > 0:
-                AL_e2e_sampled_temp.append((j,maxidx[0]+j+1))
-        
-        sampidx = np.random.choice(len(AL_e2e_sampled_temp))
-        
-        sampe2eidx = AL_e2e_sampled_temp[sampidx]
-        AL_sampe2eidx_list.append(sampe2eidx)
-        
-        e2edist = np.linalg.norm(np.subtract(MorphData.ALdist[AL_longer_idx[i]][sampe2eidx[0]],
-                                             MorphData.ALdist[AL_longer_idx[i]][sampe2eidx[1]]))
-        AL_e2e_sampled.append(e2edist)
-        AL_cont_sampled.append(np.sum(consdist[sampe2eidx[0]:sampe2eidx[1]]))
+for q in range(len(q_range)):
 
-for i in range(len(LH_longer_idx)):
-    LH_e2e_sampled_temp = []
-    consdiff = np.diff(MorphData.LHdist[LH_longer_idx[i]], axis=0)
-    if len(consdiff) > 1:
-        consdist = np.sqrt(np.sum(np.square(consdiff),1))
-        for j in range(len(consdist)-1):
-            maxidx = np.where(np.cumsum(consdist[j:]) > length_LH_mean)[0]
-            if len(maxidx) > 0:
-                LH_e2e_sampled_temp.append((j,maxidx[0]+j+1))
-        
-        sampidx = np.random.choice(len(LH_e2e_sampled_temp))
-        
-        sampe2eidx = LH_e2e_sampled_temp[sampidx]
-        LH_sampe2eidx_list.append(sampe2eidx)
-        
-        e2edist = np.linalg.norm(np.subtract(MorphData.LHdist[LH_longer_idx[i]][sampe2eidx[0]],
-                                             MorphData.LHdist[LH_longer_idx[i]][sampe2eidx[1]]))
-        LH_e2e_sampled.append(e2edist)
-        LH_cont_sampled.append(np.sum(consdist[sampe2eidx[0]:sampe2eidx[1]]))
+    AL_e2e_sampled_temp2 = []
+    AL_cont_sampled_temp2 = []
+    AL_sampe2eidx_list_temp2 = []
+    LH_e2e_sampled_temp2 = []
+    LH_cont_sampled_temp2 = []
+    LH_sampe2eidx_list_temp2 = []
+    calyx_e2e_sampled_temp2 = []
+    calyx_cont_sampled_temp2 = []
+    calyx_sampe2eidx_list_temp2 = []
 
-for i in range(len(calyx_longer_idx)):
-    calyx_e2e_sampled_temp = []
-    consdiff = np.diff(MorphData.calyxdist[calyx_longer_idx[i]], axis=0)
-    if len(consdiff) > 1:
-        consdist = np.sqrt(np.sum(np.square(consdiff),1))
-        for j in range(len(consdist)-1):
-            maxidx = np.where(np.cumsum(consdist[j:]) > length_calyx_mean)[0]
-            if len(maxidx) > 0:
-                calyx_e2e_sampled_temp.append((j,maxidx[0]+j+1))
-        
-        sampidx = np.random.choice(len(calyx_e2e_sampled_temp))
-        
-        sampe2eidx = calyx_e2e_sampled_temp[sampidx]
-        calyx_sampe2eidx_list.append(sampe2eidx)
-        
-        e2edist = np.linalg.norm(np.subtract(MorphData.calyxdist[calyx_longer_idx[i]][sampe2eidx[0]],
-                                             MorphData.calyxdist[calyx_longer_idx[i]][sampe2eidx[1]]))
-        calyx_e2e_sampled.append(e2edist)
-        calyx_cont_sampled.append(np.sum(consdist[sampe2eidx[0]:sampe2eidx[1]]))
+    AL_longer_idx = np.where(LengthData.length_AL_flat > 2*np.pi/q_range[q])[0]
+    LH_longer_idx = np.where(LengthData.length_LH_flat > 2*np.pi/q_range[q])[0]
+    calyx_longer_idx = np.where(LengthData.length_calyx_flat > 2*np.pi/q_range[q])[0]
+    
+    for i in range(len(AL_longer_idx)):
+        AL_e2e_tuple = []
+        consdiff = np.diff(MorphData.ALdist[AL_longer_idx[i]], axis=0)
+        if len(consdiff) > 1:
+            consdist = np.sqrt(np.sum(np.square(consdiff),1))
+            for j in range(len(consdist)-1):
+                maxidx = np.where(np.cumsum(consdist[j:]) > 2*np.pi/q_range[q])[0]
+                if len(maxidx) > 0:
+                    AL_e2e_tuple.append((j,maxidx[0]+j+1))
+            
+            # sampidx = np.random.choice(len(AL_e2e_sampled_temp))
+            AL_sampe2eidx_list_temp2.append(AL_e2e_tuple)
+            
+            AL_e2e_sampled_temp = []
+            AL_cont_sampled_temp = []
+            
+            for k in range(len(AL_e2e_tuple)):
+            # sampe2eidx = AL_e2e_sampled_temp[sampidx]
+                e2edist = np.linalg.norm(np.subtract(MorphData.ALdist[AL_longer_idx[i]][AL_e2e_tuple[k][0]],
+                                                     MorphData.ALdist[AL_longer_idx[i]][AL_e2e_tuple[k][1]]))
+                AL_e2e_sampled_temp.append(e2edist)
+                AL_cont_sampled_temp.append(np.sum(consdist[AL_e2e_tuple[k][0]:AL_e2e_tuple[k][1]]))
+            AL_e2e_sampled_temp2.append(AL_e2e_sampled_temp)
+            AL_cont_sampled_temp2.append(AL_cont_sampled_temp)
+    
+    for i in range(len(LH_longer_idx)):
+        LH_e2e_tuple = []
+        consdiff = np.diff(MorphData.LHdist[LH_longer_idx[i]], axis=0)
+        if len(consdiff) > 1:
+            consdist = np.sqrt(np.sum(np.square(consdiff),1))
+            for j in range(len(consdist)-1):
+                maxidx = np.where(np.cumsum(consdist[j:]) > 2*np.pi/q_range[q])[0]
+                if len(maxidx) > 0:
+                    LH_e2e_tuple.append((j,maxidx[0]+j+1))
+            
+            # sampidx = np.random.choice(len(LH_e2e_sampled_temp))
+            LH_sampe2eidx_list_temp2.append(LH_e2e_tuple)
+            
+            LH_e2e_sampled_temp = []
+            LH_cont_sampled_temp = []
+            
+            for k in range(len(LH_e2e_tuple)):
+            # sampe2eidx = LH_e2e_sampled_temp[sampidx]
+                e2edist = np.linalg.norm(np.subtract(MorphData.LHdist[LH_longer_idx[i]][LH_e2e_tuple[k][0]],
+                                                     MorphData.LHdist[LH_longer_idx[i]][LH_e2e_tuple[k][1]]))
+                LH_e2e_sampled_temp.append(e2edist)
+                LH_cont_sampled_temp.append(np.sum(consdist[LH_e2e_tuple[k][0]:LH_e2e_tuple[k][1]]))
+            LH_e2e_sampled_temp2.append(LH_e2e_sampled_temp)
+            LH_cont_sampled_temp2.append(LH_cont_sampled_temp)
+    
+    for i in range(len(calyx_longer_idx)):
+        calyx_e2e_tuple = []
+        consdiff = np.diff(MorphData.calyxdist[calyx_longer_idx[i]], axis=0)
+        if len(consdiff) > 1:
+            consdist = np.sqrt(np.sum(np.square(consdiff),1))
+            for j in range(len(consdist)-1):
+                maxidx = np.where(np.cumsum(consdist[j:]) > 2*np.pi/q_range[q])[0]
+                if len(maxidx) > 0:
+                    calyx_e2e_tuple.append((j,maxidx[0]+j+1))
+            
+            # sampidx = np.random.choice(len(calyx_e2e_sampled_temp))
+            calyx_sampe2eidx_list_temp2.append(calyx_e2e_tuple)
+            
+            calyx_e2e_sampled_temp = []
+            calyx_cont_sampled_temp = []
+            
+            for k in range(len(calyx_e2e_tuple)):
+            # sampe2eidx = calyx_e2e_sampled_temp[sampidx]
+                e2edist = np.linalg.norm(np.subtract(MorphData.calyxdist[calyx_longer_idx[i]][calyx_e2e_tuple[k][0]],
+                                                     MorphData.calyxdist[calyx_longer_idx[i]][calyx_e2e_tuple[k][1]]))
+                calyx_e2e_sampled_temp.append(e2edist)
+                calyx_cont_sampled_temp.append(np.sum(consdist[calyx_e2e_tuple[k][0]:calyx_e2e_tuple[k][1]]))
+            calyx_e2e_sampled_temp2.append(calyx_e2e_sampled_temp)
+            calyx_cont_sampled_temp2.append(calyx_cont_sampled_temp)
+    
+    AL_e2e_sampled.append(AL_e2e_sampled_temp2)
+    AL_cont_sampled.append(AL_e2e_sampled_temp2)
+    AL_sampe2eidx_list.append(AL_sampe2eidx_list_temp2)
+    LH_e2e_sampled.append(LH_e2e_sampled_temp2)
+    LH_cont_sampled.append(LH_cont_sampled_temp2)
+    LH_sampe2eidx_list.append(LH_sampe2eidx_list_temp2)
+    calyx_e2e_sampled.append(calyx_e2e_sampled_temp2)
+    calyx_cont_sampled.append(calyx_cont_sampled_temp2)
+    calyx_sampe2eidx_list.append(calyx_sampe2eidx_list_temp2)
 
-res_AL = scipy.optimize.differential_evolution(plength, bounds=[(0, 100)], args=(np.mean(np.square(AL_e2e_sampled)), np.mean(AL_cont_sampled)))#length_AL_mean))
-res_LH = scipy.optimize.differential_evolution(plength, bounds=[(0, 100)], args=(np.mean(np.square(LH_e2e_sampled)), np.mean(LH_cont_sampled)))#length_LH_mean))
-res_calyx = scipy.optimize.differential_evolution(plength, bounds=[(0, 100)], args=(np.mean(np.square(calyx_e2e_sampled)), np.mean(calyx_cont_sampled)))#length_calyx_mean))
+res_AL = []
+res_LH = []
+res_calyx = []
+
+for q in range(len(q_range)):
+    AL_e2e_sampled_flat = [item for sublist in AL_e2e_sampled[q] for item in sublist]
+    AL_cont_sampled_flat = [item for sublist in AL_cont_sampled[q] for item in sublist]
+    res_AL1 = scipy.optimize.differential_evolution(plength,
+                                                    bounds=[(0.001, 100)], 
+                                                    args=(np.mean(np.square(AL_e2e_sampled_flat)), 
+                                                          2*np.pi/q_range[q]))#length_AL_mean))
+    LH_e2e_sampled_flat = [item for sublist in LH_e2e_sampled[q] for item in sublist]
+    LH_cont_sampled_flat = [item for sublist in LH_cont_sampled[q] for item in sublist]
+    res_LH1 = scipy.optimize.differential_evolution(plength, 
+                                                    bounds=[(0.001, 100)], 
+                                                    args=(np.mean(np.square(LH_e2e_sampled_flat)), 
+                                                          2*np.pi/q_range[q]))#length_LH_mean))
+    calyx_e2e_sampled_flat = [item for sublist in calyx_e2e_sampled[q] for item in sublist]
+    calyx_cont_sampled_flat = [item for sublist in calyx_cont_sampled[q] for item in sublist]
+    res_calyx1 = scipy.optimize.differential_evolution(plength, 
+                                                       bounds=[(0.001, 100)], 
+                                                       args=(np.mean(np.square(calyx_e2e_sampled_flat)), 
+                                                             2*np.pi/q_range[q]))#length_calyx_mean))
+    res_AL.append(res_AL1.x[0])
+    res_LH.append(res_LH1.x[0])
+    res_calyx.append(res_calyx1.x[0])
+
+
+fig = plt.figure(figsize=(6, 4))
+plt.scatter(q_range, res_AL, marker='.', color='tab:blue')
+plt.scatter(q_range, res_LH, marker='.', color='tab:green')
+plt.scatter(q_range, res_calyx, marker='.', color='tab:orange')
+plt.xscale('log')
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
+plt.ylabel("$l_{p}$", fontsize=15)
+# plt.savefig(Parameter.outputdir + '/lp_all.pdf', dpi=300, bbox_inches='tight')
+plt.show()
 
