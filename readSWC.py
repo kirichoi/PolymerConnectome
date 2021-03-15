@@ -8372,6 +8372,10 @@ for i in range(len(LHdist_short)):
         
 rGy_LH_short_flat = utils.radiusOfGyration(LHdist_short_flat)[0]
 
+rGy_calyx_short_flat = np.delete(rGy_calyx_short_flat, [40, 41])
+rGy_AL_short_flat = np.delete(rGy_AL_short_flat, 73)
+
+
 #%% form factor per neurite
 
 q_range = np.logspace(-2,3,100)
@@ -8442,19 +8446,19 @@ d_Pq_calyx = np.gradient(np.log10(Pq_calyx[:60]), np.log10(q_range[:60]))
 d_Pq_LH = np.gradient(np.log10(Pq_LH[:60]), np.log10(q_range[:60]))
 d_Pq_AL = np.gradient(np.log10(Pq_AL[:60]), np.log10(q_range[:60]))
 
-calyx_length_temp = np.array([item for sublist in LengthData.length_calyx for item in sublist])
-LH_length_temp = np.array([item for sublist in LengthData.length_LH for item in sublist])
-AL_length_temp = np.array([item for sublist in LengthData.length_AL for item in sublist])
+LengthData.length_calyx_flat = np.array([item for sublist in LengthData.length_calyx for item in sublist])
+LengthData.length_LH_flat = np.array([item for sublist in LengthData.length_LH for item in sublist])
+LengthData.length_AL_flat = np.array([item for sublist in LengthData.length_AL for item in sublist])
 
-calyx_q_idx = np.where(q_range < 2*np.pi/np.percentile(calyx_length_temp, 2))[0][-1]
-LH_q_idx = np.where(q_range < 2*np.pi/np.percentile(LH_length_temp, 2))[0][-1]
-AL_q_idx = np.where(q_range < 2*np.pi/np.percentile(AL_length_temp, 2))[0][-1]
+calyx_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_calyx_flat, 2))[0][-1]
+LH_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_LH_flat, 2))[0][-1]
+AL_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_AL_flat, 2))[0][-1]
 
 rgy_calyx_full = utils.radiusOfGyration(np.array([calyx_dist_flat]))
 rgy_LH_full = utils.radiusOfGyration(np.array([LH_dist_flat]))
 rgy_AL_full = utils.radiusOfGyration(np.array([AL_dist_flat]))
 
-q_range_fit_calyx = np.where(q_range > 1/np.mean(calyx_length_temp))[0]
+q_range_fit_calyx = np.where(q_range > 1/np.mean(LengthData.length_calyx_flat))[0]
 q_range_fit_calyx = q_range_fit_calyx[q_range_fit_calyx <= 60]
 
 poptD_Pq_calyx, pcovD_Pq_calyx = scipy.optimize.curve_fit(objFuncGL, 
@@ -8466,7 +8470,7 @@ perrD_Pq_calyx = np.sqrt(np.diag(pcovD_Pq_calyx))
 
 fitYD_Pq_calyx = objFuncPpow(q_range[q_range_fit_calyx], poptD_Pq_calyx[0], poptD_Pq_calyx[1])
 
-q_range_fit_LH = np.where(q_range > 1/np.mean(LH_length_temp))[0]
+q_range_fit_LH = np.where(q_range > 1/np.mean(LengthData.length_LH_flat))[0]
 q_range_fit_LH = q_range_fit_LH[q_range_fit_LH <= 60]
 
 poptD_Pq_LH, pcovD_Pq_LH = scipy.optimize.curve_fit(objFuncGL, 
@@ -8478,7 +8482,7 @@ perrD_Pq_LH = np.sqrt(np.diag(pcovD_Pq_LH))
 
 fitYD_Pq_LH = objFuncPpow(q_range[q_range_fit_LH], poptD_Pq_LH[0], poptD_Pq_LH[1])
 
-q_range_fit_AL = np.where(q_range > 1/np.mean(AL_length_temp))[0]
+q_range_fit_AL = np.where(q_range > 1/np.mean(LengthData.length_AL_flat))[0]
 q_range_fit_AL = q_range_fit_AL[q_range_fit_AL <= 60]
 
 poptD_Pq_AL, pcovD_Pq_AL = scipy.optimize.curve_fit(objFuncGL, 
@@ -8496,13 +8500,13 @@ plt.plot(q_range[:AL_q_idx], Pq_AL[:AL_q_idx], color='tab:blue')
 plt.plot(q_range[:calyx_q_idx], Pq_calyx[:calyx_q_idx], color='tab:orange')
 plt.plot(q_range[:LH_q_idx], Pq_LH[:LH_q_idx], color='tab:green')
 
-plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue')
-plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange')
-plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green')
+plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue')
+plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange')
+plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green')
 
-# plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
-# plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
-# plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green', ls='dotted')
 
 plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
@@ -8609,13 +8613,13 @@ plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
 plt.text(10.3, 1-0.02,'Linear', fontsize=14)
 plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
-plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue')
-plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange')
-plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green')
+plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue')
+plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange')
+plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green')
 
-# plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
-# plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
-# plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green', ls='dotted')
 
 plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
@@ -8734,13 +8738,13 @@ for s in scaleVal:
 
 q_range = np.logspace(-2,3,100)
 
-calyx_length_temp = np.array([item for sublist in LengthData.length_calyx for item in sublist])
-LH_length_temp = np.array([item for sublist in LengthData.length_LH for item in sublist])
-AL_length_temp = np.array([item for sublist in LengthData.length_AL for item in sublist])
+LengthData.length_calyx_flat = np.array([item for sublist in LengthData.length_calyx for item in sublist])
+LengthData.length_LH_flat = np.array([item for sublist in LengthData.length_LH for item in sublist])
+LengthData.length_AL_flat = np.array([item for sublist in LengthData.length_AL for item in sublist])
 
-calyx_q_idx = np.where(q_range < 2*np.pi/np.percentile(calyx_length_temp, 2))[0][-1]
-LH_q_idx = np.where(q_range < 2*np.pi/np.percentile(LH_length_temp, 2))[0][-1]
-AL_q_idx = np.where(q_range < 2*np.pi/np.percentile(AL_length_temp, 2))[0][-1]
+calyx_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_calyx_flat, 2))[0][-1]
+LH_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_LH_flat, 2))[0][-1]
+AL_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_AL_flat, 2))[0][-1]
 
 rgy_calyx_full = utils.radiusOfGyration(np.array([calyx_dist_flat]))
 rgy_LH_full = utils.radiusOfGyration(np.array([LH_dist_flat]))
@@ -8759,9 +8763,9 @@ for i in range(len(Pq_AL_glo[0])):
 
 # plt.plot(q_range[:AL_q_idx], np.average(Pq_AL_glo[:AL_q_idx],axis=1), color='k', lw=2)
 
-plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue')
+plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue')
 
-# plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue', ls='dotted')
 
 plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 
@@ -8796,9 +8800,9 @@ for i in range(len(Pq_LH_glo[0])):
 
 # plt.plot(q_range[:LH_q_idx], np.average(Pq_LH_glo[:LH_q_idx],axis=1), color='k', lw=2)
 
-plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green')
+plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green')
 
-# plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green', ls='dotted')
 
 plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 
@@ -8833,9 +8837,9 @@ for i in range(len(Pq_calyx_glo[0])):
 
 # plt.plot(q_range[:calyx_q_idx], np.average(Pq_calyx_glo[:calyx_q_idx],axis=1), color='k', lw=2)
 
-plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange')
+plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange')
 
-# plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange', ls='dotted')
 
 plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 
@@ -8970,9 +8974,9 @@ plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
 plt.text(10.3, 1-0.02,'Linear', fontsize=14)
 plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
-plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange')
+plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange')
 
-# plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange', ls='dotted')
 
 plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 
@@ -9005,9 +9009,9 @@ plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
 plt.text(10.3, 1-0.02,'Linear', fontsize=14)
 plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
-plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green')
+plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green')
 
-# plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green', ls='dotted')
 
 plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 
@@ -9040,9 +9044,9 @@ plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
 plt.text(10.3, 1-0.02,'Linear', fontsize=14)
 plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
-plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue')
+plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue')
 
-# plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:red')
+# plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:red')
 
 plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 
@@ -9230,13 +9234,13 @@ plt.show()
 
 q_range = np.logspace(-2,3,100)
 
-calyx_length_temp = np.array([item for sublist in LengthData.length_calyx for item in sublist])
-LH_length_temp = np.array([item for sublist in LengthData.length_LH for item in sublist])
-AL_length_temp = np.array([item for sublist in LengthData.length_AL for item in sublist])
+LengthData.length_calyx_flat = np.array([item for sublist in LengthData.length_calyx for item in sublist])
+LengthData.length_LH_flat = np.array([item for sublist in LengthData.length_LH for item in sublist])
+LengthData.length_AL_flat = np.array([item for sublist in LengthData.length_AL for item in sublist])
 
-calyx_q_idx = np.where(q_range < 2*np.pi/np.percentile(calyx_length_temp, 2))[0][-1]
-LH_q_idx = np.where(q_range < 2*np.pi/np.percentile(LH_length_temp, 2))[0][-1]
-AL_q_idx = np.where(q_range < 2*np.pi/np.percentile(AL_length_temp, 2))[0][-1]
+calyx_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_calyx_flat, 2))[0][-1]
+LH_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_LH_flat, 2))[0][-1]
+AL_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_AL_flat, 2))[0][-1]
 
 rgy_calyx_full = utils.radiusOfGyration(np.array([calyx_dist_flat]))
 rgy_LH_full = utils.radiusOfGyration(np.array([LH_dist_flat]))
@@ -9255,9 +9259,9 @@ for i in range(len(Pq_AL_pn[0])):
 
 # plt.plot(q_range[:AL_q_idx], np.average(Pq_AL_pn[:AL_q_idx],axis=1), color='k', lw=2)
 
-plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue')
+plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue')
 
-# plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue', ls='dotted')
 
 plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 
@@ -9292,9 +9296,9 @@ for i in range(len(Pq_LH_pn[0])):
 
 # plt.plot(q_range[:LH_q_idx], np.average(Pq_LH_pn[:LH_q_idx],axis=1), color='k', lw=2)
 
-plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green')
+plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green')
 
-# plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green', ls='dotted')
 
 plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 
@@ -9329,9 +9333,9 @@ for i in range(len(Pq_calyx_pn[0])):
 
 # plt.plot(q_range[:calyx_q_idx], np.average(Pq_calyx_pn[:calyx_q_idx],axis=1), color='k', lw=2)
 
-plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange')
+plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange')
 
-# plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange', ls='dotted')
 
 plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 
@@ -9466,9 +9470,9 @@ plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
 plt.text(10.3, 1-0.02,'Linear', fontsize=14)
 plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
-plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange')
+plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange')
 
-# plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange', ls='dotted')
 
 plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 
@@ -9502,9 +9506,9 @@ plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
 plt.text(10.3, 1-0.02,'Linear', fontsize=14)
 plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
-plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green')
+plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green')
 
-# plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green', ls='dotted')
 
 plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 
@@ -9538,9 +9542,9 @@ plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
 plt.text(10.3, 1-0.02,'Linear', fontsize=14)
 plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
-plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue')
+plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue')
 
-# plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue', ls='dotted')
 
 plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 
@@ -9613,9 +9617,9 @@ for i in range(len(un_AL_nUG_MG)):
 
 # plt.plot(q_range[:AL_q_idx], np.average(Pq_AL_pn[:AL_q_idx],axis=1), color='k', lw=2)
 
-plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue')
+plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue')
 
-# plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:orange', ls='dotted')
 
 plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 
@@ -9693,9 +9697,9 @@ plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
 plt.text(10.3, 1-0.02,'Linear', fontsize=14)
 plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
-plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue')
+plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue')
 
-# plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue', ls='dotted')
 
 plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 
@@ -9763,9 +9767,9 @@ plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
 plt.text(10.3, 1-0.02,'Linear', fontsize=14)
 plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
-plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green')
+plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green')
 
-# plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:blue', ls='dotted')
 
 plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 
@@ -9786,13 +9790,13 @@ plt.show()
 
 q_range = np.logspace(-2,3,100)
 
-calyx_length_temp = np.array([item for sublist in LengthData.length_calyx for item in sublist])
-LH_length_temp = np.array([item for sublist in LengthData.length_LH for item in sublist])
-AL_length_temp = np.array([item for sublist in LengthData.length_AL for item in sublist])
+LengthData.length_calyx_flat = np.array([item for sublist in LengthData.length_calyx for item in sublist])
+LengthData.length_LH_flat = np.array([item for sublist in LengthData.length_LH for item in sublist])
+LengthData.length_AL_flat = np.array([item for sublist in LengthData.length_AL for item in sublist])
 
-calyx_q_idx = np.where(q_range < 2*np.pi/np.percentile(calyx_length_temp, 2))[0][-1]
-LH_q_idx = np.where(q_range < 2*np.pi/np.percentile(LH_length_temp, 2))[0][-1]
-AL_q_idx = np.where(q_range < 2*np.pi/np.percentile(AL_length_temp, 2))[0][-1]
+calyx_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_calyx_flat, 2))[0][-1]
+LH_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_LH_flat, 2))[0][-1]
+AL_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_AL_flat, 2))[0][-1]
 
 rgy_calyx_full = utils.radiusOfGyration(np.array([calyx_dist_flat]))
 rgy_LH_full = utils.radiusOfGyration(np.array([LH_dist_flat]))
@@ -9951,7 +9955,7 @@ plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
 plt.vlines(2*np.pi/np.median(length_calyx_short_flat), 1e-6, 10, color='tab:orange')
 
-# plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange', ls='dotted')
 
 # plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 plt.vlines(1/np.median(rGy_calyx_short_flat), 1e-6, 10, color='tab:orange', ls='--')
@@ -9988,7 +9992,7 @@ plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
 plt.vlines(2*np.pi/np.median(length_LH_short_flat), 1e-6, 10, color='tab:green')
 
-# plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green', ls='dotted')
 
 # plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 plt.vlines(1/np.median(rGy_LH_short_flat), 1e-6, 10, color='tab:green', ls='--')
@@ -10025,7 +10029,7 @@ plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
 plt.vlines(2*np.pi/np.median(length_AL_short_flat), 1e-6, 10, color='tab:blue')
 
-# plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue', ls='dotted')
 
 # plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 plt.vlines(1/np.median(rGy_AL_short_flat), 1e-6, 10, color='tab:blue', ls='--')
@@ -10133,8 +10137,6 @@ print(np.median(neurite_CM_calyx_dist_flat))
 print(np.median(neurite_CM_AL_flat_dist))
 print(np.median(neurite_CM_LH_flat_dist))
 print(np.median(neurite_CM_calyx_flat_dist))
-
-
 
 
 #%% neurite morphology SAW (50) vs theta (21)
@@ -10395,6 +10397,12 @@ for i in range(len(LHdist_short_ind)):
 plt.show()
 
 
+#%% Nu sampling for AL, LH, and MB calyx comparison
+
+
+1/rGy_AL_short_flat
+
+
 
 #%% 16 moving average (FIGURE FORM FACTOR 16)186573
 # 35 - 24726
@@ -10440,7 +10448,7 @@ plt.text(10.3, 1-0.02,'Linear', fontsize=14)
 plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
 plt.vlines(2*np.pi/np.median(LengthData.length_AL[nid]), 1e-6, 10, color='tab:blue')
-# plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue', ls='dotted')
 plt.vlines(1/rGy_AL_new[nid_AL], 1e-6, 10, color='tab:blue', ls='--')
 
 plt.xscale('log')
@@ -10471,7 +10479,7 @@ plt.text(10.3, 1-0.02,'Linear', fontsize=14)
 plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
 plt.vlines(2*np.pi/np.median(LengthData.length_calyx[nid]), 1e-6, 10, color='tab:orange')
-# plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange', ls='dotted')
 plt.vlines(1/rGy_calyx_new[nid_calyx], 1e-6, 10, color='tab:orange', ls='--')
 
 plt.xscale('log')
@@ -10502,7 +10510,7 @@ plt.text(10.3, 1-0.02,'Linear', fontsize=14)
 plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
 plt.vlines(2*np.pi/np.median(LengthData.length_LH[nid]), 1e-6, 10, color='tab:green')
-# plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
+# plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green', ls='dotted')
 plt.vlines(1/rGy_LH[nid_AL], 1e-6, 10, color='tab:green', ls='--')
 
 plt.xscale('log')
@@ -10639,9 +10647,9 @@ plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
 plt.text(10.3, 1-0.02,'Linear', fontsize=14)
 plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
-plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dashdot')
+plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange', ls='dashdot')
 
-plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
+plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange', ls='dotted')
 
 plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 
@@ -10669,9 +10677,9 @@ plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
 plt.text(10.3, 1-0.02,'Linear', fontsize=14)
 plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
-plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green', ls='dashdot')
+plt.vlines(2*np.pi/np.mean(LengthData.length_LH_flat), 1e-6, 10, color='tab:green', ls='dashdot')
 
-plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
+plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green', ls='dotted')
 
 plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 
@@ -10699,9 +10707,9 @@ plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
 plt.text(10.3, 1-0.02,'Linear', fontsize=14)
 plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
-plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dashdot')
+plt.vlines(2*np.pi/np.mean(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue', ls='dashdot')
 
-plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue', ls='dotted')
 
 plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 
@@ -10733,9 +10741,9 @@ plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
 plt.text(10.3, 1-0.02,'Linear', fontsize=14)
 plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
-plt.vlines(2*np.pi/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dashdot')
+plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange', ls='dashdot')
 
-plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
+plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange', ls='dotted')
 
 plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 
@@ -10763,9 +10771,9 @@ plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
 plt.text(10.3, 1-0.02,'Linear', fontsize=14)
 plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
-plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green', ls='dashdot')
+plt.vlines(2*np.pi/np.mean(LengthData.length_LH_flat), 1e-6, 10, color='tab:green', ls='dashdot')
 
-plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
+plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green', ls='dotted')
 
 plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 
@@ -10793,9 +10801,9 @@ plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
 plt.text(10.3, 1-0.02,'Linear', fontsize=14)
 plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
-plt.vlines(2*np.pi/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dashdot')
+plt.vlines(2*np.pi/np.mean(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue', ls='dashdot')
 
-plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
+plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue', ls='dotted')
 
 plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 
@@ -10828,7 +10836,7 @@ for i in range(len(LH_glo_col_idx)):
     plt.text(10.3, 1-0.02,'Linear', fontsize=14)
     plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
     
-    plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
+    plt.vlines(2*np.pi/np.mean(LengthData.length_LH_flat), 1e-6, 10, color='tab:green')
     plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
     
     plt.xscale('log')
@@ -10904,7 +10912,7 @@ plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
 plt.text(10.3, 1-0.02,'Linear', fontsize=14)
 plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
-plt.vlines(2*np.pi/np.median(LH_length_temp), 1e-6, 10, color='k')
+plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='k')
 plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='k', ls='--')
 
 plt.xscale('log')
@@ -10983,7 +10991,7 @@ plt.hlines(0.388, 0.01, 100, ls='dashed', color='k')
 # plt.text(10.3, 1-0.02,'Linear', fontsize=14)
 # plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
-plt.vlines(2*np.pi/np.median(AL_length_temp), 1e-6, 10, color='k')
+plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='k')
 plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='k', ls='--')
 
 plt.xscale('log')
@@ -11062,7 +11070,7 @@ plt.hlines(0.388, 0.01, 100, ls='dashed', color='k')
 # plt.text(10.3, 1-0.02,'Linear', fontsize=14)
 # plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
-plt.vlines(2*np.pi/np.median(calyx_length_temp), 1e-6, 10, color='k')
+plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='k')
 plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='k', ls='--')
 
 plt.xscale('log')
@@ -11097,7 +11105,7 @@ for i in range(len(np.argsort(glo_len)[-6:])):
     plt.text(10.3, 1-0.02,'Linear', fontsize=14)
     plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
     
-    plt.vlines(2*np.pi/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
+    plt.vlines(2*np.pi/np.mean(LengthData.length_LH_flat), 1e-6, 10, color='tab:green')
     plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
     
     plt.xscale('log')
@@ -11491,13 +11499,13 @@ plt.text(10.3, 7/16-0.01, '$\Theta$ Solvent')
 plt.text(10.3, 1/2-0.01, 'Random')
 plt.text(10.3, 1-0.01,' Rigid')
 
-plt.vlines(1/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
-plt.vlines(1/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
-plt.vlines(1/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
+plt.vlines(1/np.mean(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue')
+plt.vlines(1/np.mean(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange')
+plt.vlines(1/np.mean(LengthData.length_LH_flat), 1e-6, 10, color='tab:green')
 
-plt.vlines(1/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
-plt.vlines(1/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
-plt.vlines(1/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
+plt.vlines(1/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue', ls='dotted')
+plt.vlines(1/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange', ls='dotted')
+plt.vlines(1/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green', ls='dotted')
 
 plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
@@ -11879,13 +11887,13 @@ plt.text(30.5, 7/16-0.01, '$\Theta$ Solvent')
 plt.text(30.5, 1/2-0.01, 'Random')
 plt.text(30.5, 1-0.01,' Rigid')
 
-plt.vlines(1/np.mean(AL_length_temp), 1e-6, 10, color='tab:blue')
-plt.vlines(1/np.mean(calyx_length_temp), 1e-6, 10, color='tab:orange')
-plt.vlines(1/np.mean(LH_length_temp), 1e-6, 10, color='tab:green')
+plt.vlines(1/np.mean(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue')
+plt.vlines(1/np.mean(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange')
+plt.vlines(1/np.mean(LengthData.length_LH_flat), 1e-6, 10, color='tab:green')
 
-plt.vlines(1/np.median(AL_length_temp), 1e-6, 10, color='tab:blue', ls='dotted')
-plt.vlines(1/np.median(calyx_length_temp), 1e-6, 10, color='tab:orange', ls='dotted')
-plt.vlines(1/np.median(LH_length_temp), 1e-6, 10, color='tab:green', ls='dotted')
+plt.vlines(1/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue', ls='dotted')
+plt.vlines(1/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange', ls='dotted')
+plt.vlines(1/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green', ls='dotted')
 
 plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
@@ -12291,7 +12299,7 @@ ax.set_zticklabels([])
 plt.show()
 
 
-#%% Persistence length
+#%% Persistence length V1
 
 LengthData.length_branch_ee = []
 
@@ -12341,8 +12349,6 @@ plt.xlabel('End-to-end Length', fontsize=15)
 plt.ylabel('Contour Length', fontsize=15)
 plt.show()
 
-
-
 l_p_max = []
 for i in range(len(length_branch_max)):
     res = scipy.optimize.differential_evolution(plength, bounds=[(0, 10000)], args=(length_branch_ee_max[i], length_branch_max[i]))
@@ -12350,4 +12356,12 @@ for i in range(len(length_branch_max)):
         l_p_max.append(res.x[0])
     else:
         l_p_max.append(0)
+
+
+l_p_max = np.delete(l_p_max, 41)
+
+
+#%% Persistence length V2
+
+np.mean(LengthData.length_AL)
 
