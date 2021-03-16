@@ -12447,9 +12447,7 @@ plt.scatter(np.array(binx_AL), res_AL, marker='.', color='tab:blue')
 plt.scatter(np.array(binx_LH), res_LH, marker='.', color='tab:green')
 plt.scatter(np.array(binx_calyx), res_calyx, marker='.', color='tab:orange')
 plt.plot(np.arange(18), np.arange(18), color='k', linestyle='--')
-# plt.xscale('log')
 plt.ylim(0, 15)
-# plt.xlim(3e-1, 7)
 plt.xlabel("$l$ ($\mu\mathrm{m}$)", fontsize=15)
 plt.ylabel("$l_{p}$", fontsize=15)
 plt.show()
@@ -12504,9 +12502,9 @@ for q in range(len(q_range)):
     calyx_cont_sampled_temp2 = []
     calyx_sampe2eidx_list_temp2 = []
 
-    AL_longer_idx = np.where(LengthData.length_AL_flat > 2*np.pi/q_range[q])[0]
-    LH_longer_idx = np.where(LengthData.length_LH_flat > 2*np.pi/q_range[q])[0]
-    calyx_longer_idx = np.where(LengthData.length_calyx_flat > 2*np.pi/q_range[q])[0]
+    AL_longer_idx = np.where(LengthData.length_AL_flat >= 2*np.pi/q_range[q])[0]
+    LH_longer_idx = np.where(LengthData.length_LH_flat >= 2*np.pi/q_range[q])[0]
+    calyx_longer_idx = np.where(LengthData.length_calyx_flat >= 2*np.pi/q_range[q])[0]
     
     for i in range(len(AL_longer_idx)):
         AL_e2e_tuple = []
@@ -12604,7 +12602,7 @@ for q in range(len(q_range)):
     #                                                 bounds=[(0, 100)], 
     #                                                 args=(np.mean(np.square(AL_e2e_sampled_flat)), 
     #                                                       np.mean(AL_cont_sampled_flat)))#2*np.pi/q_range[q]))
-    res_AL1 = scipy.optimize.fsolve(plength, 0.001, args=(np.mean(np.square(AL_e2e_sampled_flat)), 
+    res_AL1 = scipy.optimize.minimize(plength, x0=1, args=(np.mean(np.square(AL_e2e_sampled_flat)), 
                                                           np.mean(AL_cont_sampled_flat)))#2*np.pi/q_range[q]))
     
     LH_e2e_sampled_flat = LH_e2e_sampled[q]#[item for sublist in LH_e2e_sampled[q] for item in sublist]
@@ -12613,7 +12611,7 @@ for q in range(len(q_range)):
     #                                                 bounds=[(0, 100)], 
     #                                                 args=(np.mean(np.square(LH_e2e_sampled_flat)), 
     #                                                       np.mean(LH_cont_sampled_flat)))#2*np.pi/q_range[q]))
-    res_LH1 = scipy.optimize.fsolve(plength, 0.001, args=(np.mean(np.square(LH_e2e_sampled_flat)), 
+    res_LH1 = scipy.optimize.minimize(plength, x0=1, args=(np.mean(np.square(LH_e2e_sampled_flat)), 
                                                           np.mean(LH_cont_sampled_flat)))#2*np.pi/q_range[q]))
     calyx_e2e_sampled_flat = calyx_e2e_sampled[q]#[item for sublist in calyx_e2e_sampled[q] for item in sublist]
     calyx_cont_sampled_flat = calyx_cont_sampled[q]#[item for sublist in calyx_cont_sampled[q] for item in sublist]
@@ -12621,7 +12619,7 @@ for q in range(len(q_range)):
     #                                                    bounds=[(0, 100)], 
     #                                                    args=(np.mean(np.square(calyx_e2e_sampled_flat)), 
     #                                                          np.mean(calyx_cont_sampled_flat)))#2*np.pi/q_range[q]))
-    res_calyx1 = scipy.optimize.fsolve(plength, 0.001, args=(np.mean(np.square(calyx_e2e_sampled_flat)), 
+    res_calyx1 = scipy.optimize.minimize(plength, x0=1, args=(np.mean(np.square(calyx_e2e_sampled_flat)), 
                                                              np.mean(calyx_cont_sampled_flat)))#2*np.pi/q_range[q]))
     res_AL.append(res_AL1[0])
     res_LH.append(res_LH1[0])
