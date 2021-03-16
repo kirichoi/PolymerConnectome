@@ -12366,7 +12366,7 @@ l_p_max = np.delete(l_p_max, 41)
 def plength(l, MSR, R_max):
     return np.abs(MSR - (2*l*R_max - 2*np.square(l)*(1 - np.exp(-R_max/l))))
 
-q_range = np.logspace(-1, 1, 100)[25:90]
+q_range = np.logspace(-1, 1, 100)[20:90]
 
 length_AL_mean = np.mean(LengthData.length_AL_flat)
 length_LH_mean = np.mean(LengthData.length_LH_flat)
@@ -12491,25 +12491,24 @@ for q in range(len(q_range)):
     AL_e2e_sampled_flat = [item for sublist in AL_e2e_sampled[q] for item in sublist]
     AL_cont_sampled_flat = [item for sublist in AL_cont_sampled[q] for item in sublist]
     res_AL1 = scipy.optimize.differential_evolution(plength,
-                                                    bounds=[(0.001, 100)], 
+                                                    bounds=[(0, 100)], 
                                                     args=(np.mean(np.square(AL_e2e_sampled_flat)), 
                                                           2*np.pi/q_range[q]))#length_AL_mean))
     LH_e2e_sampled_flat = [item for sublist in LH_e2e_sampled[q] for item in sublist]
     LH_cont_sampled_flat = [item for sublist in LH_cont_sampled[q] for item in sublist]
     res_LH1 = scipy.optimize.differential_evolution(plength, 
-                                                    bounds=[(0.001, 100)], 
+                                                    bounds=[(0, 100)], 
                                                     args=(np.mean(np.square(LH_e2e_sampled_flat)), 
                                                           2*np.pi/q_range[q]))#length_LH_mean))
     calyx_e2e_sampled_flat = [item for sublist in calyx_e2e_sampled[q] for item in sublist]
     calyx_cont_sampled_flat = [item for sublist in calyx_cont_sampled[q] for item in sublist]
     res_calyx1 = scipy.optimize.differential_evolution(plength, 
-                                                       bounds=[(0.001, 100)], 
+                                                       bounds=[(0, 100)], 
                                                        args=(np.mean(np.square(calyx_e2e_sampled_flat)), 
                                                              2*np.pi/q_range[q]))#length_calyx_mean))
     res_AL.append(res_AL1.x[0])
     res_LH.append(res_LH1.x[0])
     res_calyx.append(res_calyx1.x[0])
-
 
 fig = plt.figure(figsize=(6, 4))
 plt.scatter(q_range, res_AL, marker='.', color='tab:blue')
