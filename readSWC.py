@@ -12304,6 +12304,10 @@ plt.show()
 def plength(l, MSR, R_max):
     return np.abs(MSR - (2*l*R_max - 2*np.square(l)*(1 - np.exp(-R_max/l))))
 
+LengthData.length_calyx_flat = np.array([item for sublist in LengthData.length_calyx for item in sublist])
+LengthData.length_LH_flat = np.array([item for sublist in LengthData.length_LH for item in sublist])
+LengthData.length_AL_flat = np.array([item for sublist in LengthData.length_AL for item in sublist])
+
 LengthData.length_branch_ee = []
 
 for i in range(len(BranchData.branch_dist)):
@@ -12329,8 +12333,6 @@ LengthData.length_branch_ee_calyx = []
 for i in range(len(MorphData.calyxdist)):
     LengthData.length_branch_ee_calyx.append(np.linalg.norm(np.subtract(MorphData.calyxdist[i][0], MorphData.calyxdist[i][-1])))
 
-
-
 fig = plt.figure(figsize=(6, 4))
 plt.scatter(LengthData.length_branch_ee_flat, LengthData.length_branch_flat, marker='.',  s=1)
 plt.plot(np.arange(150), np.arange(150), color='tab:red')
@@ -12348,9 +12350,11 @@ plt.legend(['AL', 'LH', 'MB calyx'], fontsize=13)
 plt.plot(np.arange(60), np.arange(60), color='tab:red')
 plt.show()
 
-binsize = 3
+
+
+binsize = 1
 bind = 0.1
-binrange = np.arange(0, 59*1/bind, 1)/(1/bind)
+binrange = np.arange(0, 18*1/bind, 1)/(1/bind)
 
 binee_AL = []
 bincont_AL = []
@@ -12369,18 +12373,18 @@ res_calyx = []
 binx_calyx = []
 
 for i in range(len(binrange)):
-    binidx = np.where((LengthData.length_branch_ee_AL >= binrange[i]) & 
-                      (LengthData.length_branch_ee_AL < binrange[i]+binsize))[0]
+    binidx = np.where((LengthData.length_AL_flat >= binrange[i]) & 
+                      (LengthData.length_AL_flat < binrange[i]+binsize))[0]
     
     if len(binidx) > 0:
         val1 = np.array(LengthData.length_branch_ee_AL)[binidx]
         val2 = np.array(LengthData.length_AL_flat)[binidx]
-        res_AL1 = scipy.optimize.differential_evolution(plength,
-                                                        bounds=[(0, 100)], 
-                                                        args=(scipy.stats.moment(val1, moment=2), 
-                                                              binrange[i]+binsize/2))
-        # res_AL1 = scipy.optimize.fsolve(plength, 0.001, args=(np.mean(np.square(val1)), 
-        #                                                      binrange[i]+binsize/2))
+        # res_AL1 = scipy.optimize.differential_evolution(plength,
+        #                                                 bounds=[(0, 100)], 
+        #                                                 args=(np.mean(np.square(val1)),
+        #                                                       binrange[i]+binsize/2))
+        res_AL1 = scipy.optimize.minimize(plength, x0=1, args=(np.mean(np.square(val1)), 
+                                                                   binrange[i]+binsize/2))
         binee_AL.append(val1)
         bincont_AL.append(val2)
         bincont_AL_mean.append(np.mean(val2))
@@ -12388,18 +12392,18 @@ for i in range(len(binrange)):
         binx_AL.append(binrange[i]+binsize/2)
 
 for i in range(len(binrange)):
-    binidx = np.where((LengthData.length_branch_ee_LH >= binrange[i]) & 
-                      (LengthData.length_branch_ee_LH < binrange[i]+binsize))[0]
+    binidx = np.where((LengthData.length_LH_flat >= binrange[i]) & 
+                      (LengthData.length_LH_flat < binrange[i]+binsize))[0]
     
     if len(binidx) > 0:
         val1 = np.array(LengthData.length_branch_ee_LH)[binidx]
         val2 = np.array(LengthData.length_LH_flat)[binidx]
-        res_LH1 = scipy.optimize.differential_evolution(plength,
-                                                        bounds=[(0, 100)], 
-                                                        args=(scipy.stats.moment(val1, moment=2), 
-                                                              binrange[i]+binsize/2))
-        # res_LH1 = scipy.optimize.fsolve(plength, 0.001, args=(np.mean(np.square(val1)), 
+        # res_LH1 = scipy.optimize.differential_evolution(plength,
+        #                                                 bounds=[(0, 100)], 
+        #                                                 args=(np.mean(np.square(val1)), 
         #                                                       binrange[i]+binsize/2))
+        res_LH1 = scipy.optimize.minimize(plength, x0=1, args=(np.mean(np.square(val1)), 
+                                                                   binrange[i]+binsize/2))
         binee_LH.append(val1)
         bincont_LH.append(val2)
         bincont_LH_mean.append(np.mean(val2))
@@ -12407,18 +12411,18 @@ for i in range(len(binrange)):
         binx_LH.append(binrange[i]+binsize/2)
 
 for i in range(len(binrange)):
-    binidx = np.where((LengthData.length_branch_ee_calyx >= binrange[i]) & 
-                      (LengthData.length_branch_ee_calyx < binrange[i]+binsize))[0]
+    binidx = np.where((LengthData.length_calyx_flat >= binrange[i]) & 
+                      (LengthData.length_calyx_flat < binrange[i]+binsize))[0]
     
     if len(binidx) > 0:
         val1 = np.array(LengthData.length_branch_ee_calyx)[binidx]
         val2 = np.array(LengthData.length_calyx_flat)[binidx]
-        res_calyx1 = scipy.optimize.differential_evolution(plength,
-                                                        bounds=[(0, 100)], 
-                                                        args=(scipy.stats.moment(val1, moment=2), 
-                                                              binrange[i]+binsize/2))
-        # res_calyx1 = scipy.optimize.fsolve(plength, 0.001, args=(np.mean(np.square(val1)), 
-        #                                                          binrange[i]+binsize/2))
+        # res_calyx1 = scipy.optimize.differential_evolution(plength,
+        #                                                 bounds=[(0, 100)], 
+        #                                                 args=(np.mean(np.square(val1)), 
+        #                                                       binrange[i]+binsize/2))
+        res_calyx1 = scipy.optimize.minimize(plength, x0=1, args=(np.mean(np.square(val1)), 
+                                                                      binrange[i]+binsize/2))
         binee_calyx.append(val1)
         bincont_calyx.append(val2)
         bincont_calyx_mean.append(np.mean(val2))
@@ -12426,19 +12430,29 @@ for i in range(len(binrange)):
         binx_calyx.append(binrange[i]+binsize/2)
 
 
-
-
 fig = plt.figure(figsize=(6, 4))
 plt.scatter(2*np.pi/np.array(binx_AL), res_AL, marker='.', color='tab:blue')
 plt.scatter(2*np.pi/np.array(binx_LH), res_LH, marker='.', color='tab:green')
 plt.scatter(2*np.pi/np.array(binx_calyx), res_calyx, marker='.', color='tab:orange')
+# plt.plot(binrange, 2*np.pi/binrange, color='k')
 plt.xscale('log')
-plt.ylim(0, 20)
-plt.xlim(2e-1, 7)
+plt.ylim(0, 15)
+plt.xlim(3e-1, 7)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("$l_{p}$", fontsize=15)
 plt.show()
 
+fig = plt.figure(figsize=(6, 4))
+plt.scatter(np.array(binx_AL), res_AL, marker='.', color='tab:blue')
+plt.scatter(np.array(binx_LH), res_LH, marker='.', color='tab:green')
+plt.scatter(np.array(binx_calyx), res_calyx, marker='.', color='tab:orange')
+plt.plot(np.arange(18), np.arange(18), color='k', linestyle='--')
+# plt.xscale('log')
+plt.ylim(0, 15)
+# plt.xlim(3e-1, 7)
+plt.xlabel("$l$ ($\mu\mathrm{m}$)", fontsize=15)
+plt.ylabel("$l_{p}$", fontsize=15)
+plt.show()
 
 fig = plt.figure(figsize=(6, 4))
 plt.scatter(2*np.pi/np.array(binx_AL), np.divide(res_AL,bincont_AL_mean), marker='.', color='tab:blue')
@@ -12446,7 +12460,7 @@ plt.scatter(2*np.pi/np.array(binx_LH), np.divide(res_LH,bincont_LH_mean), marker
 plt.scatter(2*np.pi/np.array(binx_calyx), np.divide(res_calyx,bincont_calyx_mean), marker='.', color='tab:orange')
 plt.xscale('log')
 plt.ylim(0, 1.5)
-plt.xlim(2e-1, 7)
+plt.xlim(3e-1, 7)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("$l_{p}/l$", fontsize=15)
 plt.show()
