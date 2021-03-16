@@ -12301,35 +12301,48 @@ plt.show()
 
 #%% Persistence length V1
 
+def plength(l, MSR, R_max):
+    return np.abs(MSR - (2*l*R_max - 2*np.square(l)*(1 - np.exp(-R_max/l))))
+
 LengthData.length_branch_ee = []
 
 for i in range(len(BranchData.branch_dist)):
     temp = []
     for j in range(len(BranchData.branch_dist[i])):
-        temp.append(np.max(scipy.spatial.distance.cdist(BranchData.branch_dist[i][j], BranchData.branch_dist[i][j])))
+        temp.append(np.linalg.norm(np.subtract(BranchData.branch_dist[i][j][0], BranchData.branch_dist[i][j][-1])))
     LengthData.length_branch_ee.append(temp)
-
-def plength(l, R, R_max):
-    return np.abs(np.mean(np.square(R)) - (2*l*R_max - 2*np.square(l)*(1 - np.exp(-R_max/l))))
-
-l_p = []
-for i in range(len(BranchData.branch_dist)):
-    temp = []
-    for j in range(len(BranchData.branch_dist[i])):
-        res = scipy.optimize.differential_evolution(plength, bounds=[(0, 10000)], args=(LengthData.length_branch_ee[i][j], LengthData.length_branch[i][j]))
-        if res.success:
-            temp.append(res.x[0])
-        else:
-            temp.append(0)
-    l_p.append(temp)
-
-l_p_flat = [item for sublist in l_p for item in sublist]
 
 LengthData.length_branch_ee_flat = [item for sublist in LengthData.length_branch_ee for item in sublist]
 
+LengthData.length_branch_ee_AL = []
+
+for i in range(len(MorphData.ALdist)):
+    LengthData.length_branch_ee_AL.append(np.linalg.norm(np.subtract(MorphData.ALdist[i][0], MorphData.ALdist[i][-1])))
+
+LengthData.length_branch_ee_LH = []
+
+for i in range(len(MorphData.LHdist)):
+    LengthData.length_branch_ee_LH.append(np.linalg.norm(np.subtract(MorphData.LHdist[i][0], MorphData.LHdist[i][-1])))
+    
+LengthData.length_branch_ee_calyx = []
+
+for i in range(len(MorphData.calyxdist)):
+    LengthData.length_branch_ee_calyx.append(np.linalg.norm(np.subtract(MorphData.calyxdist[i][0], MorphData.calyxdist[i][-1])))
+
+
+
 fig = plt.figure(figsize=(6, 4))
-plt.scatter(LengthData.length_branch_ee_flat, LengthData.length_branch_flat, marker='.')
+plt.scatter(LengthData.length_branch_ee_flat, LengthData.length_branch_flat, marker='.',  s=1)
 plt.plot(np.arange(150), np.arange(150), color='tab:red')
+plt.xlabel('End-to-end Length', fontsize=15)
+plt.ylabel('Contour Length', fontsize=15)
+plt.show()
+
+fig = plt.figure(figsize=(6, 4))
+plt.scatter(LengthData.length_branch_ee_AL, LengthData.length_AL_flat, marker='.', s=1)
+plt.scatter(LengthData.length_branch_ee_LH, LengthData.length_LH_flat, marker='.', s=1)
+plt.scatter(LengthData.length_branch_ee_calyx, LengthData.length_calyx_flat, marker='.', s=1)
+plt.plot(np.arange(60), np.arange(60), color='tab:red')
 plt.xlabel('End-to-end Length', fontsize=15)
 plt.ylabel('Contour Length', fontsize=15)
 plt.show()
