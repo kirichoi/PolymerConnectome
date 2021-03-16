@@ -12347,31 +12347,99 @@ plt.xlabel('End-to-end Length', fontsize=15)
 plt.ylabel('Contour Length', fontsize=15)
 plt.show()
 
-length_branch_max = []
-length_branch_ee_max = []
+binsize = 3
+bind = 0.1
+binrange = np.arange(0, 59, bind)
 
-for i in range(len(LengthData.length_branch)):
-    length_branch_max.append(np.max(LengthData.length_branch[i]))
-    maxidx = np.argmax(LengthData.length_branch[i])
-    length_branch_ee_max.append(LengthData.length_branch_ee[i][maxidx])
+binee_AL = []
+bincont_AL = []
+bincont_AL_mean = []
+res_AL = []
+binx_AL = []
+binee_LH = []
+bincont_LH = []
+bincont_LH_mean = []
+res_LH = []
+binx_LH = []
+binee_calyx = []
+bincont_calyx = []
+bincont_calyx_mean = []
+res_calyx = []
+binx_calyx = []
+
+for i in range(len(binrange)):
+    binidx = np.where((LengthData.length_branch_ee_AL >= binrange[i]) & 
+                      (LengthData.length_branch_ee_AL < binrange[i]+binsize))[0]
+    
+    if len(binidx) > 0:
+        val1 = np.array(LengthData.length_branch_ee_AL)[binidx]
+        val2 = np.array(LengthData.length_AL_flat)[binidx]
+        res_AL1 = scipy.optimize.differential_evolution(plength,
+                                                        bounds=[(0, 100)], 
+                                                        args=(np.mean(np.square(val1)), 
+                                                              np.mean(val2)))
+        binee_AL.append(val1)
+        bincont_AL.append(val2)
+        bincont_AL_mean.append(np.mean(val2))
+        res_AL.append(res_AL1.x[0])
+        binx_AL.append(binrange[i]+binsize/2)
+
+for i in range(len(binrange)):
+    binidx = np.where((LengthData.length_branch_ee_LH >= binrange[i]) & 
+                      (LengthData.length_branch_ee_LH < binrange[i]+binsize))[0]
+    
+    if len(binidx) > 0:
+        val1 = np.array(LengthData.length_branch_ee_LH)[binidx]
+        val2 = np.array(LengthData.length_LH_flat)[binidx]
+        res_LH1 = scipy.optimize.differential_evolution(plength,
+                                                        bounds=[(0, 100)], 
+                                                        args=(np.mean(np.square(val1)), 
+                                                              np.mean(val2)))
+        binee_LH.append(val1)
+        bincont_LH.append(val2)
+        bincont_LH_mean.append(np.mean(val2))
+        res_LH.append(res_LH1.x[0])
+        binx_LH.append(binrange[i]+binsize/2)
+
+for i in range(len(binrange)):
+    binidx = np.where((LengthData.length_branch_ee_calyx >= binrange[i]) & 
+                      (LengthData.length_branch_ee_calyx < binrange[i]+binsize))[0]
+    
+    if len(binidx) > 0:
+        val1 = np.array(LengthData.length_branch_ee_calyx)[binidx]
+        val2 = np.array(LengthData.length_calyx_flat)[binidx]
+        res_calyx1 = scipy.optimize.differential_evolution(plength,
+                                                        bounds=[(0, 100)], 
+                                                        args=(np.mean(np.square(val1)), 
+                                                              np.mean(val2)))
+        binee_calyx.append(val1)
+        bincont_calyx.append(val2)
+        bincont_calyx_mean.append(np.mean(val2))
+        res_calyx.append(res_calyx1.x[0])
+        binx_calyx.append(binrange[i]+binsize/2)
+
+
+
 
 fig = plt.figure(figsize=(6, 4))
-plt.scatter(length_branch_ee_max, length_branch_max, marker='.')
-plt.plot(np.arange(150), np.arange(150), color='tab:red')
-plt.xlabel('End-to-end Length', fontsize=15)
-plt.ylabel('Contour Length', fontsize=15)
+plt.scatter(2*np.pi/np.array(binx_AL), res_AL, marker='.', color='tab:blue')
+plt.scatter(2*np.pi/np.array(binx_LH), res_LH, marker='.', color='tab:green')
+plt.scatter(2*np.pi/np.array(binx_calyx), res_calyx, marker='.', color='tab:orange')
+plt.xscale('log')
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
+plt.ylabel("$l_{p}$", fontsize=15)
 plt.show()
 
-l_p_max = []
-for i in range(len(length_branch_max)):
-    res = scipy.optimize.differential_evolution(plength, bounds=[(0, 10000)], args=(length_branch_ee_max[i], length_branch_max[i]))
-    if res.success:
-        l_p_max.append(res.x[0])
-    else:
-        l_p_max.append(0)
 
+fig = plt.figure(figsize=(6, 4))
+plt.scatter(2*np.pi/np.array(binx_AL), np.divide(res_AL,bincont_AL_mean), marker='.', color='tab:blue')
+plt.scatter(2*np.pi/np.array(binx_LH), np.divide(res_LH,bincont_LH_mean), marker='.', color='tab:green')
+plt.scatter(2*np.pi/np.array(binx_calyx), np.divide(res_calyx,bincont_calyx_mean), marker='.', color='tab:orange')
+plt.xscale('log')
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
+plt.ylabel("$l_{p}$", fontsize=15)
+plt.show()
 
-l_p_max = np.delete(l_p_max, 41)
 
 
 #%% Persistence length V2
@@ -12553,7 +12621,7 @@ plt.xlim(0, 100)
 plt.ylim(3e-5, 1)
 plt.yscale('log')
 plt.legend(['AL', 'LH', 'MB calyx'], fontsize=13)
-plt.xlabel('Contour Length $R_{max}$ ($\mu m$)', fontsize=15)
+plt.xlabel('Contour Length $R_{max}$ ($\mu\mathrm{m}$)', fontsize=15)
 plt.ylabel('P($R_{max}$)', fontsize=15)
 plt.show()
 
@@ -12569,6 +12637,6 @@ plt.xlim(0, 20)
 # plt.ylim(3e-5, 1)
 # plt.yscale('log')
 plt.legend(['AL', 'LH', 'MB calyx'], fontsize=13)
-plt.xlabel('Contour Length $R_{max}$ ($\mu m$)', fontsize=15)
+plt.xlabel('Contour Length $R_{max}$ ($\mu\mathrm{m}$)', fontsize=15)
 plt.ylabel('P($R_{max}$)', fontsize=15)
 plt.show()
