@@ -12342,14 +12342,15 @@ fig = plt.figure(figsize=(6, 4))
 plt.scatter(LengthData.length_branch_ee_AL, LengthData.length_AL_flat, marker='.', s=1)
 plt.scatter(LengthData.length_branch_ee_LH, LengthData.length_LH_flat, marker='.', s=1)
 plt.scatter(LengthData.length_branch_ee_calyx, LengthData.length_calyx_flat, marker='.', s=1)
-plt.plot(np.arange(60), np.arange(60), color='tab:red')
 plt.xlabel('End-to-end Length', fontsize=15)
 plt.ylabel('Contour Length', fontsize=15)
+plt.legend(['AL', 'LH', 'MB calyx'], fontsize=13)
+plt.plot(np.arange(60), np.arange(60), color='tab:red')
 plt.show()
 
 binsize = 3
 bind = 0.1
-binrange = np.arange(0, 59, bind)
+binrange = np.arange(0, 59*1/bind, 1)/(1/bind)
 
 binee_AL = []
 bincont_AL = []
@@ -12376,8 +12377,10 @@ for i in range(len(binrange)):
         val2 = np.array(LengthData.length_AL_flat)[binidx]
         res_AL1 = scipy.optimize.differential_evolution(plength,
                                                         bounds=[(0, 100)], 
-                                                        args=(np.mean(np.square(val1)), 
-                                                              np.mean(val2)))
+                                                        args=(scipy.stats.moment(val1, moment=2), 
+                                                              binrange[i]+binsize/2))
+        # res_AL1 = scipy.optimize.fsolve(plength, 0.001, args=(np.mean(np.square(val1)), 
+        #                                                      binrange[i]+binsize/2))
         binee_AL.append(val1)
         bincont_AL.append(val2)
         bincont_AL_mean.append(np.mean(val2))
@@ -12393,8 +12396,10 @@ for i in range(len(binrange)):
         val2 = np.array(LengthData.length_LH_flat)[binidx]
         res_LH1 = scipy.optimize.differential_evolution(plength,
                                                         bounds=[(0, 100)], 
-                                                        args=(np.mean(np.square(val1)), 
-                                                              np.mean(val2)))
+                                                        args=(scipy.stats.moment(val1, moment=2), 
+                                                              binrange[i]+binsize/2))
+        # res_LH1 = scipy.optimize.fsolve(plength, 0.001, args=(np.mean(np.square(val1)), 
+        #                                                       binrange[i]+binsize/2))
         binee_LH.append(val1)
         bincont_LH.append(val2)
         bincont_LH_mean.append(np.mean(val2))
@@ -12410,8 +12415,10 @@ for i in range(len(binrange)):
         val2 = np.array(LengthData.length_calyx_flat)[binidx]
         res_calyx1 = scipy.optimize.differential_evolution(plength,
                                                         bounds=[(0, 100)], 
-                                                        args=(np.mean(np.square(val1)), 
-                                                              np.mean(val2)))
+                                                        args=(scipy.stats.moment(val1, moment=2), 
+                                                              binrange[i]+binsize/2))
+        # res_calyx1 = scipy.optimize.fsolve(plength, 0.001, args=(np.mean(np.square(val1)), 
+        #                                                          binrange[i]+binsize/2))
         binee_calyx.append(val1)
         bincont_calyx.append(val2)
         bincont_calyx_mean.append(np.mean(val2))
@@ -12426,6 +12433,8 @@ plt.scatter(2*np.pi/np.array(binx_AL), res_AL, marker='.', color='tab:blue')
 plt.scatter(2*np.pi/np.array(binx_LH), res_LH, marker='.', color='tab:green')
 plt.scatter(2*np.pi/np.array(binx_calyx), res_calyx, marker='.', color='tab:orange')
 plt.xscale('log')
+plt.ylim(0, 20)
+plt.xlim(2e-1, 7)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("$l_{p}$", fontsize=15)
 plt.show()
@@ -12436,8 +12445,10 @@ plt.scatter(2*np.pi/np.array(binx_AL), np.divide(res_AL,bincont_AL_mean), marker
 plt.scatter(2*np.pi/np.array(binx_LH), np.divide(res_LH,bincont_LH_mean), marker='.', color='tab:green')
 plt.scatter(2*np.pi/np.array(binx_calyx), np.divide(res_calyx,bincont_calyx_mean), marker='.', color='tab:orange')
 plt.xscale('log')
+plt.ylim(0, 1.5)
+plt.xlim(2e-1, 7)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("$l_{p}$", fontsize=15)
+plt.ylabel("$l_{p}/l$", fontsize=15)
 plt.show()
 
 
@@ -12575,25 +12586,32 @@ res_calyx = []
 for q in range(len(q_range)):
     AL_e2e_sampled_flat = AL_e2e_sampled[q]#[item for sublist in AL_e2e_sampled[q] for item in sublist]
     AL_cont_sampled_flat = AL_cont_sampled[q]#[item for sublist in AL_cont_sampled[q] for item in sublist]
-    res_AL1 = scipy.optimize.differential_evolution(plength,
-                                                    bounds=[(0, 100)], 
-                                                    args=(np.mean(np.square(AL_e2e_sampled_flat)), 
-                                                          2*np.pi/q_range[q]))#length_AL_mean))
+    # res_AL1 = scipy.optimize.differential_evolution(plength,
+    #                                                 bounds=[(0, 100)], 
+    #                                                 args=(np.mean(np.square(AL_e2e_sampled_flat)), 
+    #                                                       np.mean(AL_cont_sampled_flat)))#2*np.pi/q_range[q]))
+    res_AL1 = scipy.optimize.fsolve(plength, 0.001, args=(np.mean(np.square(AL_e2e_sampled_flat)), 
+                                                          np.mean(AL_cont_sampled_flat)))#2*np.pi/q_range[q]))
+    
     LH_e2e_sampled_flat = LH_e2e_sampled[q]#[item for sublist in LH_e2e_sampled[q] for item in sublist]
     LH_cont_sampled_flat = LH_cont_sampled[q]#[item for sublist in LH_cont_sampled[q] for item in sublist]
-    res_LH1 = scipy.optimize.differential_evolution(plength, 
-                                                    bounds=[(0, 100)], 
-                                                    args=(np.mean(np.square(LH_e2e_sampled_flat)), 
-                                                          2*np.pi/q_range[q]))#length_LH_mean))
+    # res_LH1 = scipy.optimize.differential_evolution(plength, 
+    #                                                 bounds=[(0, 100)], 
+    #                                                 args=(np.mean(np.square(LH_e2e_sampled_flat)), 
+    #                                                       np.mean(LH_cont_sampled_flat)))#2*np.pi/q_range[q]))
+    res_LH1 = scipy.optimize.fsolve(plength, 0.001, args=(np.mean(np.square(LH_e2e_sampled_flat)), 
+                                                          np.mean(LH_cont_sampled_flat)))#2*np.pi/q_range[q]))
     calyx_e2e_sampled_flat = calyx_e2e_sampled[q]#[item for sublist in calyx_e2e_sampled[q] for item in sublist]
     calyx_cont_sampled_flat = calyx_cont_sampled[q]#[item for sublist in calyx_cont_sampled[q] for item in sublist]
-    res_calyx1 = scipy.optimize.differential_evolution(plength, 
-                                                       bounds=[(0, 100)], 
-                                                       args=(np.mean(np.square(calyx_e2e_sampled_flat)), 
-                                                             2*np.pi/q_range[q]))#length_calyx_mean))
-    res_AL.append(res_AL1.x[0])
-    res_LH.append(res_LH1.x[0])
-    res_calyx.append(res_calyx1.x[0])
+    # res_calyx1 = scipy.optimize.differential_evolution(plength, 
+    #                                                    bounds=[(0, 100)], 
+    #                                                    args=(np.mean(np.square(calyx_e2e_sampled_flat)), 
+    #                                                          np.mean(calyx_cont_sampled_flat)))#2*np.pi/q_range[q]))
+    res_calyx1 = scipy.optimize.fsolve(plength, 0.001, args=(np.mean(np.square(calyx_e2e_sampled_flat)), 
+                                                             np.mean(calyx_cont_sampled_flat)))#2*np.pi/q_range[q]))
+    res_AL.append(res_AL1[0])
+    res_LH.append(res_LH1[0])
+    res_calyx.append(res_calyx1[0])
 
 fig = plt.figure(figsize=(6, 4))
 plt.scatter(q_range, res_AL, marker='.', color='tab:blue')
@@ -12604,8 +12622,22 @@ plt.xscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("$l_{p}$", fontsize=15)
 plt.ylim(0, 20)
+plt.xlim(2e-1, 7)
 # plt.savefig(Parameter.outputdir + '/lp_all.pdf', dpi=300, bbox_inches='tight')
 plt.show()
+
+fig = plt.figure(figsize=(6, 4))
+plt.scatter(q_range, np.divide(res_AL, 2*np.pi/q_range), marker='.', color='tab:blue')
+plt.scatter(q_range, np.divide(res_LH, 2*np.pi/q_range), marker='.', color='tab:green')
+plt.scatter(q_range, np.divide(res_calyx, 2*np.pi/q_range), marker='.', color='tab:orange')
+plt.xscale('log')
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
+plt.ylabel("$l_{p}$", fontsize=15)
+plt.ylim(0, 5)
+plt.xlim(2e-1, 7)
+# plt.savefig(Parameter.outputdir + '/lp_all.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
 
 #%% Segment contour length distribution
 
