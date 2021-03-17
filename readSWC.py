@@ -9273,6 +9273,27 @@ plt.show()
 
 #%% form factor per neuron plotting
 
+rgy_calyx_per_n = []
+
+for i in range(len(MorphData.calyxdist_per_n)):
+    if len(MorphData.calyxdist_per_n[i]) > 0:
+        rgy_temp, cm_temp = utils.radiusOfGyration(np.array([[item for sublist in MorphData.calyxdist_per_n[i] for item in sublist]]))
+        rgy_calyx_per_n.append(rgy_temp[0])
+
+rgy_LH_per_n = []
+
+for i in range(len(MorphData.LHdist_per_n)):
+    if len(MorphData.LHdist_per_n[i]) > 0:
+        rgy_temp, cm_temp = utils.radiusOfGyration(np.array([[item for sublist in MorphData.LHdist_per_n[i] for item in sublist]]))
+        rgy_LH_per_n.append(rgy_temp[0])
+
+rgy_AL_per_n = []
+
+for i in range(len(MorphData.ALdist_per_n)):
+    if len(MorphData.ALdist_per_n[i]) > 0:
+        rgy_temp, cm_temp = utils.radiusOfGyration(np.array([[item for sublist in MorphData.ALdist_per_n[i] for item in sublist]]))
+        rgy_AL_per_n.append(rgy_temp[0])
+
 q_range = np.logspace(-2,3,100)
 
 LengthData.length_calyx_flat = np.array([item for sublist in LengthData.length_calyx for item in sublist])
@@ -9304,7 +9325,8 @@ plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:bl
 
 # plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue', ls='dotted')
 
-plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
+# plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
+plt.vlines(1/np.mean(rgy_AL_per_n), 1e-6, 10, color='tab:blue', ls='--')
 
 line1 = 1/7500*np.power(q_range, -16/7)
 # line2 = 1/1000000*np.power(q_range, -4/1)
@@ -9341,7 +9363,8 @@ plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:gr
 
 # plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green', ls='dotted')
 
-plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
+# plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
+plt.vlines(1/np.mean(rgy_LH_per_n), 1e-6, 10, color='tab:green', ls='--')
 
 line1 = 1/7500*np.power(q_range, -16/7)
 # line2 = 1/1000000*np.power(q_range, -4/1)
@@ -9378,7 +9401,8 @@ plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab
 
 # plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange', ls='dotted')
 
-plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
+# plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
+plt.vlines(1/np.mean(rgy_calyx_per_n), 1e-6, 10, color='tab:orange', ls='--')
 
 line1 = 1/7500*np.power(q_range, -16/7)
 # line2 = 1/1000000*np.power(q_range, -4/1)
@@ -9515,7 +9539,8 @@ plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab
 
 # plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange', ls='dotted')
 
-plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
+# plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
+plt.vlines(1/np.mean(rgy_calyx_per_n), 1e-6, 10, color='tab:orange', ls='--')
 
 
 plt.xscale('log')
@@ -9551,7 +9576,8 @@ plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:gr
 
 # plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green', ls='dotted')
 
-plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
+# plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
+plt.vlines(1/np.mean(rgy_LH_per_n), 1e-6, 10, color='tab:green', ls='--')
 
 
 plt.xscale('log')
@@ -9587,7 +9613,8 @@ plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:bl
 
 # plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue', ls='dotted')
 
-plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
+# plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
+plt.vlines(1/np.mean(rgy_AL_per_n), 1e-6, 10, color='tab:blue', ls='--')
 
 
 plt.xscale('log')
