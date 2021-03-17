@@ -660,6 +660,47 @@ MorphData.morph_dist_len = np.array([len(arr) for arr in MorphData.morph_dist])
 MorphData.morph_dist_flat = np.array([item for sublist in MorphData.morph_dist for item in sublist])
 #MorphData.morph_dist_len_EP = np.empty((len(MorphData.morph_dist_len)))
 
+LengthData.length_calyx_b = []
+LengthData.length_calyx_b_flat = []
+
+for i in range(len(MorphData.calyxdist_per_n)):
+    temp1 = []
+    for j in range(len(MorphData.calyxdist_per_n[i])):
+        temp2 = []
+        for k in range(len(MorphData.calyxdist_per_n[i][j])-1):
+            dist = np.linalg.norm(np.subtract(MorphData.calyxdist_per_n[i][j][k], MorphData.calyxdist_per_n[i][j][k+1]))
+            temp2.append(dist)
+            LengthData.length_calyx_b_flat.append(dist)
+        temp1.append(temp2)
+    LengthData.length_calyx_b.append(temp1)
+
+LengthData.length_LH_b = []
+LengthData.length_LH_b_flat = []
+
+for i in range(len(MorphData.LHdist_per_n)):
+    temp1 = []
+    for j in range(len(MorphData.LHdist_per_n[i])):
+        temp2 = []
+        for k in range(len(MorphData.LHdist_per_n[i][j])-1):
+            dist = np.linalg.norm(np.subtract(MorphData.LHdist_per_n[i][j][k], MorphData.LHdist_per_n[i][j][k+1]))
+            temp2.append(dist)
+            LengthData.length_LH_b_flat.append(dist)
+        temp1.append(temp2)
+    LengthData.length_LH_b.append(temp1)
+
+LengthData.length_AL_b = []
+LengthData.length_AL_b_flat = []
+
+for i in range(len(MorphData.ALdist_per_n)):
+    temp1 = []
+    for j in range(len(MorphData.ALdist_per_n[i])):
+        temp2 = []
+        for k in range(len(MorphData.ALdist_per_n[i][j])-1):
+            dist = np.linalg.norm(np.subtract(MorphData.ALdist_per_n[i][j][k], MorphData.ALdist_per_n[i][j][k+1]))
+            temp2.append(dist)
+            LengthData.length_AL_b_flat.append(dist)
+        temp1.append(temp2)
+    LengthData.length_AL_b.append(temp1)
 
 t2 = time.time()
 
@@ -697,36 +738,36 @@ if Parameter.RUN:
     if Parameter.SAVE:
         utils.exportMorph(Parameter, t4-t0, MorphData, BranchData, LengthData)
 
-calyx_dist_flat = np.array([item for sublist in MorphData.calyxdist for item in sublist])
-LH_dist_flat = np.array([item for sublist in MorphData.LHdist for item in sublist])
-AL_dist_flat = np.array([item for sublist in MorphData.ALdist for item in sublist])
+MorphData.calyxdist_flat = np.array([item for sublist in MorphData.calyxdist for item in sublist])
+MorphData.LHdist_flat = np.array([item for sublist in MorphData.LHdist for item in sublist])
+MorphData.ALdist_flat = np.array([item for sublist in MorphData.ALdist for item in sublist])
 
-calyxCM = (np.sum(calyx_dist_flat, axis=0)/len(calyx_dist_flat))
-LHCM = (np.sum(LH_dist_flat, axis=0)/len(LH_dist_flat))
-ALCM = (np.sum(AL_dist_flat, axis=0)/len(AL_dist_flat))
+calyxCM = (np.sum(MorphData.calyxdist_flat, axis=0)/len(MorphData.calyxdist_flat))
+LHCM = (np.sum(MorphData.LHdist_flat, axis=0)/len(MorphData.LHdist_flat))
+ALCM = (np.sum(MorphData.ALdist_flat, axis=0)/len(MorphData.ALdist_flat))
 
 fullCM = cML#np.average(OutputData.cMLSeg, axis=0)
 
-xmax_calyx = np.max(calyx_dist_flat[:,0])
-xmin_calyx = np.min(calyx_dist_flat[:,0])
-ymax_calyx = np.max(calyx_dist_flat[:,1])
-ymin_calyx = np.min(calyx_dist_flat[:,1])
-zmax_calyx = np.max(calyx_dist_flat[:,2])
-zmin_calyx = np.min(calyx_dist_flat[:,2])
+xmax_calyx = np.max(MorphData.calyxdist_flat[:,0])
+xmin_calyx = np.min(MorphData.calyxdist_flat[:,0])
+ymax_calyx = np.max(MorphData.calyxdist_flat[:,1])
+ymin_calyx = np.min(MorphData.calyxdist_flat[:,1])
+zmax_calyx = np.max(MorphData.calyxdist_flat[:,2])
+zmin_calyx = np.min(MorphData.calyxdist_flat[:,2])
 
-xmax_LH = np.max(LH_dist_flat[:,0])
-xmin_LH = np.min(LH_dist_flat[:,0])
-ymax_LH = np.max(LH_dist_flat[:,1])
-ymin_LH = np.min(LH_dist_flat[:,1])
-zmax_LH = np.max(LH_dist_flat[:,2])
-zmin_LH = np.min(LH_dist_flat[:,2])
+xmax_LH = np.max(MorphData.LHdist_flat[:,0])
+xmin_LH = np.min(MorphData.LHdist_flat[:,0])
+ymax_LH = np.max(MorphData.LHdist_flat[:,1])
+ymin_LH = np.min(MorphData.LHdist_flat[:,1])
+zmax_LH = np.max(MorphData.LHdist_flat[:,2])
+zmin_LH = np.min(MorphData.LHdist_flat[:,2])
 
-xmax_AL = np.max(AL_dist_flat[:,0])
-xmin_AL = np.min(AL_dist_flat[:,0])
-ymax_AL = np.max(AL_dist_flat[:,1])
-ymin_AL = np.min(AL_dist_flat[:,1])
-zmax_AL = np.max(AL_dist_flat[:,2])
-zmin_AL = np.min(AL_dist_flat[:,2])
+xmax_AL = np.max(MorphData.ALdist_flat[:,0])
+xmin_AL = np.min(MorphData.ALdist_flat[:,0])
+ymax_AL = np.max(MorphData.ALdist_flat[:,1])
+ymin_AL = np.min(MorphData.ALdist_flat[:,1])
+zmax_AL = np.max(MorphData.ALdist_flat[:,2])
+zmin_AL = np.min(MorphData.ALdist_flat[:,2])
 
 # Find the BP closest to the CM
 calyxcent_bp = np.array([0,0,0])
@@ -802,9 +843,9 @@ r_z = np.array([0, 0, 1])
 r_vec_x = r_rad_x * r_x
 rotx = Rotation.from_rotvec(r_vec_x)
 morph_dist_flat_rot = rotx.apply(MorphData.morph_dist_flat)
-calyxdist_flat_rot = rotx.apply(calyx_dist_flat)
-LHdist_flat_rot = rotx.apply(LH_dist_flat)
-ALdist_flat_rot = rotx.apply(AL_dist_flat)
+calyxdist_flat_rot = rotx.apply(MorphData.calyxdist_flat)
+LHdist_flat_rot = rotx.apply(MorphData.LHdist_flat)
+ALdist_flat_rot = rotx.apply(MorphData.ALdist_flat)
 
 r_vec_y = r_rad_y * r_y
 roty = Rotation.from_rotvec(r_vec_y)
@@ -3025,7 +3066,7 @@ for b in range(len(binsize)):
     if len(zbin_calyx) == 1:
         zbin_calyx = [-1000, 1000]
     
-    hc, e = np.histogramdd(calyx_dist_flat, 
+    hc, e = np.histogramdd(MorphData.calyxdist_flat, 
                           bins=[xbin_calyx, 
                                 ybin_calyx,
                                 zbin_calyx])
@@ -3041,7 +3082,7 @@ for b in range(len(binsize)):
     if len(zbin_LH) == 1:
         zbin_LH = [-1000, 1000]
     
-    hh, e = np.histogramdd(LH_dist_flat, 
+    hh, e = np.histogramdd(MorphData.LHdist_flat, 
                           bins=[xbin_LH, 
                                 ybin_LH,
                                 zbin_LH])
@@ -3057,7 +3098,7 @@ for b in range(len(binsize)):
     if len(zbin_AL) == 1:
         zbin_AL = [-1000, 1000]
         
-    ha, e = np.histogramdd(AL_dist_flat, 
+    ha, e = np.histogramdd(MorphData.ALdist_flat, 
                           bins=[xbin_AL, 
                                 ybin_AL,
                                 zbin_AL])
@@ -3155,7 +3196,7 @@ for b in range(len(binsize)):
     if len(zbin_calyx_b) == 1:
         zbin_calyx_b = [-1000, 1000]
     
-    hc, e = np.histogramdd(calyx_dist_flat, 
+    hc, e = np.histogramdd(MorphData.calyxdist_flat, 
                           bins=[xbin_calyx_b, 
                                 ybin_calyx_b,
                                 zbin_calyx_b])
@@ -3175,7 +3216,7 @@ for b in range(len(binsize)):
     if len(zbin_LH_b) == 1:
         zbin_LH_b = [-1000, 1000]
     
-    hh, e = np.histogramdd(LH_dist_flat, 
+    hh, e = np.histogramdd(MorphData.LHdist_flat, 
                           bins=[xbin_LH_b, 
                                 ybin_LH_b,
                                 zbin_LH_b])
@@ -3195,7 +3236,7 @@ for b in range(len(binsize)):
     if len(zbin_AL_b) == 1:
         zbin_AL_b = [-1000, 1000]
         
-    ha, e = np.histogramdd(AL_dist_flat, 
+    ha, e = np.histogramdd(MorphData.ALdist_flat, 
                           bins=[xbin_AL_b, 
                                 ybin_AL_b,
                                 zbin_AL_b])
@@ -3307,7 +3348,7 @@ for r in range(bbr):
             if len(zbin_calyx_b) == 1:
                 zbin_calyx_b = [-1000, 1000]
             
-            hc, e = np.histogramdd(calyx_dist_flat, 
+            hc, e = np.histogramdd(MorphData.calyxdist_flat, 
                                   bins=[xbin_calyx_b, 
                                         ybin_calyx_b,
                                         zbin_calyx_b])
@@ -3323,7 +3364,7 @@ for r in range(bbr):
             if len(zbin_LH_b) == 1:
                 zbin_LH_b = [-1000, 1000]
             
-            hh, e = np.histogramdd(LH_dist_flat, 
+            hh, e = np.histogramdd(MorphData.LHdist_flat, 
                                   bins=[xbin_LH_b, 
                                         ybin_LH_b,
                                         zbin_LH_b])
@@ -3339,7 +3380,7 @@ for r in range(bbr):
             if len(zbin_AL_b) == 1:
                 zbin_AL_b = [-1000, 1000]
                 
-            ha, e = np.histogramdd(AL_dist_flat, 
+            ha, e = np.histogramdd(MorphData.ALdist_flat, 
                                   bins=[xbin_AL_b, 
                                         ybin_AL_b,
                                         zbin_AL_b])
@@ -5294,19 +5335,19 @@ hull_calyx = ConvexHull(np.array(morph_dist_calyx_flat))
 calyx_vol = hull_calyx.volume
 calyx_area = hull_calyx.area
 calyx_density_l = np.sum(LengthData.length_calyx_total)/calyx_vol
-calyx_density_c = len(calyx_dist_flat)/calyx_vol
+calyx_density_c = len(MorphData.calyxdist_flat)/calyx_vol
 
 hull_LH = ConvexHull(np.array(morph_dist_LH_flat))
 LH_vol = hull_LH.volume
 LH_area = hull_LH.area
 LH_density_l = np.sum(LengthData.length_LH_total)/LH_vol
-LH_density_c = len(LH_dist_flat)/LH_vol
+LH_density_c = len(MorphData.LHdist_flat)/LH_vol
 
 hull_AL = ConvexHull(np.array(morph_dist_AL_flat))
 AL_vol = hull_AL.volume
 AL_area = hull_AL.area
 AL_density_l = np.sum(LengthData.length_AL_total)/AL_vol
-AL_density_c = len(AL_dist_flat)/AL_vol
+AL_density_c = len(MorphData.ALdist_flat)/AL_vol
 
     
 #%% Scatterplot of CM based on glomeruli ID
@@ -8435,12 +8476,12 @@ calyx_results = np.load(r'./calyx_results_debye.npy')
 LH_results = np.load(r'./LH_results_debye.npy')
 AL_results = np.load(r'./AL_results_debye.npy')
 
-Pq_calyx = np.divide(np.sum(np.divide(np.array(calyx_results).reshape(100, len(calyx_dist_flat)), 
-                                      len(calyx_dist_flat)), axis=1), len(calyx_dist_flat))
-Pq_LH = np.divide(np.sum(np.divide(np.array(LH_results).reshape(100, len(LH_dist_flat)),
-                                   len(LH_dist_flat)), axis=1), len(LH_dist_flat))
-Pq_AL = np.divide(np.sum(np.divide(np.array(AL_results).reshape(100, len(AL_dist_flat)), 
-                                   len(AL_dist_flat)), axis=1), len(AL_dist_flat))
+Pq_calyx = np.divide(np.sum(np.divide(np.array(calyx_results).reshape(100, len(MorphData.calyxdist_flat)), 
+                                      len(MorphData.calyxdist_flat)), axis=1), len(MorphData.calyxdist_flat))
+Pq_LH = np.divide(np.sum(np.divide(np.array(LH_results).reshape(100, len(MorphData.LHdist_flat)),
+                                   len(MorphData.LHdist_flat)), axis=1), len(MorphData.LHdist_flat))
+Pq_AL = np.divide(np.sum(np.divide(np.array(AL_results).reshape(100, len(MorphData.ALdist_flat)), 
+                                   len(MorphData.ALdist_flat)), axis=1), len(MorphData.ALdist_flat))
 
 d_Pq_calyx = np.gradient(np.log10(Pq_calyx[:60]), np.log10(q_range[:60]))
 d_Pq_LH = np.gradient(np.log10(Pq_LH[:60]), np.log10(q_range[:60]))
@@ -8454,9 +8495,9 @@ calyx_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_calyx_f
 LH_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_LH_flat, 2))[0][-1]
 AL_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_AL_flat, 2))[0][-1]
 
-rgy_calyx_full = utils.radiusOfGyration(np.array([calyx_dist_flat]))
-rgy_LH_full = utils.radiusOfGyration(np.array([LH_dist_flat]))
-rgy_AL_full = utils.radiusOfGyration(np.array([AL_dist_flat]))
+rgy_calyx_full = utils.radiusOfGyration(np.array([MorphData.calyxdist_flat]))
+rgy_LH_full = utils.radiusOfGyration(np.array([MorphData.LHdist_flat]))
+rgy_AL_full = utils.radiusOfGyration(np.array([MorphData.ALdist_flat]))
 
 q_range_fit_calyx = np.where(q_range > 1/np.mean(LengthData.length_calyx_flat))[0]
 q_range_fit_calyx = q_range_fit_calyx[q_range_fit_calyx <= 60]
@@ -8746,9 +8787,9 @@ calyx_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_calyx_f
 LH_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_LH_flat, 2))[0][-1]
 AL_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_AL_flat, 2))[0][-1]
 
-rgy_calyx_full = utils.radiusOfGyration(np.array([calyx_dist_flat]))
-rgy_LH_full = utils.radiusOfGyration(np.array([LH_dist_flat]))
-rgy_AL_full = utils.radiusOfGyration(np.array([AL_dist_flat]))
+rgy_calyx_full = utils.radiusOfGyration(np.array([MorphData.calyxdist_flat]))
+rgy_LH_full = utils.radiusOfGyration(np.array([MorphData.LHdist_flat]))
+rgy_AL_full = utils.radiusOfGyration(np.array([MorphData.ALdist_flat]))
 
 Pq_calyx_glo = np.load(r'./Pq_calyx_glo.npy')
 Pq_LH_glo = np.load(r'./Pq_LH_glo.npy')
@@ -9242,9 +9283,9 @@ calyx_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_calyx_f
 LH_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_LH_flat, 2))[0][-1]
 AL_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_AL_flat, 2))[0][-1]
 
-rgy_calyx_full = utils.radiusOfGyration(np.array([calyx_dist_flat]))
-rgy_LH_full = utils.radiusOfGyration(np.array([LH_dist_flat]))
-rgy_AL_full = utils.radiusOfGyration(np.array([AL_dist_flat]))
+rgy_calyx_full = utils.radiusOfGyration(np.array([MorphData.calyxdist_flat]))
+rgy_LH_full = utils.radiusOfGyration(np.array([MorphData.LHdist_flat]))
+rgy_AL_full = utils.radiusOfGyration(np.array([MorphData.ALdist_flat]))
 
 Pq_calyx_pn = np.load(r'./Pq_calyx.npy')
 Pq_LH_pn = np.load(r'./Pq_LH.npy')
@@ -9486,7 +9527,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-plt.savefig(Parameter.outputdir + '/Pq_all_pn_calyx_mv_8.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_calyx_mv_8.pdf', dpi=300, bbox_inches='tight')
 plt.show()
   
 
@@ -9522,7 +9563,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-plt.savefig(Parameter.outputdir + '/Pq_all_pn_LH_mv_8.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_LH_mv_8.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -9558,7 +9599,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_mv_8.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_mv_8.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 #%% Neuron projection within neuropil or two neuropils
@@ -9798,9 +9839,9 @@ calyx_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_calyx_f
 LH_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_LH_flat, 2))[0][-1]
 AL_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_AL_flat, 2))[0][-1]
 
-rgy_calyx_full = utils.radiusOfGyration(np.array([calyx_dist_flat]))
-rgy_LH_full = utils.radiusOfGyration(np.array([LH_dist_flat]))
-rgy_AL_full = utils.radiusOfGyration(np.array([AL_dist_flat]))
+rgy_calyx_full = utils.radiusOfGyration(np.array([MorphData.calyxdist_flat]))
+rgy_LH_full = utils.radiusOfGyration(np.array([MorphData.LHdist_flat]))
+rgy_AL_full = utils.radiusOfGyration(np.array([MorphData.ALdist_flat]))
 
 Pq_calyx_pnn = np.load(r'./Pq_calyx_neurite.npy')
 Pq_LH_pnn = np.load(r'./Pq_LH_neurite.npy')
@@ -12020,9 +12061,9 @@ rotz = Rotation.from_rotvec(r_vec_z)
 sel_morph_dist_flat = np.array([item for sublist in np.array(MorphData.morph_dist,dtype=object)[nidx_list] for item in sublist])
 
 morph_dist_flat_rot = rotx.apply(sel_morph_dist_flat)
-calyxdist_flat_rot = rotx.apply(calyx_dist_flat)
-LHdist_flat_rot = rotx.apply(LH_dist_flat)
-ALdist_flat_rot = rotx.apply(AL_dist_flat)
+calyxdist_flat_rot = rotx.apply(MorphData.calyxdist_flat)
+LHdist_flat_rot = rotx.apply(MorphData.LHdist_flat)
+ALdist_flat_rot = rotx.apply(MorphData.ALdist_flat)
 
 morph_dist_flat_rot = roty.apply(morph_dist_flat_rot)
 # calyxdist_flat_rot = roty.apply(calyxdist_flat)
