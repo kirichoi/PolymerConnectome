@@ -8554,9 +8554,9 @@ plt.vlines(1/rgy_AL_full[0], 1e-8, 10, color='tab:blue', ls='--')
 plt.vlines(1/rgy_calyx_full[0], 1e-8, 10, color='tab:orange', ls='--')
 plt.vlines(1/rgy_LH_full[0], 1e-8, 10, color='tab:green', ls='--')
 
-plt.vlines(2*np.pi/np.mean(LengthData.length_AL_b_flat), 1e-8, 10, color='tab:blue', ls='-.')
-plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_b_flat), 1e-8, 10, color='tab:orange', ls='-.')
-plt.vlines(2*np.pi/np.mean(LengthData.length_LH_b_flat), 1e-8, 10, color='tab:green', ls='-.')
+plt.vlines(2*np.pi/np.mean(LengthData.length_AL_b_flat), 1e-8, 10, color='tab:blue', ls=':')
+plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_b_flat), 1e-8, 10, color='tab:orange', ls=':')
+plt.vlines(2*np.pi/np.mean(LengthData.length_LH_b_flat), 1e-8, 10, color='tab:green', ls=':')
 
 line1 = 1/100000*np.power(q_range, -16/7)
 line2 = 1/10000000*np.power(q_range, -4/1)
@@ -8671,9 +8671,9 @@ plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 
-plt.vlines(2*np.pi/np.mean(LengthData.length_AL_b_flat), 1e-6, 10, color='tab:blue', ls='-.')
-plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_b_flat), 1e-6, 10, color='tab:orange', ls='-.')
-plt.vlines(2*np.pi/np.mean(LengthData.length_LH_b_flat), 1e-6, 10, color='tab:green', ls='-.')
+plt.vlines(2*np.pi/np.mean(LengthData.length_AL_b_flat), 1e-6, 10, color='tab:blue', ls=':')
+plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_b_flat), 1e-6, 10, color='tab:orange', ls=':')
+plt.vlines(2*np.pi/np.mean(LengthData.length_LH_b_flat), 1e-6, 10, color='tab:green', ls=':')
 
 plt.axvspan(0.24, 0.64, alpha=0.25, color='tab:blue')
 
@@ -9315,7 +9315,7 @@ plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:bl
 
 # plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 plt.vlines(1/np.mean(rGy_AL), 1e-6, 10, color='tab:blue', ls='--')
-plt.vlines(2*np.pi/np.mean(LengthData.length_AL_b_flat), 1e-6, 10, color='tab:blue', ls='-.')
+plt.vlines(2*np.pi/np.mean(LengthData.length_AL_b_flat), 1e-6, 10, color='tab:blue', ls=':')
 
 line1 = 1/7500*np.power(q_range, -16/7)
 # line2 = 1/1000000*np.power(q_range, -4/1)
@@ -9354,7 +9354,7 @@ plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:gr
 
 # plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 plt.vlines(1/np.mean(rGy_LH), 1e-6, 10, color='tab:green', ls='--')
-plt.vlines(2*np.pi/np.mean(LengthData.length_LH_b_flat), 1e-6, 10, color='tab:green', ls='-.')
+plt.vlines(2*np.pi/np.mean(LengthData.length_LH_b_flat), 1e-6, 10, color='tab:green', ls=':')
 
 line1 = 1/7500*np.power(q_range, -16/7)
 # line2 = 1/1000000*np.power(q_range, -4/1)
@@ -9393,7 +9393,7 @@ plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab
 
 # plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 plt.vlines(1/np.mean(rGy_calyx), 1e-6, 10, color='tab:orange', ls='--')
-plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_b_flat), 1e-6, 10, color='tab:orange', ls='-.')
+plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_b_flat), 1e-6, 10, color='tab:orange', ls=':')
 
 line1 = 1/7500*np.power(q_range, -16/7)
 # line2 = 1/1000000*np.power(q_range, -4/1)
@@ -9532,7 +9532,7 @@ plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab
 
 # plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 plt.vlines(1/np.mean(rGy_calyx), 1e-6, 10, color='tab:orange', ls='--')
-plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_b_flat), 1e-6, 10, color='tab:orange', ls='-.')
+plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_b_flat), 1e-6, 10, color='tab:orange', ls=':')
 
 plt.xscale('log')
 # plt.yscale('log')
@@ -9569,7 +9569,7 @@ plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:gr
 
 # plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 plt.vlines(1/np.mean(rGy_LH), 1e-6, 10, color='tab:green', ls='--')
-plt.vlines(2*np.pi/np.mean(LengthData.length_LH_b_flat), 1e-6, 10, color='tab:green', ls='-.')
+plt.vlines(2*np.pi/np.mean(LengthData.length_LH_b_flat), 1e-6, 10, color='tab:green', ls=':')
 
 plt.xscale('log')
 # plt.yscale('log')
@@ -9606,7 +9606,7 @@ plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:bl
 
 # plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 plt.vlines(1/np.mean(rGy_AL), 1e-6, 10, color='tab:blue', ls='--')
-plt.vlines(2*np.pi/np.mean(LengthData.length_AL_b_flat), 1e-6, 10, color='tab:blue', ls='-.')
+plt.vlines(2*np.pi/np.mean(LengthData.length_AL_b_flat), 1e-6, 10, color='tab:blue', ls=':')
 
 plt.xscale('log')
 # plt.yscale('log')
