@@ -453,6 +453,7 @@ for f in range(len(fp)):
     MorphData.neuron_id.append(os.path.basename(fp[f]).split('.')[0])
     
     scall = int(df.iloc[np.where(df[6] == -1)[0]].values[0][0])
+    MorphData.somaP.append(scall)
     
     MorphData.morph_id.append(df[0].tolist())
     MorphData.morph_parent.append(df[6].tolist())
@@ -8541,17 +8542,21 @@ plt.plot(q_range[:AL_q_idx], Pq_AL[:AL_q_idx], color='tab:blue')
 plt.plot(q_range[:calyx_q_idx], Pq_calyx[:calyx_q_idx], color='tab:orange')
 plt.plot(q_range[:LH_q_idx], Pq_LH[:LH_q_idx], color='tab:green')
 
-plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue')
-plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange')
-plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green')
+plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-8, 10, color='tab:blue')
+plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-8, 10, color='tab:orange')
+plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-8, 10, color='tab:green')
 
 # plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue', ls='dotted')
 # plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange', ls='dotted')
 # plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green', ls='dotted')
 
-plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
-plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
-plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
+plt.vlines(1/rgy_AL_full[0], 1e-8, 10, color='tab:blue', ls='--')
+plt.vlines(1/rgy_calyx_full[0], 1e-8, 10, color='tab:orange', ls='--')
+plt.vlines(1/rgy_LH_full[0], 1e-8, 10, color='tab:green', ls='--')
+
+plt.vlines(2*np.pi/np.mean(LengthData.length_AL_b_flat), 1e-8, 10, color='tab:blue', ls='-.')
+plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_b_flat), 1e-8, 10, color='tab:orange', ls='-.')
+plt.vlines(2*np.pi/np.mean(LengthData.length_LH_b_flat), 1e-8, 10, color='tab:green', ls='-.')
 
 line1 = 1/100000*np.power(q_range, -16/7)
 line2 = 1/10000000*np.power(q_range, -4/1)
@@ -8572,7 +8577,7 @@ plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
-plt.ylim(1e-6, 10)
+plt.ylim(5e-8, 10)
 plt.legend(['AL', 'MB calyx', 'LH'], fontsize=13)
 # plt.savefig(Parameter.outputdir + '/Pq_neuropil_6.pdf', dpi=300, bbox_inches='tight')
 plt.show()
@@ -8649,10 +8654,10 @@ plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
 plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
 plt.hlines(1, 0.01, 100, ls='dashed', color='k')
 plt.hlines(0.388, 0.01, 100, ls='dashed', color='k')
-plt.text(10.3, 1/4-0.02, 'Ideal', fontsize=14)
-plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
-plt.text(10.3, 1-0.02,'Linear', fontsize=14)
-plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
+plt.text(105, 1/4-0.02, 'Ideal', fontsize=14)
+plt.text(105, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
+plt.text(105, 1-0.02,'Linear', fontsize=14)
+plt.text(105, 0.388-0.02,'Solution', fontsize=14)
 
 plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue')
 plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange')
@@ -8666,11 +8671,15 @@ plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 
+plt.vlines(2*np.pi/np.mean(LengthData.length_AL_b_flat), 1e-6, 10, color='tab:blue', ls='-.')
+plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_b_flat), 1e-6, 10, color='tab:orange', ls='-.')
+plt.vlines(2*np.pi/np.mean(LengthData.length_LH_b_flat), 1e-6, 10, color='tab:green', ls='-.')
+
 plt.axvspan(0.24, 0.64, alpha=0.25, color='tab:blue')
 
 plt.xscale('log')
 plt.ylim(0.1, 1.2)
-plt.xlim(0.01, 10)
+plt.xlim(0.01, 100)
 ax.minorticks_on()
 
 plt.legend(["AL", "MB calyx", "LH"], fontsize=14, loc='upper left')
@@ -9306,6 +9315,7 @@ plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:bl
 
 # plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 plt.vlines(1/np.mean(rGy_AL), 1e-6, 10, color='tab:blue', ls='--')
+plt.vlines(2*np.pi/np.mean(LengthData.length_AL_b_flat), 1e-6, 10, color='tab:blue', ls='-.')
 
 line1 = 1/7500*np.power(q_range, -16/7)
 # line2 = 1/1000000*np.power(q_range, -4/1)
@@ -9326,7 +9336,7 @@ plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
-plt.ylim(1e-4, 10)
+plt.ylim(1e-5, 10)
 plt.xlim(0.8e-2, 1e2)
 # plt.savefig(Parameter.outputdir + '/Pq_per_neuron_AL_full_5.png', dpi=600, bbox_inches='tight')
 plt.show()
@@ -9344,6 +9354,7 @@ plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:gr
 
 # plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 plt.vlines(1/np.mean(rGy_LH), 1e-6, 10, color='tab:green', ls='--')
+plt.vlines(2*np.pi/np.mean(LengthData.length_LH_b_flat), 1e-6, 10, color='tab:green', ls='-.')
 
 line1 = 1/7500*np.power(q_range, -16/7)
 # line2 = 1/1000000*np.power(q_range, -4/1)
@@ -9364,7 +9375,7 @@ plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
-plt.ylim(1e-4, 10)
+plt.ylim(1e-5, 10)
 plt.xlim(0.8e-2, 1e2)
 # plt.savefig(Parameter.outputdir + '/Pq_per_neuron_LH_full_5.png', dpi=600, bbox_inches='tight')
 plt.show()
@@ -9382,6 +9393,7 @@ plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab
 
 # plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 plt.vlines(1/np.mean(rGy_calyx), 1e-6, 10, color='tab:orange', ls='--')
+plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_b_flat), 1e-6, 10, color='tab:orange', ls='-.')
 
 line1 = 1/7500*np.power(q_range, -16/7)
 # line2 = 1/1000000*np.power(q_range, -4/1)
@@ -9402,7 +9414,7 @@ plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
-plt.ylim(1e-4, 10)
+plt.ylim(1e-5, 10)
 plt.xlim(0.8e-2, 1e2)
 # plt.savefig(Parameter.outputdir + '/Pq_per_neuron_calyx_full_5.png', dpi=600, bbox_inches='tight')
 plt.show()
@@ -9509,10 +9521,10 @@ plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
 plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
 plt.hlines(1, 0.01, 100, ls='dashed', color='k')
 plt.hlines(0.388, 0.01, 100, ls='dashed', color='k')
-plt.text(10.3, 1/4-0.02, 'Ideal', fontsize=14)
-plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
-plt.text(10.3, 1-0.02,'Linear', fontsize=14)
-plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
+plt.text(105, 1/4-0.02, 'Ideal', fontsize=14)
+plt.text(105, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
+plt.text(105, 1-0.02,'Linear', fontsize=14)
+plt.text(105, 0.388-0.02,'Solution', fontsize=14)
 
 plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange')
 
@@ -9520,12 +9532,12 @@ plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab
 
 # plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
 plt.vlines(1/np.mean(rGy_calyx), 1e-6, 10, color='tab:orange', ls='--')
-
+plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_b_flat), 1e-6, 10, color='tab:orange', ls='-.')
 
 plt.xscale('log')
 # plt.yscale('log')
 plt.ylim(0.1, 1.2)
-plt.xlim(0.01, 10)
+plt.xlim(0.01, 100)
 ax.minorticks_on()
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
@@ -9546,10 +9558,10 @@ plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
 plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
 plt.hlines(1, 0.01, 100, ls='dashed', color='k')
 plt.hlines(0.388, 0.01, 100, ls='dashed', color='k')
-plt.text(10.3, 1/4-0.02, 'Ideal', fontsize=14)
-plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
-plt.text(10.3, 1-0.02,'Linear', fontsize=14)
-plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
+plt.text(105, 1/4-0.02, 'Ideal', fontsize=14)
+plt.text(105, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
+plt.text(105, 1-0.02,'Linear', fontsize=14)
+plt.text(105, 0.388-0.02,'Solution', fontsize=14)
 
 plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green')
 
@@ -9557,12 +9569,12 @@ plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:gr
 
 # plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
 plt.vlines(1/np.mean(rGy_LH), 1e-6, 10, color='tab:green', ls='--')
-
+plt.vlines(2*np.pi/np.mean(LengthData.length_LH_b_flat), 1e-6, 10, color='tab:green', ls='-.')
 
 plt.xscale('log')
 # plt.yscale('log')
 plt.ylim(0.1, 1.2)
-plt.xlim(0.01, 10)
+plt.xlim(0.01, 100)
 ax.minorticks_on()
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
@@ -9583,10 +9595,10 @@ plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
 plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
 plt.hlines(1, 0.01, 100, ls='dashed', color='k')
 plt.hlines(0.388, 0.01, 100, ls='dashed', color='k')
-plt.text(10.3, 1/4-0.02, 'Ideal', fontsize=14)
-plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
-plt.text(10.3, 1-0.02,'Linear', fontsize=14)
-plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
+plt.text(105, 1/4-0.02, 'Ideal', fontsize=14)
+plt.text(105, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
+plt.text(105, 1-0.02,'Linear', fontsize=14)
+plt.text(105, 0.388-0.02,'Solution', fontsize=14)
 
 plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue')
 
@@ -9594,12 +9606,12 @@ plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:bl
 
 # plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 plt.vlines(1/np.mean(rGy_AL), 1e-6, 10, color='tab:blue', ls='--')
-
+plt.vlines(2*np.pi/np.mean(LengthData.length_AL_b_flat), 1e-6, 10, color='tab:blue', ls='-.')
 
 plt.xscale('log')
 # plt.yscale('log')
 plt.ylim(0.1, 1.2)
-plt.xlim(0.01, 10)
+plt.xlim(0.01, 100)
 ax.minorticks_on()
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
@@ -9608,7 +9620,7 @@ plt.yticks(fontsize=14)
 # plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_mv_8.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
-#%% Neuron projection within neuropil or two neuropils
+#%% Neuron projection within neuropil or two neuropils - multiglomerular, mPN
 
 un_calyx_tr = np.delete(un_calyx, [40, 41], 0)
 un_AL_tr = np.delete(un_AL, 73, 0)
@@ -9668,7 +9680,7 @@ plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:bl
 
 # plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:orange', ls='dotted')
 
-plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
+plt.vlines(1/np.mean(rGy_AL), 1e-6, 10, color='tab:blue', ls='--')
 
 line1 = 1/7500*np.power(q_range, -16/7)
 # line2 = 1/1000000*np.power(q_range, -4/1)
@@ -9748,7 +9760,7 @@ plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:bl
 
 # plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue', ls='dotted')
 
-plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
+plt.vlines(1/np.mean(rGy_AL), 1e-6, 10, color='tab:blue', ls='--')
 
 
 plt.xscale('log')
@@ -9818,7 +9830,7 @@ plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:gr
 
 # plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:blue', ls='dotted')
 
-plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
+plt.vlines(1/np.mean(rGy_LH), 1e-6, 10, color='tab:green', ls='--')
 
 
 plt.xscale('log')
@@ -10960,7 +10972,7 @@ plt.text(10.3, 1-0.02,'Linear', fontsize=14)
 plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
 plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='k')
-plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='k', ls='--')
+plt.vlines(1/np.mean(rGy_LH), 1e-6, 10, color='k', ls='--')
 
 plt.xscale('log')
 plt.ylim(0.1, 1.2)
@@ -11039,7 +11051,7 @@ plt.hlines(0.388, 0.01, 100, ls='dashed', color='k')
 # plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
 plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='k')
-plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='k', ls='--')
+plt.vlines(1/np.mean(rGy_AL), 1e-6, 10, color='k', ls='--')
 
 plt.xscale('log')
 plt.ylim(0.1, 1.2)
@@ -11118,7 +11130,7 @@ plt.hlines(0.388, 0.01, 100, ls='dashed', color='k')
 # plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
 plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='k')
-plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='k', ls='--')
+plt.vlines(1/np.mean(rGy_calyx), 1e-6, 10, color='k', ls='--')
 
 plt.xscale('log')
 plt.ylim(0.1, 1.2)
