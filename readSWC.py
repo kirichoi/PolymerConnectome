@@ -12743,3 +12743,46 @@ plt.legend(['AL', 'LH', 'MB calyx'], fontsize=13)
 plt.xlabel('Contour Length $R_{max}$ ($\mu\mathrm{m}$)', fontsize=15)
 plt.ylabel('P($R_{max}$)', fontsize=15)
 plt.show()
+
+#%% b distribution
+
+y_AL, x_AL = np.histogram(LengthData.length_AL_b_flat, bins=500, density=True)
+y_LH, x_LH = np.histogram(LengthData.length_LH_b_flat, bins=500, density=True)
+y_calyx, x_calyx = np.histogram(LengthData.length_calyx_b_flat, bins=500, density=True)
+
+fig = plt.figure(figsize=(6, 4))
+plt.plot(x_AL[:-1] + np.diff(x_AL), y_AL, color='tab:blue')
+plt.plot(x_LH[:-1] + np.diff(x_LH), y_LH, color='tab:green')
+plt.plot(x_calyx[:-1] + np.diff(x_calyx), y_calyx, color='tab:orange')
+plt.xlim(0, 10)
+# plt.ylim(3e-5, 1)
+plt.yscale('log')
+plt.legend(['AL', 'LH', 'MB calyx'], fontsize=13)
+plt.xlabel('$b$ ($\mu\mathrm{m}$)', fontsize=15)
+plt.ylabel('P($b$)', fontsize=15)
+plt.show()
+
+y_AL, x_AL = np.histogram(LengthData.length_AL_b_flat, bins=500, density=True)
+y_LH, x_LH = np.histogram(LengthData.length_LH_b_flat, bins=500, density=True)
+y_calyx, x_calyx = np.histogram(LengthData.length_calyx_b_flat, bins=500, density=True)
+
+fig = plt.figure(figsize=(6, 4))
+plt.plot(x_AL[:-1] + np.diff(x_AL), y_AL, color='tab:blue')
+plt.plot(x_LH[:-1] + np.diff(x_LH), y_LH, color='tab:green')
+plt.plot(x_calyx[:-1] + np.diff(x_calyx), y_calyx, color='tab:orange')
+plt.xlim(0, 1.5)
+# plt.ylim(3e-5, 1)
+# plt.yscale('log')
+plt.legend(['AL', 'LH', 'MB calyx'], fontsize=13)
+plt.xlabel('$b$ ($\mu\mathrm{m}$)', fontsize=15)
+plt.ylabel('P($b$)', fontsize=15)
+plt.show()
+
+
+
+
+
+
+
+
+
