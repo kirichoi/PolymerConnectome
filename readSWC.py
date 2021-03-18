@@ -2280,7 +2280,7 @@ for b in range(len(radiussize)):
         spheredist_calyx_c_temp1 = []
         spheredist_calyx_c_temp2 = []
         
-        trkd = np.where(MorphData.calyxdist_trk == un_calyx[n])[0]
+        trkd = np.where(np.array(MorphData.calyxdist_trk) == un_calyx[n])[0]
         ncalyxdist_flat = np.array([item for sublist in np.array(MorphData.calyxdist, dtype=object)[trkd] for item in sublist])
         ncalyx_CM = np.average(ncalyxdist_flat, axis=0)
         
@@ -2317,7 +2317,7 @@ for b in range(len(radiussize)):
         spheredist_LH_c_temp1 = []
         spheredist_LH_c_temp2 = []
         
-        trkd = np.where(MorphData.LHdist_trk == un_LH[n])[0]
+        trkd = np.where(np.array(MorphData.LHdist_trk) == un_LH[n])[0]
         nLHdist_flat = np.array([item for sublist in np.array(MorphData.LHdist, dtype=object)[trkd] for item in sublist])
         nLH_CM = np.average(nLHdist_flat, axis=0)
         
@@ -2354,7 +2354,7 @@ for b in range(len(radiussize)):
         spheredist_AL_c_temp1 = []
         spheredist_AL_c_temp2 = []
         
-        trkd = np.where(MorphData.ALdist_trk == un_AL[n])[0]
+        trkd = np.where(np.array(MorphData.ALdist_trk) == un_AL[n])[0]
         nALdist_flat = np.array([item for sublist in np.array(MorphData.ALdist, dtype=object)[trkd] for item in sublist])
         nAL_CM = np.average(nALdist_flat, axis=0)
         
@@ -4651,7 +4651,7 @@ un_LH = np.unique(MorphData.LHdist_trk)
 un_AL = np.unique(MorphData.ALdist_trk)
 
 for i in range(len(un_calyx)):
-    idx = np.where(MorphData.calyxdist_trk == un_calyx[i])[0]
+    idx = np.where(np.array(MorphData.calyxdist_trk) == un_calyx[i])[0]
     tarval = np.array(MorphData.calyxdist,dtype=object)[idx]
     calyxdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
     sumval = np.sum(LengthData.length_calyx[un_calyx[i]])
@@ -4663,7 +4663,7 @@ for i in range(len(un_calyx)):
 (rGy_calyx, cML_calyx) = utils.radiusOfGyration(calyxdist_per_n_flat)
 
 for i in range(len(un_LH)):
-    idx = np.where(MorphData.LHdist_trk == un_LH[i])[0]
+    idx = np.where(np.array(MorphData.LHdist_trk) == un_LH[i])[0]
     tarval = np.array(MorphData.LHdist,dtype=object)[idx]
     LHdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
     sumval = np.sum(LengthData.length_LH[un_LH[i]])
@@ -4675,7 +4675,7 @@ for i in range(len(un_LH)):
 (rGy_LH, cML_LH) = utils.radiusOfGyration(LHdist_per_n_flat)
 
 for i in range(len(un_AL)):
-    idx = np.where(MorphData.ALdist_trk == un_AL[i])[0]
+    idx = np.where((MorphData.ALdist_trk) == un_AL[i])[0]
     tarval = np.array(MorphData.ALdist,dtype=object)[idx]
     ALdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
     sumval = np.sum(LengthData.length_AL[un_AL[i]])
@@ -4779,19 +4779,19 @@ un_LH = np.unique(MorphData.LHdist_trk)
 un_AL = np.unique(MorphData.ALdist_trk)
 
 for i in range(len(un_calyx)):
-    idx = np.where(MorphData.calyxdist_trk == un_calyx[i])[0]
+    idx = np.where(np.array(MorphData.calyxdist_trk) == un_calyx[i])[0]
     tarval = np.array(MorphData.calyxdist)[idx]
     (rGy_t, cML_t) = utils.radiusOfGyration(tarval)
     rGy_calyx_per_seg.append(rGy_t)
 
 for i in range(len(un_LH)):
-    idx = np.where(MorphData.LHdist_trk == un_LH[i])[0]
+    idx = np.where(np.array(MorphData.LHdist_trk) == un_LH[i])[0]
     tarval = np.array(MorphData.LHdist)[idx]
     (rGy_t, cML_t) = utils.radiusOfGyration(tarval)
     rGy_LH_per_seg.append(rGy_t)
     
 for i in range(len(un_AL)):
-    idx = np.where(MorphData.ALdist_trk == un_AL[i])[0]
+    idx = np.where(np.array(MorphData.ALdist_trk) == un_AL[i])[0]
     tarval = np.array(MorphData.ALdist)[idx]
     (rGy_t, cML_t) = utils.radiusOfGyration(tarval)
     rGy_AL_per_seg.append(rGy_t)
@@ -6458,9 +6458,9 @@ LHtest_ncl = np.nan_to_num(LHtest_ncl)
 ALtest_cl = np.nan_to_num(ALtest_cl)
 ALtest_ncl = np.nan_to_num(ALtest_ncl)
 
-ALtest_idx = np.where(ALtest_cl != 0)[0]
-LHtest_idx = np.where(LHtest_cl != 0)[0]
-calyxtest_idx = np.where(calyxtest_cl != 0)[0]
+ALtest_idx = np.where(np.array(ALtest_cl) != 0)[0]
+LHtest_idx = np.where(np.array(LHtest_cl) != 0)[0]
+calyxtest_idx = np.where(np.array(calyxtest_cl) != 0)[0]
 
 ALtest_percent = (ALtest_ncl[ALtest_idx] - ALtest_cl[ALtest_idx])/ALtest_ncl[ALtest_idx]
 LHtest_percent = (LHtest_ncl[LHtest_idx] - LHtest_cl[LHtest_idx])/LHtest_ncl[LHtest_idx]
@@ -6562,8 +6562,8 @@ plt.tight_layout()
 plt.show()
 
 
-LH_glo_col = np.sort(np.array(glo_list)[LHtest_idx][np.where(LHtest_percent >= 0.75)[0]])
-calyx_glo_col = np.sort(np.array(glo_list)[calyxtest_idx][np.where(calyxtest_percent >= 0.75)[0]])
+LH_glo_col = np.sort(np.array(glo_list)[LHtest_idx][np.where(np.array(LHtest_percent) >= 0.75)[0]])
+calyx_glo_col = np.sort(np.array(glo_list)[calyxtest_idx][np.where(np.array(calyxtest_percent) >= 0.75)[0]])
 
 print(LH_glo_col)
 print(calyx_glo_col)
@@ -8141,7 +8141,7 @@ t13 = time.time()
 
 for q in range(len(q_range)):
     for i in range(len(un_calyx)):
-        idx = np.where(MorphData.calyxdist_trk == un_calyx[i])[0]
+        idx = np.where(np.array(MorphData.calyxdist_trk) == un_calyx[i])[0]
         tarval = np.array(MorphData.calyxdist)[idx]
         calyxdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
         calyxdist_per_n_flat_t = np.unique(calyxdist_per_n_flat_t, axis=0)
@@ -8153,7 +8153,7 @@ np.save(r'./Pq_calyx.npy', Pq_calyx)
 
 for q in range(len(q_range)):
     for i in range(len(un_LH)):
-        idx = np.where(MorphData.LHdist_trk == un_LH[i])[0]
+        idx = np.where(np.array(MorphData.LHdist_trk) == un_LH[i])[0]
         tarval = np.array(MorphData.LHdist)[idx]
         LHdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
         LHdist_per_n_flat_t = np.unique(LHdist_per_n_flat_t, axis=0)
@@ -8165,7 +8165,7 @@ np.save(r'./Pq_LH.npy', Pq_LH)
 
 for q in range(len(q_range)):
     for i in range(len(un_AL)):
-        idx = np.where(MorphData.ALdist_trk == un_AL[i])[0]
+        idx = np.where(np.array(MorphData.ALdist_trk) == un_AL[i])[0]
         tarval = np.array(MorphData.ALdist)[idx]
         ALdist_per_n_flat_t = [item for sublist in tarval for item in sublist]
         ALdist_per_n_flat_t = np.unique(ALdist_per_n_flat_t, axis=0)
@@ -11605,7 +11605,7 @@ for ib in range(len(un_calyx)):
     count_calyx_bp_temp1 = []
     contour_calyx_bp_temp1 = []
     
-    idx = np.where(MorphData.calyxdist_trk == un_calyx[ib])[0]
+    idx = np.where(np.array(MorphData.calyxdist_trk) == un_calyx[ib])[0]
     tarval = list(np.array(MorphData.calyxdist, dtype=object)[idx])
     calyxdist_bp_flat = np.array([item for sublist in tarval for item in sublist])
     
@@ -11663,7 +11663,7 @@ for ib in range(len(un_LH)):
     count_LH_bp_temp1 = []
     contour_LH_bp_temp1 = []
     
-    idx = np.where(MorphData.LHdist_trk == un_LH[ib])[0]
+    idx = np.where(np.array(MorphData.LHdist_trk) == un_LH[ib])[0]
     tarval = list(np.array(MorphData.LHdist, dtype=object)[idx])
     LHdist_bp_flat = np.array([item for sublist in tarval for item in sublist])
     
@@ -11721,7 +11721,7 @@ for ib in range(len(un_AL)):
     count_AL_bp_temp1 = []
     contour_AL_bp_temp1 = []
     
-    idx = np.where(MorphData.ALdist_trk == un_AL[ib])[0]
+    idx = np.where(np.array(MorphData.ALdist_trk) == un_AL[ib])[0]
     tarval = list(np.array(MorphData.ALdist, dtype=object)[idx])
     ALdist_bp_flat = np.array([item for sublist in tarval for item in sublist])
     
@@ -12754,6 +12754,11 @@ fig = plt.figure(figsize=(6, 4))
 plt.plot(x_AL[:-1] + np.diff(x_AL), y_AL, color='tab:blue')
 plt.plot(x_LH[:-1] + np.diff(x_LH), y_LH, color='tab:green')
 plt.plot(x_calyx[:-1] + np.diff(x_calyx), y_calyx, color='tab:orange')
+
+plt.vlines(np.mean(LengthData.length_calyx_b_flat), 10e-5, 10, color='tab:orange', ls=':')
+plt.vlines(np.mean(LengthData.length_LH_b_flat), 10e-5, 10, color='tab:green', ls=':')
+plt.vlines(np.mean(LengthData.length_AL_b_flat), 10e-5, 10, color='tab:blue', ls=':')
+
 plt.xlim(0, 10)
 # plt.ylim(3e-5, 1)
 plt.yscale('log')
@@ -12762,18 +12767,57 @@ plt.xlabel('$b$ ($\mu\mathrm{m}$)', fontsize=15)
 plt.ylabel('P($b$)', fontsize=15)
 plt.show()
 
-y_AL, x_AL = np.histogram(LengthData.length_AL_b_flat, bins=500, density=True)
-y_LH, x_LH = np.histogram(LengthData.length_LH_b_flat, bins=500, density=True)
-y_calyx, x_calyx = np.histogram(LengthData.length_calyx_b_flat, bins=500, density=True)
-
 fig = plt.figure(figsize=(6, 4))
 plt.plot(x_AL[:-1] + np.diff(x_AL), y_AL, color='tab:blue')
 plt.plot(x_LH[:-1] + np.diff(x_LH), y_LH, color='tab:green')
 plt.plot(x_calyx[:-1] + np.diff(x_calyx), y_calyx, color='tab:orange')
+plt.vlines(np.mean(LengthData.length_calyx_b_flat), 10e-5, 10, color='tab:orange', ls=':')
+plt.vlines(np.mean(LengthData.length_LH_b_flat), 10e-5, 10, color='tab:green', ls=':')
+plt.vlines(np.mean(LengthData.length_AL_b_flat), 10e-5, 10, color='tab:blue', ls=':')
+
 plt.xlim(0, 1.5)
-# plt.ylim(3e-5, 1)
-# plt.yscale('log')
 plt.legend(['AL', 'LH', 'MB calyx'], fontsize=13)
+plt.xlabel('$b$ ($\mu\mathrm{m}$)', fontsize=15)
+plt.ylabel('P($b$)', fontsize=15)
+plt.show()
+
+#%% b distribution per neuron
+
+fig = plt.figure(figsize=(6, 4))
+for i in range(len(LengthData.length_calyx_b)):
+    flt = [item for sublist in LengthData.length_calyx_b[i] for item in sublist]
+    if len(LengthData.length_calyx_b[i]) > 0:
+        y_calyx, x_calyx = np.histogram(flt, bins=50, density=True)
+        plt.plot((x_calyx[:-1] + np.diff(x_calyx))[np.nonzero(y_calyx)[0]], y_calyx[np.nonzero(y_calyx)[0]], color='tab:orange', alpha=0.25, lw=1)
+plt.xlim(0, 5)
+# plt.ylim(3e-5, 1)
+plt.yscale('log')
+plt.xlabel('$b$ ($\mu\mathrm{m}$)', fontsize=15)
+plt.ylabel('P($b$)', fontsize=15)
+plt.show()
+
+fig = plt.figure(figsize=(6, 4))
+for i in range(len(LengthData.length_LH_b)):
+    flt = [item for sublist in LengthData.length_LH_b[i] for item in sublist]
+    if len(LengthData.length_LH_b[i]) > 0:
+        y_LH, x_LH = np.histogram(flt, bins=50, density=True)
+        plt.plot((x_LH[:-1] + np.diff(x_LH))[np.nonzero(y_LH)[0]], y_LH[np.nonzero(y_LH)[0]], color='tab:green', alpha=0.25, lw=1)
+plt.xlim(0, 5)
+# plt.ylim(3e-5, 1)
+plt.yscale('log')
+plt.xlabel('$b$ ($\mu\mathrm{m}$)', fontsize=15)
+plt.ylabel('P($b$)', fontsize=15)
+plt.show()
+
+fig = plt.figure(figsize=(6, 4))
+for i in range(len(LengthData.length_AL_b)):
+    flt = [item for sublist in LengthData.length_AL_b[i] for item in sublist]
+    if len(LengthData.length_AL_b[i]) > 0:
+        y_AL, x_AL = np.histogram(flt, bins=50, density=True)
+        plt.plot((x_AL[:-1] + np.diff(x_AL))[np.nonzero(y_AL)[0]], y_AL[np.nonzero(y_AL)[0]], color='tab:blue', alpha=0.25, lw=1)
+plt.xlim(0, 5)
+# plt.ylim(3e-5, 1)
+plt.yscale('log')
 plt.xlabel('$b$ ($\mu\mathrm{m}$)', fontsize=15)
 plt.ylabel('P($b$)', fontsize=15)
 plt.show()
