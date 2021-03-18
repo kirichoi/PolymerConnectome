@@ -12661,8 +12661,8 @@ for q in range(len(q_range)):
     #                                                 bounds=[(0, 100)], 
     #                                                 args=(np.mean(np.square(AL_e2e_sampled_flat)), 
     #                                                       np.mean(AL_cont_sampled_flat)))#2*np.pi/q_range[q]))
-    res_AL1 = scipy.optimize.minimize(plength, x0=1, args=(np.mean(np.square(AL_e2e_sampled_flat)), 
-                                                          np.mean(AL_cont_sampled_flat)))#2*np.pi/q_range[q]))
+    res_AL1 = scipy.optimize.minimize(plength, x0=.1, args=(np.mean(np.square(AL_e2e_sampled_flat)), 
+                                                           2*np.pi/q_range[q]))#np.mean(AL_cont_sampled_flat)))
     
     LH_e2e_sampled_flat = LH_e2e_sampled[q]#[item for sublist in LH_e2e_sampled[q] for item in sublist]
     LH_cont_sampled_flat = LH_cont_sampled[q]#[item for sublist in LH_cont_sampled[q] for item in sublist]
@@ -12670,19 +12670,19 @@ for q in range(len(q_range)):
     #                                                 bounds=[(0, 100)], 
     #                                                 args=(np.mean(np.square(LH_e2e_sampled_flat)), 
     #                                                       np.mean(LH_cont_sampled_flat)))#2*np.pi/q_range[q]))
-    res_LH1 = scipy.optimize.minimize(plength, x0=1, args=(np.mean(np.square(LH_e2e_sampled_flat)), 
-                                                          np.mean(LH_cont_sampled_flat)))#2*np.pi/q_range[q]))
+    res_LH1 = scipy.optimize.minimize(plength, x0=.1, args=(np.mean(np.square(LH_e2e_sampled_flat)), 
+                                                           2*np.pi/q_range[q]))#np.mean(LH_cont_sampled_flat)))
     calyx_e2e_sampled_flat = calyx_e2e_sampled[q]#[item for sublist in calyx_e2e_sampled[q] for item in sublist]
     calyx_cont_sampled_flat = calyx_cont_sampled[q]#[item for sublist in calyx_cont_sampled[q] for item in sublist]
     # res_calyx1 = scipy.optimize.differential_evolution(plength, 
     #                                                    bounds=[(0, 100)], 
     #                                                    args=(np.mean(np.square(calyx_e2e_sampled_flat)), 
     #                                                          np.mean(calyx_cont_sampled_flat)))#2*np.pi/q_range[q]))
-    res_calyx1 = scipy.optimize.minimize(plength, x0=1, args=(np.mean(np.square(calyx_e2e_sampled_flat)), 
-                                                             np.mean(calyx_cont_sampled_flat)))#2*np.pi/q_range[q]))
-    res_AL.append(res_AL1[0])
-    res_LH.append(res_LH1[0])
-    res_calyx.append(res_calyx1[0])
+    res_calyx1 = scipy.optimize.minimize(plength, x0=.1, args=(np.mean(np.square(calyx_e2e_sampled_flat)), 
+                                                              2*np.pi/q_range[q]))#np.mean(calyx_cont_sampled_flat)))
+    res_AL.append(res_AL1.x[0])
+    res_LH.append(res_LH1.x[0])
+    res_calyx.append(res_calyx1.x[0])
 
 fig = plt.figure(figsize=(6, 4))
 plt.scatter(q_range, res_AL, marker='.', color='tab:blue')
@@ -12703,7 +12703,7 @@ plt.scatter(q_range, np.divide(res_LH, 2*np.pi/q_range), marker='.', color='tab:
 plt.scatter(q_range, np.divide(res_calyx, 2*np.pi/q_range), marker='.', color='tab:orange')
 plt.xscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("$l_{p}$", fontsize=15)
+plt.ylabel("$l_{p}/l$", fontsize=15)
 plt.ylim(0, 5)
 plt.xlim(2e-1, 7)
 # plt.savefig(Parameter.outputdir + '/lp_all.pdf', dpi=300, bbox_inches='tight')
