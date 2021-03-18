@@ -12788,9 +12788,13 @@ for i in range(len(LengthData.length_calyx_b)):
     flt = [item for sublist in LengthData.length_calyx_b[i] for item in sublist]
     if len(LengthData.length_calyx_b[i]) > 0:
         y_calyx, x_calyx = np.histogram(flt, bins=50, density=True)
-        plt.plot((x_calyx[:-1] + np.diff(x_calyx))[np.nonzero(y_calyx)[0]], y_calyx[np.nonzero(y_calyx)[0]], color='tab:orange', alpha=0.25, lw=1)
-plt.xlim(0, 5)
-# plt.ylim(3e-5, 1)
+        # plt.plot((x_calyx[:-1] + np.diff(x_calyx)), y_calyx, color='tab:orange', alpha=0.25, lw=1)
+        plt.scatter((x_calyx[:-1] + np.diff(x_calyx))[np.nonzero(y_calyx)[0]], y_calyx[np.nonzero(y_calyx)[0]], 
+                    color='tab:orange',
+                    marker='.', 
+                    alpha=0.25)
+# plt.xlim(0, 5)
+plt.ylim(5e-4, 10)
 plt.yscale('log')
 plt.xlabel('$b$ ($\mu\mathrm{m}$)', fontsize=15)
 plt.ylabel('P($b$)', fontsize=15)
@@ -12801,9 +12805,12 @@ for i in range(len(LengthData.length_LH_b)):
     flt = [item for sublist in LengthData.length_LH_b[i] for item in sublist]
     if len(LengthData.length_LH_b[i]) > 0:
         y_LH, x_LH = np.histogram(flt, bins=50, density=True)
-        plt.plot((x_LH[:-1] + np.diff(x_LH))[np.nonzero(y_LH)[0]], y_LH[np.nonzero(y_LH)[0]], color='tab:green', alpha=0.25, lw=1)
-plt.xlim(0, 5)
-# plt.ylim(3e-5, 1)
+        plt.scatter((x_LH[:-1] + np.diff(x_LH))[np.nonzero(y_LH)[0]], y_LH[np.nonzero(y_LH)[0]], 
+                    color='tab:green',
+                    marker='.', 
+                    alpha=0.25)
+# plt.xlim(0, 5)
+plt.ylim(5e-4, 10)
 plt.yscale('log')
 plt.xlabel('$b$ ($\mu\mathrm{m}$)', fontsize=15)
 plt.ylabel('P($b$)', fontsize=15)
@@ -12814,19 +12821,40 @@ for i in range(len(LengthData.length_AL_b)):
     flt = [item for sublist in LengthData.length_AL_b[i] for item in sublist]
     if len(LengthData.length_AL_b[i]) > 0:
         y_AL, x_AL = np.histogram(flt, bins=50, density=True)
-        plt.plot((x_AL[:-1] + np.diff(x_AL))[np.nonzero(y_AL)[0]], y_AL[np.nonzero(y_AL)[0]], color='tab:blue', alpha=0.25, lw=1)
-plt.xlim(0, 5)
-# plt.ylim(3e-5, 1)
+        plt.scatter((x_AL[:-1] + np.diff(x_AL))[np.nonzero(y_AL)[0]], y_AL[np.nonzero(y_AL)[0]], 
+                    color='tab:blue', 
+                    marker='.',
+                    alpha=0.25)
+# plt.xlim(0, 5)
+plt.ylim(5e-4, 10)
 plt.yscale('log')
 plt.xlabel('$b$ ($\mu\mathrm{m}$)', fontsize=15)
 plt.ylabel('P($b$)', fontsize=15)
 plt.show()
 
 
+#%% Morphology araound b
 
+idx = 6
 
+l_bar = np.mean(LengthData.length_AL[idx])
 
+flt = [item for sublist in LengthData.length_calyx_b[idx] for item in sublist]
+b_bar = np.mean(flt)
 
+fig = plt.figure(figsize=(8, 8))
+ax = plt.axes(projection='3d')
+ax.set_box_aspect((1,1,1))
+
+for i in range(len(MorphData.calyxdist_per_n[idx])):
+    temp = np.where(np.array(LengthData.length_calyx_b[idx][i]) >= b_bar)[0]
+    
+    listOfPoints = MorphData.calyxdist_per_n[idx][i]
+    for t,f in enumerate(temp):
+        morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+        ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:red')
+# plt.savefig(Parameter.outputdir + '/neurite_comp_calyx_' + str(idx) + '_1.png', dpi=600, bbox_inches='tight', transparent=True)
+plt.show()
 
 
 
