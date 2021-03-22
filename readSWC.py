@@ -12823,22 +12823,27 @@ length_calyx_mean = np.mean(LengthData.length_calyx_flat)
 AL_e2e_sampled = []
 AL_cont_sampled = []
 AL_sampe2eidx_list = []
+rGy_AL_sampled = []
 LH_e2e_sampled = []
 LH_cont_sampled = []
 LH_sampe2eidx_list = []
+rGy_LH_sampled = []
 calyx_e2e_sampled = []
 calyx_cont_sampled = []
 calyx_sampe2eidx_list = []
+rGy_calyx_sampled = []
 
 for n in range(len(LengthData.length_AL)):
     if len(LengthData.length_AL[n]) > 0:
         AL_e2e_sampled_temp2 = []
         AL_cont_sampled_temp2 = []
         AL_sampe2eidx_list_temp2 = []
+        rGy_AL_sampled_temp2 = []
         for q in range(len(l_range)-1):
             AL_e2e_sampled_temp3 = []
             AL_cont_sampled_temp3 = []
             AL_sampe2eidx_list_temp3 = []
+            rGy_AL_sampled_temp3 = []
         
             AL_longer_idx = np.where(LengthData.length_AL[n] >= l_range[q])[0]
             
@@ -12857,33 +12862,43 @@ for n in range(len(LengthData.length_AL)):
                     
                     AL_e2e_sampled_temp = []
                     AL_cont_sampled_temp = []
+                    rGy_AL_sampled_temp = []
                     
                     for k in range(len(AL_e2e_tuple)):
                     # sampe2eidx = AL_e2e_sampled_temp[sampidx]
                         e2edist = np.linalg.norm(np.subtract(MorphData.ALdist_per_n[n][AL_longer_idx[i]][AL_e2e_tuple[k][0]],
                                                              MorphData.ALdist_per_n[n][AL_longer_idx[i]][AL_e2e_tuple[k][1]]))
                         AL_e2e_sampled_temp.append(e2edist)
-                        AL_cont_sampled_temp.append(np.sum(consdist[AL_e2e_tuple[k][0]:AL_e2e_tuple[k][1]]))
+                        AL_cont_sampled_temp.append(np.sum(consdist[AL_e2e_tuple[k][0]:AL_e2e_tuple[k][1]+1]))
+                        rGy_AL_sampled_temp.append(utils.radiusOfGyration(np.array([MorphData.ALdist_per_n[n]
+                                                                                    [AL_longer_idx[i]]
+                                                                                    [AL_e2e_tuple[k][0]:AL_e2e_tuple[k][1]+1]]))[0][0])
                     AL_e2e_sampled_temp3.append(AL_e2e_sampled_temp)
                     AL_cont_sampled_temp3.append(AL_cont_sampled_temp)
+                    rGy_AL_sampled_temp3.append(rGy_AL_sampled_temp)
             
             AL_e2e_sampled_temp2.append(AL_e2e_sampled_temp3)
             AL_cont_sampled_temp2.append(AL_cont_sampled_temp3)
             AL_sampe2eidx_list_temp2.append(AL_sampe2eidx_list_temp3)
+            rGy_AL_sampled_temp2.append(rGy_AL_sampled_temp3)
         
         AL_e2e_sampled.append(AL_e2e_sampled_temp2)
         AL_cont_sampled.append(AL_cont_sampled_temp2)
         AL_sampe2eidx_list.append(AL_sampe2eidx_list_temp2)
+        rGy_AL_sampled.append(rGy_AL_sampled_temp2)
+
 
 for n in range(len(LengthData.length_LH)):
     if len(LengthData.length_LH[n]) > 0:
         LH_e2e_sampled_temp2 = []
         LH_cont_sampled_temp2 = []
         LH_sampe2eidx_list_temp2 = []
+        rGy_LH_sampled_temp2 = []
         for q in range(len(l_range)-1):
             LH_e2e_sampled_temp3 = []
             LH_cont_sampled_temp3 = []
             LH_sampe2eidx_list_temp3 = []
+            rGy_LH_sampled_temp3 = []
         
             LH_longer_idx = np.where(LengthData.length_LH[n] >= l_range[q])[0]
             
@@ -12902,33 +12917,43 @@ for n in range(len(LengthData.length_LH)):
                     
                     LH_e2e_sampled_temp = []
                     LH_cont_sampled_temp = []
+                    rGy_LH_sampled_temp = []
                     
                     for k in range(len(LH_e2e_tuple)):
                     # sampe2eidx = LH_e2e_sampled_temp[sampidx]
                         e2edist = np.linalg.norm(np.subtract(MorphData.LHdist_per_n[n][LH_longer_idx[i]][LH_e2e_tuple[k][0]],
                                                              MorphData.LHdist_per_n[n][LH_longer_idx[i]][LH_e2e_tuple[k][1]]))
                         LH_e2e_sampled_temp.append(e2edist)
-                        LH_cont_sampled_temp.append(np.sum(consdist[LH_e2e_tuple[k][0]:LH_e2e_tuple[k][1]]))
+                        LH_cont_sampled_temp.append(np.sum(consdist[LH_e2e_tuple[k][0]:LH_e2e_tuple[k][1]+1]))
+                        rGy_LH_sampled_temp.append(utils.radiusOfGyration(np.array([MorphData.LHdist_per_n[n]
+                                                                                    [LH_longer_idx[i]]
+                                                                                    [LH_e2e_tuple[k][0]:LH_e2e_tuple[k][1]+1]]))[0][0])
                     LH_e2e_sampled_temp3.append(LH_e2e_sampled_temp)
                     LH_cont_sampled_temp3.append(LH_cont_sampled_temp)
+                    rGy_LH_sampled_temp3.append(rGy_LH_sampled_temp)
             
             LH_e2e_sampled_temp2.append(LH_e2e_sampled_temp3)
             LH_cont_sampled_temp2.append(LH_cont_sampled_temp3)
             LH_sampe2eidx_list_temp2.append(LH_sampe2eidx_list_temp3)
+            rGy_LH_sampled_temp2.append(rGy_LH_sampled_temp3)
         
         LH_e2e_sampled.append(LH_e2e_sampled_temp2)
         LH_cont_sampled.append(LH_cont_sampled_temp2)
         LH_sampe2eidx_list.append(LH_sampe2eidx_list_temp2)
+        rGy_LH_sampled.append(rGy_LH_sampled_temp2)
+
 
 for n in range(len(LengthData.length_calyx)):
     if len(LengthData.length_calyx[n]) > 0:
         calyx_e2e_sampled_temp2 = []
         calyx_cont_sampled_temp2 = []
         calyx_sampe2eidx_list_temp2 = []
+        rGy_calyx_sampled_temp2 = []
         for q in range(len(l_range)-1):
             calyx_e2e_sampled_temp3 = []
             calyx_cont_sampled_temp3 = []
             calyx_sampe2eidx_list_temp3 = []
+            rGy_calyx_sampled_temp3 = []
         
             calyx_longer_idx = np.where(LengthData.length_calyx[n] >= l_range[q])[0]
             
@@ -12947,44 +12972,63 @@ for n in range(len(LengthData.length_calyx)):
                     
                     calyx_e2e_sampled_temp = []
                     calyx_cont_sampled_temp = []
+                    rGy_calyx_sampled_temp = []
                     
                     for k in range(len(calyx_e2e_tuple)):
                     # sampe2eidx = calyx_e2e_sampled_temp[sampidx]
                         e2edist = np.linalg.norm(np.subtract(MorphData.calyxdist_per_n[n][calyx_longer_idx[i]][calyx_e2e_tuple[k][0]],
                                                              MorphData.calyxdist_per_n[n][calyx_longer_idx[i]][calyx_e2e_tuple[k][1]]))
                         calyx_e2e_sampled_temp.append(e2edist)
-                        calyx_cont_sampled_temp.append(np.sum(consdist[calyx_e2e_tuple[k][0]:calyx_e2e_tuple[k][1]]))
+                        calyx_cont_sampled_temp.append(np.sum(consdist[calyx_e2e_tuple[k][0]:calyx_e2e_tuple[k][1]+1]))
+                        rGy_calyx_sampled_temp.append(utils.radiusOfGyration(np.array([MorphData.calyxdist_per_n[n]
+                                                                                    [calyx_longer_idx[i]]
+                                                                                    [calyx_e2e_tuple[k][0]:calyx_e2e_tuple[k][1]+1]]))[0][0])
                     calyx_e2e_sampled_temp3.append(calyx_e2e_sampled_temp)
                     calyx_cont_sampled_temp3.append(calyx_cont_sampled_temp)
+                    rGy_calyx_sampled_temp3.append(rGy_calyx_sampled_temp)
             
             calyx_e2e_sampled_temp2.append(calyx_e2e_sampled_temp3)
             calyx_cont_sampled_temp2.append(calyx_cont_sampled_temp3)
             calyx_sampe2eidx_list_temp2.append(calyx_sampe2eidx_list_temp3)
+            rGy_calyx_sampled_temp2.append(rGy_calyx_sampled_temp3)
         
         calyx_e2e_sampled.append(calyx_e2e_sampled_temp2)
         calyx_cont_sampled.append(calyx_cont_sampled_temp2)
         calyx_sampe2eidx_list.append(calyx_sampe2eidx_list_temp2)
+        rGy_calyx_sampled.append(rGy_calyx_sampled_temp2)
 
 test_r_AL = []
+test_rgy_AL = []
 for i in range(len(AL_e2e_sampled)):
     test_r_AL1 = []
+    test_rgy_AL1 = []
     for q in range(len(AL_e2e_sampled[i])):
         test_r_AL1.append(np.mean([item for sublist in AL_e2e_sampled[i][q] for item in sublist]))
+        test_rgy_AL1.append(np.mean([item for sublist in rGy_AL_sampled[i][q] for item in sublist]))
     test_r_AL.append(test_r_AL1)
+    test_rgy_AL.append(test_rgy_AL1)
 
 test_r_LH = []
+test_rgy_LH = []
 for i in range(len(LH_e2e_sampled)):
     test_r_LH1 = []
+    test_rgy_LH1 = []
     for q in range(len(LH_e2e_sampled[i])):
         test_r_LH1.append(np.mean([item for sublist in LH_e2e_sampled[i][q] for item in sublist]))
+        test_rgy_LH1.append(np.mean([item for sublist in rGy_LH_sampled[i][q] for item in sublist]))
     test_r_LH.append(test_r_LH1)
+    test_rgy_LH.append(test_rgy_LH1)
 
 test_r_calyx = []
+test_rgy_calyx = []
 for i in range(len(calyx_e2e_sampled)):
     test_r_calyx1 = []
+    test_rgy_calyx1 = []
     for q in range(len(calyx_e2e_sampled[i])):
         test_r_calyx1.append(np.mean([item for sublist in calyx_e2e_sampled[i][q] for item in sublist]))
+        test_rgy_calyx1.append(np.mean([item for sublist in rGy_calyx_sampled[i][q] for item in sublist]))
     test_r_calyx.append(test_r_calyx1)
+    test_rgy_calyx.append(test_rgy_calyx1)
 
 fig = plt.figure(figsize=(6, 4))
 for i in range(len(test_r_AL)):
