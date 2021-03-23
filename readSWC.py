@@ -12831,7 +12831,7 @@ plt.show()
 def plength(l, MSR, R_max):
     return np.abs(MSR - (2*l*R_max - 2*np.square(l)*(1 - np.exp(-R_max/l))))
 
-l_range = np.logspace(-1, 1, 20)
+l_range = np.logspace(-2, 1, 40)
 
 length_AL_mean = np.mean(LengthData.length_AL_flat)
 length_LH_mean = np.mean(LengthData.length_LH_flat)
@@ -13093,7 +13093,7 @@ plt.ylim(0.07, 10)
 plt.show()
 
 
-shiftN = 3
+shiftN = 5
 xtest_AL = []
 ytest_AL = []
 xtest_calyx = []
@@ -13101,56 +13101,56 @@ ytest_calyx = []
 xtest_LH = []
 ytest_LH = []
 
-for n in range(len(test_r_AL)):
-    if np.sum(np.isnan(test_r_AL[n])) == 0:
-        xtest_AL_temp = []
-        ytest_AL_temp = []
-        for i in range(len(l_range) - shiftN - 1):
-            xtest_AL_temp.append(np.average(l_range[i:i+shiftN]))
-            
-            poptD_e2e_AL, pcovD_e2e_AL = scipy.optimize.curve_fit(objFuncGL, 
-                                                        (l_range[:-1]+np.diff(l_range))[i:i+shiftN], 
-                                                        test_r_AL[n][i:i+shiftN], 
-                                                        p0=[1., 0.], 
-                                                        maxfev=100000)
-            ytest_AL_temp.append(poptD_e2e_AL[0])
-            
-        xtest_AL.append(xtest_AL_temp)
-        ytest_AL.append(ytest_AL_temp)
+for n in range(len(test_rgy_AL)):
+    nonnanidx = np.argwhere(~np.isnan(test_rgy_AL[n])).T[0]
+    xtest_AL_temp = []
+    ytest_AL_temp = []
+    for i in range(len(nonnanidx) - shiftN - 1):
+        xtest_AL_temp.append(np.average(l_range[nonnanidx][i:i+shiftN]))
+        
+        poptD_e2e_AL, pcovD_e2e_AL = scipy.optimize.curve_fit(objFuncGL, 
+                                                    np.log10(l_range[:-1]+np.diff(l_range))[nonnanidx][i:i+shiftN], 
+                                                    np.log10(test_rgy_AL[n])[nonnanidx][i:i+shiftN], 
+                                                    p0=[1., 0.], 
+                                                    maxfev=100000)
+        ytest_AL_temp.append(poptD_e2e_AL[0])
+        
+    xtest_AL.append(xtest_AL_temp)
+    ytest_AL.append(ytest_AL_temp)
 
-for n in range(len(test_r_LH)):
-    if np.sum(np.isnan(test_r_LH[n])) == 0:
-        xtest_LH_temp = []
-        ytest_LH_temp = []
-        for i in range(len(l_range) - shiftN - 1):
-            xtest_LH_temp.append(np.average(l_range[i:i+shiftN]))
-            
-            poptD_e2e_LH, pcovD_e2e_LH = scipy.optimize.curve_fit(objFuncGL, 
-                                                        (l_range[:-1]+np.diff(l_range))[i:i+shiftN], 
-                                                        test_r_LH[n][i:i+shiftN], 
-                                                        p0=[1., 0.], 
-                                                        maxfev=100000)
-            ytest_LH_temp.append(poptD_e2e_LH[0])
-            
-        xtest_LH.append(xtest_LH_temp)
-        ytest_LH.append(ytest_LH_temp)
+for n in range(len(test_rgy_LH)):
+    nonnanidx = np.argwhere(~np.isnan(test_rgy_LH[n])).T[0]
+    xtest_LH_temp = []
+    ytest_LH_temp = []
+    for i in range(len(nonnanidx) - shiftN - 1):
+        xtest_LH_temp.append(np.average(l_range[nonnanidx][i:i+shiftN]))
+        
+        poptD_e2e_LH, pcovD_e2e_LH = scipy.optimize.curve_fit(objFuncGL, 
+                                                    np.log10(l_range[:-1]+np.diff(l_range))[nonnanidx][i:i+shiftN], 
+                                                    np.log10(test_rgy_LH[n])[nonnanidx][i:i+shiftN], 
+                                                    p0=[1., 0.], 
+                                                    maxfev=100000)
+        ytest_LH_temp.append(poptD_e2e_LH[0])
+        
+    xtest_LH.append(xtest_LH_temp)
+    ytest_LH.append(ytest_LH_temp)
 
-for n in range(len(test_r_calyx)):
-    if np.sum(np.isnan(test_r_calyx[n])) == 0:
-        xtest_calyx_temp = []
-        ytest_calyx_temp = []
-        for i in range(len(l_range) - shiftN - 1):
-            xtest_calyx_temp.append(np.average(l_range[i:i+shiftN]))
-            
-            poptD_e2e_calyx, pcovD_e2e_calyx = scipy.optimize.curve_fit(objFuncGL, 
-                                                        (l_range[:-1]+np.diff(l_range))[i:i+shiftN], 
-                                                        test_r_calyx[n][i:i+shiftN], 
-                                                        p0=[1., 0.], 
-                                                        maxfev=100000)
-            ytest_calyx_temp.append(poptD_e2e_calyx[0])
-            
-        xtest_calyx.append(xtest_calyx_temp)
-        ytest_calyx.append(ytest_calyx_temp)
+for n in range(len(test_rgy_calyx)):
+    nonnanidx = np.argwhere(~np.isnan(test_rgy_calyx[n])).T[0]
+    xtest_calyx_temp = []
+    ytest_calyx_temp = []
+    for i in range(len(nonnanidx) - shiftN - 1):
+        xtest_calyx_temp.append(np.average(l_range[nonnanidx][i:i+shiftN]))
+        
+        poptD_e2e_calyx, pcovD_e2e_calyx = scipy.optimize.curve_fit(objFuncGL, 
+                                                    np.log10(l_range[:-1]+np.diff(l_range))[nonnanidx][i:i+shiftN], 
+                                                    np.log10(test_rgy_calyx[n])[nonnanidx][i:i+shiftN], 
+                                                    p0=[1., 0.], 
+                                                    maxfev=100000)
+        ytest_calyx_temp.append(poptD_e2e_calyx[0])
+        
+    xtest_calyx.append(xtest_calyx_temp)
+    ytest_calyx.append(ytest_calyx_temp)
 
 fig = plt.figure(figsize=(6, 4))
 for i in range(len(ytest_AL)):
@@ -13346,6 +13346,9 @@ for i in range(len(MorphData.calyxdist_per_n[idx])):
         ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:red')
 # plt.savefig(Parameter.outputdir + '/neurite_comp_calyx_' + str(idx) + '_1.png', dpi=600, bbox_inches='tight', transparent=True)
 plt.show()
+
+
+#%% Neuron morphology poster
 
 
 
