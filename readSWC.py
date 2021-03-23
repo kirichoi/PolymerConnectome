@@ -9423,6 +9423,11 @@ plt.show()
 
 #%% Form factor per neuron moving window (FIGURE FORM FACTOR)
 
+def first_consecutive(lst):
+    for i,j in enumerate(lst,lst[0]):
+        if i!=j:
+            return i
+
 mw_Pq_calyx_pn = []
 mw_Pq_calyx_pn_err = []
 mwx_calyx_pn = []
@@ -9434,6 +9439,8 @@ for j in range(len(Pq_calyx_pn[0])):
     mwx_calyx_pn_temp = []
     
     Pq_calyx_posidx = np.where(Pq_calyx_pn[:,j] > 0)[0]
+    
+    Pq_calyx_posidx = Pq_calyx_posidx[:first_consecutive(Pq_calyx_posidx)]
     
     calyx_q_idx_new = Pq_calyx_posidx[Pq_calyx_posidx < calyx_q_idx]
     
@@ -9464,6 +9471,8 @@ for j in range(len(Pq_LH_pn[0])):
     
     Pq_LH_posidx = np.where(Pq_LH_pn[:,j] > 0)[0]
     
+    Pq_LH_posidx = Pq_LH_posidx[:first_consecutive(Pq_LH_posidx)]
+    
     LH_q_idx_new = Pq_LH_posidx[Pq_LH_posidx < LH_q_idx]
     
     for i in range(len(LH_q_idx_new) - shiftN):
@@ -9493,6 +9502,8 @@ for j in range(len(Pq_AL_pn[0])):
     
     Pq_AL_posidx = np.where(Pq_AL_pn[:,j] > 0)[0]
     
+    Pq_AL_posidx = Pq_AL_posidx[:first_consecutive(Pq_AL_posidx)]
+    
     AL_q_idx_new = Pq_AL_posidx[Pq_AL_posidx < AL_q_idx]
     
     for i in range(len(AL_q_idx_new) - shiftN):
@@ -9516,7 +9527,9 @@ fig, ax = plt.subplots(figsize=(6,4.5))
 for i in range(len(mw_Pq_calyx_pn)):
     plt.plot(mwx_calyx_pn[i], -1/np.array(mw_Pq_calyx_pn[i]), color='tab:orange', lw=2, alpha=0.5)
 
-plt.plot(mwx_calyx_pn[0], -1/tolerant_mean(mw_Pq_calyx_pn).data, color='k', lw=2)
+xmax = max(mwx_calyx_pn, key = len)
+
+plt.plot(xmax, -1/tolerant_mean(mw_Pq_calyx_pn).data, color='k', lw=2)
 
 plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
 plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
@@ -9553,7 +9566,9 @@ fig, ax = plt.subplots(figsize=(6,4.5))
 for i in range(len(mw_Pq_LH_pn)):
     plt.plot(mwx_LH_pn[i], -1/np.array(mw_Pq_LH_pn[i]), color='tab:green', lw=2, alpha=0.5)
 
-plt.plot(mwx_LH_pn[1], -1/tolerant_mean(mw_Pq_LH_pn).data, color='k', lw=2)
+xmax = max(mwx_LH_pn, key = len)
+
+plt.plot(xmax, -1/tolerant_mean(mw_Pq_LH_pn).data, color='k', lw=2)
 
 plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
 plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
@@ -9590,7 +9605,9 @@ fig, ax = plt.subplots(figsize=(6,4.5))
 for i in range(len(mw_Pq_AL_pn)):
     plt.plot(mwx_AL_pn[i], -1/np.array(mw_Pq_AL_pn[i]), color='tab:blue', lw=2, alpha=0.5)
 
-plt.plot(mwx_AL_pn[0], -1/tolerant_mean(mw_Pq_AL_pn).data, color='k', lw=2)
+xmax = max(mwx_AL_pn, key = len)
+
+plt.plot(xmax, -1/tolerant_mean(mw_Pq_AL_pn).data, color='k', lw=2)
 
 plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
 plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
