@@ -13441,7 +13441,7 @@ for i in range(len(mPN_all)):
     for xb, yb, zb in zip(Xb, Yb, Zb):
         ax[int(len(uPN_all)/col)+2+int(i/col)][i-int(i/col)*col].plot([xb], [yb], [zb], 'w')
     ax[int(len(uPN_all)/col)+2+int(i/col)][i-int(i/col)*col].set_title(np.array(MorphData.neuron_id)[mPN_all[i]], fontsize=15)
-    ax[int(i/col)][i-int(i/col)*col].set_ylim(np.flip(ax[int(i/col)][i-int(i/col)*col].get_ylim()))
+    ax[int(len(uPN_all)/col)+2+int(i/col)][i-int(i/col)*col].set_ylim(np.flip(ax[int(len(uPN_all)/col)+2+int(i/col)][i-int(i/col)*col].get_ylim()))
     
 
 
