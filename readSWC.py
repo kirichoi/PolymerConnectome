@@ -13350,5 +13350,71 @@ plt.show()
 
 #%% Neuron morphology poster
 
+un_calyx_nUG_right_hem = [0, 14, 16, 73]
+un_calyx_nUG_SG = [1, 2, 3, 7, 9, 10, 17, 40, 45, 48, 49, 58, 61, 65, 88, 89, 100, 154, 157, 160]
+un_calyx_nUG_LH = [4, 47, 103, 143]
+un_calyx_nUG_AL = [26, 135]
+un_calyx_nUG_MG = [70, 71, 93, 94, 97, 114, 115, 138, 139, 149]
 
+un_AL_nUG_right_hem = [0, 14, 16, 73]
+un_AL_nUG_calyx = [26, 135]
+un_AL_nUG_LH = [136]
+un_AL_nUG_MG = [70, 71, 93, 94, 97, 114, 115, 138, 139, 149]
+
+un_LH_nUG_right_hem = [0, 14, 16, 73]
+un_LH_nUG_SG = [42]
+un_LH_nUG_calyx = [4, 47, 103, 143]
+un_LH_nUG_AL = [136]
+un_LH_nUG_MG = [70, 71, 93, 94, 97, 114, 115, 138, 139, 149]
+
+mPN_all = np.unique(un_calyx_nUG_right_hem + un_calyx_nUG_SG + un_calyx_nUG_LH + 
+          un_calyx_nUG_AL + un_calyx_nUG_MG + un_AL_nUG_right_hem + 
+          un_AL_nUG_calyx + un_AL_nUG_LH + un_AL_nUG_MG + un_LH_nUG_right_hem +
+          un_LH_nUG_SG + un_LH_nUG_calyx + un_LH_nUG_AL + un_LH_nUG_MG)
+
+uPN_all = [6, 8, 11, 12, 13, 15, 18, 19, 20, 21, 22, 23, 24, 25, 27, 28, 29, 30,
+           31, 32, 33, 34, 35, 36, 37, 38, 39, 51, 52, 53, 54, 57, 59, 60, 62, 
+           63, 64, 66, 67, 68, 69, 72, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 
+           84, 85, 86, 87, 90, 91, 92, 95, 96, 98, 99, 101, 102, 104, 105, 106,
+           107, 108, 109, 110, 111, 112, 113, 116, 117, 118, 119, 120, 121, 122, 
+           123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 137, 140, 
+           141, 142, 144, 145, 146, 147, 148, 150, 151, 152, 153, 155, 156, 158, 159]
+
+
+row = 10
+col = 20
+
+fig, ax = plt.subplots(row, col, figsize=(48,32), subplot_kw=dict(projection='3d'))
+
+# uPNs
+for i in range(len(uPN_all[:10])):
+    ax[int(i/row)][i-int(i/row)*row].set_box_aspect((1,1,1))
+    tararr = np.array(MorphData.morph_dist[uPN_all[i]])
+    somaIdx = np.where(np.array(MorphData.morph_parent[uPN_all[i]]) < 0)[0]
+    for p in range(len(MorphData.morph_parent[uPN_all[i]])):
+        if MorphData.morph_parent[uPN_all[i]][p] < 0:
+            pass
+        else:
+            morph_line = np.vstack((MorphData.morph_dist[uPN_all[i]]
+                                    [MorphData.morph_id[uPN_all[i]].index(MorphData.morph_parent[uPN_all[i]][p])], MorphData.morph_dist[uPN_all[i]][p]))
+            ax[int(i/row)][i-int(i/row)*row].plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:red', lw=0.25)
+    
+    X = np.array(MorphData.morph_dist[uPN_all[i]])[:,0]
+    Y = np.array(MorphData.morph_dist[uPN_all[i]])[:,1]
+    Z = np.array(MorphData.morph_dist[uPN_all[i]])[:,2]
+    
+    max_range = np.array([X.max()-X.min(), Y.max()-Y.min(), Z.max()-Z.min()]).max()
+    Xb = 0.5*max_range*np.mgrid[-1:2:2,-1:2:2,-1:2:2][0].flatten() + 0.5*(X.max()+X.min())
+    Yb = 0.5*max_range*np.mgrid[-1:2:2,-1:2:2,-1:2:2][1].flatten() + 0.5*(Y.max()+Y.min())
+    Zb = 0.5*max_range*np.mgrid[-1:2:2,-1:2:2,-1:2:2][2].flatten() + 0.5*(Z.max()+Z.min())
+    for xb, yb, zb in zip(Xb, Yb, Zb):
+       ax[int(i/row)][i-int(i/row)*row].plot([xb], [yb], [zb], 'w')
+    ax[int(i/row)][i-int(i/row)*row].set_title(np.array(MorphData.neuron_id)[uPN_all[i]], fontsize=15)
+    
+for i in range(row):
+    for j in range(col):
+        ax[i][j].axis('off')
+
+plt.tight_layout()
+plt.show()
 
