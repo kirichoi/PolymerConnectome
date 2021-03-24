@@ -13384,11 +13384,15 @@ uPN_all = [6, 8, 11, 12, 13, 15, 18, 19, 20, 21, 22, 23, 24, 25, 27, 28, 29, 30,
 row = 10
 col = 20
 
-fig, ax = plt.subplots(row, col, figsize=(48,32), subplot_kw=dict(projection='3d'))
+fig, ax = plt.subplots(row, col, figsize=(64,32), subplot_kw=dict(projection='3d'))
+
+for i in range(row):
+    for j in range(col):
+        ax[i][j].axis('off')
 
 # uPNs
-for i in range(len(uPN_all[:10])):
-    ax[int(i/row)][i-int(i/row)*row].set_box_aspect((1,1,1))
+for i in range(len(uPN_all)):
+    ax[int(i/col)][i-int(i/col)*col].set_box_aspect((1,1,1))
     tararr = np.array(MorphData.morph_dist[uPN_all[i]])
     somaIdx = np.where(np.array(MorphData.morph_parent[uPN_all[i]]) < 0)[0]
     for p in range(len(MorphData.morph_parent[uPN_all[i]])):
@@ -13397,7 +13401,7 @@ for i in range(len(uPN_all[:10])):
         else:
             morph_line = np.vstack((MorphData.morph_dist[uPN_all[i]]
                                     [MorphData.morph_id[uPN_all[i]].index(MorphData.morph_parent[uPN_all[i]][p])], MorphData.morph_dist[uPN_all[i]][p]))
-            ax[int(i/row)][i-int(i/row)*row].plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:red', lw=0.25)
+            ax[int(i/col)][i-int(i/col)*col].plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:red', lw=0.25)
     
     X = np.array(MorphData.morph_dist[uPN_all[i]])[:,0]
     Y = np.array(MorphData.morph_dist[uPN_all[i]])[:,1]
@@ -13408,13 +13412,40 @@ for i in range(len(uPN_all[:10])):
     Yb = 0.5*max_range*np.mgrid[-1:2:2,-1:2:2,-1:2:2][1].flatten() + 0.5*(Y.max()+Y.min())
     Zb = 0.5*max_range*np.mgrid[-1:2:2,-1:2:2,-1:2:2][2].flatten() + 0.5*(Z.max()+Z.min())
     for xb, yb, zb in zip(Xb, Yb, Zb):
-       ax[int(i/row)][i-int(i/row)*row].plot([xb], [yb], [zb], 'w')
-    ax[int(i/row)][i-int(i/row)*row].set_title(np.array(MorphData.neuron_id)[uPN_all[i]], fontsize=15)
+        ax[int(i/col)][i-int(i/col)*col].plot([xb], [yb], [zb], 'w')
+    ax[int(i/col)][i-int(i/col)*col].set_title(np.array(MorphData.neuron_id)[uPN_all[i]], fontsize=15)
+    ax[int(i/col)][i-int(i/col)*col].set_ylim(np.flip(ax[int(i/col)][i-int(i/col)*col].get_ylim()))
+
     
-for i in range(row):
-    for j in range(col):
-        ax[i][j].axis('off')
+# mPNs
+for i in range(len(mPN_all)):
+    ax[int(len(uPN_all)/col)+2+int(i/col)][i-int(i/col)*col].set_box_aspect((1,1,1))
+    tararr = np.array(MorphData.morph_dist[mPN_all[i]])
+    somaIdx = np.where(np.array(MorphData.morph_parent[mPN_all[i]]) < 0)[0]
+    for p in range(len(MorphData.morph_parent[mPN_all[i]])):
+        if MorphData.morph_parent[mPN_all[i]][p] < 0:
+            pass
+        else:
+            morph_line = np.vstack((MorphData.morph_dist[mPN_all[i]]
+                                    [MorphData.morph_id[mPN_all[i]].index(MorphData.morph_parent[mPN_all[i]][p])], MorphData.morph_dist[mPN_all[i]][p]))
+            ax[int(len(uPN_all)/col)+2+int(i/col)][i-int(i/col)*col].plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:red', lw=0.25)
+    
+    X = np.array(MorphData.morph_dist[mPN_all[i]])[:,0]
+    Y = np.array(MorphData.morph_dist[mPN_all[i]])[:,1]
+    Z = np.array(MorphData.morph_dist[mPN_all[i]])[:,2]
+    
+    max_range = np.array([X.max()-X.min(), Y.max()-Y.min(), Z.max()-Z.min()]).max()
+    Xb = 0.5*max_range*np.mgrid[-1:2:2,-1:2:2,-1:2:2][0].flatten() + 0.5*(X.max()+X.min())
+    Yb = 0.5*max_range*np.mgrid[-1:2:2,-1:2:2,-1:2:2][1].flatten() + 0.5*(Y.max()+Y.min())
+    Zb = 0.5*max_range*np.mgrid[-1:2:2,-1:2:2,-1:2:2][2].flatten() + 0.5*(Z.max()+Z.min())
+    for xb, yb, zb in zip(Xb, Yb, Zb):
+        ax[int(len(uPN_all)/col)+2+int(i/col)][i-int(i/col)*col].plot([xb], [yb], [zb], 'w')
+    ax[int(len(uPN_all)/col)+2+int(i/col)][i-int(i/col)*col].set_title(np.array(MorphData.neuron_id)[mPN_all[i]], fontsize=15)
+    ax[int(i/col)][i-int(i/col)*col].set_ylim(np.flip(ax[int(i/col)][i-int(i/col)*col].get_ylim()))
+    
+
 
 plt.tight_layout()
+# plt.savefig(Parameter.outputdir + '/poster_all_1.pdf', dpi=600, bbox_inches='tight')
 plt.show()
 
