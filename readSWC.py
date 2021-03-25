@@ -8293,7 +8293,7 @@ for i in un_AL:
         for k in range(len(unique_parent_trk_temp)):
             parent_trk_temp_red = np.array(dtemp1, dtype=object)[np.where(np.array(parent_trk_temp) == unique_parent_trk_temp[k])[0]]
             parent_trk_temp_red_u = np.unique([item for sublist in parent_trk_temp_red for item in sublist])
-            if len(parent_trk_temp_red_u) > 19:
+            if len(parent_trk_temp_red_u) > 5:
                 ALdist_short_1.append(dtemp[parent_trk_temp_red_u])
                 length_AL_short.append(np.array(LengthData.length_AL[i])[ALseg_short][parent_trk_temp_red_u])
     
@@ -8346,7 +8346,7 @@ for i in un_calyx:
         for k in range(len(unique_parent_trk_temp)):
             parent_trk_temp_red = np.array(dtemp1, dtype=object)[np.where(np.array(parent_trk_temp) == unique_parent_trk_temp[k])[0]]
             parent_trk_temp_red_u = np.unique([item for sublist in parent_trk_temp_red for item in sublist])
-            if len(parent_trk_temp_red_u) > 19:
+            if len(parent_trk_temp_red_u) > 5:
                 calyxdist_short_1.append(dtemp[parent_trk_temp_red_u])
                 length_calyx_short.append(np.array(LengthData.length_calyx[i])[calyxseg_short][parent_trk_temp_red_u])
     
@@ -8399,7 +8399,7 @@ for i in un_LH:
         for k in range(len(unique_parent_trk_temp)):
             parent_trk_temp_red = np.array(dtemp1, dtype=object)[np.where(np.array(parent_trk_temp) == unique_parent_trk_temp[k])[0]]
             parent_trk_temp_red_u = np.unique([item for sublist in parent_trk_temp_red for item in sublist])
-            if len(parent_trk_temp_red_u) > 19:
+            if len(parent_trk_temp_red_u) > 5:
                 LHdist_short_1.append(dtemp[parent_trk_temp_red_u])
                 length_LH_short.append(np.array(LengthData.length_LH[i])[LHseg_short][parent_trk_temp_red_u])
     
