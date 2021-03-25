@@ -9440,9 +9440,9 @@ for j in range(len(Pq_calyx_pn[0])):
     
     Pq_calyx_posidx = np.where(Pq_calyx_pn[:,j] > 0)[0]
     
-    Pq_calyx_posidx = Pq_calyx_posidx[:first_consecutive(Pq_calyx_posidx)]
+    calyx_q_idx_new = Pq_calyx_posidx[:first_consecutive(Pq_calyx_posidx)]
     
-    calyx_q_idx_new = Pq_calyx_posidx[Pq_calyx_posidx < calyx_q_idx]
+    # calyx_q_idx_new = Pq_calyx_posidx[Pq_calyx_posidx < calyx_q_idx]
     
     for i in range(len(calyx_q_idx_new) - shiftN):
         mwx_calyx_pn_temp.append(np.average(q_range[calyx_q_idx_new][i:i+shiftN]))
@@ -9471,9 +9471,9 @@ for j in range(len(Pq_LH_pn[0])):
     
     Pq_LH_posidx = np.where(Pq_LH_pn[:,j] > 0)[0]
     
-    Pq_LH_posidx = Pq_LH_posidx[:first_consecutive(Pq_LH_posidx)]
+    LH_q_idx_new = Pq_LH_posidx[:first_consecutive(Pq_LH_posidx)]
     
-    LH_q_idx_new = Pq_LH_posidx[Pq_LH_posidx < LH_q_idx]
+    # LH_q_idx_new = Pq_LH_posidx[Pq_LH_posidx < LH_q_idx]
     
     for i in range(len(LH_q_idx_new) - shiftN):
         mwx_LH_pn_temp.append(np.average(q_range[LH_q_idx_new][i:i+shiftN]))
@@ -9502,9 +9502,9 @@ for j in range(len(Pq_AL_pn[0])):
     
     Pq_AL_posidx = np.where(Pq_AL_pn[:,j] > 0)[0]
     
-    Pq_AL_posidx = Pq_AL_posidx[:first_consecutive(Pq_AL_posidx)]
+    AL_q_idx_new = Pq_AL_posidx[:first_consecutive(Pq_AL_posidx)]
     
-    AL_q_idx_new = Pq_AL_posidx[Pq_AL_posidx < AL_q_idx]
+    # AL_q_idx_new = Pq_AL_posidx[Pq_AL_posidx < AL_q_idx]
     
     for i in range(len(AL_q_idx_new) - shiftN):
         mwx_AL_pn_temp.append(np.average(q_range[AL_q_idx_new][i:i+shiftN]))
