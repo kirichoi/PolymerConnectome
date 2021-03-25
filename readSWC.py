@@ -8472,6 +8472,11 @@ plt.show()
 
 #%% form factor per neuropil plotting
 
+def first_consecutive(lst):
+    for i,j in enumerate(lst,lst[0]):
+        if i!=j:
+            return i
+
 q_range = np.logspace(-2,3,100)
 
 calyx_results = np.load(r'./calyx_results_debye.npy')
@@ -8539,6 +8544,11 @@ fitYD_Pq_AL = objFuncPpow(q_range[q_range_fit_AL], poptD_Pq_AL[0], poptD_Pq_AL[1
 
 
 fig = plt.figure(figsize=(8,6))
+
+AL_q_idx = first_consecutive(np.where(Pq_AL > 0)[0])
+calyx_q_idx = first_consecutive(np.where(Pq_calyx > 0)[0])
+LH_q_idx = first_consecutive(np.where(Pq_LH > 0)[0])
+
 plt.plot(q_range[:AL_q_idx], Pq_AL[:AL_q_idx], color='tab:blue')
 plt.plot(q_range[:calyx_q_idx], Pq_calyx[:calyx_q_idx], color='tab:orange')
 plt.plot(q_range[:LH_q_idx], Pq_LH[:LH_q_idx], color='tab:green')
@@ -8585,6 +8595,15 @@ plt.show()
 
 
 #%% form factor per neuropil moving window (FIGURE FORM FACTOR)
+
+def first_consecutive(lst):
+    for i,j in enumerate(lst,lst[0]):
+        if i!=j:
+            return i
+
+AL_q_idx = first_consecutive(np.where(Pq_AL > 0)[0])
+calyx_q_idx = first_consecutive(np.where(Pq_calyx > 0)[0])
+LH_q_idx = first_consecutive(np.where(Pq_LH > 0)[0])
 
 mw_Pq_calyx = []
 mw_Pq_calyx_err = []
