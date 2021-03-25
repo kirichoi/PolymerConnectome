@@ -9283,6 +9283,11 @@ plt.show()
 
 #%% form factor per neuron plotting
 
+def first_consecutive(lst):
+    for i,j in enumerate(lst,lst[0]):
+        if i!=j:
+            return i
+
 q_range = np.logspace(-2,3,100)
 
 LengthData.length_calyx_flat = np.array([item for sublist in LengthData.length_calyx for item in sublist])
@@ -9306,6 +9311,7 @@ Pq_AL_pn = np.delete(Pq_AL_pn, 73, 1)
 
 fig = plt.figure(figsize=(8,6))
 for i in range(len(Pq_AL_pn[0])):
+    AL_q_idx = first_consecutive(np.where(Pq_AL_pn[:,i] > 0)[0])
     plt.plot(q_range[:AL_q_idx], Pq_AL_pn[:AL_q_idx,i], color='tab:blue', alpha=0.5)
 
 # plt.plot(q_range[:AL_q_idx], np.average(Pq_AL_pn[:AL_q_idx],axis=1), color='k', lw=2)
@@ -9345,6 +9351,7 @@ plt.show()
 
 fig = plt.figure(figsize=(8,6))
 for i in range(len(Pq_LH_pn[0])):
+    LH_q_idx = first_consecutive(np.where(Pq_LH_pn[:,i] > 0)[0])
     plt.plot(q_range[:LH_q_idx], Pq_LH_pn[:LH_q_idx,i], color='tab:green', alpha=0.5)
 
 # plt.plot(q_range[:LH_q_idx], np.average(Pq_LH_pn[:LH_q_idx],axis=1), color='k', lw=2)
@@ -9384,6 +9391,7 @@ plt.show()
 
 fig = plt.figure(figsize=(8,6))
 for i in range(len(Pq_calyx_pn[0])):
+    calyx_q_idx = first_consecutive(np.where(Pq_calyx_pn[:,i] > 0)[0])
     plt.plot(q_range[:calyx_q_idx], Pq_calyx_pn[:calyx_q_idx,i], color='tab:orange', alpha=0.5)
 
 # plt.plot(q_range[:calyx_q_idx], np.average(Pq_calyx_pn[:calyx_q_idx],axis=1), color='k', lw=2)
