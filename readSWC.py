@@ -8620,7 +8620,7 @@ mw_Pq_calyx_err = []
 mwx_calyx = []
 
 idx = scipy.signal.argrelmax(np.log10(Pq_calyx))[0]
-qidx = min(range(len(q_range)), key=lambda i: abs(q_range[i]-4*np.pi/np.mean(LengthData.length_calyx_flat)))
+qidx = min(range(len(q_range)), key=lambda i: abs(q_range[i]-10*np.pi/np.mean(LengthData.length_calyx_flat)))
 idx = idx[idx>qidx]
 Pq_calyx_new = np.concatenate((Pq_calyx[:qidx], Pq_calyx[idx]))
 q_range_new = np.concatenate((q_range[:qidx], q_range[idx]))
@@ -8642,7 +8642,7 @@ mw_Pq_LH_err = []
 mwx_LH = []
 
 idx = scipy.signal.argrelmax(np.log10(Pq_LH))[0]
-qidx = min(range(len(q_range)), key=lambda i: abs(q_range[i]-4*np.pi/np.mean(LengthData.length_LH_flat)))
+qidx = min(range(len(q_range)), key=lambda i: abs(q_range[i]-10*np.pi/np.mean(LengthData.length_LH_flat)))
 idx = idx[idx>qidx]
 Pq_LH_new = np.concatenate((Pq_LH[:qidx], Pq_LH[idx]))
 q_range_new = np.concatenate((q_range[:qidx], q_range[idx]))
@@ -8664,7 +8664,7 @@ mw_Pq_AL_err = []
 mwx_AL = []
 
 idx = scipy.signal.argrelmax(np.log10(Pq_AL))[0]
-qidx = min(range(len(q_range)), key=lambda i: abs(q_range[i]-4*np.pi/np.mean(LengthData.length_AL_flat)))
+qidx = min(range(len(q_range)), key=lambda i: abs(q_range[i]-10*np.pi/np.mean(LengthData.length_AL_flat)))
 idx = idx[idx>qidx]
 Pq_AL_new = np.concatenate((Pq_AL[:qidx], Pq_AL[idx]))
 q_range_new = np.concatenate((q_range[:qidx], q_range[idx]))
@@ -9357,20 +9357,25 @@ Pq_AL_pn = np.load(r'./Pq_AL.npy')
 Pq_calyx_pn = np.delete(Pq_calyx_pn, [40, 41], 1)
 Pq_AL_pn = np.delete(Pq_AL_pn, 73, 1)
 
+Pq_calyx_pn = np.abs(Pq_calyx_pn)
+Pq_LH_pn = np.abs(Pq_LH_pn)
+Pq_AL_pn = np.abs(Pq_AL_pn)
+
 fig = plt.figure(figsize=(8,6))
 for i in range(len(Pq_AL_pn[0])):
     AL_q_idx = first_consecutive(np.where(Pq_AL_pn[:,i] > 0)[0])
+    AL_q_idx = len(Pq_AL_pn[:,i])
     plt.plot(q_range[:AL_q_idx], Pq_AL_pn[:AL_q_idx,i], color='tab:blue', alpha=0.5)
 
 # plt.plot(q_range[:AL_q_idx], np.average(Pq_AL_pn[:AL_q_idx],axis=1), color='k', lw=2)
 
-plt.vlines(2*np.pi/np.mean(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue')
+plt.vlines(2*np.pi/np.mean(LengthData.length_AL_flat), 1e-8, 10, color='tab:blue')
 
 # plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue', ls='dotted')
 
 # plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
-plt.vlines(1/np.mean(rGy_AL), 1e-6, 10, color='tab:blue', ls='--')
-plt.vlines(2*np.pi/np.mean(LengthData.length_AL_b_flat), 1e-6, 10, color='tab:blue', ls=':')
+plt.vlines(1/np.mean(rGy_AL), 1e-8, 10, color='tab:blue', ls='--')
+plt.vlines(2*np.pi/np.mean(LengthData.length_AL_b_flat), 1e-8, 10, color='tab:blue', ls=':')
 
 line1 = 1/7500*np.power(q_range, -16/7)
 # line2 = 1/1000000*np.power(q_range, -4/1)
@@ -9391,8 +9396,8 @@ plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
-plt.ylim(1e-5, 10)
-plt.xlim(0.8e-2, 1e2)
+plt.ylim(1e-8, 10)
+plt.xlim(0.8e-2, 1e3)
 # plt.savefig(Parameter.outputdir + '/Pq_per_neuron_AL_full_5.png', dpi=600, bbox_inches='tight')
 plt.show()
 
@@ -9400,17 +9405,18 @@ plt.show()
 fig = plt.figure(figsize=(8,6))
 for i in range(len(Pq_LH_pn[0])):
     LH_q_idx = first_consecutive(np.where(Pq_LH_pn[:,i] > 0)[0])
+    LH_q_idx = len(Pq_LH_pn[:,i])
     plt.plot(q_range[:LH_q_idx], Pq_LH_pn[:LH_q_idx,i], color='tab:green', alpha=0.5)
 
 # plt.plot(q_range[:LH_q_idx], np.average(Pq_LH_pn[:LH_q_idx],axis=1), color='k', lw=2)
 
-plt.vlines(2*np.pi/np.mean(LengthData.length_LH_flat), 1e-6, 10, color='tab:green')
+plt.vlines(2*np.pi/np.mean(LengthData.length_LH_flat), 1e-8, 10, color='tab:green')
 
 # plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green', ls='dotted')
 
 # plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
-plt.vlines(1/np.mean(rGy_LH), 1e-6, 10, color='tab:green', ls='--')
-plt.vlines(2*np.pi/np.mean(LengthData.length_LH_b_flat), 1e-6, 10, color='tab:green', ls=':')
+plt.vlines(1/np.mean(rGy_LH), 1e-8, 10, color='tab:green', ls='--')
+plt.vlines(2*np.pi/np.mean(LengthData.length_LH_b_flat), 1e-8, 10, color='tab:green', ls=':')
 
 line1 = 1/7500*np.power(q_range, -16/7)
 # line2 = 1/1000000*np.power(q_range, -4/1)
@@ -9431,8 +9437,8 @@ plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
-plt.ylim(1e-5, 10)
-plt.xlim(0.8e-2, 1e2)
+plt.ylim(1e-8, 10)
+plt.xlim(0.8e-2, 1e3)
 # plt.savefig(Parameter.outputdir + '/Pq_per_neuron_LH_full_5.png', dpi=600, bbox_inches='tight')
 plt.show()
 
@@ -9440,17 +9446,18 @@ plt.show()
 fig = plt.figure(figsize=(8,6))
 for i in range(len(Pq_calyx_pn[0])):
     calyx_q_idx = first_consecutive(np.where(Pq_calyx_pn[:,i] > 0)[0])
+    calyx_q_idx = len(Pq_calyx_pn[:,i])
     plt.plot(q_range[:calyx_q_idx], Pq_calyx_pn[:calyx_q_idx,i], color='tab:orange', alpha=0.5)
 
 # plt.plot(q_range[:calyx_q_idx], np.average(Pq_calyx_pn[:calyx_q_idx],axis=1), color='k', lw=2)
 
-plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange')
+plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_flat), 1e-8, 10, color='tab:orange')
 
 # plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange', ls='dotted')
 
 # plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
-plt.vlines(1/np.mean(rGy_calyx), 1e-6, 10, color='tab:orange', ls='--')
-plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_b_flat), 1e-6, 10, color='tab:orange', ls=':')
+plt.vlines(1/np.mean(rGy_calyx), 1e-8, 10, color='tab:orange', ls='--')
+plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_b_flat), 1e-8, 10, color='tab:orange', ls=':')
 
 line1 = 1/7500*np.power(q_range, -16/7)
 # line2 = 1/1000000*np.power(q_range, -4/1)
@@ -9471,8 +9478,8 @@ plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
-plt.ylim(1e-5, 10)
-plt.xlim(0.8e-2, 1e2)
+plt.ylim(1e-8, 10)
+plt.xlim(0.8e-2, 1e3)
 # plt.savefig(Parameter.outputdir + '/Pq_per_neuron_calyx_full_5.png', dpi=600, bbox_inches='tight')
 plt.show()
 
@@ -9483,29 +9490,37 @@ def first_consecutive(lst):
     for i,j in enumerate(lst,lst[0]):
         if i!=j:
             return i
+shiftN = 15
 
 mw_Pq_calyx_pn = []
 mw_Pq_calyx_pn_err = []
 mwx_calyx_pn = []
-shiftN = 15
 
 for j in range(len(Pq_calyx_pn[0])):
     mw_Pq_calyx_pn_temp = []
     mw_Pq_calyx_pn_err_temp = []
     mwx_calyx_pn_temp = []
     
-    Pq_calyx_posidx = np.where(Pq_calyx_pn[:,j] > 0)[0]
+    # Pq_calyx_posidx = np.where(Pq_calyx_pn[:,j] > 0)[0]
     
-    calyx_q_idx_new = Pq_calyx_posidx[:first_consecutive(Pq_calyx_posidx)]
+    # calyx_q_idx_new = Pq_calyx_posidx[:first_consecutive(Pq_calyx_posidx)]
     
+    calyx_q_idx_new = len(Pq_calyx_pn[:,j])
+    
+    idx = scipy.signal.argrelmax(np.log10(Pq_calyx_pn[:,j]))[0]
+    qidx = min(range(len(q_range)), key=lambda i: abs(q_range[i]-10*np.pi/np.mean(LengthData.length_calyx_flat)))
+    idx = idx[idx>qidx]
+    Pq_calyx_pn_new = np.concatenate((Pq_calyx_pn[:,j][:qidx], Pq_calyx_pn[:,j][idx]))
+    q_range_new = np.concatenate((q_range[:qidx], q_range[idx]))
+
     # calyx_q_idx_new = Pq_calyx_posidx[Pq_calyx_posidx < calyx_q_idx]
     
-    for i in range(len(calyx_q_idx_new) - shiftN):
-        mwx_calyx_pn_temp.append(np.average(q_range[calyx_q_idx_new][i:i+shiftN]))
+    for i in range(len(q_range_new) - shiftN):
+        mwx_calyx_pn_temp.append(np.average(q_range_new[i:i+shiftN]))
         
         poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                    np.log10(q_range[calyx_q_idx_new][i:i+shiftN]), 
-                                                    np.log10(Pq_calyx_pn[calyx_q_idx_new,j][i:i+shiftN]), 
+                                                    np.log10(q_range_new[i:i+shiftN]), 
+                                                    np.log10(Pq_calyx_pn_new[i:i+shiftN]), 
                                                     p0=[1., 0.], 
                                                     maxfev=100000)
         mw_Pq_calyx_pn_temp.append(poptmxc[0])
@@ -9525,18 +9540,26 @@ for j in range(len(Pq_LH_pn[0])):
     mw_Pq_LH_pn_err_temp = []
     mwx_LH_pn_temp = []
     
-    Pq_LH_posidx = np.where(Pq_LH_pn[:,j] > 0)[0]
+    # Pq_LH_posidx = np.where(Pq_LH_pn[:,j] > 0)[0]
     
-    LH_q_idx_new = Pq_LH_posidx[:first_consecutive(Pq_LH_posidx)]
+    # LH_q_idx_new = Pq_LH_posidx[:first_consecutive(Pq_LH_posidx)]
+    
+    LH_q_idx_new = len(Pq_LH_pn[:,j])
+    
+    idx = scipy.signal.argrelmax(np.log10(Pq_LH_pn[:,j]))[0]
+    qidx = min(range(len(q_range)), key=lambda i: abs(q_range[i]-10*np.pi/np.mean(LengthData.length_LH_flat)))
+    idx = idx[idx>qidx]
+    Pq_LH_pn_new = np.concatenate((Pq_LH_pn[:,j][:qidx], Pq_LH_pn[:,j][idx]))
+    q_range_new = np.concatenate((q_range[:qidx], q_range[idx]))
     
     # LH_q_idx_new = Pq_LH_posidx[Pq_LH_posidx < LH_q_idx]
     
-    for i in range(len(LH_q_idx_new) - shiftN):
-        mwx_LH_pn_temp.append(np.average(q_range[LH_q_idx_new][i:i+shiftN]))
+    for i in range(len(q_range_new) - shiftN):
+        mwx_LH_pn_temp.append(np.average(q_range_new[i:i+shiftN]))
         
         poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                    np.log10(q_range[LH_q_idx_new][i:i+shiftN]), 
-                                                    np.log10(Pq_LH_pn[LH_q_idx_new,j][i:i+shiftN]), 
+                                                    np.log10(q_range_new[i:i+shiftN]), 
+                                                    np.log10(Pq_LH_pn_new[i:i+shiftN]), 
                                                     p0=[1., 0.], 
                                                     maxfev=100000)
         mw_Pq_LH_pn_temp.append(poptmxc[0])
@@ -9556,18 +9579,26 @@ for j in range(len(Pq_AL_pn[0])):
     mw_Pq_AL_pn_err_temp = []
     mwx_AL_pn_temp = []
     
-    Pq_AL_posidx = np.where(Pq_AL_pn[:,j] > 0)[0]
+    # Pq_AL_posidx = np.where(Pq_AL_pn[:,j] > 0)[0]
     
-    AL_q_idx_new = Pq_AL_posidx[:first_consecutive(Pq_AL_posidx)]
+    # AL_q_idx_new = Pq_AL_posidx[:first_consecutive(Pq_AL_posidx)]
+    
+    AL_q_idx_new = len(Pq_AL_pn[:,j])
+    
+    idx = scipy.signal.argrelmax(np.log10(Pq_AL_pn[:,j]))[0]
+    qidx = min(range(len(q_range)), key=lambda i: abs(q_range[i]-10*np.pi/np.mean(LengthData.length_AL_flat)))
+    idx = idx[idx>qidx]
+    Pq_AL_pn_new = np.concatenate((Pq_AL_pn[:,j][:qidx], Pq_AL_pn[:,j][idx]))
+    q_range_new = np.concatenate((q_range[:qidx], q_range[idx]))
     
     # AL_q_idx_new = Pq_AL_posidx[Pq_AL_posidx < AL_q_idx]
     
-    for i in range(len(AL_q_idx_new) - shiftN):
-        mwx_AL_pn_temp.append(np.average(q_range[AL_q_idx_new][i:i+shiftN]))
+    for i in range(len(q_range_new) - shiftN):
+        mwx_AL_pn_temp.append(np.average(q_range_new[i:i+shiftN]))
         
         poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                    np.log10(q_range[AL_q_idx_new][i:i+shiftN]), 
-                                                    np.log10(Pq_AL_pn[AL_q_idx_new,j][i:i+shiftN]), 
+                                                    np.log10(q_range_new[i:i+shiftN]), 
+                                                    np.log10(Pq_AL_pn_new[i:i+shiftN]), 
                                                     p0=[1., 0.], 
                                                     maxfev=100000)
         mw_Pq_AL_pn_temp.append(poptmxc[0])
@@ -9587,14 +9618,14 @@ xmax = max(mwx_calyx_pn, key = len)
 
 plt.plot(xmax, -1/tolerant_mean(mw_Pq_calyx_pn).data, color='k', lw=2)
 
-plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
-plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
-plt.hlines(1, 0.01, 100, ls='dashed', color='k')
-plt.hlines(0.388, 0.01, 100, ls='dashed', color='k')
-plt.text(105, 1/4-0.02, 'Ideal', fontsize=14)
-plt.text(105, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
-plt.text(105, 1-0.02,'Linear', fontsize=14)
-plt.text(105, 0.388-0.02,'Solution', fontsize=14)
+plt.hlines(1/4, 0.01, 1000, ls='dashed', color='k')
+plt.hlines(7/16, 0.01, 1000, ls='dashed', color='k')
+plt.hlines(1, 0.01, 1000, ls='dashed', color='k')
+plt.hlines(0.388, 0.01, 1000, ls='dashed', color='k')
+plt.text(1010, 1/4-0.02, 'Ideal', fontsize=14)
+plt.text(1010, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
+plt.text(1010, 1-0.02,'Linear', fontsize=14)
+plt.text(1010, 0.388-0.02,'Solution', fontsize=14)
 
 plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange')
 
@@ -9607,7 +9638,7 @@ plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_b_flat), 1e-6, 10, color='tab
 plt.xscale('log')
 # plt.yscale('log')
 plt.ylim(0.1, 1.2)
-plt.xlim(0.01, 100)
+plt.xlim(0.01, 1000)
 ax.minorticks_on()
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
@@ -9626,14 +9657,14 @@ xmax = max(mwx_LH_pn, key = len)
 
 plt.plot(xmax, -1/tolerant_mean(mw_Pq_LH_pn).data, color='k', lw=2)
 
-plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
-plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
-plt.hlines(1, 0.01, 100, ls='dashed', color='k')
-plt.hlines(0.388, 0.01, 100, ls='dashed', color='k')
-plt.text(105, 1/4-0.02, 'Ideal', fontsize=14)
-plt.text(105, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
-plt.text(105, 1-0.02,'Linear', fontsize=14)
-plt.text(105, 0.388-0.02,'Solution', fontsize=14)
+plt.hlines(1/4, 0.01, 1000, ls='dashed', color='k')
+plt.hlines(7/16, 0.01, 1000, ls='dashed', color='k')
+plt.hlines(1, 0.01, 1000, ls='dashed', color='k')
+plt.hlines(0.388, 0.01, 1000, ls='dashed', color='k')
+plt.text(1010, 1/4-0.02, 'Ideal', fontsize=14)
+plt.text(1010, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
+plt.text(1010, 1-0.02,'Linear', fontsize=14)
+plt.text(1010, 0.388-0.02,'Solution', fontsize=14)
 
 plt.vlines(2*np.pi/np.mean(LengthData.length_LH_flat), 1e-6, 10, color='tab:green')
 
@@ -9646,7 +9677,7 @@ plt.vlines(2*np.pi/np.mean(LengthData.length_LH_b_flat), 1e-6, 10, color='tab:gr
 plt.xscale('log')
 # plt.yscale('log')
 plt.ylim(0.1, 1.2)
-plt.xlim(0.01, 100)
+plt.xlim(0.01, 1000)
 ax.minorticks_on()
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
@@ -9665,14 +9696,14 @@ xmax = max(mwx_AL_pn, key = len)
 
 plt.plot(xmax, -1/tolerant_mean(mw_Pq_AL_pn).data, color='k', lw=2)
 
-plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
-plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
-plt.hlines(1, 0.01, 100, ls='dashed', color='k')
-plt.hlines(0.388, 0.01, 100, ls='dashed', color='k')
-plt.text(105, 1/4-0.02, 'Ideal', fontsize=14)
-plt.text(105, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
-plt.text(105, 1-0.02,'Linear', fontsize=14)
-plt.text(105, 0.388-0.02,'Solution', fontsize=14)
+plt.hlines(1/4, 0.01, 1000, ls='dashed', color='k')
+plt.hlines(7/16, 0.01, 1000, ls='dashed', color='k')
+plt.hlines(1, 0.01, 1000, ls='dashed', color='k')
+plt.hlines(0.388, 0.01, 1000, ls='dashed', color='k')
+plt.text(1010, 1/4-0.02, 'Ideal', fontsize=14)
+plt.text(1010, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
+plt.text(1010, 1-0.02,'Linear', fontsize=14)
+plt.text(1010, 0.388-0.02,'Solution', fontsize=14)
 
 plt.vlines(2*np.pi/np.mean(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue')
 
@@ -9685,7 +9716,7 @@ plt.vlines(2*np.pi/np.mean(LengthData.length_AL_b_flat), 1e-6, 10, color='tab:bl
 plt.xscale('log')
 # plt.yscale('log')
 plt.ylim(0.1, 1.2)
-plt.xlim(0.01, 100)
+plt.xlim(0.01, 1000)
 ax.minorticks_on()
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
