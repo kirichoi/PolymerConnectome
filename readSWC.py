@@ -8549,25 +8549,29 @@ AL_q_idx = first_consecutive(np.where(Pq_AL > 0)[0])
 calyx_q_idx = first_consecutive(np.where(Pq_calyx > 0)[0])
 LH_q_idx = first_consecutive(np.where(Pq_LH > 0)[0])
 
+AL_q_idx = len(Pq_AL)
+LH_q_idx = len(Pq_LH)
+calyx_q_idx = len(Pq_calyx)
+
 plt.plot(q_range[:AL_q_idx], Pq_AL[:AL_q_idx], color='tab:blue')
 plt.plot(q_range[:calyx_q_idx], Pq_calyx[:calyx_q_idx], color='tab:orange')
 plt.plot(q_range[:LH_q_idx], Pq_LH[:LH_q_idx], color='tab:green')
 
-plt.vlines(2*np.pi/np.mean(LengthData.length_AL_flat), 1e-8, 10, color='tab:blue')
-plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_flat), 1e-8, 10, color='tab:orange')
-plt.vlines(2*np.pi/np.mean(LengthData.length_LH_flat), 1e-8, 10, color='tab:green')
+plt.vlines(2*np.pi/np.mean(LengthData.length_AL_flat), 1e-9, 10, color='tab:blue')
+plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_flat), 1e-9, 10, color='tab:orange')
+plt.vlines(2*np.pi/np.mean(LengthData.length_LH_flat), 1e-9, 10, color='tab:green')
 
 # plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue', ls='dotted')
 # plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange', ls='dotted')
 # plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green', ls='dotted')
 
-plt.vlines(1/rgy_AL_full[0], 1e-8, 10, color='tab:blue', ls='--')
-plt.vlines(1/rgy_calyx_full[0], 1e-8, 10, color='tab:orange', ls='--')
-plt.vlines(1/rgy_LH_full[0], 1e-8, 10, color='tab:green', ls='--')
+plt.vlines(1/rgy_AL_full[0], 1e-9, 10, color='tab:blue', ls='--')
+plt.vlines(1/rgy_calyx_full[0], 1e-9, 10, color='tab:orange', ls='--')
+plt.vlines(1/rgy_LH_full[0], 1e-9, 10, color='tab:green', ls='--')
 
-plt.vlines(2*np.pi/np.mean(LengthData.length_AL_b_flat), 1e-8, 10, color='tab:blue', ls=':')
-plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_b_flat), 1e-8, 10, color='tab:orange', ls=':')
-plt.vlines(2*np.pi/np.mean(LengthData.length_LH_b_flat), 1e-8, 10, color='tab:green', ls=':')
+plt.vlines(2*np.pi/np.mean(LengthData.length_AL_b_flat), 1e-9, 10, color='tab:blue', ls=':')
+plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_b_flat), 1e-9, 10, color='tab:orange', ls=':')
+plt.vlines(2*np.pi/np.mean(LengthData.length_LH_b_flat), 1e-9, 10, color='tab:green', ls=':')
 
 line1 = 1/100000*np.power(q_range, -16/7)
 line2 = 1/10000000*np.power(q_range, -4/1)
@@ -8588,7 +8592,7 @@ plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
-plt.ylim(5e-8, 10)
+plt.ylim(1e-9, 10)
 plt.legend(['AL', 'MB calyx', 'LH'], fontsize=13)
 # plt.savefig(Parameter.outputdir + '/Pq_neuropil_6.pdf', dpi=300, bbox_inches='tight')
 plt.show()
@@ -10234,13 +10238,13 @@ for i in range(len(neurite_CM_calyx)):
 neurite_CM_calyx_dist_flat = [item for sublist in neurite_CM_calyx_dist for item in sublist]
 
 
-print(np.median(neurite_CM_AL_dist_flat))
-print(np.median(neurite_CM_LH_dist_flat))
-print(np.median(neurite_CM_calyx_dist_flat))
+print(np.mean(neurite_CM_AL_dist_flat))
+print(np.mean(neurite_CM_LH_dist_flat))
+print(np.mean(neurite_CM_calyx_dist_flat))
 
-print(np.median(neurite_CM_AL_flat_dist))
-print(np.median(neurite_CM_LH_flat_dist))
-print(np.median(neurite_CM_calyx_flat_dist))
+print(np.mean(neurite_CM_AL_flat_dist))
+print(np.mean(neurite_CM_LH_flat_dist))
+print(np.mean(neurite_CM_calyx_flat_dist))
 
 
 #%% neurite morphology SAW (50) vs theta (21)
@@ -10408,7 +10412,7 @@ for i in range(len(LHdist_short_ind[7])):
 # plt.savefig(Parameter.outputdir + '/neurite_21_LH.png', dpi=600, bbox_inches='tight', transparent=True)
 plt.show()
 
-#%% Neurite morphology comparison
+#%% Neurite morphology comparison MB calyx
 
 idx = 6
 
@@ -10454,7 +10458,7 @@ for i in range(len(calyxdist_short_ind)):
 # plt.savefig(Parameter.outputdir + '/neurite_comp_calyx_' + str(idx) + '_2.png', dpi=600, bbox_inches='tight', transparent=True)
 plt.show()
 
-#%%
+#%% Neurite morphology comparison LH
 
 idx = 6
 
@@ -10501,11 +10505,28 @@ for i in range(len(LHdist_short_ind)):
 plt.show()
 
 
-#%% Nu sampling for AL, LH, and MB calyx comparison
+#%% Neurite cluster spatial distribution MB calyx
 
+calyxdist_short_ind = []
+for i in range(len(calyxdist_short[np.where(un_calyx == idx)[0][0]])):
+    for j in range(len(calyxdist_short[np.where(un_calyx == idx)[0][0]][i])):
+        calyxdist_short_ind.append(calyxdist_short[np.where(un_calyx == idx)[0][0]][i][j])
 
-1/rGy_AL_short_flat
+fig, ax = plt.subplots(figsize=(8,8))
+ax = plt.axes(projection='3d')
+ax.set_box_aspect((1,1,1))
+ax.axis('off')
 
+for i in range(len(calyxdist_short_ind)):
+    listOfPoints = calyxdist_short_ind[i]
+    for f in range(len(listOfPoints)-1):
+        morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+        ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:red')
+# ax.set_xlim(515, 520)
+# ax.set_ylim(330, 325)
+# ax.set_zlim(71, 76)
+# plt.savefig(Parameter.outputdir + '/neurite_comp_calyx_' + str(idx) + '_2.png', dpi=600, bbox_inches='tight', transparent=True)
+plt.show()
 
 
 #%% 16 moving average (FIGURE FORM FACTOR 16)186573
@@ -13473,6 +13494,7 @@ for i in range(len(mPN_all)):
 
 
 plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/poster_all_1.pdf', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/poster_all_1.png', dpi=600, bbox_inches='tight')
+# fig.clf()
 plt.show()
 
