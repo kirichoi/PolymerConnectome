@@ -8600,6 +8600,8 @@ plt.show()
 
 #%% form factor per neuropil moving window (FIGURE FORM FACTOR)
 
+import scipy.signal
+
 def first_consecutive(lst):
     for i,j in enumerate(lst,lst[0]):
         if i!=j:
@@ -8620,7 +8622,7 @@ mw_Pq_calyx_err = []
 mwx_calyx = []
 
 idx = scipy.signal.argrelmax(np.log10(Pq_calyx))[0]
-qidx = min(range(len(q_range)), key=lambda i: abs(q_range[i]-10*np.pi/np.mean(LengthData.length_calyx_flat)))
+qidx = min(range(len(q_range)), key=lambda i: abs(q_range[i]-2*np.pi/np.mean(LengthData.length_calyx_b_flat)))
 idx = idx[idx>qidx]
 Pq_calyx_new = np.concatenate((Pq_calyx[:qidx], Pq_calyx[idx]))
 q_range_new = np.concatenate((q_range[:qidx], q_range[idx]))
@@ -8642,7 +8644,7 @@ mw_Pq_LH_err = []
 mwx_LH = []
 
 idx = scipy.signal.argrelmax(np.log10(Pq_LH))[0]
-qidx = min(range(len(q_range)), key=lambda i: abs(q_range[i]-10*np.pi/np.mean(LengthData.length_LH_flat)))
+qidx = min(range(len(q_range)), key=lambda i: abs(q_range[i]-2*np.pi/np.mean(LengthData.length_LH_b_flat)))
 idx = idx[idx>qidx]
 Pq_LH_new = np.concatenate((Pq_LH[:qidx], Pq_LH[idx]))
 q_range_new = np.concatenate((q_range[:qidx], q_range[idx]))
@@ -8664,7 +8666,7 @@ mw_Pq_AL_err = []
 mwx_AL = []
 
 idx = scipy.signal.argrelmax(np.log10(Pq_AL))[0]
-qidx = min(range(len(q_range)), key=lambda i: abs(q_range[i]-10*np.pi/np.mean(LengthData.length_AL_flat)))
+qidx = min(range(len(q_range)), key=lambda i: abs(q_range[i]-2*np.pi/np.mean(LengthData.length_AL_b_flat)))
 idx = idx[idx>qidx]
 Pq_AL_new = np.concatenate((Pq_AL[:qidx], Pq_AL[idx]))
 q_range_new = np.concatenate((q_range[:qidx], q_range[idx]))
@@ -9508,7 +9510,7 @@ for j in range(len(Pq_calyx_pn[0])):
     calyx_q_idx_new = len(Pq_calyx_pn[:,j])
     
     idx = scipy.signal.argrelmax(np.log10(Pq_calyx_pn[:,j]))[0]
-    qidx = min(range(len(q_range)), key=lambda i: abs(q_range[i]-10*np.pi/np.mean(LengthData.length_calyx_flat)))
+    qidx = min(range(len(q_range)), key=lambda i: abs(q_range[i]-2*np.pi/np.mean(LengthData.length_calyx_b_flat)))
     idx = idx[idx>qidx]
     Pq_calyx_pn_new = np.concatenate((Pq_calyx_pn[:,j][:qidx], Pq_calyx_pn[:,j][idx]))
     q_range_new = np.concatenate((q_range[:qidx], q_range[idx]))
@@ -9547,7 +9549,7 @@ for j in range(len(Pq_LH_pn[0])):
     LH_q_idx_new = len(Pq_LH_pn[:,j])
     
     idx = scipy.signal.argrelmax(np.log10(Pq_LH_pn[:,j]))[0]
-    qidx = min(range(len(q_range)), key=lambda i: abs(q_range[i]-10*np.pi/np.mean(LengthData.length_LH_flat)))
+    qidx = min(range(len(q_range)), key=lambda i: abs(q_range[i]-2*np.pi/np.mean(LengthData.length_LH_b_flat)))
     idx = idx[idx>qidx]
     Pq_LH_pn_new = np.concatenate((Pq_LH_pn[:,j][:qidx], Pq_LH_pn[:,j][idx]))
     q_range_new = np.concatenate((q_range[:qidx], q_range[idx]))
@@ -9586,7 +9588,7 @@ for j in range(len(Pq_AL_pn[0])):
     AL_q_idx_new = len(Pq_AL_pn[:,j])
     
     idx = scipy.signal.argrelmax(np.log10(Pq_AL_pn[:,j]))[0]
-    qidx = min(range(len(q_range)), key=lambda i: abs(q_range[i]-10*np.pi/np.mean(LengthData.length_AL_flat)))
+    qidx = min(range(len(q_range)), key=lambda i: abs(q_range[i]-2*np.pi/np.mean(LengthData.length_AL_b_flat)))
     idx = idx[idx>qidx]
     Pq_AL_pn_new = np.concatenate((Pq_AL_pn[:,j][:qidx], Pq_AL_pn[:,j][idx]))
     q_range_new = np.concatenate((q_range[:qidx], q_range[idx]))
@@ -10566,6 +10568,8 @@ plt.show()
 # cmap = cm.get_cmap('jet', len(calyxdist_short))
 cmap = []
 
+CM_neurite = []
+
 fig = plt.figure(figsize=(8, 8))
 ax = plt.axes(projection='3d')
 ax.set_box_aspect((1,1,1))
@@ -10576,6 +10580,7 @@ for i in range(len(calyxdist_short)):
         for j in range(len(calyxdist_short[i])):
             flat = [item for sublist in calyxdist_short[i][j] for item in sublist]
             rgy, CM = utils.radiusOfGyration([flat])
+            CM_neurite.append(CM[0])
             ax.scatter3D(CM[0][0], CM[0][1], CM[0][2], color=cval, marker='.')
 ylim = ax.get_ylim()
 ax.set_ylim((ylim[1], ylim[0]))
