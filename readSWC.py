@@ -8251,7 +8251,7 @@ plt.xscale('log')
 # plt.yscale('log')
 plt.show()
 
-#%% neurite collection
+#%% Neurite collection
 
 un_calyx = np.unique(MorphData.calyxdist_trk)
 un_LH = np.unique(MorphData.LHdist_trk)
@@ -10607,6 +10607,45 @@ for i in range(len(calyxdist_short)):
 ylim = ax.get_ylim()
 ax.set_ylim((ylim[1], ylim[0]))
 plt.show()
+
+#%%
+from scipy.stats import kde
+from mayavi import mlab
+
+nscale = 1
+
+figure = mlab.figure('DensityPlot')
+
+xi = np.array(CM_neurite)[:,0]
+yi = -np.array(CM_neurite)[:,1]
+zi = np.array(CM_neurite)[:,2]
+
+nbinsx = int((np.max(xi)-np.min(xi))/nscale)
+nbinsy = int((np.max(yi)-np.min(yi))/nscale)
+nbinsz = int((np.max(zi)-np.min(zi))/nscale)
+
+xyz = np.vstack([xi,yi,zi])
+neuritekde = kde.gaussian_kde(xyz, bw_method=0.2)
+
+xi, yi, zi = np.mgrid[np.min(xi)-5:np.max(xi)+5:nbinsx*1j, 
+                      np.min(yi)-5:np.max(yi)+5:nbinsy*1j, 
+                      np.min(zi)-5:np.max(zi)+5:nbinsz*1j]
+coords = np.vstack([item.ravel() for item in [xi, yi, zi]]) 
+density = neuritekde(coords).reshape(xi.shape)
+
+
+grid = mlab.pipeline.scalar_field(xi, yi, zi, density)
+vmin = density.min()
+vmax = density.max()
+# mlab.pipeline.volume(grid)
+mlab.volume_slice(density, plane_orientation='x_axes', slice_index=20, vmax=np.max(density)*0.8)
+mlab.volume_slice(density, plane_orientation='y_axes', slice_index=25, vmax=np.max(density)*0.8)
+mlab.volume_slice(density, plane_orientation='z_axes', slice_index=20, vmax=np.max(density)*0.8)
+# mlab.contour3d(xi, yi, zi, density)
+
+mlab.axes()
+mlab.show()
+
 
 # LAMMPS
 # calyxdist_short_flat_flat = [item for sublist in calyxdist_short_flat for item in sublist]
