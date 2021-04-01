@@ -10067,7 +10067,7 @@ plt.show()
 mw_Pq_calyx_pnn = []
 mw_Pq_calyx_pnn_err = []
 mwx_calyx_pn = []
-shiftN = 5
+shiftN = 3
 
 for j in range(len(Pq_calyx_pnn[0])):
     mw_Pq_calyx_pnn_temp = []
@@ -10702,8 +10702,6 @@ from mayavi import mlab
 
 nscale = 1
 
-figure = mlab.figure('DensityPlot')
-
 xi = np.array(CM_neurite)[:,0]
 yi = -np.array(CM_neurite)[:,1]
 zi = np.array(CM_neurite)[:,2]
@@ -10721,58 +10719,50 @@ xi, yi, zi = np.mgrid[np.min(xi)-5:np.max(xi)+5:nbinsx*1j,
 coords = np.vstack([item.ravel() for item in [xi, yi, zi]]) 
 density = neuritekde(coords).reshape(xi.shape)
 
-
-grid = mlab.pipeline.scalar_field(xi, yi, zi, density)
-vmin = density.min()
-vmax = density.max()
-# mlab.pipeline.volume(grid)
-mlab.volume_slice(density, plane_orientation='x_axes', slice_index=20, vmax=np.max(density)*0.8)
-mlab.volume_slice(density, plane_orientation='y_axes', slice_index=25, vmax=np.max(density)*0.8)
-mlab.volume_slice(density, plane_orientation='z_axes', slice_index=20, vmax=np.max(density)*0.8)
-# mlab.contour3d(xi, yi, zi, density)
-
-mlab.axes()
-mlab.show()
-
-
-# LAMMPS
-# calyxdist_short_flat_flat = [item for sublist in calyxdist_short_flat for item in sublist]
-
-# atoms = []
-# bonds = []
-
-# atomid = 0
-# bondid = 0
-# bondnum = 0
-
-# for i in range(len(calyxdist_short)):
-#     if len(calyxdist_short[i]) > 0:
-#         for j in range(len(calyxdist_short[0])):
-#             for k in range(len(calyxdist_short[i][j])):
-#                 bondnum += len(calyxdist_short[i][j]) - 1
-#                 for l in range(len(calyxdist_short[i][j][k])):
-#                     atoms.append([atomid, 1, calyxdist_short[i][j][k][0], calyxdist_short[i][j][k][1], calyxdist_short[i][j][k][2]])
-#                     if l != len(calyxdist_short[i][j][k]) - 1:
-#                         bonds.append([bondid, 1, atomid, atomid+1])
-#                         bondid += 1
-#                     atomid += 1
-
-# lammps = open('./calyxdist_short.txt', 'w')
-# lammps.write("LAMMPS data file written by Kiri Choi")
-# lammps.write("%s atoms" % len(calyxdist_short_flat_flat))
-# lammps.write("%s bonds" % bondnum)
-# lammps.write("1 atom types")
-# lammps.write("1 bond types")
-# lammps.write("1 bond types")
-# lammps.write("%s %s xlo xhi" % (np.min(np.array(calyxdist_short_flat_flat)[:,0]), np.max(np.array(calyxdist_short_flat_flat)[:,0])))
-# lammps.write("%s %s ylo yhi" % (np.min(-np.array(calyxdist_short_flat_flat)[:,1]), np.max(-np.array(calyxdist_short_flat_flat)[:,1])))
-# lammps.write("%s %s zlo zhi" % (np.min(np.array(calyxdist_short_flat_flat)[:,2]), np.max(np.array(calyxdist_short_flat_flat)[:,2])))
-# lammps.write("\n")
-# lammps.write("Atoms")
-# lammps.write("\n")
+#%%
+for i in range(len(density)):
+    figure = mlab.figure('DensityPlot')
+    
+    grid = mlab.pipeline.scalar_field(xi, yi, zi, density)
+    vmin = density.min()
+    vmax = density.max()
+    # mlab.pipeline.volume(grid)
+    mlab.volume_slice(density, plane_orientation='x_axes', slice_index=i, vmax=np.max(density)*0.8)
+    # mlab.volume_slice(density, plane_orientation='y_axes', slice_index=25, vmax=np.max(density)*0.8)
+    # mlab.volume_slice(density, plane_orientation='z_axes', slice_index=20, vmax=np.max(density)*0.8)
+    # mlab.contour3d(xi, yi, zi, density)
+    
+    mlab.axes()
+    mlab.savefig(filename='./' + str(i) + '.png')
+    mlab.close()
 
 
-# lammps.close()
+#%% Neurite structure factor
+
+q_range = np.logspace(-2,1,100)
+
+Pq_calyx_neurite = np.empty(len(q_range))
+
+for q in range(len(q_range)):
+    qrvec = q_range[q]*scipy.spatial.distance.cdist(CM_neurite, CM_neurite)
+    qrvec = qrvec[np.triu_indices_from(qrvec, k=1)]
+    Pq_calyx_neurite[q] = np.divide(np.divide(2*np.sum(np.sin(qrvec)/qrvec), len(CM_neurite)), len(CM_neurite))
+
+fig, ax = plt.subplots(figsize=(6,4.5))
+
+plt.plot(q_range, np.abs(Pq_calyx_neurite))
+plt.xscale('log')
+plt.yscale('log')
+
+# plt.ylim(0.1, 1.2)
+# plt.xlim(0.01, 10)
+# plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
+# plt.xticks(fontsize=14)
+# plt.ylabel(r"$\nu$", fontsize=17)
+# plt.yticks(fontsize=14)
+# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_AL_mv_4.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
 
 
 
