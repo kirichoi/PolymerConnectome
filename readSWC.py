@@ -8484,11 +8484,11 @@ LH_results = np.load(r'./LH_results_debye.npy')
 AL_results = np.load(r'./AL_results_debye.npy')
 
 Pq_calyx = np.divide(np.sum(np.divide(np.array(calyx_results).reshape(100, len(MorphData.calyxdist_flat)), 
-                                      len(MorphData.calyxdist_flat)), axis=1), len(MorphData.calyxdist_flat))
+                                      len(MorphData.calyxdist_flat)), axis=1), len(MorphData.calyxdist_flat))+1e-6
 Pq_LH = np.divide(np.sum(np.divide(np.array(LH_results).reshape(100, len(MorphData.LHdist_flat)),
-                                   len(MorphData.LHdist_flat)), axis=1), len(MorphData.LHdist_flat))
+                                   len(MorphData.LHdist_flat)), axis=1), len(MorphData.LHdist_flat))+1e-6
 Pq_AL = np.divide(np.sum(np.divide(np.array(AL_results).reshape(100, len(MorphData.ALdist_flat)), 
-                                   len(MorphData.ALdist_flat)), axis=1), len(MorphData.ALdist_flat))
+                                   len(MorphData.ALdist_flat)), axis=1), len(MorphData.ALdist_flat))+1e-6
 
 d_Pq_calyx = np.gradient(np.log10(Pq_calyx[:60]), np.log10(q_range[:60]))
 d_Pq_LH = np.gradient(np.log10(Pq_LH[:60]), np.log10(q_range[:60]))
@@ -8586,7 +8586,7 @@ plt.vlines(2*np.pi/np.mean(LengthData.length_LH_b_flat), 1e-9, 10, color='tab:gr
 line1 = 1/20*np.power(q_range, -16/7)
 line2 = 1/10000000*np.power(q_range, -4/1)
 line3 = 10*np.power(q_range, -1/0.388)
-line4 = 1/2000000*np.power(q_range, -1)
+line4 = 1/500000*np.power(q_range, -1)
 
 plt.plot(q_range, line1, lw=1, color='tab:red')
 plt.plot(q_range, line2, lw=1, color='tab:gray')
@@ -8597,13 +8597,13 @@ plt.plot(q_range, line4, lw=1, color='k')
 plt.text(.5, 3e-1, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
 plt.text(0.01, 7e-2, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
 plt.text(180, 2e-5, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
-plt.text(0.01, 8e-6, r'$\nu = 1$', fontsize=13)
+plt.text(0.01, 3e-5, r'$\nu = 1$', fontsize=13)
 
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
-plt.ylim(1e-9, 10)
+plt.ylim(1e-8, 10)
 plt.legend(['AL', 'MB calyx', 'LH'], fontsize=13)
 # plt.savefig(Parameter.outputdir + '/Pq_neuropil_6.pdf', dpi=300, bbox_inches='tight')
 plt.show()
@@ -8624,9 +8624,14 @@ AL_q_idx = first_consecutive(np.where(Pq_AL > 0)[0])
 calyx_q_idx = first_consecutive(np.where(Pq_calyx > 0)[0])
 LH_q_idx = first_consecutive(np.where(Pq_LH > 0)[0])
 
-# AL_q_idx = len(Pq_AL)
-# LH_q_idx = len(Pq_LH)
-# calyx_q_idx = len(Pq_calyx)
+AL_q_idx = len(Pq_AL)
+LH_q_idx = len(Pq_LH)
+calyx_q_idx = len(Pq_calyx)
+
+# AL_q_idx = np.where(q_range > 2*np.pi/np.mean(LengthData.length_AL_b_flat))[0][0] - 1
+# calyx_q_idx = np.where(q_range > 2*np.pi/np.mean(LengthData.length_calyx_b_flat))[0][0] - 1
+# LH_q_idx = np.where(q_range > 2*np.pi/np.mean(LengthData.length_LH_b_flat))[0][0] - 1
+
 
 mw_Pq_calyx = []
 mw_Pq_calyx_err = []
@@ -8639,7 +8644,7 @@ mwx_calyx = []
 # q_range_new = np.concatenate((q_range[:qidx], q_range[idx]))
 
 for i in range(len(q_range[:calyx_q_idx]) - shiftN):
-    mwx_calyx.append(np.power(10, (np.log10(q_range[:calyx_q_idx][i])+np.log10(q_range[:calyx_q_idx][i+shiftN-1]))/2))
+    mwx_calyx.append(np.average(q_range[:calyx_q_idx][i:i+shiftN]))
     
     poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
                                                 np.log10(q_range[:calyx_q_idx][i:i+shiftN]), 
@@ -8661,7 +8666,7 @@ mwx_LH = []
 # q_range_new = np.concatenate((q_range[:qidx], q_range[idx]))
 
 for i in range(len(q_range[:LH_q_idx]) - shiftN):
-    mwx_LH.append(np.power(10, (np.log10(q_range[:LH_q_idx][i])+np.log10(q_range[:LH_q_idx][i+shiftN-1]))/2))
+    mwx_LH.append(np.average(q_range[:LH_q_idx][i:i+shiftN]))
     
     poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
                                                 np.log10(q_range[:LH_q_idx][i:i+shiftN]), 
@@ -8683,7 +8688,7 @@ mwx_AL = []
 # q_range_new = np.concatenate((q_range[:qidx], q_range[idx]))
 
 for i in range(len(q_range[:AL_q_idx]) - shiftN):
-    mwx_AL.append(np.power(10, (np.log10(q_range[:AL_q_idx][i])+np.log10(q_range[:AL_q_idx][i+shiftN-1]))/2))
+    mwx_AL.append(np.average(q_range[:AL_q_idx][i:i+shiftN]))
     
     poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
                                                 np.log10(q_range[:AL_q_idx][i:i+shiftN]), 
@@ -9378,7 +9383,7 @@ fig = plt.figure(figsize=(8,6))
 for i in range(len(Pq_AL_pn[0])):
     AL_q_idx = first_consecutive(np.where(Pq_AL_pn[:,i] > 0)[0])
     AL_q_idx = len(Pq_AL_pn[:,i])
-    plt.plot(q_range[:AL_q_idx], Pq_AL_pn[:AL_q_idx,i], color='tab:blue', alpha=0.5)
+    plt.plot(q_range[:AL_q_idx], Pq_AL_pn[:AL_q_idx,i]+np.abs(np.min(Pq_AL_pn[:,i]))+1e-6, color='tab:blue', alpha=0.5)
 
 # plt.plot(q_range[:AL_q_idx], np.average(Pq_AL_pn[:AL_q_idx],axis=1), color='k', lw=2)
 
@@ -9434,7 +9439,7 @@ fig = plt.figure(figsize=(8,6))
 for i in range(len(Pq_LH_pn[0])):
     LH_q_idx = first_consecutive(np.where(Pq_LH_pn[:,i] > 0)[0])
     LH_q_idx = len(Pq_LH_pn[:,i])
-    plt.plot(q_range[:LH_q_idx], Pq_LH_pn[:LH_q_idx,i], color='tab:green', alpha=0.5)
+    plt.plot(q_range[:LH_q_idx], Pq_LH_pn[:LH_q_idx,i]+np.abs(np.min(Pq_LH_pn[:,i]))+1e-6, color='tab:green', alpha=0.5)
 
 # plt.plot(q_range[:LH_q_idx], np.average(Pq_LH_pn[:LH_q_idx],axis=1), color='k', lw=2)
 
@@ -9490,7 +9495,7 @@ fig = plt.figure(figsize=(8,6))
 for i in range(len(Pq_calyx_pn[0])):
     calyx_q_idx = first_consecutive(np.where(Pq_calyx_pn[:,i] > 0)[0])
     calyx_q_idx = len(Pq_calyx_pn[:,i])
-    plt.plot(q_range[:calyx_q_idx], Pq_calyx_pn[:calyx_q_idx,i], color='tab:orange', alpha=0.5)
+    plt.plot(q_range[:calyx_q_idx], Pq_calyx_pn[:calyx_q_idx,i]+np.abs(np.min(Pq_calyx_pn[:,i]))+1e-6, color='tab:orange', alpha=0.5)
 
 # plt.plot(q_range[:calyx_q_idx], np.average(Pq_calyx_pn[:calyx_q_idx],axis=1), color='k', lw=2)
 
@@ -9573,12 +9578,12 @@ for j in range(len(Pq_calyx_pn[0])):
 
     calyx_q_idx_new = Pq_calyx_posidx[Pq_calyx_posidx < calyx_q_idx]
     
-    for i in range(len(calyx_q_idx_new) - shiftN):
-        mwx_calyx_pn_temp.append(np.average(q_range[calyx_q_idx_new][i:i+shiftN]))
+    for i in range(len(q_range) - shiftN):
+        mwx_calyx_pn_temp.append(np.average(q_range[i:i+shiftN]))
         
         poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                    np.log10(q_range[calyx_q_idx_new][i:i+shiftN]), 
-                                                    np.log10(Pq_calyx_pn[calyx_q_idx_new,j][i:i+shiftN]), 
+                                                    np.log10(q_range[i:i+shiftN]), 
+                                                    np.log10(Pq_calyx_pn[:,j][i:i+shiftN]+np.abs(np.min(Pq_calyx_pn[:,j]))+1e-4), 
                                                     p0=[1., 0.], 
                                                     maxfev=100000)
         mw_Pq_calyx_pn_temp.append(poptmxc[0])
@@ -9612,12 +9617,12 @@ for j in range(len(Pq_LH_pn[0])):
     
     LH_q_idx_new = Pq_LH_posidx[Pq_LH_posidx < LH_q_idx]
     
-    for i in range(len(LH_q_idx_new) - shiftN):
-        mwx_LH_pn_temp.append(np.average(q_range[LH_q_idx_new][i:i+shiftN]))
+    for i in range(len(q_range) - shiftN):
+        mwx_LH_pn_temp.append(np.average(q_range[i:i+shiftN]))
         
         poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                    np.log10(q_range[LH_q_idx_new][i:i+shiftN]), 
-                                                    np.log10(Pq_LH_pn[LH_q_idx_new,j][i:i+shiftN]), 
+                                                    np.log10(q_range[i:i+shiftN]), 
+                                                    np.log10(Pq_LH_pn[:,j][i:i+shiftN]+np.abs(np.min(Pq_LH_pn[:,j]))+1e-4), 
                                                     p0=[1., 0.], 
                                                     maxfev=100000)
         mw_Pq_LH_pn_temp.append(poptmxc[0])
@@ -9651,12 +9656,12 @@ for j in range(len(Pq_AL_pn[0])):
     
     AL_q_idx_new = Pq_AL_posidx[Pq_AL_posidx < AL_q_idx]
     
-    for i in range(len(AL_q_idx_new) - shiftN):
-        mwx_AL_pn_temp.append(np.average(q_range[AL_q_idx_new][i:i+shiftN]))
+    for i in range(len(q_range) - shiftN):
+        mwx_AL_pn_temp.append(np.average(q_range[i:i+shiftN]))
         
         poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                    np.log10(q_range[AL_q_idx_new][i:i+shiftN]), 
-                                                    np.log10(Pq_AL_pn[AL_q_idx_new,j][i:i+shiftN]), 
+                                                    np.log10(q_range[i:i+shiftN]), 
+                                                    np.log10(Pq_AL_pn[:,j][i:i+shiftN]+np.abs(np.min(Pq_AL_pn[:,j]))+1e-4), 
                                                     p0=[1., 0.], 
                                                     maxfev=100000)
         mw_Pq_AL_pn_temp.append(poptmxc[0])
