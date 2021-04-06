@@ -8484,11 +8484,11 @@ LH_results = np.load(r'./LH_results_debye.npy')
 AL_results = np.load(r'./AL_results_debye.npy')
 
 Pq_calyx = np.divide(np.sum(np.divide(np.array(calyx_results).reshape(100, len(MorphData.calyxdist_flat)), 
-                                      len(MorphData.calyxdist_flat)), axis=1), len(MorphData.calyxdist_flat))+1e-6
+                                      len(MorphData.calyxdist_flat)), axis=1), len(MorphData.calyxdist_flat))
 Pq_LH = np.divide(np.sum(np.divide(np.array(LH_results).reshape(100, len(MorphData.LHdist_flat)),
-                                   len(MorphData.LHdist_flat)), axis=1), len(MorphData.LHdist_flat))+1e-6
+                                   len(MorphData.LHdist_flat)), axis=1), len(MorphData.LHdist_flat))
 Pq_AL = np.divide(np.sum(np.divide(np.array(AL_results).reshape(100, len(MorphData.ALdist_flat)), 
-                                   len(MorphData.ALdist_flat)), axis=1), len(MorphData.ALdist_flat))+1e-6
+                                   len(MorphData.ALdist_flat)), axis=1), len(MorphData.ALdist_flat))
 
 d_Pq_calyx = np.gradient(np.log10(Pq_calyx[:60]), np.log10(q_range[:60]))
 d_Pq_LH = np.gradient(np.log10(Pq_LH[:60]), np.log10(q_range[:60]))
@@ -10755,7 +10755,7 @@ for q in range(len(q_range)):
 
 fig, ax = plt.subplots(figsize=(6,4.5))
 
-plt.plot(q_range, Pq_calyx_neurite)
+plt.plot(q_range, Pq_calyx_neurite+1e-3)
 plt.xscale('log')
 plt.yscale('log')
 
@@ -10768,7 +10768,25 @@ plt.yticks(fontsize=14)
 # plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_AL_mv_4.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
+#%% Gyration tensor
 
+CM_neurite = np.array(CM_neurite)
+
+Gten = np.empty((3,3))
+
+for k in range(len(Gten)):
+    for l in range(len(Gten[k])):
+        val = 0
+        for i in range(len(CM_neurite)):
+            for j in range(len(CM_neurite)):
+                val += (CM_neurite[i,k]-CM_neurite[j,k])*(CM_neurite[i,l]-CM_neurite[j,l])
+        Gten[k][l] = np.divide(val, 2*np.square(len(CM_neurite)))
+
+w, v = np.linalg.eig(Gten)
+
+aspher = 3/2*np.max(w)-np.sum(w)/2
+acylin = np.sort(w)[1]-np.min(w)
+aniso = 3/2*np.sum(np.square(w))/np.square(np.sum(w)) - 1/2
 
 
 #%% 16 moving average (FIGURE FORM FACTOR 16)186573
