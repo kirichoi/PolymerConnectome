@@ -8603,7 +8603,7 @@ plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
-plt.ylim(1e-8, 10)
+plt.ylim(1e-9, 10)
 plt.legend(['AL', 'MB calyx', 'LH'], fontsize=13)
 # plt.savefig(Parameter.outputdir + '/Pq_neuropil_6.pdf', dpi=300, bbox_inches='tight')
 plt.show()
@@ -8632,7 +8632,6 @@ calyx_q_idx = len(Pq_calyx)
 # calyx_q_idx = np.where(q_range > 2*np.pi/np.mean(LengthData.length_calyx_b_flat))[0][0] - 1
 # LH_q_idx = np.where(q_range > 2*np.pi/np.mean(LengthData.length_LH_b_flat))[0][0] - 1
 
-
 mw_Pq_calyx = []
 mw_Pq_calyx_err = []
 mwx_calyx = []
@@ -8643,12 +8642,18 @@ mwx_calyx = []
 # Pq_calyx_new = np.concatenate((Pq_calyx[:qidx], Pq_calyx[idx]))
 # q_range_new = np.concatenate((q_range[:qidx], q_range[idx]))
 
-for i in range(len(q_range[:calyx_q_idx]) - shiftN):
-    mwx_calyx.append(np.average(q_range[:calyx_q_idx][i:i+shiftN]))
+for i in range(len(q_range) - 3):
+    if i > 50:
+        shiftN=45
+    # elif i > 75:
+    #     shiftN=3
+    else:
+        shiftN=15
+    mwx_calyx.append(np.average(q_range[i:i+shiftN]))
     
-    poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                np.log10(q_range[:calyx_q_idx][i:i+shiftN]), 
-                                                np.log10(Pq_calyx[:calyx_q_idx][i:i+shiftN]), 
+    poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncPpow, 
+                                                q_range[i:i+shiftN], 
+                                                Pq_calyx[i:i+shiftN], 
                                                 p0=[1., 0.], 
                                                 maxfev=100000)
     mw_Pq_calyx.append(poptmxc[0])
@@ -8665,12 +8670,18 @@ mwx_LH = []
 # Pq_LH_new = np.concatenate((Pq_LH[:qidx], Pq_LH[idx]))
 # q_range_new = np.concatenate((q_range[:qidx], q_range[idx]))
 
-for i in range(len(q_range[:LH_q_idx]) - shiftN):
-    mwx_LH.append(np.average(q_range[:LH_q_idx][i:i+shiftN]))
+for i in range(len(q_range) - 3):
+    if i > 50:
+        shiftN=45
+    # elif i > 75:
+    #     shiftN=3
+    else:
+        shiftN=15
+    mwx_LH.append(np.average(q_range[i:i+shiftN]))
     
-    poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                np.log10(q_range[:LH_q_idx][i:i+shiftN]), 
-                                                np.log10(Pq_LH[:LH_q_idx][i:i+shiftN]), 
+    poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncPpow, 
+                                                q_range[i:i+shiftN], 
+                                                Pq_LH[i:i+shiftN], 
                                                 p0=[1., 0.], 
                                                 maxfev=100000)
     mw_Pq_LH.append(poptmxc[0])
@@ -8687,12 +8698,18 @@ mwx_AL = []
 # Pq_AL_new = np.concatenate((Pq_AL[:qidx], Pq_AL[idx]))
 # q_range_new = np.concatenate((q_range[:qidx], q_range[idx]))
 
-for i in range(len(q_range[:AL_q_idx]) - shiftN):
-    mwx_AL.append(np.average(q_range[:AL_q_idx][i:i+shiftN]))
+for i in range(len(q_range) - 3):
+    if i > 50:
+        shiftN=45
+    # elif i > 75:
+    #     shiftN=3
+    else:
+        shiftN=15
+    mwx_AL.append(np.average(q_range[i:i+shiftN]))
     
-    poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                np.log10(q_range[:AL_q_idx][i:i+shiftN]), 
-                                                np.log10(Pq_AL[:AL_q_idx][i:i+shiftN]), 
+    poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncPpow, 
+                                                q_range[i:i+shiftN], 
+                                                Pq_AL[i:i+shiftN], 
                                                 p0=[1., 0.], 
                                                 maxfev=100000)
     mw_Pq_AL.append(poptmxc[0])
