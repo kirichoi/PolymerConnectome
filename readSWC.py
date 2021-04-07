@@ -8613,6 +8613,7 @@ plt.show()
 
 import scipy.signal
 from statsmodels.tsa.api import SimpleExpSmoothing
+from scipy.ndimage.filters import uniform_filter1d
 
 def first_consecutive(lst):
     for i,j in enumerate(lst,lst[0]):
@@ -8621,19 +8622,19 @@ def first_consecutive(lst):
 
 shiftN = 15
 
-Pq_calyx = np.divide(np.sum(np.divide(np.array(calyx_results).reshape(100, len(MorphData.calyxdist_flat)), 
-                                      len(MorphData.calyxdist_flat)), axis=1), len(MorphData.calyxdist_flat))
-Pq_LH = np.divide(np.sum(np.divide(np.array(LH_results).reshape(100, len(MorphData.LHdist_flat)),
-                                   len(MorphData.LHdist_flat)), axis=1), len(MorphData.LHdist_flat))
-Pq_AL = np.divide(np.sum(np.divide(np.array(AL_results).reshape(100, len(MorphData.ALdist_flat)), 
-                                   len(MorphData.ALdist_flat)), axis=1), len(MorphData.ALdist_flat))
+# Pq_calyx = np.divide(np.sum(np.divide(np.array(calyx_results).reshape(100, len(MorphData.calyxdist_flat)), 
+#                                       len(MorphData.calyxdist_flat)), axis=1), len(MorphData.calyxdist_flat))
+# Pq_LH = np.divide(np.sum(np.divide(np.array(LH_results).reshape(100, len(MorphData.LHdist_flat)),
+#                                    len(MorphData.LHdist_flat)), axis=1), len(MorphData.LHdist_flat))
+# Pq_AL = np.divide(np.sum(np.divide(np.array(AL_results).reshape(100, len(MorphData.ALdist_flat)), 
+#                                    len(MorphData.ALdist_flat)), axis=1), len(MorphData.ALdist_flat))
 
-fit1 = SimpleExpSmoothing(Pq_AL[67:]).fit(smoothing_level=0.1,optimized=False)
-Pq_AL[67:] = fit1.fittedvalues#scipy.signal.savgol_filter(Pq_AL[50:], 21, 4)
-fit1 = SimpleExpSmoothing(Pq_LH[69:]).fit(smoothing_level=0.1,optimized=False)
-Pq_LH[69:] = fit1.fittedvalues#scipy.signal.savgol_filter(Pq_LH[50:], 21, 4)
-fit1 = SimpleExpSmoothing(Pq_calyx[72:]).fit(smoothing_level=0.1,optimized=False)
-Pq_calyx[72:] = fit1.fittedvalues#scipy.signal.savgol_filter(Pq_calyx[50:], 21, 4)
+# fit1 = SimpleExpSmoothing(Pq_AL[67:]).fit(smoothing_level=0.1,optimized=False)
+# Pq_AL[67:] = fit1.fittedvalues#scipy.signal.savgol_filter(Pq_AL[50:], 21, 4)
+# fit1 = SimpleExpSmoothing(Pq_LH[69:]).fit(smoothing_level=0.1,optimized=False)
+# Pq_LH[69:] = fit1.fittedvalues#scipy.signal.savgol_filter(Pq_LH[50:], 21, 4)
+# fit1 = SimpleExpSmoothing(Pq_calyx[72:]).fit(smoothing_level=0.1,optimized=False)
+# Pq_calyx[72:] = fit1.fittedvalues#scipy.signal.savgol_filter(Pq_calyx[50:], 21, 4)
 
 AL_q_idx = first_consecutive(np.where(Pq_AL > 0)[0])
 calyx_q_idx = first_consecutive(np.where(Pq_calyx > 0)[0])
@@ -9394,6 +9395,380 @@ plt.show()
 
 
 
+#%% Persistence length V3
+
+def plength(l, MSR, R_max):
+    return np.abs(MSR - (2*l*R_max - 2*np.square(l)*(1 - np.exp(-R_max/l))))
+
+l_range = np.logspace(-2, 1, 40)
+
+length_AL_mean = np.mean(LengthData.length_AL_flat)
+length_LH_mean = np.mean(LengthData.length_LH_flat)
+length_calyx_mean = np.mean(LengthData.length_calyx_flat)
+
+AL_e2e_sampled = []
+AL_cont_sampled = []
+AL_sampe2eidx_list = []
+rGy_AL_sampled = []
+LH_e2e_sampled = []
+LH_cont_sampled = []
+LH_sampe2eidx_list = []
+rGy_LH_sampled = []
+calyx_e2e_sampled = []
+calyx_cont_sampled = []
+calyx_sampe2eidx_list = []
+rGy_calyx_sampled = []
+
+for n in range(len(LengthData.length_AL)):
+    if len(LengthData.length_AL[n]) > 0:
+        AL_e2e_sampled_temp2 = []
+        AL_cont_sampled_temp2 = []
+        AL_sampe2eidx_list_temp2 = []
+        rGy_AL_sampled_temp2 = []
+        for q in range(len(l_range)-1):
+            AL_e2e_sampled_temp3 = []
+            AL_cont_sampled_temp3 = []
+            AL_sampe2eidx_list_temp3 = []
+            rGy_AL_sampled_temp3 = []
+        
+            AL_longer_idx = np.where(LengthData.length_AL[n] >= l_range[q])[0]
+            
+            for i in range(len(AL_longer_idx)):
+                AL_e2e_tuple = []
+                consdiff = np.diff(MorphData.ALdist_per_n[n][AL_longer_idx[i]], axis=0)
+                if len(consdiff) > 1:
+                    consdist = np.sqrt(np.sum(np.square(consdiff),1))
+                    for j in range(len(consdist)-1):
+                        maxidx = np.where((np.cumsum(consdist[j:]) >= l_range[q]) & (np.cumsum(consdist[j:]) < l_range[q+1]))[0]
+                        if len(maxidx) > 0:
+                            AL_e2e_tuple.append((j,maxidx[0]+j+1))
+                    
+                    # sampidx = np.random.choice(len(AL_e2e_tuple))
+                    AL_sampe2eidx_list_temp3.append(AL_e2e_tuple)
+                    
+                    AL_e2e_sampled_temp = []
+                    AL_cont_sampled_temp = []
+                    rGy_AL_sampled_temp = []
+                    
+                    for k in range(len(AL_e2e_tuple)):
+                    # sampe2eidx = AL_e2e_sampled_temp[sampidx]
+                        e2edist = np.linalg.norm(np.subtract(MorphData.ALdist_per_n[n][AL_longer_idx[i]][AL_e2e_tuple[k][0]],
+                                                             MorphData.ALdist_per_n[n][AL_longer_idx[i]][AL_e2e_tuple[k][1]]))
+                        AL_e2e_sampled_temp.append(e2edist)
+                        AL_cont_sampled_temp.append(np.sum(consdist[AL_e2e_tuple[k][0]:AL_e2e_tuple[k][1]+1]))
+                        rGy_AL_sampled_temp.append(utils.radiusOfGyration(np.array([MorphData.ALdist_per_n[n]
+                                                                                    [AL_longer_idx[i]]
+                                                                                    [AL_e2e_tuple[k][0]:AL_e2e_tuple[k][1]+1]]))[0][0])
+                    AL_e2e_sampled_temp3.append(AL_e2e_sampled_temp)
+                    AL_cont_sampled_temp3.append(AL_cont_sampled_temp)
+                    rGy_AL_sampled_temp3.append(rGy_AL_sampled_temp)
+            
+            AL_e2e_sampled_temp2.append(AL_e2e_sampled_temp3)
+            AL_cont_sampled_temp2.append(AL_cont_sampled_temp3)
+            AL_sampe2eidx_list_temp2.append(AL_sampe2eidx_list_temp3)
+            rGy_AL_sampled_temp2.append(rGy_AL_sampled_temp3)
+        
+        AL_e2e_sampled.append(AL_e2e_sampled_temp2)
+        AL_cont_sampled.append(AL_cont_sampled_temp2)
+        AL_sampe2eidx_list.append(AL_sampe2eidx_list_temp2)
+        rGy_AL_sampled.append(rGy_AL_sampled_temp2)
+
+
+for n in range(len(LengthData.length_LH)):
+    if len(LengthData.length_LH[n]) > 0:
+        LH_e2e_sampled_temp2 = []
+        LH_cont_sampled_temp2 = []
+        LH_sampe2eidx_list_temp2 = []
+        rGy_LH_sampled_temp2 = []
+        for q in range(len(l_range)-1):
+            LH_e2e_sampled_temp3 = []
+            LH_cont_sampled_temp3 = []
+            LH_sampe2eidx_list_temp3 = []
+            rGy_LH_sampled_temp3 = []
+        
+            LH_longer_idx = np.where(LengthData.length_LH[n] >= l_range[q])[0]
+            
+            for i in range(len(LH_longer_idx)):
+                LH_e2e_tuple = []
+                consdiff = np.diff(MorphData.LHdist_per_n[n][LH_longer_idx[i]], axis=0)
+                if len(consdiff) > 1:
+                    consdist = np.sqrt(np.sum(np.square(consdiff),1))
+                    for j in range(len(consdist)-1):
+                        maxidx = np.where((np.cumsum(consdist[j:]) >= l_range[q]) & (np.cumsum(consdist[j:]) < l_range[q+1]))[0]
+                        if len(maxidx) > 0:
+                            LH_e2e_tuple.append((j,maxidx[0]+j+1))
+                    
+                    # sampidx = np.random.choice(len(LH_e2e_tuple))
+                    LH_sampe2eidx_list_temp3.append(LH_e2e_tuple)
+                    
+                    LH_e2e_sampled_temp = []
+                    LH_cont_sampled_temp = []
+                    rGy_LH_sampled_temp = []
+                    
+                    for k in range(len(LH_e2e_tuple)):
+                    # sampe2eidx = LH_e2e_sampled_temp[sampidx]
+                        e2edist = np.linalg.norm(np.subtract(MorphData.LHdist_per_n[n][LH_longer_idx[i]][LH_e2e_tuple[k][0]],
+                                                             MorphData.LHdist_per_n[n][LH_longer_idx[i]][LH_e2e_tuple[k][1]]))
+                        LH_e2e_sampled_temp.append(e2edist)
+                        LH_cont_sampled_temp.append(np.sum(consdist[LH_e2e_tuple[k][0]:LH_e2e_tuple[k][1]+1]))
+                        rGy_LH_sampled_temp.append(utils.radiusOfGyration(np.array([MorphData.LHdist_per_n[n]
+                                                                                    [LH_longer_idx[i]]
+                                                                                    [LH_e2e_tuple[k][0]:LH_e2e_tuple[k][1]+1]]))[0][0])
+                    LH_e2e_sampled_temp3.append(LH_e2e_sampled_temp)
+                    LH_cont_sampled_temp3.append(LH_cont_sampled_temp)
+                    rGy_LH_sampled_temp3.append(rGy_LH_sampled_temp)
+            
+            LH_e2e_sampled_temp2.append(LH_e2e_sampled_temp3)
+            LH_cont_sampled_temp2.append(LH_cont_sampled_temp3)
+            LH_sampe2eidx_list_temp2.append(LH_sampe2eidx_list_temp3)
+            rGy_LH_sampled_temp2.append(rGy_LH_sampled_temp3)
+        
+        LH_e2e_sampled.append(LH_e2e_sampled_temp2)
+        LH_cont_sampled.append(LH_cont_sampled_temp2)
+        LH_sampe2eidx_list.append(LH_sampe2eidx_list_temp2)
+        rGy_LH_sampled.append(rGy_LH_sampled_temp2)
+
+
+for n in range(len(LengthData.length_calyx)):
+    if len(LengthData.length_calyx[n]) > 0:
+        calyx_e2e_sampled_temp2 = []
+        calyx_cont_sampled_temp2 = []
+        calyx_sampe2eidx_list_temp2 = []
+        rGy_calyx_sampled_temp2 = []
+        for q in range(len(l_range)-1):
+            calyx_e2e_sampled_temp3 = []
+            calyx_cont_sampled_temp3 = []
+            calyx_sampe2eidx_list_temp3 = []
+            rGy_calyx_sampled_temp3 = []
+        
+            calyx_longer_idx = np.where(LengthData.length_calyx[n] >= l_range[q])[0]
+            
+            for i in range(len(calyx_longer_idx)):
+                calyx_e2e_tuple = []
+                consdiff = np.diff(MorphData.calyxdist_per_n[n][calyx_longer_idx[i]], axis=0)
+                if len(consdiff) > 1:
+                    consdist = np.sqrt(np.sum(np.square(consdiff),1))
+                    for j in range(len(consdist)-1):
+                        maxidx = np.where((np.cumsum(consdist[j:]) >= l_range[q]) & (np.cumsum(consdist[j:]) < l_range[q+1]))[0]
+                        if len(maxidx) > 0:
+                            calyx_e2e_tuple.append((j,maxidx[0]+j+1))
+                    
+                    # sampidx = np.random.choice(len(calyx_e2e_tuple))
+                    calyx_sampe2eidx_list_temp3.append(calyx_e2e_tuple)
+                    
+                    calyx_e2e_sampled_temp = []
+                    calyx_cont_sampled_temp = []
+                    rGy_calyx_sampled_temp = []
+                    
+                    for k in range(len(calyx_e2e_tuple)):
+                    # sampe2eidx = calyx_e2e_sampled_temp[sampidx]
+                        e2edist = np.linalg.norm(np.subtract(MorphData.calyxdist_per_n[n][calyx_longer_idx[i]][calyx_e2e_tuple[k][0]],
+                                                             MorphData.calyxdist_per_n[n][calyx_longer_idx[i]][calyx_e2e_tuple[k][1]]))
+                        calyx_e2e_sampled_temp.append(e2edist)
+                        calyx_cont_sampled_temp.append(np.sum(consdist[calyx_e2e_tuple[k][0]:calyx_e2e_tuple[k][1]+1]))
+                        rGy_calyx_sampled_temp.append(utils.radiusOfGyration(np.array([MorphData.calyxdist_per_n[n]
+                                                                                    [calyx_longer_idx[i]]
+                                                                                    [calyx_e2e_tuple[k][0]:calyx_e2e_tuple[k][1]+1]]))[0][0])
+                    calyx_e2e_sampled_temp3.append(calyx_e2e_sampled_temp)
+                    calyx_cont_sampled_temp3.append(calyx_cont_sampled_temp)
+                    rGy_calyx_sampled_temp3.append(rGy_calyx_sampled_temp)
+            
+            calyx_e2e_sampled_temp2.append(calyx_e2e_sampled_temp3)
+            calyx_cont_sampled_temp2.append(calyx_cont_sampled_temp3)
+            calyx_sampe2eidx_list_temp2.append(calyx_sampe2eidx_list_temp3)
+            rGy_calyx_sampled_temp2.append(rGy_calyx_sampled_temp3)
+        
+        calyx_e2e_sampled.append(calyx_e2e_sampled_temp2)
+        calyx_cont_sampled.append(calyx_cont_sampled_temp2)
+        calyx_sampe2eidx_list.append(calyx_sampe2eidx_list_temp2)
+        rGy_calyx_sampled.append(rGy_calyx_sampled_temp2)
+
+test_r_AL = []
+test_rgy_AL = []
+for i in range(len(AL_e2e_sampled)):
+    test_r_AL1 = []
+    test_rgy_AL1 = []
+    for q in range(len(AL_e2e_sampled[i])):
+        test_r_AL1.append(np.mean([item for sublist in AL_e2e_sampled[i][q] for item in sublist]))
+        test_rgy_AL1.append(np.mean([item for sublist in rGy_AL_sampled[i][q] for item in sublist]))
+    test_r_AL.append(test_r_AL1)
+    test_rgy_AL.append(test_rgy_AL1)
+
+test_r_LH = []
+test_rgy_LH = []
+for i in range(len(LH_e2e_sampled)):
+    test_r_LH1 = []
+    test_rgy_LH1 = []
+    for q in range(len(LH_e2e_sampled[i])):
+        test_r_LH1.append(np.mean([item for sublist in LH_e2e_sampled[i][q] for item in sublist]))
+        test_rgy_LH1.append(np.mean([item for sublist in rGy_LH_sampled[i][q] for item in sublist]))
+    test_r_LH.append(test_r_LH1)
+    test_rgy_LH.append(test_rgy_LH1)
+
+test_r_calyx = []
+test_rgy_calyx = []
+for i in range(len(calyx_e2e_sampled)):
+    test_r_calyx1 = []
+    test_rgy_calyx1 = []
+    for q in range(len(calyx_e2e_sampled[i])):
+        test_r_calyx1.append(np.mean([item for sublist in calyx_e2e_sampled[i][q] for item in sublist]))
+        test_rgy_calyx1.append(np.mean([item for sublist in rGy_calyx_sampled[i][q] for item in sublist]))
+    test_r_calyx.append(test_r_calyx1)
+    test_rgy_calyx.append(test_rgy_calyx1)
+
+fig = plt.figure(figsize=(6, 4))
+for i in range(len(test_r_AL)):
+    plt.scatter(l_range[:-1]+np.diff(l_range), test_r_AL[i], marker='.', color='tab:blue', alpha=0.25)
+#plt.plot(np.log10(2*np.pi/np.array(test_l)), -1/np.log10(np.diff(test_r)))
+plt.vlines(np.mean(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue')
+
+plt.vlines(np.mean(LengthData.length_AL_b_flat), 1e-6, 10, color='tab:blue', ls=':')
+plt.xlabel("$l$ ($\mu\mathrm{m}$)", fontsize=15)
+plt.ylabel("$R$", fontsize=15)
+plt.xscale('log')
+plt.yscale('log')
+plt.ylim(0.07, 10)
+# plt.savefig(Parameter.outputdir + '/lp_all.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig = plt.figure(figsize=(6, 4))
+for i in range(len(test_r_LH)):
+    plt.scatter(l_range[:-1]+np.diff(l_range), test_r_LH[i], marker='.', color='tab:green', alpha=0.25)
+#plt.plot(np.log10(2*np.pi/np.array(test_l)), -1/np.log10(np.diff(test_r)))
+plt.vlines(np.mean(LengthData.length_LH_flat), 1e-6, 10, color='tab:green')
+
+plt.vlines(np.mean(LengthData.length_LH_b_flat), 1e-6, 10, color='tab:green', ls=':')
+plt.xlabel("$l$ ($\mu\mathrm{m}$)", fontsize=15)
+plt.ylabel("$R$", fontsize=15)
+plt.xscale('log')
+plt.yscale('log')
+plt.ylim(0.07, 10)
+# plt.savefig(Parameter.outputdir + '/lp_all.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig = plt.figure(figsize=(6, 4))
+for i in range(len(test_r_calyx)):
+    plt.scatter(l_range[:-1]+np.diff(l_range), test_r_calyx[i], marker='.', color='tab:orange', alpha=0.25)
+#plt.plot(np.log10(2*np.pi/np.array(test_l)), -1/np.log10(np.diff(test_r)))
+plt.vlines(np.mean(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange')
+
+plt.vlines(np.mean(LengthData.length_calyx_b_flat), 1e-6, 10, color='tab:orange', ls=':')
+plt.xlabel("$l$ ($\mu\mathrm{m}$)", fontsize=15)
+plt.ylabel("$R$", fontsize=15)
+plt.xscale('log')
+plt.yscale('log')
+plt.ylim(0.07, 10)
+# plt.savefig(Parameter.outputdir + '/lp_all.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+shiftN = 5
+xtest_AL = []
+ytest_AL = []
+xtest_calyx = []
+ytest_calyx = []
+xtest_LH = []
+ytest_LH = []
+
+for n in range(len(test_rgy_AL)):
+    nonnanidx = np.argwhere(~np.isnan(test_rgy_AL[n])).T[0]
+    xtest_AL_temp = []
+    ytest_AL_temp = []
+    for i in range(len(nonnanidx) - shiftN - 1):
+        xtest_AL_temp.append(np.average(l_range[nonnanidx][i:i+shiftN]))
+        
+        poptD_e2e_AL, pcovD_e2e_AL = scipy.optimize.curve_fit(objFuncGL, 
+                                                    np.log10(l_range[:-1]+np.diff(l_range))[nonnanidx][i:i+shiftN], 
+                                                    np.log10(test_rgy_AL[n])[nonnanidx][i:i+shiftN], 
+                                                    p0=[1., 0.], 
+                                                    maxfev=100000)
+        ytest_AL_temp.append(poptD_e2e_AL[0])
+        
+    xtest_AL.append(xtest_AL_temp)
+    ytest_AL.append(ytest_AL_temp)
+
+for n in range(len(test_rgy_LH)):
+    nonnanidx = np.argwhere(~np.isnan(test_rgy_LH[n])).T[0]
+    xtest_LH_temp = []
+    ytest_LH_temp = []
+    for i in range(len(nonnanidx) - shiftN - 1):
+        xtest_LH_temp.append(np.average(l_range[nonnanidx][i:i+shiftN]))
+        
+        poptD_e2e_LH, pcovD_e2e_LH = scipy.optimize.curve_fit(objFuncGL, 
+                                                    np.log10(l_range[:-1]+np.diff(l_range))[nonnanidx][i:i+shiftN], 
+                                                    np.log10(test_rgy_LH[n])[nonnanidx][i:i+shiftN], 
+                                                    p0=[1., 0.], 
+                                                    maxfev=100000)
+        ytest_LH_temp.append(poptD_e2e_LH[0])
+        
+    xtest_LH.append(xtest_LH_temp)
+    ytest_LH.append(ytest_LH_temp)
+
+for n in range(len(test_rgy_calyx)):
+    nonnanidx = np.argwhere(~np.isnan(test_rgy_calyx[n])).T[0]
+    xtest_calyx_temp = []
+    ytest_calyx_temp = []
+    for i in range(len(nonnanidx) - shiftN - 1):
+        xtest_calyx_temp.append(np.average(l_range[nonnanidx][i:i+shiftN]))
+        
+        poptD_e2e_calyx, pcovD_e2e_calyx = scipy.optimize.curve_fit(objFuncGL, 
+                                                    np.log10(l_range[:-1]+np.diff(l_range))[nonnanidx][i:i+shiftN], 
+                                                    np.log10(test_rgy_calyx[n])[nonnanidx][i:i+shiftN], 
+                                                    p0=[1., 0.], 
+                                                    maxfev=100000)
+        ytest_calyx_temp.append(poptD_e2e_calyx[0])
+        
+    xtest_calyx.append(xtest_calyx_temp)
+    ytest_calyx.append(ytest_calyx_temp)
+
+fig = plt.figure(figsize=(6, 4))
+for i in range(len(ytest_AL)):
+    plt.plot(np.array(xtest_AL[i]), np.array(ytest_AL[i]), color='tab:blue', alpha=0.25)
+# plt.plot(2*np.pi/np.array(test_l)[:-1] + np.diff(2*np.pi/np.array(test_l)), 
+         # np.diff(np.log10(test_r))/np.log10(2*np.pi/np.array(test_l))[:-1] + np.diff(np.log10(2*np.pi/np.array(test_l))))
+plt.vlines(np.mean(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue')
+
+plt.vlines(np.mean(LengthData.length_AL_b_flat), 1e-6, 10, color='tab:blue', ls=':')
+plt.xlabel("$l$ ($\mu\mathrm{m}$)", fontsize=15)
+# plt.ylabel("$R$", fontsize=15)
+plt.xscale('log')
+# plt.yscale('log')
+plt.ylim(0, 1.5)
+# plt.savefig(Parameter.outputdir + '/lp_all.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig = plt.figure(figsize=(6, 4))
+for i in range(len(ytest_LH)):
+    plt.plot(np.array(xtest_LH[i]), np.array(ytest_LH[i]), color='tab:green', alpha=0.25)
+# plt.plot(2*np.pi/np.array(test_l)[:-1] + np.diff(2*np.pi/np.array(test_l)), 
+         # np.diff(np.log10(test_r))/np.log10(2*np.pi/np.array(test_l))[:-1] + np.diff(np.log10(2*np.pi/np.array(test_l))))
+plt.vlines(np.mean(LengthData.length_LH_flat), 1e-6, 10, color='tab:green')
+
+plt.vlines(np.mean(LengthData.length_LH_b_flat), 1e-6, 10, color='tab:green', ls=':')
+plt.xlabel("$l$ ($\mu\mathrm{m}$)", fontsize=15)
+# plt.ylabel("$R$", fontsize=15)
+plt.xscale('log')
+# plt.yscale('log')
+plt.ylim(0, 1.5)
+# plt.savefig(Parameter.outputdir + '/lp_all.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig = plt.figure(figsize=(6, 4))
+for i in range(len(ytest_calyx)):
+    plt.plot(np.array(xtest_calyx[i]), np.array(ytest_calyx[i]), color='tab:orange', alpha=0.25)
+# plt.plot(2*np.pi/np.array(test_l)[:-1] + np.diff(2*np.pi/np.array(test_l)), 
+         # np.diff(np.log10(test_r))/np.log10(2*np.pi/np.array(test_l))[:-1] + np.diff(np.log10(2*np.pi/np.array(test_l))))
+plt.vlines(np.mean(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange')
+
+plt.vlines(np.mean(LengthData.length_calyx_b_flat), 1e-6, 10, color='tab:orange', ls=':')
+plt.xlabel("$l$ ($\mu\mathrm{m}$)", fontsize=15)
+# plt.ylabel("$R$", fontsize=15)
+plt.xscale('log')
+# plt.yscale('log')
+plt.ylim(0, 1.5)
+# plt.savefig(Parameter.outputdir + '/lp_all.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
 
 #%% form factor per neuron plotting
 
@@ -9431,7 +9806,7 @@ fig = plt.figure(figsize=(8,6))
 for i in range(len(Pq_AL_pn[0])):
     AL_q_idx = first_consecutive(np.where(Pq_AL_pn[:,i] > 0)[0])
     AL_q_idx = len(Pq_AL_pn[:,i])
-    plt.plot(q_range[:AL_q_idx], Pq_AL_pn[:AL_q_idx,i]+np.abs(np.min(Pq_AL_pn[:,i]))+1e-6, color='tab:blue', alpha=0.5)
+    plt.plot(q_range[Pq_AL_pn[:,i]>0], Pq_AL_pn[Pq_AL_pn[:,i]>0,i], color='tab:blue', alpha=0.5)
 
 # plt.plot(q_range[:AL_q_idx], np.average(Pq_AL_pn[:AL_q_idx],axis=1), color='k', lw=2)
 
@@ -9487,7 +9862,7 @@ fig = plt.figure(figsize=(8,6))
 for i in range(len(Pq_LH_pn[0])):
     LH_q_idx = first_consecutive(np.where(Pq_LH_pn[:,i] > 0)[0])
     LH_q_idx = len(Pq_LH_pn[:,i])
-    plt.plot(q_range[:LH_q_idx], Pq_LH_pn[:LH_q_idx,i]+np.abs(np.min(Pq_LH_pn[:,i]))+1e-6, color='tab:green', alpha=0.5)
+    plt.plot(q_range[Pq_LH_pn[:,i]>0], Pq_LH_pn[Pq_LH_pn[:,i]>0,i], color='tab:green', alpha=0.5)
 
 # plt.plot(q_range[:LH_q_idx], np.average(Pq_LH_pn[:LH_q_idx],axis=1), color='k', lw=2)
 
@@ -9538,12 +9913,11 @@ plt.xlim(0.8e-2, 1e3)
 # plt.savefig(Parameter.outputdir + '/Pq_per_neuron_LH_full_5.png', dpi=600, bbox_inches='tight')
 plt.show()
 
-
 fig = plt.figure(figsize=(8,6))
 for i in range(len(Pq_calyx_pn[0])):
     calyx_q_idx = first_consecutive(np.where(Pq_calyx_pn[:,i] > 0)[0])
     calyx_q_idx = len(Pq_calyx_pn[:,i])
-    plt.plot(q_range[:calyx_q_idx], Pq_calyx_pn[:calyx_q_idx,i]+np.abs(np.min(Pq_calyx_pn[:,i]))+1e-6, color='tab:orange', alpha=0.5)
+    plt.plot(q_range[Pq_calyx_pn[:,i] > 0], Pq_calyx_pn[Pq_calyx_pn[:,i] > 0,i], color='tab:orange', alpha=0.5)
 
 # plt.plot(q_range[:calyx_q_idx], np.average(Pq_calyx_pn[:calyx_q_idx],axis=1), color='k', lw=2)
 
@@ -9601,6 +9975,7 @@ def first_consecutive(lst):
     for i,j in enumerate(lst,lst[0]):
         if i!=j:
             return i
+
 shiftN = 15
 
 mw_Pq_calyx_pn = []
@@ -9608,6 +9983,8 @@ mw_Pq_calyx_pn_err = []
 mwx_calyx_pn = []
 
 for j in range(len(Pq_calyx_pn[0])):
+    shiftN = 15
+    
     mw_Pq_calyx_pn_temp = []
     mw_Pq_calyx_pn_err_temp = []
     mwx_calyx_pn_temp = []
@@ -9626,12 +10003,18 @@ for j in range(len(Pq_calyx_pn[0])):
 
     calyx_q_idx_new = Pq_calyx_posidx[Pq_calyx_posidx < calyx_q_idx]
     
-    for i in range(len(q_range) - shiftN):
-        mwx_calyx_pn_temp.append(np.average(q_range[i:i+shiftN]))
+    for i in range(len(q_range[Pq_calyx_posidx]) - 3):
+        if i > 50:
+            shiftN=30
+        elif i > 65:
+            shiftN=3
+        else:
+            shiftN=15
+        mwx_calyx_pn_temp.append(np.average(q_range[Pq_calyx_posidx][i:i+shiftN]))
         
         poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                    np.log10(q_range[i:i+shiftN]), 
-                                                    np.log10(Pq_calyx_pn[:,j][i:i+shiftN]+np.abs(np.min(Pq_calyx_pn[:,j]))+1e-4), 
+                                                    np.log10(q_range[Pq_calyx_posidx][i:i+shiftN]), 
+                                                    np.log10(Pq_calyx_pn[Pq_calyx_posidx,j][i:i+shiftN]), 
                                                     p0=[1., 0.], 
                                                     maxfev=100000)
         mw_Pq_calyx_pn_temp.append(poptmxc[0])
@@ -9647,6 +10030,8 @@ mw_Pq_LH_pn_err = []
 mwx_LH_pn = []
 
 for j in range(len(Pq_LH_pn[0])):
+    shiftN = 15
+    
     mw_Pq_LH_pn_temp = []
     mw_Pq_LH_pn_err_temp = []
     mwx_LH_pn_temp = []
@@ -9665,12 +10050,18 @@ for j in range(len(Pq_LH_pn[0])):
     
     LH_q_idx_new = Pq_LH_posidx[Pq_LH_posidx < LH_q_idx]
     
-    for i in range(len(q_range) - shiftN):
-        mwx_LH_pn_temp.append(np.average(q_range[i:i+shiftN]))
+    for i in range(len(q_range[Pq_LH_posidx]) - 3):
+        if i > 50:
+            shiftN=30
+        elif i > 65:
+            shiftN=3
+        else:
+            shiftN=15
+        mwx_LH_pn_temp.append(np.average(q_range[Pq_LH_posidx][i:i+shiftN]))
         
         poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                    np.log10(q_range[i:i+shiftN]), 
-                                                    np.log10(Pq_LH_pn[:,j][i:i+shiftN]+np.abs(np.min(Pq_LH_pn[:,j]))+1e-4), 
+                                                    np.log10(q_range[Pq_LH_posidx][i:i+shiftN]), 
+                                                    np.log10(Pq_LH_pn[Pq_LH_posidx,j][i:i+shiftN]), 
                                                     p0=[1., 0.], 
                                                     maxfev=100000)
         mw_Pq_LH_pn_temp.append(poptmxc[0])
@@ -9686,6 +10077,8 @@ mw_Pq_AL_pn_err = []
 mwx_AL_pn = []
 
 for j in range(len(Pq_AL_pn[0])):
+    shiftN = 15
+    
     mw_Pq_AL_pn_temp = []
     mw_Pq_AL_pn_err_temp = []
     mwx_AL_pn_temp = []
@@ -9704,12 +10097,18 @@ for j in range(len(Pq_AL_pn[0])):
     
     AL_q_idx_new = Pq_AL_posidx[Pq_AL_posidx < AL_q_idx]
     
-    for i in range(len(q_range) - shiftN):
-        mwx_AL_pn_temp.append(np.average(q_range[i:i+shiftN]))
+    for i in range(len(q_range[Pq_AL_posidx]) - 3):
+        if i > 40:
+            shiftN=45
+        elif i > 55:
+            shiftN=3
+        else:
+            shiftN=15
+        mwx_AL_pn_temp.append(np.average(q_range[Pq_AL_posidx][i:i+shiftN]))
         
         poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                    np.log10(q_range[i:i+shiftN]), 
-                                                    np.log10(Pq_AL_pn[:,j][i:i+shiftN]+np.abs(np.min(Pq_AL_pn[:,j]))+1e-4), 
+                                                    np.log10(q_range[Pq_AL_posidx][i:i+shiftN]), 
+                                                    np.log10(Pq_AL_pn[Pq_AL_posidx,j][i:i+shiftN]), 
                                                     p0=[1., 0.], 
                                                     maxfev=100000)
         mw_Pq_AL_pn_temp.append(poptmxc[0])
@@ -9728,6 +10127,9 @@ for i in range(len(mw_Pq_calyx_pn)):
 xmax = max(mwx_calyx_pn, key = len)
 
 plt.plot(xmax, -1/tolerant_mean(mw_Pq_calyx_pn).data, color='k', lw=2)
+
+plt.plot((2*np.pi/tolerant_mean(xtest_calyx).data)[tolerant_mean(xtest_calyx).data < np.mean(LengthData.length_calyx_flat)], 
+         tolerant_mean(ytest_calyx).data[tolerant_mean(xtest_calyx).data < np.mean(LengthData.length_calyx_flat)], color='tab:gray', lw=2)
 
 plt.hlines(1/4, 0.01, 1000, ls='dashed', color='k')
 plt.hlines(7/16, 0.01, 1000, ls='dashed', color='k')
@@ -9768,6 +10170,9 @@ xmax = max(mwx_LH_pn, key = len)
 
 plt.plot(xmax, -1/tolerant_mean(mw_Pq_LH_pn).data, color='k', lw=2)
 
+plt.plot((2*np.pi/tolerant_mean(xtest_LH).data)[tolerant_mean(xtest_LH).data < np.mean(LengthData.length_LH_flat)], 
+         tolerant_mean(ytest_LH).data[tolerant_mean(xtest_LH).data < np.mean(LengthData.length_LH_flat)], color='tab:gray', lw=2)
+
 plt.hlines(1/4, 0.01, 1000, ls='dashed', color='k')
 plt.hlines(7/16, 0.01, 1000, ls='dashed', color='k')
 plt.hlines(1, 0.01, 1000, ls='dashed', color='k')
@@ -9806,6 +10211,9 @@ for i in range(len(mw_Pq_AL_pn)):
 xmax = max(mwx_AL_pn, key = len)
 
 plt.plot(xmax, -1/tolerant_mean(mw_Pq_AL_pn).data, color='k', lw=2)
+
+plt.plot((2*np.pi/tolerant_mean(xtest_AL).data)[tolerant_mean(xtest_AL).data < np.mean(LengthData.length_AL_flat)], 
+         tolerant_mean(ytest_AL).data[tolerant_mean(xtest_AL).data < np.mean(LengthData.length_AL_flat)], color='tab:gray', lw=2)
 
 plt.hlines(1/4, 0.01, 1000, ls='dashed', color='k')
 plt.hlines(7/16, 0.01, 1000, ls='dashed', color='k')
@@ -13178,381 +13586,6 @@ plt.xscale('log')
 # plt.yscale('log')
 plt.ylim(0, 1.5)
 
-# plt.savefig(Parameter.outputdir + '/lp_all.pdf', dpi=300, bbox_inches='tight')
-plt.show()
-
-
-#%% Persistence length V3
-
-def plength(l, MSR, R_max):
-    return np.abs(MSR - (2*l*R_max - 2*np.square(l)*(1 - np.exp(-R_max/l))))
-
-l_range = np.logspace(-2, 1, 40)
-
-length_AL_mean = np.mean(LengthData.length_AL_flat)
-length_LH_mean = np.mean(LengthData.length_LH_flat)
-length_calyx_mean = np.mean(LengthData.length_calyx_flat)
-
-AL_e2e_sampled = []
-AL_cont_sampled = []
-AL_sampe2eidx_list = []
-rGy_AL_sampled = []
-LH_e2e_sampled = []
-LH_cont_sampled = []
-LH_sampe2eidx_list = []
-rGy_LH_sampled = []
-calyx_e2e_sampled = []
-calyx_cont_sampled = []
-calyx_sampe2eidx_list = []
-rGy_calyx_sampled = []
-
-for n in range(len(LengthData.length_AL)):
-    if len(LengthData.length_AL[n]) > 0:
-        AL_e2e_sampled_temp2 = []
-        AL_cont_sampled_temp2 = []
-        AL_sampe2eidx_list_temp2 = []
-        rGy_AL_sampled_temp2 = []
-        for q in range(len(l_range)-1):
-            AL_e2e_sampled_temp3 = []
-            AL_cont_sampled_temp3 = []
-            AL_sampe2eidx_list_temp3 = []
-            rGy_AL_sampled_temp3 = []
-        
-            AL_longer_idx = np.where(LengthData.length_AL[n] >= l_range[q])[0]
-            
-            for i in range(len(AL_longer_idx)):
-                AL_e2e_tuple = []
-                consdiff = np.diff(MorphData.ALdist_per_n[n][AL_longer_idx[i]], axis=0)
-                if len(consdiff) > 1:
-                    consdist = np.sqrt(np.sum(np.square(consdiff),1))
-                    for j in range(len(consdist)-1):
-                        maxidx = np.where((np.cumsum(consdist[j:]) >= l_range[q]) & (np.cumsum(consdist[j:]) < l_range[q+1]))[0]
-                        if len(maxidx) > 0:
-                            AL_e2e_tuple.append((j,maxidx[0]+j+1))
-                    
-                    # sampidx = np.random.choice(len(AL_e2e_tuple))
-                    AL_sampe2eidx_list_temp3.append(AL_e2e_tuple)
-                    
-                    AL_e2e_sampled_temp = []
-                    AL_cont_sampled_temp = []
-                    rGy_AL_sampled_temp = []
-                    
-                    for k in range(len(AL_e2e_tuple)):
-                    # sampe2eidx = AL_e2e_sampled_temp[sampidx]
-                        e2edist = np.linalg.norm(np.subtract(MorphData.ALdist_per_n[n][AL_longer_idx[i]][AL_e2e_tuple[k][0]],
-                                                             MorphData.ALdist_per_n[n][AL_longer_idx[i]][AL_e2e_tuple[k][1]]))
-                        AL_e2e_sampled_temp.append(e2edist)
-                        AL_cont_sampled_temp.append(np.sum(consdist[AL_e2e_tuple[k][0]:AL_e2e_tuple[k][1]+1]))
-                        rGy_AL_sampled_temp.append(utils.radiusOfGyration(np.array([MorphData.ALdist_per_n[n]
-                                                                                    [AL_longer_idx[i]]
-                                                                                    [AL_e2e_tuple[k][0]:AL_e2e_tuple[k][1]+1]]))[0][0])
-                    AL_e2e_sampled_temp3.append(AL_e2e_sampled_temp)
-                    AL_cont_sampled_temp3.append(AL_cont_sampled_temp)
-                    rGy_AL_sampled_temp3.append(rGy_AL_sampled_temp)
-            
-            AL_e2e_sampled_temp2.append(AL_e2e_sampled_temp3)
-            AL_cont_sampled_temp2.append(AL_cont_sampled_temp3)
-            AL_sampe2eidx_list_temp2.append(AL_sampe2eidx_list_temp3)
-            rGy_AL_sampled_temp2.append(rGy_AL_sampled_temp3)
-        
-        AL_e2e_sampled.append(AL_e2e_sampled_temp2)
-        AL_cont_sampled.append(AL_cont_sampled_temp2)
-        AL_sampe2eidx_list.append(AL_sampe2eidx_list_temp2)
-        rGy_AL_sampled.append(rGy_AL_sampled_temp2)
-
-
-for n in range(len(LengthData.length_LH)):
-    if len(LengthData.length_LH[n]) > 0:
-        LH_e2e_sampled_temp2 = []
-        LH_cont_sampled_temp2 = []
-        LH_sampe2eidx_list_temp2 = []
-        rGy_LH_sampled_temp2 = []
-        for q in range(len(l_range)-1):
-            LH_e2e_sampled_temp3 = []
-            LH_cont_sampled_temp3 = []
-            LH_sampe2eidx_list_temp3 = []
-            rGy_LH_sampled_temp3 = []
-        
-            LH_longer_idx = np.where(LengthData.length_LH[n] >= l_range[q])[0]
-            
-            for i in range(len(LH_longer_idx)):
-                LH_e2e_tuple = []
-                consdiff = np.diff(MorphData.LHdist_per_n[n][LH_longer_idx[i]], axis=0)
-                if len(consdiff) > 1:
-                    consdist = np.sqrt(np.sum(np.square(consdiff),1))
-                    for j in range(len(consdist)-1):
-                        maxidx = np.where((np.cumsum(consdist[j:]) >= l_range[q]) & (np.cumsum(consdist[j:]) < l_range[q+1]))[0]
-                        if len(maxidx) > 0:
-                            LH_e2e_tuple.append((j,maxidx[0]+j+1))
-                    
-                    # sampidx = np.random.choice(len(LH_e2e_tuple))
-                    LH_sampe2eidx_list_temp3.append(LH_e2e_tuple)
-                    
-                    LH_e2e_sampled_temp = []
-                    LH_cont_sampled_temp = []
-                    rGy_LH_sampled_temp = []
-                    
-                    for k in range(len(LH_e2e_tuple)):
-                    # sampe2eidx = LH_e2e_sampled_temp[sampidx]
-                        e2edist = np.linalg.norm(np.subtract(MorphData.LHdist_per_n[n][LH_longer_idx[i]][LH_e2e_tuple[k][0]],
-                                                             MorphData.LHdist_per_n[n][LH_longer_idx[i]][LH_e2e_tuple[k][1]]))
-                        LH_e2e_sampled_temp.append(e2edist)
-                        LH_cont_sampled_temp.append(np.sum(consdist[LH_e2e_tuple[k][0]:LH_e2e_tuple[k][1]+1]))
-                        rGy_LH_sampled_temp.append(utils.radiusOfGyration(np.array([MorphData.LHdist_per_n[n]
-                                                                                    [LH_longer_idx[i]]
-                                                                                    [LH_e2e_tuple[k][0]:LH_e2e_tuple[k][1]+1]]))[0][0])
-                    LH_e2e_sampled_temp3.append(LH_e2e_sampled_temp)
-                    LH_cont_sampled_temp3.append(LH_cont_sampled_temp)
-                    rGy_LH_sampled_temp3.append(rGy_LH_sampled_temp)
-            
-            LH_e2e_sampled_temp2.append(LH_e2e_sampled_temp3)
-            LH_cont_sampled_temp2.append(LH_cont_sampled_temp3)
-            LH_sampe2eidx_list_temp2.append(LH_sampe2eidx_list_temp3)
-            rGy_LH_sampled_temp2.append(rGy_LH_sampled_temp3)
-        
-        LH_e2e_sampled.append(LH_e2e_sampled_temp2)
-        LH_cont_sampled.append(LH_cont_sampled_temp2)
-        LH_sampe2eidx_list.append(LH_sampe2eidx_list_temp2)
-        rGy_LH_sampled.append(rGy_LH_sampled_temp2)
-
-
-for n in range(len(LengthData.length_calyx)):
-    if len(LengthData.length_calyx[n]) > 0:
-        calyx_e2e_sampled_temp2 = []
-        calyx_cont_sampled_temp2 = []
-        calyx_sampe2eidx_list_temp2 = []
-        rGy_calyx_sampled_temp2 = []
-        for q in range(len(l_range)-1):
-            calyx_e2e_sampled_temp3 = []
-            calyx_cont_sampled_temp3 = []
-            calyx_sampe2eidx_list_temp3 = []
-            rGy_calyx_sampled_temp3 = []
-        
-            calyx_longer_idx = np.where(LengthData.length_calyx[n] >= l_range[q])[0]
-            
-            for i in range(len(calyx_longer_idx)):
-                calyx_e2e_tuple = []
-                consdiff = np.diff(MorphData.calyxdist_per_n[n][calyx_longer_idx[i]], axis=0)
-                if len(consdiff) > 1:
-                    consdist = np.sqrt(np.sum(np.square(consdiff),1))
-                    for j in range(len(consdist)-1):
-                        maxidx = np.where((np.cumsum(consdist[j:]) >= l_range[q]) & (np.cumsum(consdist[j:]) < l_range[q+1]))[0]
-                        if len(maxidx) > 0:
-                            calyx_e2e_tuple.append((j,maxidx[0]+j+1))
-                    
-                    # sampidx = np.random.choice(len(calyx_e2e_tuple))
-                    calyx_sampe2eidx_list_temp3.append(calyx_e2e_tuple)
-                    
-                    calyx_e2e_sampled_temp = []
-                    calyx_cont_sampled_temp = []
-                    rGy_calyx_sampled_temp = []
-                    
-                    for k in range(len(calyx_e2e_tuple)):
-                    # sampe2eidx = calyx_e2e_sampled_temp[sampidx]
-                        e2edist = np.linalg.norm(np.subtract(MorphData.calyxdist_per_n[n][calyx_longer_idx[i]][calyx_e2e_tuple[k][0]],
-                                                             MorphData.calyxdist_per_n[n][calyx_longer_idx[i]][calyx_e2e_tuple[k][1]]))
-                        calyx_e2e_sampled_temp.append(e2edist)
-                        calyx_cont_sampled_temp.append(np.sum(consdist[calyx_e2e_tuple[k][0]:calyx_e2e_tuple[k][1]+1]))
-                        rGy_calyx_sampled_temp.append(utils.radiusOfGyration(np.array([MorphData.calyxdist_per_n[n]
-                                                                                    [calyx_longer_idx[i]]
-                                                                                    [calyx_e2e_tuple[k][0]:calyx_e2e_tuple[k][1]+1]]))[0][0])
-                    calyx_e2e_sampled_temp3.append(calyx_e2e_sampled_temp)
-                    calyx_cont_sampled_temp3.append(calyx_cont_sampled_temp)
-                    rGy_calyx_sampled_temp3.append(rGy_calyx_sampled_temp)
-            
-            calyx_e2e_sampled_temp2.append(calyx_e2e_sampled_temp3)
-            calyx_cont_sampled_temp2.append(calyx_cont_sampled_temp3)
-            calyx_sampe2eidx_list_temp2.append(calyx_sampe2eidx_list_temp3)
-            rGy_calyx_sampled_temp2.append(rGy_calyx_sampled_temp3)
-        
-        calyx_e2e_sampled.append(calyx_e2e_sampled_temp2)
-        calyx_cont_sampled.append(calyx_cont_sampled_temp2)
-        calyx_sampe2eidx_list.append(calyx_sampe2eidx_list_temp2)
-        rGy_calyx_sampled.append(rGy_calyx_sampled_temp2)
-
-test_r_AL = []
-test_rgy_AL = []
-for i in range(len(AL_e2e_sampled)):
-    test_r_AL1 = []
-    test_rgy_AL1 = []
-    for q in range(len(AL_e2e_sampled[i])):
-        test_r_AL1.append(np.mean([item for sublist in AL_e2e_sampled[i][q] for item in sublist]))
-        test_rgy_AL1.append(np.mean([item for sublist in rGy_AL_sampled[i][q] for item in sublist]))
-    test_r_AL.append(test_r_AL1)
-    test_rgy_AL.append(test_rgy_AL1)
-
-test_r_LH = []
-test_rgy_LH = []
-for i in range(len(LH_e2e_sampled)):
-    test_r_LH1 = []
-    test_rgy_LH1 = []
-    for q in range(len(LH_e2e_sampled[i])):
-        test_r_LH1.append(np.mean([item for sublist in LH_e2e_sampled[i][q] for item in sublist]))
-        test_rgy_LH1.append(np.mean([item for sublist in rGy_LH_sampled[i][q] for item in sublist]))
-    test_r_LH.append(test_r_LH1)
-    test_rgy_LH.append(test_rgy_LH1)
-
-test_r_calyx = []
-test_rgy_calyx = []
-for i in range(len(calyx_e2e_sampled)):
-    test_r_calyx1 = []
-    test_rgy_calyx1 = []
-    for q in range(len(calyx_e2e_sampled[i])):
-        test_r_calyx1.append(np.mean([item for sublist in calyx_e2e_sampled[i][q] for item in sublist]))
-        test_rgy_calyx1.append(np.mean([item for sublist in rGy_calyx_sampled[i][q] for item in sublist]))
-    test_r_calyx.append(test_r_calyx1)
-    test_rgy_calyx.append(test_rgy_calyx1)
-
-fig = plt.figure(figsize=(6, 4))
-for i in range(len(test_r_AL)):
-    plt.scatter(l_range[:-1]+np.diff(l_range), test_r_AL[i], marker='.', color='tab:blue', alpha=0.25)
-#plt.plot(np.log10(2*np.pi/np.array(test_l)), -1/np.log10(np.diff(test_r)))
-plt.vlines(np.mean(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue')
-
-plt.vlines(np.mean(LengthData.length_AL_b_flat), 1e-6, 10, color='tab:blue', ls=':')
-plt.xlabel("$l$ ($\mu\mathrm{m}$)", fontsize=15)
-plt.ylabel("$R$", fontsize=15)
-plt.xscale('log')
-plt.yscale('log')
-plt.ylim(0.07, 10)
-# plt.savefig(Parameter.outputdir + '/lp_all.pdf', dpi=300, bbox_inches='tight')
-plt.show()
-
-fig = plt.figure(figsize=(6, 4))
-for i in range(len(test_r_LH)):
-    plt.scatter(l_range[:-1]+np.diff(l_range), test_r_LH[i], marker='.', color='tab:green', alpha=0.25)
-#plt.plot(np.log10(2*np.pi/np.array(test_l)), -1/np.log10(np.diff(test_r)))
-plt.vlines(np.mean(LengthData.length_LH_flat), 1e-6, 10, color='tab:green')
-
-plt.vlines(np.mean(LengthData.length_LH_b_flat), 1e-6, 10, color='tab:green', ls=':')
-plt.xlabel("$l$ ($\mu\mathrm{m}$)", fontsize=15)
-plt.ylabel("$R$", fontsize=15)
-plt.xscale('log')
-plt.yscale('log')
-plt.ylim(0.07, 10)
-# plt.savefig(Parameter.outputdir + '/lp_all.pdf', dpi=300, bbox_inches='tight')
-plt.show()
-
-fig = plt.figure(figsize=(6, 4))
-for i in range(len(test_r_calyx)):
-    plt.scatter(l_range[:-1]+np.diff(l_range), test_r_calyx[i], marker='.', color='tab:orange', alpha=0.25)
-#plt.plot(np.log10(2*np.pi/np.array(test_l)), -1/np.log10(np.diff(test_r)))
-plt.vlines(np.mean(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange')
-
-plt.vlines(np.mean(LengthData.length_calyx_b_flat), 1e-6, 10, color='tab:orange', ls=':')
-plt.xlabel("$l$ ($\mu\mathrm{m}$)", fontsize=15)
-plt.ylabel("$R$", fontsize=15)
-plt.xscale('log')
-plt.yscale('log')
-plt.ylim(0.07, 10)
-# plt.savefig(Parameter.outputdir + '/lp_all.pdf', dpi=300, bbox_inches='tight')
-plt.show()
-
-
-shiftN = 5
-xtest_AL = []
-ytest_AL = []
-xtest_calyx = []
-ytest_calyx = []
-xtest_LH = []
-ytest_LH = []
-
-for n in range(len(test_rgy_AL)):
-    nonnanidx = np.argwhere(~np.isnan(test_rgy_AL[n])).T[0]
-    xtest_AL_temp = []
-    ytest_AL_temp = []
-    for i in range(len(nonnanidx) - shiftN - 1):
-        xtest_AL_temp.append(np.average(l_range[nonnanidx][i:i+shiftN]))
-        
-        poptD_e2e_AL, pcovD_e2e_AL = scipy.optimize.curve_fit(objFuncGL, 
-                                                    np.log10(l_range[:-1]+np.diff(l_range))[nonnanidx][i:i+shiftN], 
-                                                    np.log10(test_rgy_AL[n])[nonnanidx][i:i+shiftN], 
-                                                    p0=[1., 0.], 
-                                                    maxfev=100000)
-        ytest_AL_temp.append(poptD_e2e_AL[0])
-        
-    xtest_AL.append(xtest_AL_temp)
-    ytest_AL.append(ytest_AL_temp)
-
-for n in range(len(test_rgy_LH)):
-    nonnanidx = np.argwhere(~np.isnan(test_rgy_LH[n])).T[0]
-    xtest_LH_temp = []
-    ytest_LH_temp = []
-    for i in range(len(nonnanidx) - shiftN - 1):
-        xtest_LH_temp.append(np.average(l_range[nonnanidx][i:i+shiftN]))
-        
-        poptD_e2e_LH, pcovD_e2e_LH = scipy.optimize.curve_fit(objFuncGL, 
-                                                    np.log10(l_range[:-1]+np.diff(l_range))[nonnanidx][i:i+shiftN], 
-                                                    np.log10(test_rgy_LH[n])[nonnanidx][i:i+shiftN], 
-                                                    p0=[1., 0.], 
-                                                    maxfev=100000)
-        ytest_LH_temp.append(poptD_e2e_LH[0])
-        
-    xtest_LH.append(xtest_LH_temp)
-    ytest_LH.append(ytest_LH_temp)
-
-for n in range(len(test_rgy_calyx)):
-    nonnanidx = np.argwhere(~np.isnan(test_rgy_calyx[n])).T[0]
-    xtest_calyx_temp = []
-    ytest_calyx_temp = []
-    for i in range(len(nonnanidx) - shiftN - 1):
-        xtest_calyx_temp.append(np.average(l_range[nonnanidx][i:i+shiftN]))
-        
-        poptD_e2e_calyx, pcovD_e2e_calyx = scipy.optimize.curve_fit(objFuncGL, 
-                                                    np.log10(l_range[:-1]+np.diff(l_range))[nonnanidx][i:i+shiftN], 
-                                                    np.log10(test_rgy_calyx[n])[nonnanidx][i:i+shiftN], 
-                                                    p0=[1., 0.], 
-                                                    maxfev=100000)
-        ytest_calyx_temp.append(poptD_e2e_calyx[0])
-        
-    xtest_calyx.append(xtest_calyx_temp)
-    ytest_calyx.append(ytest_calyx_temp)
-
-fig = plt.figure(figsize=(6, 4))
-for i in range(len(ytest_AL)):
-    plt.plot(np.array(xtest_AL[i]), np.array(ytest_AL[i]), color='tab:blue', alpha=0.25)
-# plt.plot(2*np.pi/np.array(test_l)[:-1] + np.diff(2*np.pi/np.array(test_l)), 
-         # np.diff(np.log10(test_r))/np.log10(2*np.pi/np.array(test_l))[:-1] + np.diff(np.log10(2*np.pi/np.array(test_l))))
-plt.vlines(np.mean(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue')
-
-plt.vlines(np.mean(LengthData.length_AL_b_flat), 1e-6, 10, color='tab:blue', ls=':')
-plt.xlabel("$l$ ($\mu\mathrm{m}$)", fontsize=15)
-# plt.ylabel("$R$", fontsize=15)
-plt.xscale('log')
-# plt.yscale('log')
-plt.ylim(0, 1.5)
-# plt.savefig(Parameter.outputdir + '/lp_all.pdf', dpi=300, bbox_inches='tight')
-plt.show()
-
-fig = plt.figure(figsize=(6, 4))
-for i in range(len(ytest_LH)):
-    plt.plot(np.array(xtest_LH[i]), np.array(ytest_LH[i]), color='tab:green', alpha=0.25)
-# plt.plot(2*np.pi/np.array(test_l)[:-1] + np.diff(2*np.pi/np.array(test_l)), 
-         # np.diff(np.log10(test_r))/np.log10(2*np.pi/np.array(test_l))[:-1] + np.diff(np.log10(2*np.pi/np.array(test_l))))
-plt.vlines(np.mean(LengthData.length_LH_flat), 1e-6, 10, color='tab:green')
-
-plt.vlines(np.mean(LengthData.length_LH_b_flat), 1e-6, 10, color='tab:green', ls=':')
-plt.xlabel("$l$ ($\mu\mathrm{m}$)", fontsize=15)
-# plt.ylabel("$R$", fontsize=15)
-plt.xscale('log')
-# plt.yscale('log')
-plt.ylim(0, 1.5)
-# plt.savefig(Parameter.outputdir + '/lp_all.pdf', dpi=300, bbox_inches='tight')
-plt.show()
-
-fig = plt.figure(figsize=(6, 4))
-for i in range(len(ytest_calyx)):
-    plt.plot(np.array(xtest_calyx[i]), np.array(ytest_calyx[i]), color='tab:orange', alpha=0.25)
-# plt.plot(2*np.pi/np.array(test_l)[:-1] + np.diff(2*np.pi/np.array(test_l)), 
-         # np.diff(np.log10(test_r))/np.log10(2*np.pi/np.array(test_l))[:-1] + np.diff(np.log10(2*np.pi/np.array(test_l))))
-plt.vlines(np.mean(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange')
-
-plt.vlines(np.mean(LengthData.length_calyx_b_flat), 1e-6, 10, color='tab:orange', ls=':')
-plt.xlabel("$l$ ($\mu\mathrm{m}$)", fontsize=15)
-# plt.ylabel("$R$", fontsize=15)
-plt.xscale('log')
-# plt.yscale('log')
-plt.ylim(0, 1.5)
 # plt.savefig(Parameter.outputdir + '/lp_all.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
