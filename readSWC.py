@@ -8612,6 +8612,7 @@ plt.show()
 #%% form factor per neuropil moving window (FIGURE FORM FACTOR)
 
 import scipy.signal
+from statsmodels.tsa.api import SimpleExpSmoothing
 
 def first_consecutive(lst):
     for i,j in enumerate(lst,lst[0]):
@@ -8619,6 +8620,20 @@ def first_consecutive(lst):
             return i
 
 shiftN = 15
+
+Pq_calyx = np.divide(np.sum(np.divide(np.array(calyx_results).reshape(100, len(MorphData.calyxdist_flat)), 
+                                      len(MorphData.calyxdist_flat)), axis=1), len(MorphData.calyxdist_flat))
+Pq_LH = np.divide(np.sum(np.divide(np.array(LH_results).reshape(100, len(MorphData.LHdist_flat)),
+                                   len(MorphData.LHdist_flat)), axis=1), len(MorphData.LHdist_flat))
+Pq_AL = np.divide(np.sum(np.divide(np.array(AL_results).reshape(100, len(MorphData.ALdist_flat)), 
+                                   len(MorphData.ALdist_flat)), axis=1), len(MorphData.ALdist_flat))
+
+fit1 = SimpleExpSmoothing(Pq_AL[67:]).fit(smoothing_level=0.1,optimized=False)
+Pq_AL[67:] = fit1.fittedvalues#scipy.signal.savgol_filter(Pq_AL[50:], 21, 4)
+fit1 = SimpleExpSmoothing(Pq_LH[69:]).fit(smoothing_level=0.1,optimized=False)
+Pq_LH[69:] = fit1.fittedvalues#scipy.signal.savgol_filter(Pq_LH[50:], 21, 4)
+fit1 = SimpleExpSmoothing(Pq_calyx[72:]).fit(smoothing_level=0.1,optimized=False)
+Pq_calyx[72:] = fit1.fittedvalues#scipy.signal.savgol_filter(Pq_calyx[50:], 21, 4)
 
 AL_q_idx = first_consecutive(np.where(Pq_AL > 0)[0])
 calyx_q_idx = first_consecutive(np.where(Pq_calyx > 0)[0])
@@ -8642,23 +8657,39 @@ mwx_calyx = []
 # Pq_calyx_new = np.concatenate((Pq_calyx[:qidx], Pq_calyx[idx]))
 # q_range_new = np.concatenate((q_range[:qidx], q_range[idx]))
 
-for i in range(len(q_range) - 3):
-    if i > 50:
-        shiftN=45
-    # elif i > 75:
+for i in range(len(q_range[Pq_calyx>0]) - shiftN):
+    # if i > 50:
+    #     shiftN=30
+    # elif i > 65:
     #     shiftN=3
-    else:
-        shiftN=15
-    mwx_calyx.append(np.average(q_range[i:i+shiftN]))
+    # else:
+    #     shiftN=15
+    mwx_calyx.append(np.average(q_range[Pq_calyx>0][i:i+shiftN]))
     
-    poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncPpow, 
-                                                q_range[i:i+shiftN], 
-                                                Pq_calyx[i:i+shiftN], 
+    poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
+                                                np.log10(q_range[Pq_calyx>0][i:i+shiftN]), 
+                                                np.log10(Pq_calyx[Pq_calyx>0][i:i+shiftN]), 
                                                 p0=[1., 0.], 
                                                 maxfev=100000)
     mw_Pq_calyx.append(poptmxc[0])
     mw_Pq_calyx_err.append(np.sqrt(np.diag(pcovmxc))[0])
 
+# for i in range(len(q_range) - 3):
+#     if i > 50:
+#         shiftN=45
+#     # elif i > 75:
+#     #     shiftN=3
+#     else:
+#         shiftN=10
+#     mwx_calyx.append(np.average(q_range[i:i+shiftN]))
+    
+#     poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncPpow, 
+#                                                 q_range[i:i+shiftN], 
+#                                                 Pq_calyx[i:i+shiftN], 
+#                                                 p0=[1., 0.], 
+#                                                 maxfev=100000)
+#     mw_Pq_calyx.append(poptmxc[0])
+#     mw_Pq_calyx_err.append(np.sqrt(np.diag(pcovmxc))[0])
 
 mw_Pq_LH = []
 mw_Pq_LH_err = []
@@ -8670,18 +8701,18 @@ mwx_LH = []
 # Pq_LH_new = np.concatenate((Pq_LH[:qidx], Pq_LH[idx]))
 # q_range_new = np.concatenate((q_range[:qidx], q_range[idx]))
 
-for i in range(len(q_range) - 3):
-    if i > 50:
-        shiftN=45
-    # elif i > 75:
+for i in range(len(q_range[Pq_LH>0]) - shiftN):
+    # if i > 50:
+    #     shiftN=30
+    # elif i > 65:
     #     shiftN=3
-    else:
-        shiftN=15
-    mwx_LH.append(np.average(q_range[i:i+shiftN]))
+    # else:
+    #     shiftN=15
+    mwx_LH.append(np.average(q_range[Pq_LH>0][i:i+shiftN]))
     
-    poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncPpow, 
-                                                q_range[i:i+shiftN], 
-                                                Pq_LH[i:i+shiftN], 
+    poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
+                                                np.log10(q_range[Pq_LH>0][i:i+shiftN]), 
+                                                np.log10(Pq_LH[Pq_LH>0][i:i+shiftN]), 
                                                 p0=[1., 0.], 
                                                 maxfev=100000)
     mw_Pq_LH.append(poptmxc[0])
@@ -8698,18 +8729,18 @@ mwx_AL = []
 # Pq_AL_new = np.concatenate((Pq_AL[:qidx], Pq_AL[idx]))
 # q_range_new = np.concatenate((q_range[:qidx], q_range[idx]))
 
-for i in range(len(q_range) - 3):
-    if i > 50:
-        shiftN=45
-    # elif i > 75:
+for i in range(len(q_range[Pq_AL>0]) - shiftN):
+    # if i > 50:
+    #     shiftN=30
+    # elif i > 65:
     #     shiftN=3
-    else:
-        shiftN=15
-    mwx_AL.append(np.average(q_range[i:i+shiftN]))
+    # else:
+    #     shiftN=15
+    mwx_AL.append(np.average(q_range[Pq_AL>0][i:i+shiftN]))
     
-    poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncPpow, 
-                                                q_range[i:i+shiftN], 
-                                                Pq_AL[i:i+shiftN], 
+    poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
+                                                np.log10(q_range[Pq_AL>0][i:i+shiftN]), 
+                                                np.log10(Pq_AL[Pq_AL>0][i:i+shiftN]), 
                                                 p0=[1., 0.], 
                                                 maxfev=100000)
     mw_Pq_AL.append(poptmxc[0])
