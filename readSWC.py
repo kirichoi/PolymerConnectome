@@ -8665,6 +8665,7 @@ for i in range(len(q_range[Pq_calyx>0]) - shiftN):
     #     shiftN=3
     # else:
     #     shiftN=15
+    
     mwx_calyx.append(np.average(q_range[Pq_calyx>0][i:i+shiftN]))
     
     poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
@@ -8709,6 +8710,7 @@ for i in range(len(q_range[Pq_LH>0]) - shiftN):
     #     shiftN=3
     # else:
     #     shiftN=15
+    
     mwx_LH.append(np.average(q_range[Pq_LH>0][i:i+shiftN]))
     
     poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
@@ -8730,6 +8732,7 @@ mwx_AL = []
 # Pq_AL_new = np.concatenate((Pq_AL[:qidx], Pq_AL[idx]))
 # q_range_new = np.concatenate((q_range[:qidx], q_range[idx]))
 
+
 for i in range(len(q_range[Pq_AL>0]) - shiftN):
     # if i > 50:
     #     shiftN=30
@@ -8737,6 +8740,7 @@ for i in range(len(q_range[Pq_AL>0]) - shiftN):
     #     shiftN=3
     # else:
     #     shiftN=15
+    
     mwx_AL.append(np.average(q_range[Pq_AL>0][i:i+shiftN]))
     
     poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
@@ -9990,6 +9994,7 @@ for j in range(len(Pq_calyx_pn[0])):
     mwx_calyx_pn_temp = []
     
     Pq_calyx_posidx = np.where(Pq_calyx_pn[:,j] > 0)[0]
+    thres = np.argmin(np.abs(q_range[Pq_calyx_posidx] - 2*np.pi/np.mean(LengthData.length_calyx_b_flat)))-15
     
     # calyx_q_idx_new = Pq_calyx_posidx[:first_consecutive(Pq_calyx_posidx)]
     
@@ -10004,13 +10009,18 @@ for j in range(len(Pq_calyx_pn[0])):
     calyx_q_idx_new = Pq_calyx_posidx[Pq_calyx_posidx < calyx_q_idx]
     
     for i in range(len(q_range[Pq_calyx_posidx]) - 3):
+        # if i <= thres:
+        #     shiftN=15
+        # else:
+        #     shiftN=len(q_range[Pq_calyx_posidx])
         if i > 50:
             shiftN=30
         elif i > 65:
             shiftN=3
         else:
             shiftN=15
-        mwx_calyx_pn_temp.append(np.average(q_range[Pq_calyx_posidx][i:i+shiftN]))
+            
+        mwx_calyx_pn_temp.append(np.power(10, np.average(np.log10(q_range[Pq_calyx_posidx][i:i+shiftN][[0, -1]]))))
         
         poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
                                                     np.log10(q_range[Pq_calyx_posidx][i:i+shiftN]), 
@@ -10037,6 +10047,7 @@ for j in range(len(Pq_LH_pn[0])):
     mwx_LH_pn_temp = []
     
     Pq_LH_posidx = np.where(Pq_LH_pn[:,j] > 0)[0]
+    thres = np.argmin(np.abs(q_range[Pq_LH_posidx] - 2*np.pi/np.mean(LengthData.length_LH_b_flat)))-15
     
     # LH_q_idx_new = Pq_LH_posidx[:first_consecutive(Pq_LH_posidx)]
     
@@ -10051,13 +10062,18 @@ for j in range(len(Pq_LH_pn[0])):
     LH_q_idx_new = Pq_LH_posidx[Pq_LH_posidx < LH_q_idx]
     
     for i in range(len(q_range[Pq_LH_posidx]) - 3):
+        # if i <= thres:
+        #     shiftN=15
+        # else:
+        #     shiftN=len(q_range[Pq_LH_posidx])
         if i > 50:
             shiftN=30
         elif i > 65:
             shiftN=3
         else:
             shiftN=15
-        mwx_LH_pn_temp.append(np.average(q_range[Pq_LH_posidx][i:i+shiftN]))
+            
+        mwx_LH_pn_temp.append(np.power(10, np.average(np.log10(q_range[Pq_LH_posidx][i:i+shiftN][[0, -1]]))))
         
         poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
                                                     np.log10(q_range[Pq_LH_posidx][i:i+shiftN]), 
@@ -10084,6 +10100,7 @@ for j in range(len(Pq_AL_pn[0])):
     mwx_AL_pn_temp = []
     
     Pq_AL_posidx = np.where(Pq_AL_pn[:,j] > 0)[0]
+    thres = np.argmin(np.abs(q_range[Pq_AL_posidx] - 2*np.pi/np.mean(LengthData.length_AL_b_flat)))-15
     
     # AL_q_idx_new = Pq_AL_posidx[:first_consecutive(Pq_AL_posidx)]
     
@@ -10097,14 +10114,19 @@ for j in range(len(Pq_AL_pn[0])):
     
     AL_q_idx_new = Pq_AL_posidx[Pq_AL_posidx < AL_q_idx]
     
-    for i in range(len(q_range[Pq_AL_posidx]) - 3):
-        if i > 40:
-            shiftN=45
-        elif i > 55:
+    for i in range(len(q_range[Pq_AL_posidx])-3):
+        # if i <= thres:
+        #     shiftN=15
+        # else:
+        #     shiftN=len(q_range[Pq_AL_posidx])
+        if i > 50:
+            shiftN=30
+        elif i > 65:
             shiftN=3
         else:
             shiftN=15
-        mwx_AL_pn_temp.append(np.average(q_range[Pq_AL_posidx][i:i+shiftN]))
+        
+        mwx_AL_pn_temp.append(np.power(10, np.average(np.log10(q_range[Pq_AL_posidx][i:i+shiftN][[0, -1]]))))
         
         poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
                                                     np.log10(q_range[Pq_AL_posidx][i:i+shiftN]), 
