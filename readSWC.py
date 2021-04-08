@@ -11246,6 +11246,37 @@ plt.yticks(fontsize=14)
 # plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_AL_mv_4.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
+#%% P(r)
+
+CM_CM_neurite = np.average(CM_neurite, axis=0)
+
+dist = scipy.spatial.distance.cdist([CM_CM_neurite], CM_neurite)[0]
+
+val,edge = np.histogram(dist, bins=75, density=True)
+
+fig, ax = plt.subplots(figsize=(6,4.5))
+
+plt.plot(edge[:-1] - np.diff(edge), val)
+plt.xlabel('$r_{CM}$ ($\mu\mathrm{m}$)', fontsize=13)
+plt.ylabel('$P(r_{CM})$', fontsize=13)
+
+plt.show()
+
+
+dist = scipy.spatial.distance.cdist(CM_neurite, CM_neurite)
+
+dist = dist[np.triu_indices_from(dist, k=1)]
+
+val,edge = np.histogram(dist, bins=75, density=True)
+
+fig, ax = plt.subplots(figsize=(6,4.5))
+
+plt.plot(edge[:-1] - np.diff(edge), val)
+plt.xlabel('$r$ ($\mu\mathrm{m}$)', fontsize=13)
+plt.ylabel('$P(r)$', fontsize=13)
+
+plt.show()
+
 #%% Gyration tensor
 
 CM_neurite = np.array(CM_neurite)
