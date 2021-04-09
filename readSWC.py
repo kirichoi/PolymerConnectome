@@ -4972,7 +4972,8 @@ for i in range(len(AL_bP)):
 
 #%% Radius of Gyration for calyx, LH, and AL per branching point using sphere
 
-l_range = np.linspace(1, 10, 10)
+#TODO: finish the code
+l_range = np.linspace(1, 10, 5)
 
 rGy_calyx_per_bP = []
 length_calyx_bP = []
@@ -4998,33 +4999,32 @@ for i in range(len(calyx_bP)):
         BranchData.calyx_branchdist.append([])
         
 
-for i in range(len(BranchData.calyx_branchdist[:1])):
+for i in range(len(BranchData.calyx_branchdist)):
     rGy_calyx_per_bP_temp = []
     length_calyx_bP_temp = []
-    idx = np.where(np.array(MorphData.calyxdist_trk) == un_calyx[i])[0]
-    # tarval = np.array(MorphData.calyxdist)[idx]
+    # idx = np.where(np.array(MorphData.calyxdist_trk) == un_calyx[i])[0]
     for j in range(len(BranchData.calyx_branchdist[i])):
         rGy_calyx_per_bP_temp1 = []
         length_calyx_bP_temp1 = []
         for l in range(len(l_range)):
             temp_tar = []
             temp_len = 0
-            dist = scipy.spatial.distance.cdist([BranchData.calyx_branchdist[i][j]], MorphData.calyxdist_per_n[i][j])[0]
-            distval = np.array(MorphData.calyxdist_per_n[i][j])[np.where(dist <= l_range[l])[0]]
+            dist = scipy.spatial.distance.cdist([BranchData.calyx_branchdist[i][j]], MorphData.calyxdist_per_n[un_calyx[i]][j])[0]
+            distval = np.array(MorphData.calyxdist_per_n[un_calyx[i]][j])[np.where(dist <= l_range[l])[0]]
             if len(distval) > 1:
                 for d in range(len(distval)-1):
                     temp_len += np.linalg.norm(np.subtract(distval[d], distval[d+1]))
                 temp_tar.append(distval)
             
                 (rGy_t, cML_t) = utils.radiusOfGyration([[item for sublist in temp_tar for item in sublist]])
-                rGy_calyx_per_bP_temp1.append(rGy_t)
+                rGy_calyx_per_bP_temp1.append(rGy_t[0])
                 length_calyx_bP_temp1.append(temp_len)
             
-        rGy_calyx_per_bP_temp.append(rGy_calyx_per_bP_temp1)
-        length_calyx_bP_temp.append(length_calyx_bP_temp1)
+        rGy_calyx_per_bP_temp.append([rGy_calyx_per_bP_temp1])
+        length_calyx_bP_temp.append([length_calyx_bP_temp1])
     
     rGy_calyx_per_bP.append(np.array([item for sublist in rGy_calyx_per_bP_temp for item in sublist]))
-    length_calyx_bP.append(length_calyx_bP_temp)
+    length_calyx_bP.append(np.array([item for sublist in length_calyx_bP_temp for item in sublist]))
 
 
 
@@ -9871,7 +9871,8 @@ for i in range(len(Pq_AL_pn[0])):
     AL_q_idx = len(Pq_AL_pn[:,i])
     plt.plot(q_range[Pq_AL_pn[:,i]>0], Pq_AL_pn[Pq_AL_pn[:,i]>0,i], color='tab:blue', alpha=0.5)
 
-# plt.plot(q_range[:AL_q_idx], np.average(Pq_AL_pn[:AL_q_idx],axis=1), color='k', lw=2)
+# plt.plot(q_range[np.average(Pq_AL_pn, axis=1) > 0], 
+#          np.average(Pq_AL_pn, axis=1)[np.average(Pq_AL_pn, axis=1) > 0], color='k', lw=2)
 
 plt.vlines(2*np.pi/np.mean(LengthData.length_AL_flat), 1e-9, 10, color='tab:blue')
 
@@ -9927,7 +9928,8 @@ for i in range(len(Pq_LH_pn[0])):
     LH_q_idx = len(Pq_LH_pn[:,i])
     plt.plot(q_range[Pq_LH_pn[:,i]>0], Pq_LH_pn[Pq_LH_pn[:,i]>0,i], color='tab:green', alpha=0.5)
 
-# plt.plot(q_range[:LH_q_idx], np.average(Pq_LH_pn[:LH_q_idx],axis=1), color='k', lw=2)
+# plt.plot(q_range[np.average(Pq_LH_pn, axis=1) > 0], 
+#          np.average(Pq_LH_pn, axis=1)[np.average(Pq_LH_pn, axis=1) > 0], color='k', lw=2)
 
 plt.vlines(2*np.pi/np.mean(LengthData.length_LH_flat), 1e-9, 10, color='tab:green')
 
@@ -9976,13 +9978,15 @@ plt.xlim(0.8e-2, 1e3)
 # plt.savefig(Parameter.outputdir + '/Pq_per_neuron_LH_full_5.png', dpi=600, bbox_inches='tight')
 plt.show()
 
+
 fig = plt.figure(figsize=(8,6))
 for i in range(len(Pq_calyx_pn[0])):
     calyx_q_idx = first_consecutive(np.where(Pq_calyx_pn[:,i] > 0)[0])
     calyx_q_idx = len(Pq_calyx_pn[:,i])
     plt.plot(q_range[Pq_calyx_pn[:,i] > 0], Pq_calyx_pn[Pq_calyx_pn[:,i] > 0,i], color='tab:orange', alpha=0.5)
 
-# plt.plot(q_range[:calyx_q_idx], np.average(Pq_calyx_pn[:calyx_q_idx],axis=1), color='k', lw=2)
+# plt.plot(q_range[np.average(Pq_calyx_pn, axis=1) > 0], 
+#          np.average(Pq_calyx_pn, axis=1)[np.average(Pq_calyx_pn, axis=1) > 0], color='k', lw=2)
 
 plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_flat), 1e-9, 10, color='tab:orange')
 
