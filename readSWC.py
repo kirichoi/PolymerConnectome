@@ -4750,15 +4750,12 @@ length_AL_nempty = copy.deepcopy([x for x in LengthData.length_AL if x != []])
 
 calyx_btrk = copy.deepcopy([x for x in BranchData.calyx_branchTrk if x != []])
 calyx_toex = [i for i,x in enumerate(LengthData.length_calyx) if not x]
-calyx_bP = copy.deepcopy([element for i, element in enumerate(BranchData.calyx_branchP) if i not in calyx_toex])
 
 LH_btrk = copy.deepcopy([x for x in BranchData.LH_branchTrk if x != []])
 LH_toex = [i for i,x in enumerate(LengthData.length_LH) if not x]
-LH_bP = copy.deepcopy([element for i, element in enumerate(BranchData.LH_branchP) if i not in LH_toex])
 
 AL_btrk = copy.deepcopy([x for x in BranchData.AL_branchTrk if x != []])
 AL_toex = [i for i,x in enumerate(LengthData.length_AL) if not x]
-AL_bP = copy.deepcopy([element for i, element in enumerate(BranchData.AL_branchP) if i not in AL_toex])
 
 calyxdist_per_seg_count = []
 LHdist_per_seg_count = []
@@ -4767,13 +4764,6 @@ ALdist_per_seg_count = []
 rGy_calyx_per_seg = []
 rGy_LH_per_seg = []
 rGy_AL_per_seg = []
-
-rGy_calyx_per_bP = []
-length_calyx_bP = []
-rGy_LH_per_bP = []
-length_LH_bP = []
-rGy_AL_per_bP = []
-length_AL_bP = []
 
 un_calyx = np.unique(MorphData.calyxdist_trk)
 un_LH = np.unique(MorphData.LHdist_trk)
@@ -4910,6 +4900,17 @@ for i in np.array(all_list):
 
 #%% Radius of Gyration for calyx, LH, and AL per branching point
 
+rGy_calyx_per_bP = []
+length_calyx_bP = []
+rGy_LH_per_bP = []
+length_LH_bP = []
+rGy_AL_per_bP = []
+length_AL_bP = []
+
+calyx_bP = copy.deepcopy([element for i, element in enumerate(BranchData.calyx_branchP) if i not in calyx_toex])
+LH_bP = copy.deepcopy([element for i, element in enumerate(BranchData.LH_branchP) if i not in LH_toex])
+AL_bP = copy.deepcopy([element for i, element in enumerate(BranchData.AL_branchP) if i not in AL_toex])
+
 for i in range(len(calyx_bP)):
     rGy_calyx_per_bP_temp = []
     length_calyx_bP_temp = []
@@ -4967,6 +4968,64 @@ for i in range(len(AL_bP)):
         length_AL_bP_temp.append(temp_len)
     rGy_AL_per_bP.append(np.squeeze(rGy_AL_per_bP_temp))
     length_AL_bP.append(length_AL_bP_temp)
+
+
+#%% Radius of Gyration for calyx, LH, and AL per branching point using sphere
+
+l_range = np.linspace(1, 10, 10)
+
+rGy_calyx_per_bP = []
+length_calyx_bP = []
+rGy_LH_per_bP = []
+length_LH_bP = []
+rGy_AL_per_bP = []
+length_AL_bP = []
+
+calyx_bP = copy.deepcopy([element for i, element in enumerate(BranchData.calyx_branchP) if i not in calyx_toex])
+LH_bP = copy.deepcopy([element for i, element in enumerate(BranchData.LH_branchP) if i not in LH_toex])
+AL_bP = copy.deepcopy([element for i, element in enumerate(BranchData.AL_branchP) if i not in AL_toex])
+
+
+BranchData.calyx_branchdist = []
+
+for i in range(len(calyx_bP)):
+    branchP_dist_t = []
+    for j in range(len(calyx_bP[i])):
+        branchP_dist_t.append(MorphData.morph_dist[un_calyx[i]][MorphData.morph_id[un_calyx[i]].index(calyx_bP[i][j])])
+    if len(branchP_dist_t) > 0:
+        BranchData.calyx_branchdist.append(branchP_dist_t)
+    else:
+        BranchData.calyx_branchdist.append([])
+        
+
+for i in range(len(BranchData.calyx_branchdist[:1])):
+    rGy_calyx_per_bP_temp = []
+    length_calyx_bP_temp = []
+    idx = np.where(np.array(MorphData.calyxdist_trk) == un_calyx[i])[0]
+    # tarval = np.array(MorphData.calyxdist)[idx]
+    for j in range(len(BranchData.calyx_branchdist[i])):
+        rGy_calyx_per_bP_temp1 = []
+        length_calyx_bP_temp1 = []
+        for l in range(len(l_range)):
+            temp_tar = []
+            temp_len = 0
+            dist = scipy.spatial.distance.cdist([BranchData.calyx_branchdist[i][j]], MorphData.calyxdist_per_n[i][j])[0]
+            distval = np.array(MorphData.calyxdist_per_n[i][j])[np.where(dist <= l_range[l])[0]]
+            if len(distval) > 1:
+                for d in range(len(distval)-1):
+                    temp_len += np.linalg.norm(np.subtract(distval[d], distval[d+1]))
+                temp_tar.append(distval)
+            
+                (rGy_t, cML_t) = utils.radiusOfGyration([[item for sublist in temp_tar for item in sublist]])
+                rGy_calyx_per_bP_temp1.append(rGy_t)
+                length_calyx_bP_temp1.append(temp_len)
+            
+        rGy_calyx_per_bP_temp.append(rGy_calyx_per_bP_temp1)
+        length_calyx_bP_temp.append(length_calyx_bP_temp1)
+    
+    rGy_calyx_per_bP.append(np.array([item for sublist in rGy_calyx_per_bP_temp for item in sublist]))
+    length_calyx_bP.append(length_calyx_bP_temp)
+
 
 
 
@@ -9399,7 +9458,7 @@ plt.show()
 
 
 
-#%% Persistence length V3
+#%% l vs Rgy
 
 def plength(l, MSR, R_max):
     return np.abs(MSR - (2*l*R_max - 2*np.square(l)*(1 - np.exp(-R_max/l))))
@@ -11276,6 +11335,7 @@ plt.xlabel('$r$ ($\mu\mathrm{m}$)', fontsize=13)
 plt.ylabel('$P(r)$', fontsize=13)
 
 plt.show()
+
 
 #%% Gyration tensor
 
