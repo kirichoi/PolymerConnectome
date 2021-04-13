@@ -867,7 +867,7 @@ xex = argrelextrema(x[0], np.less)[0]
 yex = argrelextrema(y[0], np.less)[0]
 zex = argrelextrema(z[0], np.less)[0]
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.hist(morph_dist_flat_rot[:,0], 
          bins=int((np.max(morph_dist_flat_rot[:,0]) - np.min(morph_dist_flat_rot[:,0]))/1), 
          color='tab:purple', alpha=0.5)
@@ -887,7 +887,7 @@ plt.scatter(x[1][xex[[13,27,40]]], x[0][xex[[13,27,40]]], color='tab:red')
 # plt.savefig(Parameter.outputdir + '/x_segment_hist_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.hist(morph_dist_flat_rot[:,1],
          bins=int((np.max(morph_dist_flat_rot[:,1]) - np.min(morph_dist_flat_rot[:,1]))/1),
          color='tab:purple', alpha=0.5)
@@ -907,7 +907,7 @@ plt.scatter(y[1][yex[[9,26,46]]], y[0][yex[[9,26,46]]], color='tab:red')
 # plt.savefig(Parameter.outputdir + '/y_segment_hist_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.hist(morph_dist_flat_rot[:,2], 
          bins=int((np.max(morph_dist_flat_rot[:,2]) - np.min(morph_dist_flat_rot[:,2]))/1), 
          color='tab:purple', alpha=0.5)
@@ -955,7 +955,7 @@ for i in np.linspace(-45, 0, 10):
     if (len(LHcallogand) > 0) and (len(calALlogand) > 0):
         xex_list.append([i, x[1][xidx], np.average(x[0][xidx]), np.std(x[0][xidx[[0,1]]])])
     
-    fig = plt.figure(figsize=(8,6))
+    fig = plt.figure(figsize=(6,4.5))
     plt.hist(morph_dist_flat_rot[:,0], bins=int((np.max(morph_dist_flat_rot[:,0]) - np.min(morph_dist_flat_rot[:,0]))/1), color='tab:purple', alpha=0.5)
     plt.vlines([refcalyx_rot[0], refLH_rot[0], refAL_rot[0]], 0, np.max(x[0]))
     plt.xlabel('x Coordinates', fontsize=15)
@@ -986,7 +986,7 @@ for i in np.linspace(0, 45, 10):
     if (len(LHcallogand) > 0) and (len(calALlogand) > 0):
         yex_list.append([i, y[1][yidx], np.average(y[0][yidx]), np.std(y[0][yidx[[0,1]]])])
 
-    fig = plt.figure(figsize=(8,6))
+    fig = plt.figure(figsize=(6,4.5))
     plt.hist(morph_dist_flat_rot[:,1], bins=int((np.max(morph_dist_flat_rot[:,1]) - np.min(morph_dist_flat_rot[:,1]))/1), color='tab:purple', alpha=0.5)
     plt.vlines([refcalyx_rot[1], refLH_rot[1], refAL_rot[1]], 0, np.max(y[0]))
     plt.xlabel('y Coordinates', fontsize=15)
@@ -1021,7 +1021,7 @@ for i in np.linspace(-45, 0, 10):
     elif (len(LHcallogand) < 1) and (len(calALlogand) > 0):
         zex_list.append([i, z[1][zidx], np.average(z[0][zidx]), np.std(z[0][zidx])])
     
-    fig = plt.figure(figsize=(8,6))
+    fig = plt.figure(figsize=(6,4.5))
     plt.hist(morph_dist_flat_rot[:,2], bins=int((np.max(morph_dist_flat_rot[:,2]) - np.min(morph_dist_flat_rot[:,2]))/1), color='tab:purple', alpha=0.5)
     plt.vlines([refcalyx_rot[2], refLH_rot[2], refAL_rot[2]], 0, np.max(z[0]))
     plt.xlabel('z Coordinates', fontsize=15)
@@ -1055,7 +1055,7 @@ for i in np.linspace(-90, 90, 19):
     if(len(calALlogand) > 0):
         zex_list_y_2.append([i, z[1][zidx], np.average(z[0][zidx]), np.std(z[0][zidx])])
         
-    fig = plt.figure(figsize=(8,6))
+    fig = plt.figure(figsize=(6,4.5))
     plt.hist(morph_dist_flat_rot[:,2],
              bins=int((np.max(morph_dist_flat_rot[:,2]) - np.min(morph_dist_flat_rot[:,2]))/1),
              color='tab:purple', 
@@ -1256,7 +1256,7 @@ if Parameter.PLOT:
     
     # branchEndPDict = {'branch': BranchData.branchNum, 'endP': MorphData.endP_len}
     # branchEndPDF = pd.DataFrame(data=branchEndPDict)
-    fig = plt.figure(figsize=(8,6))
+    fig = plt.figure(figsize=(6,4.5))
     # seaborn.swarmplot(x='branch', y='endP', data=branchEndPDF)
     plt.scatter(BranchData.branchNum, MorphData.endP_len)
     plt.title("Distribution of Number of Tips\n for Given Number of Branches", fontsize=20)
@@ -1271,7 +1271,7 @@ if Parameter.PLOT:
     #==============================================================================
     
     
-    fig = plt.figure(figsize=(8,6))
+    fig = plt.figure(figsize=(6,4.5))
     seaborn.kdeplot(BranchData.branchNum, 
                     bw=25)
 #    plt.xlim(-2, 8)
@@ -1285,7 +1285,7 @@ if Parameter.PLOT:
     #==============================================================================
     
     
-    fig = plt.figure(figsize=(8,6))
+    fig = plt.figure(figsize=(6,4.5))
     plt.scatter(MorphData.morph_dist_len, rGy)
     plt.yscale('log')
     plt.xscale('log')
@@ -1309,7 +1309,7 @@ if Parameter.PLOT:
     perrR = np.sqrt(np.diag(pcovR))
     fitYR = objFuncPpow(LengthData.length_total, poptR[0], poptR[1])
     
-    fig = plt.figure(figsize=(8,6))
+    fig = plt.figure(figsize=(6,4.5))
     plt.scatter(LengthData.length_total, rGy)
     plt.plot(LengthData.length_total, fitYR, color='tab:red')
     plt.yscale('log')
@@ -1416,7 +1416,7 @@ if Parameter.PLOT:
             poptRS_sl.append(poptRS_s[0])
     
     
-    fig = plt.figure(figsize=(8,6))
+    fig = plt.figure(figsize=(6,4.5))
     plt.scatter(RS_x, poptRS_sl)
     #plt.plot(regMDistLen*Parameter.sSize, fitYR, color='tab:red')
     #plt.yscale('log')
@@ -1455,7 +1455,7 @@ if Parameter.PLOT:
 #        poptRS_sl.append(poptRS_s[0])
 #    
 #    
-#    fig = plt.figure(figsize=(8,6))
+#    fig = plt.figure(figsize=(6,4.5))
 #    plt.scatter(RS_x, poptRS_sl)
 #    #plt.plot(regMDistLen*Parameter.sSize, fitYR, color='tab:red')
 #    #plt.yscale('log')
@@ -1593,7 +1593,7 @@ for i in range(len(nSize_brl) - shift_N):
         poptRS_brl.append(poptRS_br[0])
 
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.scatter(RS_xbr, poptRS_brl)
 #plt.plot(regMDistLen*Parameter.sSize, fitYR, color='tab:red')
 #plt.yscale('log')
@@ -1773,7 +1773,7 @@ fitYD_LH = objFuncPpow(radiussize, poptD_LH[0], poptD_LH[1])
 fitYD_AL1 = objFuncPpow(radiussize, poptD_AL1[0], poptD_AL1[1])
 fitYD_AL2 = objFuncPpow(radiussize, poptD_AL2[0], poptD_AL2[1])
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 
 # plt.scatter(radiussize[:16], 
                     # spheredist_AL_sum[:16], color='tab:blue', facecolors='none', marker='s', alpha=0.5)
@@ -1991,7 +1991,7 @@ fitYD_AL1 = objFuncPpow(radiussize, poptD_AL1[0], poptD_AL1[1])
 fitYD_AL2 = objFuncPpow(radiussize, poptD_AL2[0], poptD_AL2[1])
 fitYD_AL3 = objFuncPpow(radiussize, poptD_AL3[0], poptD_AL3[1])
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 
 plt.scatter(radiussize[np.nonzero(spheredist_AL_sum)][iarg_AL2:], 
             spheredist_AL_sum[np.nonzero(spheredist_AL_sum)][iarg_AL2:], 
@@ -2089,7 +2089,7 @@ for i in range(len(radiussize[np.nonzero(spheredist_AL_sum)]) - shiftN):
     ALmwerr.append(np.sqrt(np.diag(pcovmxa))[0])
     
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.plot(np.array(mwx_AL), np.array(ALmw), lw=2)
 plt.plot(np.array(mwx_calyx), np.array(Calyxmw), lw=2)
 plt.plot(np.array(mwx_LH), np.array(LHmw), lw=2)
@@ -2150,7 +2150,7 @@ fitYD_calyx = objFuncPpow(radiussize, poptD_calyx[0], poptD_calyx[1])
 fitYD_LH = objFuncPpow(radiussize, poptD_LH[0], poptD_LH[1])
 fitYD_AL = objFuncPpow(radiussize, poptD_AL[0], poptD_AL[1])
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 
 plt.scatter(radiussize[np.nonzero(spheredist_AL_count1)][iarg_AL:], 
             spheredist_AL_count1[np.nonzero(spheredist_AL_count1)][iarg_AL:],
@@ -2230,7 +2230,7 @@ for i in range(len(radiussize[np.nonzero(spheredist_AL_count1)]) - shiftN):
     ALmwerr.append(np.sqrt(np.diag(pcovmxa))[0])
     
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.plot(1/np.array(mwx_AL), 1/np.array(ALmw), lw=2)
 plt.plot(1/np.array(mwx_calyx), 1/np.array(Calyxmw), lw=2)
 plt.plot(1/np.array(mwx_LH), 1/np.array(LHmw), lw=2)
@@ -2455,7 +2455,7 @@ fitYD_calyx = objFuncPpow(radiussize, poptD_calyx[0], poptD_calyx[1])
 fitYD_LH = objFuncPpow(radiussize, poptD_LH[0], poptD_LH[1])
 fitYD_AL = objFuncPpow(radiussize, poptD_AL[0], poptD_AL[1])
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 
 plt.scatter(radiussize[np.nonzero(spheredist_AL_sum_avg)], spheredist_AL_sum_avg_nz, color='tab:blue', facecolors='none')
 # plt.errorbar(radiussize, spheredist_AL_sum_avg, scipy.stats.sem(spheredist_AL_sum, axis=0), capsize=2)
@@ -2482,7 +2482,7 @@ plt.ylabel("$L$", fontsize=15)
 plt.show()
 
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 
 plt.scatter(np.tile(radiussize, (len(spheredist_AL_sum),1)), spheredist_AL_sum, color='tab:blue', facecolors='none', alpha=0.5)
 seaborn.kdeplot(x=np.tile(radiussize, len(spheredist_AL_sum))[np.nonzero(spheredist_AL_sum.flatten())],
@@ -2498,7 +2498,7 @@ plt.ylabel("$L$", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/density_scale_AL_per_n_1.png', dpi=300, bbox_inches='tight')
 plt.show()
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 
 plt.scatter(np.tile(radiussize, (len(spheredist_calyx_sum),1)), spheredist_calyx_sum, color='tab:orange', facecolors='none', alpha=0.5)
 seaborn.kdeplot(x=np.tile(radiussize, len(spheredist_calyx_sum))[np.nonzero(spheredist_calyx_sum.flatten())],
@@ -2514,7 +2514,7 @@ plt.ylabel("$L$", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/density_scale_calyx_per_n_1.png', dpi=300, bbox_inches='tight')
 plt.show()
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 
 plt.scatter(np.tile(radiussize, (len(spheredist_LH_sum),1)), spheredist_LH_sum, color='tab:green', facecolors='none', alpha=0.5)
 seaborn.kdeplot(x=np.tile(radiussize, len(spheredist_LH_sum))[np.nonzero(spheredist_LH_sum.flatten())],
@@ -2567,7 +2567,7 @@ fitYD_calyx = objFuncPpow(radiussize, poptD_calyx[0], poptD_calyx[1])
 fitYD_LH = objFuncPpow(radiussize, poptD_LH[0], poptD_LH[1])
 fitYD_AL = objFuncPpow(radiussize, poptD_AL[0], poptD_AL[1])
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 
 plt.scatter(radiussize, 
                     spheredist_AL_count1_avg, color='tab:blue', facecolors='none', alpha=0.5)
@@ -2630,7 +2630,7 @@ fitYD_calyx = objFuncPpow(radiussize, poptD_calyx[0], poptD_calyx[1])
 fitYD_LH = objFuncPpow(radiussize, poptD_LH[0], poptD_LH[1])
 fitYD_AL = objFuncPpow(radiussize, poptD_AL[0], poptD_AL[1])
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 
 plt.scatter(radiussize, 
                     spheredist_AL_count2_avg, color='tab:blue', facecolors='none', alpha=0.5)
@@ -3033,7 +3033,7 @@ perrBcount_all = np.sqrt(np.diag(pcovBcount_all))
 
 fitYBcount_all = objFuncPpow(binsize, poptBcount_all[0], poptBcount_all[1])
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.scatter(1/binsize, hlist_count)
 plt.plot(1/binsize, fitYBcount_all, lw=2, linestyle='--')
 plt.yscale('log')
@@ -3283,7 +3283,7 @@ fitYBcount_calyx_b = objFuncPpow(binsize, poptBcount_calyx_b[0], poptBcount_caly
 fitYBcount_LH_b = objFuncPpow(binsize, poptBcount_LH_b[0], poptBcount_LH_b[1])
 fitYBcount_AL_b = objFuncPpow(binsize, poptBcount_AL_b[0], poptBcount_AL_b[1])
     
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.scatter(1/binsize, hlist_AL_b_count)
 plt.scatter(1/binsize, hlist_calyx_b_count)
 plt.scatter(1/binsize, hlist_LH_b_count)
@@ -3448,7 +3448,7 @@ for r in range(bbr):
         poptBcount_AL_b[r][l] = poptBcount_AL_b_t
         perrBcount_AL_b[r][l] = perrBcount_AL_b_t
     
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 for r in range(bbr):
     for l in range(len(sp_l)):
         plt.scatter(binsize, hlist_calyx_b_count[r][l], color='tab:blue')
@@ -3479,7 +3479,7 @@ perrBcount_calyx_b_avg = np.sqrt(np.sum(np.square(perrBcount_calyx_b[:,:,0]), ax
 perrBcount_LH_b_avg = np.sqrt(np.sum(np.square(perrBcount_LH_b[:,:,0]), axis=0))/bbr
 perrBcount_AL_b_avg = np.sqrt(np.sum(np.square(perrBcount_AL_b[:,:,0]), axis=0))/bbr
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.plot(2*sp_l, poptBcount_AL_b_avg, lw=2, linestyle='--', color='tab:blue')
 plt.plot(2*sp_l, poptBcount_calyx_b_avg, lw=2, linestyle='--', color='tab:orange')
 plt.plot(2*sp_l, poptBcount_LH_b_avg, lw=2, linestyle='--', color='tab:green')
@@ -3574,7 +3574,7 @@ kde = neighbors.KernelDensity(kernel='gaussian', bandwidth=0.05).fit(poptBcount_
 
 log_dens = kde.score_samples(xval.reshape((len(xval),1)))
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.hist(poptBcount_single_all, bins=int(len(hlist_single_count)/5), density=True)
 plt.plot(xval, np.exp(log_dens), lw=3)
 plt.vlines(np.mean(poptBcount_single_all), 
@@ -3716,7 +3716,7 @@ kde_calyx = neighbors.KernelDensity(kernel='gaussian', bandwidth=0.05).fit(poptB
 
 log_dens_calyx = kde_calyx.score_samples(xval_calyx.reshape((len(xval_calyx),1)))
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.hist(poptBcount_single_all_calyx, bins=int(len(hlist_single_count_calyx)/5), density=True)
 plt.plot(xval_calyx, np.exp(log_dens_calyx), lw=3)
 plt.vlines(np.mean(poptBcount_single_all_calyx), 
@@ -3810,7 +3810,7 @@ kde_LH = neighbors.KernelDensity(kernel='gaussian', bandwidth=0.05).fit(poptBcou
 
 log_dens_LH = kde_LH.score_samples(xval_LH.reshape((len(xval_LH),1)))
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.hist(poptBcount_single_all_LH, bins=int(len(hlist_single_count_LH)/5), density=True)
 plt.plot(xval_LH, np.exp(log_dens_LH), lw=3)
 plt.vlines(np.mean(poptBcount_single_all_LH), 
@@ -3904,7 +3904,7 @@ kde_AL = neighbors.KernelDensity(kernel='gaussian', bandwidth=0.05).fit(poptBcou
 
 log_dens_AL = kde_AL.score_samples(xval_AL.reshape((len(xval_AL),1)))
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.hist(poptBcount_single_all_AL, bins=int(len(hlist_single_count_AL)/5), density=True)
 plt.plot(xval_AL, np.exp(log_dens_AL), lw=3)
 plt.vlines(np.mean(poptBcount_single_all_AL), 
@@ -4586,7 +4586,7 @@ poptR, pcovR = scipy.optimize.curve_fit(objFuncGL,
 perrR = np.sqrt(np.diag(pcovR))
 fitYR = objFuncPpow(LengthData.length_total, poptR[0], poptR[1])
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.scatter(LengthData.length_total, rGy)
 plt.plot(LengthData.length_total, fitYR, color='tab:red')
 plt.yscale('log')
@@ -4616,7 +4616,7 @@ poptR_ee, pcovR_ee = scipy.optimize.curve_fit(objFuncGL,
 perrR_ee = np.sqrt(np.diag(pcovR_ee))
 fitYR_ee = objFuncPpow(LengthData.length_ee, poptR_ee[0], poptR_ee[1])
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.scatter(LengthData.length_ee, rGy)
 plt.plot(LengthData.length_ee, fitYR_ee, color='tab:red')
 plt.yscale('log')
@@ -4715,7 +4715,7 @@ perrR_AL = np.sqrt(np.diag(pcovR_AL))
 fitYR_AL = objFuncPpow(xvallog1, poptR_AL[0], poptR_AL[1])
 
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.scatter(LengthData.length_AL_total, rGy_AL, color='tab:blue', facecolors='none')
 plt.scatter(LengthData.length_calyx_total[np.argsort(np.log10(LengthData.length_calyx_total))[2:]], 
             rGy_calyx[np.argsort(np.log10(LengthData.length_calyx_total))[2:]], color='tab:orange', facecolors='none')
@@ -4842,7 +4842,7 @@ for i in range(len(length_AL_nempty)):
             perrR_AL_per_seg.append(np.sqrt(np.diag(pcov)))
             fitYR_AL_per_seg.append(objFuncPpow(xvallog1, popt[0], popt[1]))
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 for i in range(len(length_calyx_nempty)):
     plt.scatter(length_calyx_nempty[i], rGy_calyx_per_seg[i], s=0.5, color='tab:orange')
 for i in range(len(length_LH_nempty)):
@@ -5031,7 +5031,7 @@ for i in range(len(BranchData.calyx_branchdist)):
 
 #%% Length study
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.hist(LengthData.length_AL_total, 
           bins=int((np.max(LengthData.length_AL_total) - np.min(LengthData.length_AL_total))/100),
           density=True,
@@ -5305,7 +5305,7 @@ poptR, pcovR = scipy.optimize.curve_fit(objFuncGL,
 perrR = np.sqrt(np.diag(pcovR))
 fitYR = objFuncPpow(MorphData.morph_dist_len[glo_idx_flat], poptR[0], poptR[1])
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.scatter(MorphData.morph_dist_len[glo_idx_flat], rGy[glo_idx_flat])
 plt.plot(MorphData.morph_dist_len[glo_idx_flat], fitYR, color='tab:red')
 plt.yscale('log')
@@ -8991,7 +8991,7 @@ Pq_AL_glo = np.load(r'./Pq_AL_glo.npy')
 # Pq_calyx_glo = np.delete(Pq_calyx_glo, [40, 41], 1)
 # Pq_AL_glo = np.delete(Pq_AL_glo, 73, 1)
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 for i in range(len(Pq_AL_glo[0])):
     plt.plot(q_range[:AL_q_idx], Pq_AL_glo[:AL_q_idx,i], color='tab:blue', alpha=0.5)
 
@@ -9028,7 +9028,7 @@ plt.xlim(0.8e-2, 1e2)
 plt.show()
 
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 for i in range(len(Pq_LH_glo[0])):
     plt.plot(q_range[:LH_q_idx], Pq_LH_glo[:LH_q_idx,i], color='tab:green', alpha=0.5)
 
@@ -9065,7 +9065,7 @@ plt.xlim(0.8e-2, 1e2)
 plt.show()
 
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 for i in range(len(Pq_calyx_glo[0])):
     plt.plot(q_range[:calyx_q_idx], Pq_calyx_glo[:calyx_q_idx,i], color='tab:orange', alpha=0.5)
 
@@ -10381,40 +10381,36 @@ un_LH_nUG_AL = [136]
 un_LH_nUG_MG = [70, 71, 93, 94, 97, 114, 115, 138, 139, 149]
 
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 for i in range(len(un_AL_nUG_MG)):
-    idx_temp = np.where(un_AL_tr == un_AL_nUG_MG[i])[0]
-    plt.plot(q_range[:AL_q_idx], Pq_AL_pn[:AL_q_idx,idx_temp], color='tab:blue', alpha=0.5)
+    idx_temp = np.where(un_AL_tr == un_AL_nUG_MG[i])[0][0]
+    plt.plot(q_range[Pq_AL_pn[:,idx_temp]>0], Pq_AL_pn[:,idx_temp][Pq_AL_pn[:,idx_temp]>0], color='tab:blue', alpha=0.5)
 
-# plt.plot(q_range[:AL_q_idx], np.average(Pq_AL_pn[:AL_q_idx],axis=1), color='k', lw=2)
+plt.vlines(2*np.pi/np.mean(LengthData.length_AL_flat), 1e-8, 10, color='tab:blue')
+plt.vlines(1/np.mean(rGy_AL), 1e-8, 10, color='tab:blue', ls='--')
+plt.vlines(2*np.pi/np.mean(LengthData.length_AL_b_flat), 1e-8, 10, color='tab:blue', ls='dotted')
 
-plt.vlines(2*np.pi/np.mean(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue')
+line1 = 1/5000*np.power(q_range, -16/7)
+line2 = 1/50000000*np.power(q_range, -4/1)
+line3 = 1/50000*np.power(q_range, -1/0.388)
+line4 = 1/1*np.power(q_range, -1)
 
-# plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:orange', ls='dotted')
+plt.plot(q_range, line1, lw=1, color='tab:red')
+plt.plot(q_range, line2, lw=1, color='tab:gray')
+plt.plot(q_range, line3, lw=1, color='tab:purple')
+plt.plot(q_range, line4, lw=1, color='k')
 
-plt.vlines(1/np.mean(rGy_AL), 1e-6, 10, color='tab:blue', ls='--')
-
-line1 = 1/7500*np.power(q_range, -16/7)
-# line2 = 1/1000000*np.power(q_range, -4/1)
-line3 = 1/5000*np.power(q_range, -2/1)
-line4 = 1/2500*np.power(q_range, -1)
-
-# plt.plot(q_range[10:17], line2[10:17], lw=2, color='k')
-plt.plot(q_range[19:27], line1[19:27], lw=2, color='k')
-plt.plot(q_range[28:36], line3[28:36], lw=2, color='k')
-plt.plot(q_range[38:48], line4[38:48], lw=2, color='k')
-
-# plt.text(0.025, 7e-3, r'$\nu = \dfrac{1}{4}$', fontsize=13)
-plt.text(0.05, 0.8e-2, r'$\nu = \dfrac{7}{16}$', fontsize=13)
-plt.text(0.16, 0.8e-3, r'$\nu = \dfrac{1}{2}$', fontsize=13)
-plt.text(0.7, 1.5e-4, r'$\nu = 1$', fontsize=13)
+plt.text(4, 1.5e-5, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
+plt.text(0.011, 3e-3, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
+plt.text(1.3, 2e-8, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
+plt.text(100, 1.5e-2, r'$\nu = 1$', fontsize=13)
 
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
-plt.ylim(1e-4, 10)
-plt.xlim(0.8e-2, 1e2)
+plt.ylim(1e-8, 10)
+plt.xlim(1e-2, 1e3)
 # plt.savefig(Parameter.outputdir + '/Pq_per_neuron_AL_full_5.png', dpi=600, bbox_inches='tight')
 plt.show()
 
@@ -10469,11 +10465,7 @@ plt.text(10.3, 1-0.02,'Linear', fontsize=14)
 plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
 plt.vlines(2*np.pi/np.mean(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue')
-
-# plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue', ls='dotted')
-
 plt.vlines(1/np.mean(rGy_AL), 1e-6, 10, color='tab:blue', ls='--')
-
 
 plt.xscale('log')
 # plt.yscale('log')
@@ -10486,6 +10478,41 @@ plt.yticks(fontsize=14)
 # plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_MG_mv_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
+
+
+
+fig = plt.figure(figsize=(6,4.5))
+for i in range(len(un_LH_nUG_MG)):
+    idx_temp = np.where(un_LH_tr == un_LH_nUG_MG[i])[0][0]
+    plt.plot(q_range[Pq_LH_pn[:,idx_temp]>0], Pq_LH_pn[:,idx_temp][Pq_LH_pn[:,idx_temp]>0], color='tab:green', alpha=0.5)
+
+plt.vlines(2*np.pi/np.mean(LengthData.length_LH_flat), 1e-8, 10, color='tab:green')
+plt.vlines(1/np.mean(rGy_LH), 1e-8, 10, color='tab:green', ls='--')
+plt.vlines(2*np.pi/np.mean(LengthData.length_LH_b_flat), 1e-8, 10, color='tab:green', ls='dotted')
+
+line1 = 1/5000*np.power(q_range, -16/7)
+line2 = 1/50000000*np.power(q_range, -4/1)
+line3 = 1/50000*np.power(q_range, -1/0.388)
+line4 = 1/1*np.power(q_range, -1)
+
+plt.plot(q_range, line1, lw=1, color='tab:red')
+plt.plot(q_range, line2, lw=1, color='tab:gray')
+plt.plot(q_range, line3, lw=1, color='tab:purple')
+plt.plot(q_range, line4, lw=1, color='k')
+
+plt.text(4, 1.5e-5, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
+plt.text(0.011, 3e-3, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
+plt.text(1.3, 2e-8, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
+plt.text(100, 1.5e-2, r'$\nu = 1$', fontsize=13)
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
+plt.ylabel("F(q)", fontsize=15)
+plt.ylim(1e-8, 10)
+plt.xlim(1e-2, 1e3)
+# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_LH_full_5.png', dpi=600, bbox_inches='tight')
+plt.show()
 
 
 mw_Pq_LH_pn = []
@@ -10539,11 +10566,7 @@ plt.text(10.3, 1-0.02,'Linear', fontsize=14)
 plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
 plt.vlines(2*np.pi/np.mean(LengthData.length_LH_flat), 1e-6, 10, color='tab:green')
-
-# plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:blue', ls='dotted')
-
 plt.vlines(1/np.mean(rGy_LH), 1e-6, 10, color='tab:green', ls='--')
-
 
 plt.xscale('log')
 # plt.yscale('log')
@@ -10580,7 +10603,7 @@ Pq_AL_pnn = np.load(r'./Pq_AL_neurite.npy')
 Pq_calyx_pnn = np.delete(Pq_calyx_pnn, [40, 41], 1)
 Pq_AL_pnn = np.delete(Pq_AL_pnn, 73, 1)
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.plot(np.tile(q_range[:60], (np.shape(Pq_calyx_pnn)[1],1)).T, Pq_calyx_pnn[:60])
 
 plt.xscale('log')
@@ -10590,7 +10613,7 @@ plt.ylabel("F(q)", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/Pq_calyx_pn_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.plot(np.tile(q_range[:60], (np.shape(Pq_LH_pnn)[1],1)).T, Pq_LH_pnn[:60])
 
 plt.xscale('log')
@@ -10600,7 +10623,7 @@ plt.ylabel("F(q)", fontsize=15)
 # plt.savefig(Parameter.outputdir + '/Pq_LH_pn_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.plot(np.tile(q_range[:60], (np.shape(Pq_AL_pnn)[1],1)).T, Pq_AL_pnn[:60])
 
 plt.xscale('log')
@@ -11711,7 +11734,7 @@ plt.show()
 
 nid = 60
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 
 plt.plot(mwx_calyx_pn[nid], -1/np.array(mw_Pq_calyx_pn[nid]), color='tab:orange', lw=2)
 
@@ -11741,7 +11764,7 @@ plt.ylabel(r"$\nu$", fontsize=15)
 plt.show()
   
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 
 plt.plot(mwx_LH_pn[nid], -1/np.array(mw_Pq_LH_pn[nid]), color='tab:green', lw=2)
 
@@ -11771,7 +11794,7 @@ plt.ylabel(r"$\nu$", fontsize=15)
 plt.show()
 
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 
 plt.plot(mwx_AL_pn[nid], -1/np.array(mw_Pq_AL_pn[nid]), color='tab:blue', lw=2)
 
@@ -11805,7 +11828,7 @@ plt.show()
 
 nid = 77
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 
 plt.plot(mwx_calyx_pn[nid], -1/np.array(mw_Pq_calyx_pn[nid]), color='tab:orange', lw=2)
 
@@ -11835,7 +11858,7 @@ plt.ylabel(r"$\nu$", fontsize=15)
 plt.show()
   
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 
 plt.plot(mwx_LH_pn[nid], -1/np.array(mw_Pq_LH_pn[nid]), color='tab:green', lw=2)
 
@@ -11865,7 +11888,7 @@ plt.ylabel(r"$\nu$", fontsize=15)
 plt.show()
 
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 
 plt.plot(mwx_AL_pn[nid], -1/np.array(mw_Pq_AL_pn[nid]), color='tab:blue', lw=2)
 
@@ -11937,43 +11960,102 @@ pher = ['DL3', 'VA1d', 'DA1', 'DC3']
 attr = ['VM2', 'VM7d', 'VM7v', 'DL3', 'VA1d', 'DA1']
 aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3', 'DC3']
 
+
 pherlist = []
+pherlist_pq = []
 
 for i in range(len(pher)):
     for j in range(len(glo_idx[glo_list.index(pher[i])])):
         nid = np.where(np.unique(MorphData.LHdist_trk) == glo_idx[glo_list.index(pher[i])][j])[0][0]
+        pherlist_pq.append(Pq_LH_pn[:,nid])
         pherlist.append(-1/np.array(mw_Pq_LH_pn[nid]))
 
 attrlist = []
+attrlist_pq = []
 
 for i in range(len(attr)):
     for j in range(len(glo_idx[glo_list.index(attr[i])])):
         nid = np.where(np.unique(MorphData.LHdist_trk) == glo_idx[glo_list.index(attr[i])][j])[0][0]
+        attrlist_pq.append(Pq_LH_pn[:,nid])
         attrlist.append(-1/np.array(mw_Pq_LH_pn[nid]))
 
-
 averlist = []
+averlist_pq = []
 
 for i in range(len(aver)):
     for j in range(len(glo_idx[glo_list.index(aver[i])])):
         nid = np.where(np.unique(MorphData.LHdist_trk) == glo_idx[glo_list.index(aver[i])][j])[0][0]
+        averlist_pq.append(Pq_LH_pn[:,nid])
         averlist.append(-1/np.array(mw_Pq_LH_pn[nid]))
 
+
+fig = plt.figure(figsize=(6,4.5))
+plt.plot(q_range[:len(tolerant_mean(pherlist_pq).data)], tolerant_mean(pherlist_pq).data, color='tab:blue', lw=2)
+plt.plot(q_range[:len(tolerant_mean(attrlist_pq).data)], tolerant_mean(attrlist_pq).data, color='tab:green', lw=2)
+plt.plot(q_range[:len(tolerant_mean(averlist_pq).data)], tolerant_mean(averlist_pq).data, color='tab:red', lw=2)
+plt.fill_between(q_range[:len(tolerant_mean(pherlist_pq).data)], 
+                  tolerant_mean(pherlist_pq).data-tolerant_std_error(pherlist_pq), 
+                  tolerant_mean(pherlist_pq).data+tolerant_std_error(pherlist_pq),
+                  alpha=0.3,
+                  color='tab:blue')
+plt.fill_between(q_range[:len(tolerant_mean(attrlist_pq).data)], 
+                  tolerant_mean(attrlist_pq).data-tolerant_std_error(attrlist_pq), 
+                  tolerant_mean(attrlist_pq).data+tolerant_std_error(attrlist_pq),
+                  alpha=0.3,
+                  color='tab:green')
+plt.fill_between(q_range[:len(tolerant_mean(averlist_pq).data)], 
+                  tolerant_mean(averlist_pq).data-tolerant_std_error(averlist_pq), 
+                  tolerant_mean(averlist_pq).data+tolerant_std_error(averlist_pq),
+                  alpha=0.3,
+                  color='tab:red')
+
+plt.vlines(2*np.pi/np.mean(LengthData.length_AL_flat), 1e-9, 10, color='k')
+plt.vlines(1/np.mean(rGy_AL), 1e-9, 10, color='k', ls='--')
+plt.vlines(2*np.pi/np.mean(LengthData.length_AL_b_flat), 1e-9, 10, color='k', ls=':')
+
+line1 = 1/10*np.power(q_range, -16/7)
+line2 = 1/1000000*np.power(q_range, -4/1)
+line3 = 1/5000*np.power(q_range, -1/0.388)
+line4 = 1/10*np.power(q_range, -1)
+
+plt.plot(q_range, line1, lw=1, color='tab:red')
+plt.plot(q_range, line2, lw=1, color='tab:gray')
+plt.plot(q_range, line3, lw=1, color='tab:purple')
+plt.plot(q_range, line4, lw=1, color='k')
+
+plt.text(0.4, 1e-0, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
+plt.text(0.018, 3e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
+plt.text(0.5, 1.5e-3, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
+plt.text(0.12, 1e-0, r'$\nu = 1$', fontsize=13)
+
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
+plt.ylabel("F(q)", fontsize=15)
+plt.ylim(1e-3, 2)
+plt.xlim(1e-2, 1e1)
+# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_LH_1.png', dpi=600, bbox_inches='tight')
+plt.show()
+
+
 fig, ax = plt.subplots(figsize=(6,4.5))
-plt.plot(mwx_LH_pn[1], tolerant_mean(pherlist).data, color='tab:blue', lw=2)
-plt.plot(mwx_LH_pn[1], tolerant_mean(attrlist).data, color='tab:green', lw=2)
-plt.plot(mwx_LH_pn[1], tolerant_mean(averlist).data, color='tab:red', lw=2)
-plt.fill_between(mwx_LH_pn[1], 
+
+xmax = max(mwx_LH_pn, key = len)
+plt.plot(xmax[:len(tolerant_mean(pherlist).data)], tolerant_mean(pherlist).data, color='tab:blue', lw=2)
+plt.plot(xmax[:len(tolerant_mean(attrlist).data)], tolerant_mean(attrlist).data, color='tab:green', lw=2)
+plt.plot(xmax[:len(tolerant_mean(averlist).data)], tolerant_mean(averlist).data, color='tab:red', lw=2)
+plt.fill_between(xmax[:len(tolerant_mean(pherlist).data)], 
                   tolerant_mean(pherlist).data-tolerant_std_error(pherlist), 
                   tolerant_mean(pherlist).data+tolerant_std_error(pherlist),
                   alpha=0.3,
                   color='tab:blue')
-plt.fill_between(mwx_LH_pn[1], 
+plt.fill_between(xmax[:len(tolerant_mean(attrlist).data)], 
                   tolerant_mean(attrlist).data-tolerant_std_error(attrlist), 
                   tolerant_mean(attrlist).data+tolerant_std_error(attrlist),
                   alpha=0.3,
                   color='tab:green')
-plt.fill_between(mwx_LH_pn[1], 
+plt.fill_between(xmax[:len(tolerant_mean(averlist).data)], 
                   tolerant_mean(averlist).data-tolerant_std_error(averlist), 
                   tolerant_mean(averlist).data+tolerant_std_error(averlist),
                   alpha=0.3,
@@ -12017,56 +12099,114 @@ ALdist_trk_temp = copy.deepcopy(np.unique(MorphData.ALdist_trk))
 ALdist_trk_temp = np.delete(ALdist_trk_temp, 73)
 
 pherlist = []
+pherlist_pq = []
 
 for i in range(len(pher)):
     for j in range(len(glo_idx[glo_list.index(pher[i])])):
         nid = np.where(ALdist_trk_temp == glo_idx[glo_list.index(pher[i])][j])[0][0]
+        pherlist_pq.append(Pq_AL_pn[:,nid])
         pherlist.append(-1/np.array(mw_Pq_AL_pn[nid]))
 
 attrlist = []
+attrlist_pq = []
 
 for i in range(len(attr)):
     for j in range(len(glo_idx[glo_list.index(attr[i])])):
         nid = np.where(ALdist_trk_temp == glo_idx[glo_list.index(attr[i])][j])[0][0]
+        attrlist_pq.append(Pq_AL_pn[:,nid])
         attrlist.append(-1/np.array(mw_Pq_AL_pn[nid]))
 
-
 averlist = []
+averlist_pq = []
 
 for i in range(len(aver)):
     for j in range(len(glo_idx[glo_list.index(aver[i])])):
         nid = np.where(ALdist_trk_temp == glo_idx[glo_list.index(aver[i])][j])[0][0]
+        averlist_pq.append(Pq_AL_pn[:,nid])
         averlist.append(-1/np.array(mw_Pq_AL_pn[nid]))
 
+
+fig = plt.figure(figsize=(6,4.5))
+plt.plot(q_range[:len(tolerant_mean(pherlist_pq).data)], tolerant_mean(pherlist_pq).data, color='tab:blue', lw=2)
+plt.plot(q_range[:len(tolerant_mean(attrlist_pq).data)], tolerant_mean(attrlist_pq).data, color='tab:green', lw=2)
+plt.plot(q_range[:len(tolerant_mean(averlist_pq).data)], tolerant_mean(averlist_pq).data, color='tab:red', lw=2)
+plt.fill_between(q_range[:len(tolerant_mean(pherlist_pq).data)], 
+                  tolerant_mean(pherlist_pq).data-tolerant_std_error(pherlist_pq), 
+                  tolerant_mean(pherlist_pq).data+tolerant_std_error(pherlist_pq),
+                  alpha=0.3,
+                  color='tab:blue')
+plt.fill_between(q_range[:len(tolerant_mean(attrlist_pq).data)], 
+                  tolerant_mean(attrlist_pq).data-tolerant_std_error(attrlist_pq), 
+                  tolerant_mean(attrlist_pq).data+tolerant_std_error(attrlist_pq),
+                  alpha=0.3,
+                  color='tab:green')
+plt.fill_between(q_range[:len(tolerant_mean(averlist_pq).data)], 
+                  tolerant_mean(averlist_pq).data-tolerant_std_error(averlist_pq), 
+                  tolerant_mean(averlist_pq).data+tolerant_std_error(averlist_pq),
+                  alpha=0.3,
+                  color='tab:red')
+
+plt.vlines(2*np.pi/np.mean(LengthData.length_AL_flat), 1e-9, 10, color='k')
+plt.vlines(1/np.mean(rGy_AL), 1e-9, 10, color='k', ls='--')
+plt.vlines(2*np.pi/np.mean(LengthData.length_AL_b_flat), 1e-9, 10, color='k', ls=':')
+
+line1 = 1/10*np.power(q_range, -16/7)
+line2 = 1/1000000*np.power(q_range, -4/1)
+line3 = 1/5000*np.power(q_range, -1/0.388)
+line4 = 1/10*np.power(q_range, -1)
+
+plt.plot(q_range, line1, lw=1, color='tab:red')
+plt.plot(q_range, line2, lw=1, color='tab:gray')
+plt.plot(q_range, line3, lw=1, color='tab:purple')
+plt.plot(q_range, line4, lw=1, color='k')
+
+plt.text(0.4, 1e-0, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
+plt.text(0.018, 3e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
+plt.text(0.5, 1.5e-3, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
+plt.text(0.12, 1e-0, r'$\nu = 1$', fontsize=13)
+
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
+plt.ylabel("F(q)", fontsize=15)
+plt.ylim(1e-3, 2)
+plt.xlim(1e-2, 1e1)
+# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_AL_1.png', dpi=600, bbox_inches='tight')
+plt.show()
+
+
 fig, ax = plt.subplots(figsize=(6,4.5))
-plt.plot(mwx_AL_pn[0], tolerant_mean(pherlist).data, color='tab:blue', lw=2)
-plt.plot(mwx_AL_pn[0], tolerant_mean(attrlist).data, color='tab:green', lw=2)
-plt.plot(mwx_AL_pn[0], tolerant_mean(averlist).data, color='tab:red', lw=2)
-plt.fill_between(mwx_AL_pn[0], 
+
+xmax = max(mwx_AL_pn, key = len)
+plt.plot(xmax[:len(tolerant_mean(pherlist).data)], tolerant_mean(pherlist).data, color='tab:blue', lw=2)
+plt.plot(xmax[:len(tolerant_mean(attrlist).data)], tolerant_mean(attrlist).data, color='tab:green', lw=2)
+plt.plot(xmax[:len(tolerant_mean(averlist).data)], tolerant_mean(averlist).data, color='tab:red', lw=2)
+plt.fill_between(xmax[:len(tolerant_mean(pherlist).data)], 
                   tolerant_mean(pherlist).data-tolerant_std_error(pherlist), 
                   tolerant_mean(pherlist).data+tolerant_std_error(pherlist),
                   alpha=0.3,
                   color='tab:blue')
-plt.fill_between(mwx_AL_pn[0], 
+plt.fill_between(xmax[:len(tolerant_mean(attrlist).data)], 
                   tolerant_mean(attrlist).data-tolerant_std_error(attrlist), 
                   tolerant_mean(attrlist).data+tolerant_std_error(attrlist),
                   alpha=0.3,
                   color='tab:green')
-plt.fill_between(mwx_AL_pn[0], 
+plt.fill_between(xmax[:len(tolerant_mean(averlist).data)], 
                   tolerant_mean(averlist).data-tolerant_std_error(averlist), 
                   tolerant_mean(averlist).data+tolerant_std_error(averlist),
                   alpha=0.3,
                   color='tab:red')
-plt.legend(['Pheromones', 'Attractive', 'Aversive'], fontsize=14, loc='lower left')
+# plt.legend(['Pheromones', 'Attractive', 'Aversive'], fontsize=14)
 
 plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
 plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
 plt.hlines(1, 0.01, 100, ls='dashed', color='k')
 plt.hlines(0.388, 0.01, 100, ls='dashed', color='k')
-# plt.text(10.3, 1/4-0.02, 'Ideal', fontsize=14)
-# plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
-# plt.text(10.3, 1-0.02,'Linear', fontsize=14)
-# plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
+plt.text(10.3, 1/4-0.02, 'Ideal', fontsize=14)
+plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
+plt.text(10.3, 1-0.02,'Linear', fontsize=14)
+plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
 plt.vlines(2*np.pi/np.mean(LengthData.length_AL_flat), 1e-6, 10, color='k')
 plt.vlines(1/np.mean(rGy_AL), 1e-6, 10, color='k', ls='--')
@@ -12077,10 +12217,11 @@ plt.xlim(0.01, 10)
 ax.minorticks_on()
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
-plt.ylabel(r"$\nu$", fontsize=17)
-plt.yticks(fontsize=14)
+# plt.ylabel(r"$\nu$", fontsize=17)
+plt.yticks([])
 # plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_AL_7.pdf', dpi=300, bbox_inches='tight')
 plt.show()
+
 
 
 #%% calyx form factor of glomerulus with large inter and intra distance difference - type
@@ -12096,42 +12237,100 @@ calyxdist_trk_temp = copy.deepcopy(np.unique(MorphData.calyxdist_trk))
 calyxdist_trk_temp = np.delete(calyxdist_trk_temp, [40, 41])
 
 pherlist = []
+pherlist_pq = []
 
 for i in range(len(pher)):
     for j in range(len(glo_idx[glo_list.index(pher[i])])):
         nid = np.where(calyxdist_trk_temp == glo_idx[glo_list.index(pher[i])][j])[0][0]
+        pherlist_pq.append(Pq_calyx_pn[:,nid])
         pherlist.append(-1/np.array(mw_Pq_calyx_pn[nid]))
 
 attrlist = []
+attrlist_pq = []
 
 for i in range(len(attr)):
     for j in range(len(glo_idx[glo_list.index(attr[i])])):
         nid = np.where(calyxdist_trk_temp == glo_idx[glo_list.index(attr[i])][j])[0][0]
+        attrlist_pq.append(Pq_calyx_pn[:,nid])
         attrlist.append(-1/np.array(mw_Pq_calyx_pn[nid]))
 
-
 averlist = []
+averlist_pq = []
 
 for i in range(len(aver)):
     for j in range(len(glo_idx[glo_list.index(aver[i])])):
         nid = np.where(calyxdist_trk_temp == glo_idx[glo_list.index(aver[i])][j])[0][0]
+        averlist_pq.append(Pq_calyx_pn[:,nid])
         averlist.append(-1/np.array(mw_Pq_calyx_pn[nid]))
 
+
+fig = plt.figure(figsize=(6,4.5))
+plt.plot(q_range[:len(tolerant_mean(pherlist_pq).data)], tolerant_mean(pherlist_pq).data, color='tab:blue', lw=2)
+plt.plot(q_range[:len(tolerant_mean(attrlist_pq).data)], tolerant_mean(attrlist_pq).data, color='tab:green', lw=2)
+plt.plot(q_range[:len(tolerant_mean(averlist_pq).data)], tolerant_mean(averlist_pq).data, color='tab:red', lw=2)
+plt.fill_between(q_range[:len(tolerant_mean(pherlist_pq).data)], 
+                  tolerant_mean(pherlist_pq).data-tolerant_std_error(pherlist_pq), 
+                  tolerant_mean(pherlist_pq).data+tolerant_std_error(pherlist_pq),
+                  alpha=0.3,
+                  color='tab:blue')
+plt.fill_between(q_range[:len(tolerant_mean(attrlist_pq).data)], 
+                  tolerant_mean(attrlist_pq).data-tolerant_std_error(attrlist_pq), 
+                  tolerant_mean(attrlist_pq).data+tolerant_std_error(attrlist_pq),
+                  alpha=0.3,
+                  color='tab:green')
+plt.fill_between(q_range[:len(tolerant_mean(averlist_pq).data)], 
+                  tolerant_mean(averlist_pq).data-tolerant_std_error(averlist_pq), 
+                  tolerant_mean(averlist_pq).data+tolerant_std_error(averlist_pq),
+                  alpha=0.3,
+                  color='tab:red')
+
+plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_flat), 1e-9, 10, color='k')
+plt.vlines(1/np.mean(rGy_calyx), 1e-9, 10, color='k', ls='--')
+plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_b_flat), 1e-9, 10, color='k', ls=':')
+
+line1 = 1/10*np.power(q_range, -16/7)
+line2 = 1/1000000*np.power(q_range, -4/1)
+line3 = 1/5000*np.power(q_range, -1/0.388)
+line4 = 1/10*np.power(q_range, -1)
+
+plt.plot(q_range, line1, lw=1, color='tab:red')
+plt.plot(q_range, line2, lw=1, color='tab:gray')
+plt.plot(q_range, line3, lw=1, color='tab:purple')
+plt.plot(q_range, line4, lw=1, color='k')
+
+plt.text(0.4, 1e-0, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
+plt.text(0.018, 3e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
+plt.text(0.5, 1.5e-3, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
+plt.text(0.12, 1e-0, r'$\nu = 1$', fontsize=13)
+
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
+plt.ylabel("F(q)", fontsize=15)
+plt.ylim(1e-3, 2)
+plt.xlim(1e-2, 1e1)
+# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_calyx_1.png', dpi=600, bbox_inches='tight')
+plt.show()
+
+
 fig, ax = plt.subplots(figsize=(6,4.5))
-plt.plot(mwx_calyx_pn[0], tolerant_mean(pherlist).data, color='tab:blue', lw=2)
-plt.plot(mwx_calyx_pn[0], tolerant_mean(attrlist).data, color='tab:green', lw=2)
-plt.plot(mwx_calyx_pn[0], tolerant_mean(averlist).data, color='tab:red', lw=2)
-plt.fill_between(mwx_calyx_pn[0], 
+
+xmax = max(mwx_calyx_pn, key = len)
+plt.plot(xmax[:len(tolerant_mean(pherlist).data)], tolerant_mean(pherlist).data, color='tab:blue', lw=2)
+plt.plot(xmax[:len(tolerant_mean(attrlist).data)], tolerant_mean(attrlist).data, color='tab:green', lw=2)
+plt.plot(xmax[:len(tolerant_mean(averlist).data)], tolerant_mean(averlist).data, color='tab:red', lw=2)
+plt.fill_between(xmax[:len(tolerant_mean(pherlist).data)], 
                   tolerant_mean(pherlist).data-tolerant_std_error(pherlist), 
                   tolerant_mean(pherlist).data+tolerant_std_error(pherlist),
                   alpha=0.3,
                   color='tab:blue')
-plt.fill_between(mwx_calyx_pn[0], 
+plt.fill_between(xmax[:len(tolerant_mean(attrlist).data)], 
                   tolerant_mean(attrlist).data-tolerant_std_error(attrlist), 
                   tolerant_mean(attrlist).data+tolerant_std_error(attrlist),
                   alpha=0.3,
                   color='tab:green')
-plt.fill_between(mwx_calyx_pn[0], 
+plt.fill_between(xmax[:len(tolerant_mean(averlist).data)], 
                   tolerant_mean(averlist).data-tolerant_std_error(averlist), 
                   tolerant_mean(averlist).data+tolerant_std_error(averlist),
                   alpha=0.3,
@@ -12142,10 +12341,10 @@ plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
 plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
 plt.hlines(1, 0.01, 100, ls='dashed', color='k')
 plt.hlines(0.388, 0.01, 100, ls='dashed', color='k')
-# plt.text(10.3, 1/4-0.02, 'Ideal', fontsize=14)
-# plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
-# plt.text(10.3, 1-0.02,'Linear', fontsize=14)
-# plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
+plt.text(10.3, 1/4-0.02, 'Ideal', fontsize=14)
+plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
+plt.text(10.3, 1-0.02,'Linear', fontsize=14)
+plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
 plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_flat), 1e-6, 10, color='k')
 plt.vlines(1/np.mean(rGy_calyx), 1e-6, 10, color='k', ls='--')
@@ -12160,6 +12359,7 @@ plt.xticks(fontsize=14)
 plt.yticks([])
 # plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_calyx_7.pdf', dpi=300, bbox_inches='tight')
 plt.show()
+
 
 
 
@@ -12550,7 +12750,7 @@ for j in range(np.shape(Pq_AL_pn)[1]):
 
     
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.plot(np.average(mwx_AL_pn, axis=0), -1/np.average(mw_Pq_AL_pn, axis=0), lw=2)
 plt.plot(np.average(mwx_calyx_pn, axis=0), -1/np.average(mw_Pq_calyx_pn, axis=0), lw=2)
 plt.plot(np.average(mwx_LH_pn, axis=0), -1/np.average(mw_Pq_LH_pn, axis=0), lw=2)
@@ -12835,21 +13035,21 @@ count_AL_bp_avg_avg = np.average(count_AL_bp_avg, axis=0)
 
 radiussize_q = radiussize
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 for i in range(len(rGy_calyx_bp_avg)):
     plt.scatter(radiussize_q[np.nonzero(contour_calyx_bp_avg[i])], rGy_calyx_bp_avg[i][np.nonzero(contour_calyx_bp_avg[i])], marker='.')
 plt.xscale('log')
 plt.yscale('log')
 plt.show()
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 for i in range(len(rGy_LH_bp_avg)):
     plt.scatter(radiussize_q[np.nonzero(contour_LH_bp_avg[i])], rGy_LH_bp_avg[i][np.nonzero(contour_LH_bp_avg[i])], marker='.')
 plt.xscale('log')
 plt.yscale('log')
 plt.show()
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 for i in range(len(rGy_AL_bp_avg)):
     plt.scatter(radiussize_q[np.nonzero(contour_AL_bp_avg[i])], rGy_AL_bp_avg[i][np.nonzero(contour_AL_bp_avg[i])], marker='.')
 plt.xscale('log')
@@ -12860,7 +13060,7 @@ plt.show()
 
 #%% Rgy centered at BP average
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.plot(np.average(count_AL_bp_avg, axis=0), np.average(rGy_AL_bp_avg, axis=0), marker='.', color='tab:blue')
 plt.fill_between(np.average(count_AL_bp_avg, axis=0), 
                  np.average(rGy_AL_bp_avg, axis=0)+np.std(rGy_AL_bp_avg, axis=0),
@@ -12938,7 +13138,7 @@ for i in range(len(contour_AL_bp_avg_avg) - shiftN):
 
     
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.plot(1/np.array(mwx_AL), np.array(mw_rGy_AL_bp_avg), lw=2)
 plt.plot(1/np.array(mwx_calyx), np.array(mw_rGy_calyx_bp_avg), lw=2)
 plt.plot(1/np.array(mwx_LH), np.array(mw_rGy_LH_bp_avg), lw=2)
@@ -13121,7 +13321,7 @@ xval = np.linspace(min(morph_dist_flat_rot[:,0])-0.1, max(morph_dist_flat_rot[:,
 kde = neighbors.KernelDensity(kernel='gaussian', bandwidth=3).fit(morph_dist_flat_rot[:,0].reshape((len(morph_dist_flat_rot[:,0]),1)))
 log_dens = kde.score_samples(xval.reshape((len(xval),1)))
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.plot(xval, np.exp(log_dens), lw=3)
 # plt.xlabel('x Coordinates', fontsize=15)
 # plt.ylabel('Count', fontsize=15)
@@ -13136,7 +13336,7 @@ yval = np.linspace(min(morph_dist_flat_rot[:,1])-0.1, max(morph_dist_flat_rot[:,
 kde = neighbors.KernelDensity(kernel='gaussian', bandwidth=3).fit(morph_dist_flat_rot[:,1].reshape((len(morph_dist_flat_rot[:,1]),1)))
 log_dens = kde.score_samples(yval.reshape((len(yval),1)))
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.plot(yval, np.exp(log_dens), lw=3)
 # plt.xlabel('y Coordinates', fontsize=15)
 # plt.ylabel('Count', fontsize=15)
@@ -13151,7 +13351,7 @@ zval = np.linspace(min(morph_dist_flat_rot[:,2])-0.1, max(morph_dist_flat_rot[:,
 kde = neighbors.KernelDensity(kernel='gaussian', bandwidth=3).fit(morph_dist_flat_rot[:,2].reshape((len(morph_dist_flat_rot[:,2]),1)))
 log_dens = kde.score_samples(zval.reshape((len(zval),1)))
 
-fig = plt.figure(figsize=(8,6))
+fig = plt.figure(figsize=(6,4.5))
 plt.plot(zval, np.exp(log_dens), lw=3)
 # plt.xlabel('z Coordinates', fontsize=15)
 # plt.ylabel('Count', fontsize=15)
