@@ -14213,7 +14213,24 @@ fig, ax = plt.subplots(row, col, figsize=(64,32), subplot_kw=dict(projection='3d
 
 for i in range(row):
     for j in range(col):
-        ax[i][j].axis('off')
+        ax[i][j].xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+        ax[i][j].yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+        ax[i][j].zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+        ax[i][j].xaxis._axinfo["grid"]['color'] =  (1,1,1,0)
+        ax[i][j].yaxis._axinfo["grid"]['color'] =  (1,1,1,0)
+        ax[i][j].zaxis._axinfo["grid"]['color'] =  (1,1,1,0)
+        ax[i][j].set_xticks([])
+        ax[i][j].w_xaxis.line.set_lw(0.)
+        ax[i][j].set_yticks([])
+        ax[i][j].w_yaxis.line.set_lw(0.)
+        if ((col*i+j >= len(uPN_all)) & (col*i+j < (int(np.ceil(len(uPN_all)/col))+1)*col) or
+            (col*i+j >= ((int(np.ceil(len(uPN_all)/col))+1)*col)+len(mPN_all))):
+            ax[i][j].set_zticks([])
+            ax[i][j].w_zaxis.line.set_lw(0.)
+        # ax[i][j].axis('off')
+
+fig.text(.4375, 1.02, 'Uniglomerular Projection Neurons', fontsize=40)
+fig.text(.4, .32, 'Multiglomerular Projection Neurons, Local Neurons, Etc.', fontsize=40)
 
 # uPNs
 for i in range(len(uPN_all)):
@@ -14233,13 +14250,18 @@ for i in range(len(uPN_all)):
     Z = np.array(MorphData.morph_dist[uPN_all[i]])[:,2]
     
     max_range = np.array([X.max()-X.min(), Y.max()-Y.min(), Z.max()-Z.min()]).max()
-    Xb = 0.5*max_range*np.mgrid[-1:2:2,-1:2:2,-1:2:2][0].flatten() + 0.5*(X.max()+X.min())
-    Yb = 0.5*max_range*np.mgrid[-1:2:2,-1:2:2,-1:2:2][1].flatten() + 0.5*(Y.max()+Y.min())
-    Zb = 0.5*max_range*np.mgrid[-1:2:2,-1:2:2,-1:2:2][2].flatten() + 0.5*(Z.max()+Z.min())
-    for xb, yb, zb in zip(Xb, Yb, Zb):
-        ax[int(i/col)][i-int(i/col)*col].plot([xb], [yb], [zb], 'w')
+    # Xb = 0.5*max_range*np.mgrid[-1:2:2,-1:2:2,-1:2:2][0].flatten() + 0.5*(X.max()+X.min())
+    # Yb = 0.5*max_range*np.mgrid[-1:2:2,-1:2:2,-1:2:2][1].flatten() + 0.5*(Y.max()+Y.min())
+    # Zb = 0.5*max_range*np.mgrid[-1:2:2,-1:2:2,-1:2:2][2].flatten() + 0.5*(Z.max()+Z.min())
+    # for xb, yb, zb in zip(Xb, Yb, Zb):
+    #     ax[int(i/col)][i-int(i/col)*col].plot([xb], [yb], [zb], 'w')
     ax[int(i/col)][i-int(i/col)*col].set_title(np.array(MorphData.neuron_id)[uPN_all[i]], fontsize=15)
-    ax[int(i/col)][i-int(i/col)*col].set_ylim(np.flip(ax[int(i/col)][i-int(i/col)*col].get_ylim()))
+    ax[int(i/col)][i-int(i/col)*col].set_xlim((0.5*(X.max()+X.min())-0.5*max_range, 0.5*(X.max()+X.min())+0.5*max_range))
+    ax[int(i/col)][i-int(i/col)*col].set_ylim((0.5*(Y.max()+Y.min())+0.5*max_range, 0.5*(Y.max()+Y.min())-0.5*max_range))
+    ax[int(i/col)][i-int(i/col)*col].set_zlim((0.5*(Z.max()+Z.min())-0.5*max_range, 0.5*(Z.max()+Z.min())+0.5*max_range))
+
+    # ax[int(i/col)][i-int(i/col)*col].set_ylim(np.flip(ax[int(i/col)][i-int(i/col)*col].get_ylim()))
+    
 
     
 # mPNs
@@ -14260,18 +14282,21 @@ for i in range(len(mPN_all)):
     Z = np.array(MorphData.morph_dist[mPN_all[i]])[:,2]
     
     max_range = np.array([X.max()-X.min(), Y.max()-Y.min(), Z.max()-Z.min()]).max()
-    Xb = 0.5*max_range*np.mgrid[-1:2:2,-1:2:2,-1:2:2][0].flatten() + 0.5*(X.max()+X.min())
-    Yb = 0.5*max_range*np.mgrid[-1:2:2,-1:2:2,-1:2:2][1].flatten() + 0.5*(Y.max()+Y.min())
-    Zb = 0.5*max_range*np.mgrid[-1:2:2,-1:2:2,-1:2:2][2].flatten() + 0.5*(Z.max()+Z.min())
-    for xb, yb, zb in zip(Xb, Yb, Zb):
-        ax[int(len(uPN_all)/col)+2+int(i/col)][i-int(i/col)*col].plot([xb], [yb], [zb], 'w')
+    # Xb = 0.5*max_range*np.mgrid[-1:2:2,-1:2:2,-1:2:2][0].flatten() + 0.5*(X.max()+X.min())
+    # Yb = 0.5*max_range*np.mgrid[-1:2:2,-1:2:2,-1:2:2][1].flatten() + 0.5*(Y.max()+Y.min())
+    # Zb = 0.5*max_range*np.mgrid[-1:2:2,-1:2:2,-1:2:2][2].flatten() + 0.5*(Z.max()+Z.min())
+    # for xb, yb, zb in zip(Xb, Yb, Zb):
+    #     ax[int(len(uPN_all)/col)+2+int(i/col)][i-int(i/col)*col].plot([xb], [yb], [zb], 'w')
     ax[int(len(uPN_all)/col)+2+int(i/col)][i-int(i/col)*col].set_title(np.array(MorphData.neuron_id)[mPN_all[i]], fontsize=15)
-    ax[int(len(uPN_all)/col)+2+int(i/col)][i-int(i/col)*col].set_ylim(np.flip(ax[int(len(uPN_all)/col)+2+int(i/col)][i-int(i/col)*col].get_ylim()))
+    ax[int(len(uPN_all)/col)+2+int(i/col)][i-int(i/col)*col].set_xlim((0.5*(X.max()+X.min())-0.5*max_range, 0.5*(X.max()+X.min())+0.5*max_range))
+    ax[int(len(uPN_all)/col)+2+int(i/col)][i-int(i/col)*col].set_ylim((0.5*(Y.max()+Y.min())+0.5*max_range, 0.5*(Y.max()+Y.min())-0.5*max_range))
+    ax[int(len(uPN_all)/col)+2+int(i/col)][i-int(i/col)*col].set_zlim((0.5*(Z.max()+Z.min())-0.5*max_range, 0.5*(Z.max()+Z.min())+0.5*max_range))
+    # ax[int(len(uPN_all)/col)+2+int(i/col)][i-int(i/col)*col].set_ylim(np.flip(ax[int(len(uPN_all)/col)+2+int(i/col)][i-int(i/col)*col].get_ylim()))
     
 
 
 plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/poster_all_1.png', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/poster_all_2.pdf', dpi=600, bbox_inches='tight')
 # fig.clf()
 plt.show()
 
