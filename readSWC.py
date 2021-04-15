@@ -11292,6 +11292,21 @@ coords = np.vstack([item.ravel() for item in [xi, yi, zi]])
 density = neuritekde(coords).reshape(xi.shape)
 
 #%%
+figure = mlab.figure('DensityPlot')
+    
+grid = mlab.pipeline.scalar_field(xi, yi, zi, density)
+vmin = density.min()
+vmax = density.max()
+# mlab.pipeline.volume(grid)
+# mlab.volume_slice(density, plane_orientation='x_axes', slice_index=20, vmax=np.max(density)*0.8)
+# mlab.volume_slice(density, plane_orientation='y_axes', slice_index=25, vmax=np.max(density)*0.8)
+# mlab.volume_slice(density, plane_orientation='z_axes', slice_index=20, vmax=np.max(density)*0.8)
+# mlab.contour3d(xi, yi, zi, density)
+
+mlab.axes()
+mlab.show()
+
+#%%
 for i in range(len(density)):
     figure = mlab.figure('DensityPlot')
     
@@ -11299,13 +11314,13 @@ for i in range(len(density)):
     vmin = density.min()
     vmax = density.max()
     # mlab.pipeline.volume(grid)
-    mlab.volume_slice(density, plane_orientation='x_axes', slice_index=i, vmax=np.max(density)*0.8)
-    # mlab.volume_slice(density, plane_orientation='y_axes', slice_index=25, vmax=np.max(density)*0.8)
-    # mlab.volume_slice(density, plane_orientation='z_axes', slice_index=20, vmax=np.max(density)*0.8)
+    # mlab.volume_slice(density, plane_orientation='x_axes', slice_index=i, vmax=np.max(density)*0.8)
+    # mlab.volume_slice(density, plane_orientation='y_axes', slice_index=i, vmax=np.max(density)*0.8)
+    mlab.volume_slice(density, plane_orientation='z_axes', slice_index=i, vmax=np.max(density)*0.8)
     # mlab.contour3d(xi, yi, zi, density)
     
     mlab.axes()
-    mlab.savefig(filename='./' + str(i) + '.png')
+    # mlab.savefig(filename=Parameter.outputdir + '/' + str(i) + '.png')
     mlab.close()
 
 
