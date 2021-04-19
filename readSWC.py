@@ -10414,7 +10414,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-8, 10)
 plt.xlim(1e-2, 1e3)
-# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_AL_full_5.png', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_MG_1.pdf', dpi=600, bbox_inches='tight')
 plt.show()
 
 mw_Pq_AL_pn = []
@@ -10477,12 +10477,12 @@ plt.vlines(1/np.mean(rGy_AL), 1e-6, 10, color='tab:blue', ls='--', lw=1.5)
 plt.xscale('log')
 # plt.yscale('log')
 plt.ylim(0.1, 1.2)
-plt.xlim(0.01, 10)
+plt.xlim(0.03, 6)
 # plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks([], fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_MG_mv_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_MG_mv_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -10528,7 +10528,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-8, 10)
 plt.xlim(1e-2, 1e3)
-# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_LH_full_5.png', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_LH_MG_1.pdf', dpi=600, bbox_inches='tight')
 plt.show()
 
 
@@ -10592,12 +10592,12 @@ plt.vlines(1/np.mean(rGy_LH), 1e-6, 10, color='tab:green', ls='--', lw=1.5)
 plt.xscale('log')
 # plt.yscale('log')
 plt.ylim(0.1, 1.2)
-plt.xlim(0.01, 10)
+plt.xlim(0.03, 6)
 # plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks([], fontsize=14)
 plt.ylabel(r"$\nu$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_LH_MG_mv_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_all_pn_LH_MG_mv_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -12102,100 +12102,117 @@ for i in range(len(aver)):
         averlist.append(-1/np.array(mw_Pq_LH_pn[nid]))
 
 
-fig = plt.figure(figsize=(6,4.5))
-plt.plot(q_range[:len(tolerant_mean(pherlist_pq).data)], tolerant_mean(pherlist_pq).data, color='tab:blue', lw=2)
-plt.plot(q_range[:len(tolerant_mean(attrlist_pq).data)], tolerant_mean(attrlist_pq).data, color='tab:green', lw=2)
-plt.plot(q_range[:len(tolerant_mean(averlist_pq).data)], tolerant_mean(averlist_pq).data, color='tab:red', lw=2)
-plt.fill_between(q_range[:len(tolerant_mean(pherlist_pq).data)], 
-                  tolerant_mean(pherlist_pq).data-tolerant_std_error(pherlist_pq), 
-                  tolerant_mean(pherlist_pq).data+tolerant_std_error(pherlist_pq),
-                  alpha=0.3,
-                  color='tab:blue')
-plt.fill_between(q_range[:len(tolerant_mean(attrlist_pq).data)], 
-                  tolerant_mean(attrlist_pq).data-tolerant_std_error(attrlist_pq), 
-                  tolerant_mean(attrlist_pq).data+tolerant_std_error(attrlist_pq),
-                  alpha=0.3,
-                  color='tab:green')
-plt.fill_between(q_range[:len(tolerant_mean(averlist_pq).data)], 
-                  tolerant_mean(averlist_pq).data-tolerant_std_error(averlist_pq), 
-                  tolerant_mean(averlist_pq).data+tolerant_std_error(averlist_pq),
-                  alpha=0.3,
-                  color='tab:red')
+fig, ax = plt.subplots(figsize=(6,4.5))
+plt.plot(q_range[tolerant_mean(pherlist_pq).data > 0], 
+         tolerant_mean(pherlist_pq).data[tolerant_mean(pherlist_pq).data > 0], 
+         color='tab:blue', lw=2)
+plt.plot(q_range[tolerant_mean(attrlist_pq).data > 0], 
+         tolerant_mean(attrlist_pq).data[tolerant_mean(attrlist_pq).data > 0], 
+         color='tab:green', lw=2)
+plt.plot(q_range[tolerant_mean(averlist_pq).data > 0],
+         tolerant_mean(averlist_pq).data[tolerant_mean(averlist_pq).data > 0],
+         color='tab:red', lw=2)
+# plt.fill_between(q_range[tolerant_mean(pherlist_pq).data > 0], 
+#                   tolerant_mean(pherlist_pq).data[tolerant_mean(pherlist_pq).data > 0]-tolerant_std_error(pherlist_pq)[tolerant_mean(pherlist_pq).data > 0], 
+#                   tolerant_mean(pherlist_pq).data[tolerant_mean(pherlist_pq).data > 0]+tolerant_std_error(pherlist_pq)[tolerant_mean(pherlist_pq).data > 0],
+#                   alpha=0.3,
+#                   color='tab:blue')
+# plt.fill_between(q_range[tolerant_mean(attrlist_pq).data > 0], 
+#                   tolerant_mean(attrlist_pq).data[tolerant_mean(attrlist_pq).data > 0]-tolerant_std_error(attrlist_pq)[tolerant_mean(attrlist_pq).data > 0], 
+#                   tolerant_mean(attrlist_pq).data[tolerant_mean(attrlist_pq).data > 0]+tolerant_std_error(attrlist_pq)[tolerant_mean(attrlist_pq).data > 0],
+#                   alpha=0.3,
+#                   color='tab:green')
+# plt.fill_between(q_range[tolerant_mean(averlist_pq).data > 0], 
+#                   tolerant_mean(averlist_pq).data[tolerant_mean(averlist_pq).data > 0]-tolerant_std_error(averlist_pq)[tolerant_mean(averlist_pq).data > 0], 
+#                   tolerant_mean(averlist_pq).data[tolerant_mean(averlist_pq).data > 0]+tolerant_std_error(averlist_pq)[tolerant_mean(averlist_pq).data > 0],
+#                   alpha=0.3,
+#                   color='tab:red')
 
-plt.vlines(2*np.pi/np.mean(LengthData.length_AL_flat), 1e-9, 10, color='k')
-plt.vlines(1/np.mean(rGy_AL), 1e-9, 10, color='k', ls='--')
-plt.vlines(2*np.pi/np.mean(LengthData.length_AL_b_flat), 1e-9, 10, color='k', ls=':')
+plt.vlines(2*np.pi/np.mean(LengthData.length_LH_flat), 1e-9, 10, color='k')
+plt.vlines(1/rgy_LH_full[0], 1e-9, 10, color='k', ls='--')
+plt.vlines(2*np.pi/np.mean(LengthData.length_LH_b_flat), 1e-9, 10, color='k', ls=':')
 
-line1 = 1/10*np.power(q_range, -16/7)
-line2 = 1/1000000*np.power(q_range, -4/1)
-line3 = 1/5000*np.power(q_range, -1/0.388)
+line1 = 1/30*np.power(q_range, -16/7)
+line2 = 1/1000*np.power(q_range, -4/1)
+# line3 = 10*np.power(q_range, -1/0.388)
 line4 = 1/10*np.power(q_range, -1)
 
-plt.plot(q_range, line1, lw=1, color='tab:red')
-plt.plot(q_range, line2, lw=1, color='tab:gray')
-plt.plot(q_range, line3, lw=1, color='tab:purple')
-plt.plot(q_range, line4, lw=1, color='k')
+plt.plot(q_range[25:35], line1[25:35], lw=1.5, color='tab:red')
+# plt.plot(q_range[25:35], line2[25:35], lw=1.5, color='tab:gray')
+# plt.plot(q_range, line3, lw=1.5, color='tab:purple')
+plt.plot(q_range[45:65], line4[45:65], lw=1.5, color='k')
 
-plt.text(0.4, 1e-0, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
-plt.text(0.018, 3e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
-plt.text(0.5, 1.5e-3, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
-plt.text(0.12, 1e-0, r'$\nu = 1$', fontsize=13)
-
+plt.text(0.3, 7e-1, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
+# plt.text(0.4, 1e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
+# plt.text(100, 1e-4, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
+plt.text(5, 3e-2, r'$\nu = 1$', fontsize=13)
 
 plt.xscale('log')
 plt.yscale('log')
+labels = [item.get_text() for item in ax.get_yticklabels()]
+empty_string_labels = ['']*len(labels)
+ax.set_yticklabels(empty_string_labels)
+
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("F(q)", fontsize=15)
-plt.ylim(1e-3, 2)
-plt.xlim(1e-2, 1e1)
-# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_LH_1.png', dpi=600, bbox_inches='tight')
+# plt.ylabel("F(q)", fontsize=15)
+plt.ylim(1e-8, 10)
+plt.xlim(1e-2, 1e3)
+# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_LH_raw_1.pdf', dpi=600, bbox_inches='tight')
 plt.show()
 
 
-fig, ax = plt.subplots(figsize=(6,4.5))
+fig, ax = plt.subplots(figsize=(4,3))
 
 xmax = max(mwx_LH_pn, key = len)
-plt.plot(xmax[:len(tolerant_mean(pherlist).data)], tolerant_mean(pherlist).data, color='tab:blue', lw=2)
-plt.plot(xmax[:len(tolerant_mean(attrlist).data)], tolerant_mean(attrlist).data, color='tab:green', lw=2)
-plt.plot(xmax[:len(tolerant_mean(averlist).data)], tolerant_mean(averlist).data, color='tab:red', lw=2)
-plt.fill_between(xmax[:len(tolerant_mean(pherlist).data)], 
-                  tolerant_mean(pherlist).data-tolerant_std_error(pherlist), 
-                  tolerant_mean(pherlist).data+tolerant_std_error(pherlist),
+xthres = xmax<2*np.pi/np.mean(LengthData.length_LH_flat)
+
+plt.plot(np.array(xmax)[xthres], 
+         tolerant_mean(pherlist).data[:len(np.array(xmax)[xthres])], 
+         color='tab:blue', lw=3)
+plt.plot(np.array(xmax)[xthres], 
+         tolerant_mean(attrlist).data[:len(np.array(xmax)[xthres])],
+         color='tab:green', lw=3)
+plt.plot(np.array(xmax)[xthres],
+         tolerant_mean(averlist).data[:len(np.array(xmax)[xthres])],
+         color='tab:red', lw=3)
+plt.fill_between(np.array(xmax)[xthres], 
+                  tolerant_mean(pherlist).data[:len(np.array(xmax)[xthres])]-tolerant_std_error(pherlist)[:len(np.array(xmax)[xthres])], 
+                  tolerant_mean(pherlist).data[:len(np.array(xmax)[xthres])]+tolerant_std_error(pherlist)[:len(np.array(xmax)[xthres])],
                   alpha=0.3,
                   color='tab:blue')
-plt.fill_between(xmax[:len(tolerant_mean(attrlist).data)], 
-                  tolerant_mean(attrlist).data-tolerant_std_error(attrlist), 
-                  tolerant_mean(attrlist).data+tolerant_std_error(attrlist),
+plt.fill_between(np.array(xmax)[xthres], 
+                  tolerant_mean(attrlist).data[:len(np.array(xmax)[xthres])]-tolerant_std_error(attrlist)[:len(np.array(xmax)[xthres])], 
+                  tolerant_mean(attrlist).data[:len(np.array(xmax)[xthres])]+tolerant_std_error(attrlist)[:len(np.array(xmax)[xthres])],
                   alpha=0.3,
                   color='tab:green')
-plt.fill_between(xmax[:len(tolerant_mean(averlist).data)], 
-                  tolerant_mean(averlist).data-tolerant_std_error(averlist), 
-                  tolerant_mean(averlist).data+tolerant_std_error(averlist),
+plt.fill_between(np.array(xmax)[xthres], 
+                  tolerant_mean(averlist).data[:len(np.array(xmax)[xthres])]-tolerant_std_error(averlist)[:len(np.array(xmax)[xthres])], 
+                  tolerant_mean(averlist).data[:len(np.array(xmax)[xthres])]+tolerant_std_error(averlist)[:len(np.array(xmax)[xthres])],
                   alpha=0.3,
                   color='tab:red')
 # plt.legend(['Pheromones', 'Attractive', 'Aversive'], fontsize=14)
 
-plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
-plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
-plt.hlines(1, 0.01, 100, ls='dashed', color='k')
-plt.hlines(0.388, 0.01, 100, ls='dashed', color='k')
-plt.text(10.3, 1/4-0.02, 'Ideal', fontsize=14)
-plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
-plt.text(10.3, 1-0.02,'Linear', fontsize=14)
-plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
+plt.hlines(1/4, 0.01, 100, ls='dashed', color='tab:gray', lw=2)
+plt.hlines(7/16, 0.01, 100, ls='dashed', color='tab:red', lw=2)
+plt.hlines(1, 0.01, 100, ls='dashed', color='k', lw=2)
+plt.hlines(0.388, 0.01, 100, ls='dashed', color='tab:purple', lw=2)
+# plt.text(10.3, 1/4-0.02, 'Ideal', fontsize=14)
+# plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
+# plt.text(10.3, 1-0.02,'Linear', fontsize=14)
+# plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
-plt.vlines(2*np.pi/np.mean(LengthData.length_LH_flat), 1e-6, 10, color='k')
-plt.vlines(1/np.mean(rGy_LH), 1e-6, 10, color='k', ls='--')
+plt.vlines(2*np.pi/np.mean(LengthData.length_LH_flat), 1e-6, 10, color='k', lw=2)
+plt.vlines(1/np.mean(rGy_LH), 1e-6, 10, color='k', ls='--', lw=2)
 
 plt.xscale('log')
 plt.ylim(0.1, 1.2)
-plt.xlim(0.01, 10)
+plt.xlim(0.03, 6)
 ax.minorticks_on()
-plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
-plt.xticks(fontsize=14)
-# plt.ylabel(r"$\nu$", fontsize=17)
-plt.yticks([])
-# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_LH_7.pdf', dpi=300, bbox_inches='tight')
+# plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
+plt.xticks([], fontsize=14)
+plt.ylabel(r"$\nu$", fontsize=17)
+plt.yticks(fontsize=14)
+# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_LH_8.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -12238,102 +12255,116 @@ for i in range(len(aver)):
         averlist_pq.append(Pq_AL_pn[:,nid])
         averlist.append(-1/np.array(mw_Pq_AL_pn[nid]))
 
-
-fig = plt.figure(figsize=(6,4.5))
-plt.plot(q_range[:len(tolerant_mean(pherlist_pq).data)], tolerant_mean(pherlist_pq).data, color='tab:blue', lw=2)
-plt.plot(q_range[:len(tolerant_mean(attrlist_pq).data)], tolerant_mean(attrlist_pq).data, color='tab:green', lw=2)
-plt.plot(q_range[:len(tolerant_mean(averlist_pq).data)], tolerant_mean(averlist_pq).data, color='tab:red', lw=2)
-plt.fill_between(q_range[:len(tolerant_mean(pherlist_pq).data)], 
-                  tolerant_mean(pherlist_pq).data-tolerant_std_error(pherlist_pq), 
-                  tolerant_mean(pherlist_pq).data+tolerant_std_error(pherlist_pq),
-                  alpha=0.3,
-                  color='tab:blue')
-plt.fill_between(q_range[:len(tolerant_mean(attrlist_pq).data)], 
-                  tolerant_mean(attrlist_pq).data-tolerant_std_error(attrlist_pq), 
-                  tolerant_mean(attrlist_pq).data+tolerant_std_error(attrlist_pq),
-                  alpha=0.3,
-                  color='tab:green')
-plt.fill_between(q_range[:len(tolerant_mean(averlist_pq).data)], 
-                  tolerant_mean(averlist_pq).data-tolerant_std_error(averlist_pq), 
-                  tolerant_mean(averlist_pq).data+tolerant_std_error(averlist_pq),
-                  alpha=0.3,
-                  color='tab:red')
+fig, ax = plt.subplots(figsize=(6,4.5))
+plt.plot(q_range[tolerant_mean(pherlist_pq).data > 0], 
+         tolerant_mean(pherlist_pq).data[tolerant_mean(pherlist_pq).data > 0], 
+         color='tab:blue', lw=2)
+plt.plot(q_range[tolerant_mean(attrlist_pq).data > 0], 
+         tolerant_mean(attrlist_pq).data[tolerant_mean(attrlist_pq).data > 0], 
+         color='tab:green', lw=2)
+plt.plot(q_range[tolerant_mean(averlist_pq).data > 0],
+         tolerant_mean(averlist_pq).data[tolerant_mean(averlist_pq).data > 0],
+         color='tab:red', lw=2)
+# plt.fill_between(q_range[tolerant_mean(pherlist_pq).data > 0], 
+#                   tolerant_mean(pherlist_pq).data[tolerant_mean(pherlist_pq).data > 0]-tolerant_std_error(pherlist_pq)[tolerant_mean(pherlist_pq).data > 0], 
+#                   tolerant_mean(pherlist_pq).data[tolerant_mean(pherlist_pq).data > 0]+tolerant_std_error(pherlist_pq)[tolerant_mean(pherlist_pq).data > 0],
+#                   alpha=0.3,
+#                   color='tab:blue')
+# plt.fill_between(q_range[tolerant_mean(attrlist_pq).data > 0], 
+#                   tolerant_mean(attrlist_pq).data[tolerant_mean(attrlist_pq).data > 0]-tolerant_std_error(attrlist_pq)[tolerant_mean(attrlist_pq).data > 0], 
+#                   tolerant_mean(attrlist_pq).data[tolerant_mean(attrlist_pq).data > 0]+tolerant_std_error(attrlist_pq)[tolerant_mean(attrlist_pq).data > 0],
+#                   alpha=0.3,
+#                   color='tab:green')
+# plt.fill_between(q_range[tolerant_mean(averlist_pq).data > 0], 
+#                   tolerant_mean(averlist_pq).data[tolerant_mean(averlist_pq).data > 0]-tolerant_std_error(averlist_pq)[tolerant_mean(averlist_pq).data > 0], 
+#                   tolerant_mean(averlist_pq).data[tolerant_mean(averlist_pq).data > 0]+tolerant_std_error(averlist_pq)[tolerant_mean(averlist_pq).data > 0],
+#                   alpha=0.3,
+#                   color='tab:red')
 
 plt.vlines(2*np.pi/np.mean(LengthData.length_AL_flat), 1e-9, 10, color='k')
-plt.vlines(1/np.mean(rGy_AL), 1e-9, 10, color='k', ls='--')
+plt.vlines(1/rgy_AL_full[0], 1e-9, 10, color='k', ls='--')
 plt.vlines(2*np.pi/np.mean(LengthData.length_AL_b_flat), 1e-9, 10, color='k', ls=':')
 
 line1 = 1/10*np.power(q_range, -16/7)
-line2 = 1/1000000*np.power(q_range, -4/1)
-line3 = 1/5000*np.power(q_range, -1/0.388)
+line2 = 1/1000*np.power(q_range, -4/1)
+# line3 = 10*np.power(q_range, -1/0.388)
 line4 = 1/10*np.power(q_range, -1)
 
-plt.plot(q_range, line1, lw=1, color='tab:red')
-plt.plot(q_range, line2, lw=1, color='tab:gray')
-plt.plot(q_range, line3, lw=1, color='tab:purple')
-plt.plot(q_range, line4, lw=1, color='k')
+plt.plot(q_range[25:35], line1[25:35], lw=1.5, color='tab:red')
+# plt.plot(q_range[25:35], line2[25:35], lw=1.5, color='tab:gray')
+# plt.plot(q_range, line3, lw=1.5, color='tab:purple')
+plt.plot(q_range[45:85], line4[45:85], lw=1.5, color='k')
 
-plt.text(0.4, 1e-0, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
-plt.text(0.018, 3e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
-plt.text(0.5, 1.5e-3, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
-plt.text(0.12, 1e-0, r'$\nu = 1$', fontsize=13)
+plt.text(0.3, 2e-0, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
+# plt.text(0.4, 1e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
+# plt.text(100, 1e-4, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
+plt.text(50, 3e-3, r'$\nu = 1$', fontsize=13)
 
-
+plt.legend(['Pheromones', 'Attractive', 'Aversive'], fontsize=14)
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
-plt.ylim(1e-3, 2)
-plt.xlim(1e-2, 1e1)
-# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_AL_1.png', dpi=600, bbox_inches='tight')
+plt.ylim(1e-8, 10)
+plt.xlim(1e-2, 1e3)
+# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_AL_raw_1.pdf', dpi=600, bbox_inches='tight')
 plt.show()
 
 
-fig, ax = plt.subplots(figsize=(6,4.5))
+fig, ax = plt.subplots(figsize=(4,3))
 
 xmax = max(mwx_AL_pn, key = len)
-plt.plot(xmax[:len(tolerant_mean(pherlist).data)], tolerant_mean(pherlist).data, color='tab:blue', lw=2)
-plt.plot(xmax[:len(tolerant_mean(attrlist).data)], tolerant_mean(attrlist).data, color='tab:green', lw=2)
-plt.plot(xmax[:len(tolerant_mean(averlist).data)], tolerant_mean(averlist).data, color='tab:red', lw=2)
-plt.fill_between(xmax[:len(tolerant_mean(pherlist).data)], 
-                  tolerant_mean(pherlist).data-tolerant_std_error(pherlist), 
-                  tolerant_mean(pherlist).data+tolerant_std_error(pherlist),
+xthres = xmax<2*np.pi/np.mean(LengthData.length_AL_flat)
+
+plt.plot(np.array(xmax)[xthres], 
+         tolerant_mean(pherlist).data[:len(np.array(xmax)[xthres])], 
+         color='tab:blue', lw=3)
+plt.plot(np.array(xmax)[xthres], 
+         tolerant_mean(attrlist).data[:len(np.array(xmax)[xthres])],
+         color='tab:green', lw=3)
+plt.plot(np.array(xmax)[xthres],
+         tolerant_mean(averlist).data[:len(np.array(xmax)[xthres])],
+         color='tab:red', lw=3)
+plt.fill_between(np.array(xmax)[xthres], 
+                  tolerant_mean(pherlist).data[:len(np.array(xmax)[xthres])]-tolerant_std_error(pherlist)[:len(np.array(xmax)[xthres])], 
+                  tolerant_mean(pherlist).data[:len(np.array(xmax)[xthres])]+tolerant_std_error(pherlist)[:len(np.array(xmax)[xthres])],
                   alpha=0.3,
                   color='tab:blue')
-plt.fill_between(xmax[:len(tolerant_mean(attrlist).data)], 
-                  tolerant_mean(attrlist).data-tolerant_std_error(attrlist), 
-                  tolerant_mean(attrlist).data+tolerant_std_error(attrlist),
+plt.fill_between(np.array(xmax)[xthres], 
+                  tolerant_mean(attrlist).data[:len(np.array(xmax)[xthres])]-tolerant_std_error(attrlist)[:len(np.array(xmax)[xthres])], 
+                  tolerant_mean(attrlist).data[:len(np.array(xmax)[xthres])]+tolerant_std_error(attrlist)[:len(np.array(xmax)[xthres])],
                   alpha=0.3,
                   color='tab:green')
-plt.fill_between(xmax[:len(tolerant_mean(averlist).data)], 
-                  tolerant_mean(averlist).data-tolerant_std_error(averlist), 
-                  tolerant_mean(averlist).data+tolerant_std_error(averlist),
+plt.fill_between(np.array(xmax)[xthres], 
+                  tolerant_mean(averlist).data[:len(np.array(xmax)[xthres])]-tolerant_std_error(averlist)[:len(np.array(xmax)[xthres])], 
+                  tolerant_mean(averlist).data[:len(np.array(xmax)[xthres])]+tolerant_std_error(averlist)[:len(np.array(xmax)[xthres])],
                   alpha=0.3,
                   color='tab:red')
 # plt.legend(['Pheromones', 'Attractive', 'Aversive'], fontsize=14)
 
-plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
-plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
-plt.hlines(1, 0.01, 100, ls='dashed', color='k')
-plt.hlines(0.388, 0.01, 100, ls='dashed', color='k')
-plt.text(10.3, 1/4-0.02, 'Ideal', fontsize=14)
-plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
-plt.text(10.3, 1-0.02,'Linear', fontsize=14)
-plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
+plt.hlines(1/4, 0.01, 100, ls='dashed', color='tab:gray', lw=2)
+plt.hlines(7/16, 0.01, 100, ls='dashed', color='tab:red', lw=2)
+plt.hlines(1, 0.01, 100, ls='dashed', color='k', lw=2)
+plt.hlines(0.388, 0.01, 100, ls='dashed', color='tab:purple', lw=2)
+# plt.text(10.3, 1/4-0.02, 'Ideal', fontsize=14)
+# plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
+# plt.text(10.3, 1-0.02,'Linear', fontsize=14)
+# plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
-plt.vlines(2*np.pi/np.mean(LengthData.length_AL_flat), 1e-6, 10, color='k')
-plt.vlines(1/np.mean(rGy_AL), 1e-6, 10, color='k', ls='--')
+plt.vlines(2*np.pi/np.mean(LengthData.length_AL_flat), 1e-6, 10, color='k', lw=2)
+plt.vlines(1/np.mean(rGy_AL), 1e-6, 10, color='k', ls='--', lw=2)
 
 plt.xscale('log')
 plt.ylim(0.1, 1.2)
-plt.xlim(0.01, 10)
+plt.xlim(0.03, 6)
 ax.minorticks_on()
-plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
-plt.xticks(fontsize=14)
-# plt.ylabel(r"$\nu$", fontsize=17)
-plt.yticks([])
-# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_AL_7.pdf', dpi=300, bbox_inches='tight')
+# plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
+plt.xticks([], fontsize=14)
+plt.ylabel(r"$\nu$", fontsize=17)
+plt.yticks(fontsize=14)
+# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_AL_8.pdf', dpi=300, bbox_inches='tight')
 plt.show()
+
 
 
 
@@ -12377,101 +12408,118 @@ for i in range(len(aver)):
         averlist.append(-1/np.array(mw_Pq_calyx_pn[nid]))
 
 
-fig = plt.figure(figsize=(6,4.5))
-plt.plot(q_range[:len(tolerant_mean(pherlist_pq).data)], tolerant_mean(pherlist_pq).data, color='tab:blue', lw=2)
-plt.plot(q_range[:len(tolerant_mean(attrlist_pq).data)], tolerant_mean(attrlist_pq).data, color='tab:green', lw=2)
-plt.plot(q_range[:len(tolerant_mean(averlist_pq).data)], tolerant_mean(averlist_pq).data, color='tab:red', lw=2)
-plt.fill_between(q_range[:len(tolerant_mean(pherlist_pq).data)], 
-                  tolerant_mean(pherlist_pq).data-tolerant_std_error(pherlist_pq), 
-                  tolerant_mean(pherlist_pq).data+tolerant_std_error(pherlist_pq),
-                  alpha=0.3,
-                  color='tab:blue')
-plt.fill_between(q_range[:len(tolerant_mean(attrlist_pq).data)], 
-                  tolerant_mean(attrlist_pq).data-tolerant_std_error(attrlist_pq), 
-                  tolerant_mean(attrlist_pq).data+tolerant_std_error(attrlist_pq),
-                  alpha=0.3,
-                  color='tab:green')
-plt.fill_between(q_range[:len(tolerant_mean(averlist_pq).data)], 
-                  tolerant_mean(averlist_pq).data-tolerant_std_error(averlist_pq), 
-                  tolerant_mean(averlist_pq).data+tolerant_std_error(averlist_pq),
-                  alpha=0.3,
-                  color='tab:red')
+fig, ax = plt.subplots(figsize=(6,4.5))
+plt.plot(q_range[tolerant_mean(pherlist_pq).data > 0], 
+         tolerant_mean(pherlist_pq).data[tolerant_mean(pherlist_pq).data > 0], 
+         color='tab:blue', lw=2)
+plt.plot(q_range[tolerant_mean(attrlist_pq).data > 0], 
+         tolerant_mean(attrlist_pq).data[tolerant_mean(attrlist_pq).data > 0], 
+         color='tab:green', lw=2)
+plt.plot(q_range[tolerant_mean(averlist_pq).data > 0],
+         tolerant_mean(averlist_pq).data[tolerant_mean(averlist_pq).data > 0],
+         color='tab:red', lw=2)
+# plt.fill_between(q_range[tolerant_mean(pherlist_pq).data > 0], 
+#                   tolerant_mean(pherlist_pq).data[tolerant_mean(pherlist_pq).data > 0]-tolerant_std_error(pherlist_pq)[tolerant_mean(pherlist_pq).data > 0], 
+#                   tolerant_mean(pherlist_pq).data[tolerant_mean(pherlist_pq).data > 0]+tolerant_std_error(pherlist_pq)[tolerant_mean(pherlist_pq).data > 0],
+#                   alpha=0.3,
+#                   color='tab:blue')
+# plt.fill_between(q_range[tolerant_mean(attrlist_pq).data > 0], 
+#                   tolerant_mean(attrlist_pq).data[tolerant_mean(attrlist_pq).data > 0]-tolerant_std_error(attrlist_pq)[tolerant_mean(attrlist_pq).data > 0], 
+#                   tolerant_mean(attrlist_pq).data[tolerant_mean(attrlist_pq).data > 0]+tolerant_std_error(attrlist_pq)[tolerant_mean(attrlist_pq).data > 0],
+#                   alpha=0.3,
+#                   color='tab:green')
+# plt.fill_between(q_range[tolerant_mean(averlist_pq).data > 0], 
+#                   tolerant_mean(averlist_pq).data[tolerant_mean(averlist_pq).data > 0]-tolerant_std_error(averlist_pq)[tolerant_mean(averlist_pq).data > 0], 
+#                   tolerant_mean(averlist_pq).data[tolerant_mean(averlist_pq).data > 0]+tolerant_std_error(averlist_pq)[tolerant_mean(averlist_pq).data > 0],
+#                   alpha=0.3,
+#                   color='tab:red')
 
 plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_flat), 1e-9, 10, color='k')
-plt.vlines(1/np.mean(rGy_calyx), 1e-9, 10, color='k', ls='--')
+plt.vlines(1/rgy_calyx_full[0], 1e-9, 10, color='k', ls='--')
 plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_b_flat), 1e-9, 10, color='k', ls=':')
 
 line1 = 1/10*np.power(q_range, -16/7)
-line2 = 1/1000000*np.power(q_range, -4/1)
-line3 = 1/5000*np.power(q_range, -1/0.388)
-line4 = 1/10*np.power(q_range, -1)
+line2 = 1/1000*np.power(q_range, -4/1)
+# line3 = 10*np.power(q_range, -1/0.388)
+line4 = 1/5*np.power(q_range, -1)
 
-plt.plot(q_range, line1, lw=1, color='tab:red')
-plt.plot(q_range, line2, lw=1, color='tab:gray')
-plt.plot(q_range, line3, lw=1, color='tab:purple')
-plt.plot(q_range, line4, lw=1, color='k')
+# plt.plot(q_range[25:35], line1[25:35], lw=1.5, color='tab:red')
+# plt.plot(q_range[25:35], line2[25:35], lw=1.5, color='tab:gray')
+# plt.plot(q_range, line3, lw=1.5, color='tab:purple')
+plt.plot(q_range[45:65], line4[45:65], lw=1.5, color='k')
 
-plt.text(0.4, 1e-0, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
-plt.text(0.018, 3e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
-plt.text(0.5, 1.5e-3, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
-plt.text(0.12, 1e-0, r'$\nu = 1$', fontsize=13)
-
+# plt.text(0.3, 2e-0, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
+# plt.text(0.4, 1e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
+# plt.text(100, 1e-4, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
+plt.text(5, 7e-2, r'$\nu = 1$', fontsize=13)
 
 plt.xscale('log')
 plt.yscale('log')
+labels = [item.get_text() for item in ax.get_yticklabels()]
+empty_string_labels = ['']*len(labels)
+ax.set_yticklabels(empty_string_labels)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("F(q)", fontsize=15)
-plt.ylim(1e-3, 2)
-plt.xlim(1e-2, 1e1)
-# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_calyx_1.png', dpi=600, bbox_inches='tight')
+# plt.ylabel("F(q)", fontsize=15)
+plt.ylim(1e-8, 10)
+plt.xlim(1e-2, 1e3)
+plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_calyx_raw_1.pdf', dpi=600, bbox_inches='tight')
 plt.show()
 
 
-fig, ax = plt.subplots(figsize=(6,4.5))
+fig, ax = plt.subplots(figsize=(4,3))
 
 xmax = max(mwx_calyx_pn, key = len)
-plt.plot(xmax[:len(tolerant_mean(pherlist).data)], tolerant_mean(pherlist).data, color='tab:blue', lw=2)
-plt.plot(xmax[:len(tolerant_mean(attrlist).data)], tolerant_mean(attrlist).data, color='tab:green', lw=2)
-plt.plot(xmax[:len(tolerant_mean(averlist).data)], tolerant_mean(averlist).data, color='tab:red', lw=2)
-plt.fill_between(xmax[:len(tolerant_mean(pherlist).data)], 
-                  tolerant_mean(pherlist).data-tolerant_std_error(pherlist), 
-                  tolerant_mean(pherlist).data+tolerant_std_error(pherlist),
+xthres = xmax<2*np.pi/np.mean(LengthData.length_calyx_flat)
+
+plt.plot(np.array(xmax)[xthres], 
+         tolerant_mean(pherlist).data[:len(np.array(xmax)[xthres])], 
+         color='tab:blue', lw=3)
+plt.plot(np.array(xmax)[xthres], 
+         tolerant_mean(attrlist).data[:len(np.array(xmax)[xthres])],
+         color='tab:green', lw=3)
+plt.plot(np.array(xmax)[xthres],
+         tolerant_mean(averlist).data[:len(np.array(xmax)[xthres])],
+         color='tab:red', lw=3)
+plt.fill_between(np.array(xmax)[xthres], 
+                  tolerant_mean(pherlist).data[:len(np.array(xmax)[xthres])]-tolerant_std_error(pherlist)[:len(np.array(xmax)[xthres])], 
+                  tolerant_mean(pherlist).data[:len(np.array(xmax)[xthres])]+tolerant_std_error(pherlist)[:len(np.array(xmax)[xthres])],
                   alpha=0.3,
                   color='tab:blue')
-plt.fill_between(xmax[:len(tolerant_mean(attrlist).data)], 
-                  tolerant_mean(attrlist).data-tolerant_std_error(attrlist), 
-                  tolerant_mean(attrlist).data+tolerant_std_error(attrlist),
+plt.fill_between(np.array(xmax)[xthres], 
+                  tolerant_mean(attrlist).data[:len(np.array(xmax)[xthres])]-tolerant_std_error(attrlist)[:len(np.array(xmax)[xthres])], 
+                  tolerant_mean(attrlist).data[:len(np.array(xmax)[xthres])]+tolerant_std_error(attrlist)[:len(np.array(xmax)[xthres])],
                   alpha=0.3,
                   color='tab:green')
-plt.fill_between(xmax[:len(tolerant_mean(averlist).data)], 
-                  tolerant_mean(averlist).data-tolerant_std_error(averlist), 
-                  tolerant_mean(averlist).data+tolerant_std_error(averlist),
+plt.fill_between(np.array(xmax)[xthres], 
+                  tolerant_mean(averlist).data[:len(np.array(xmax)[xthres])]-tolerant_std_error(averlist)[:len(np.array(xmax)[xthres])], 
+                  tolerant_mean(averlist).data[:len(np.array(xmax)[xthres])]+tolerant_std_error(averlist)[:len(np.array(xmax)[xthres])],
                   alpha=0.3,
                   color='tab:red')
 # plt.legend(['Pheromones', 'Attractive', 'Aversive'], fontsize=14)
 
-plt.hlines(1/4, 0.01, 100, ls='dashed', color='k')
-plt.hlines(7/16, 0.01, 100, ls='dashed', color='k')
-plt.hlines(1, 0.01, 100, ls='dashed', color='k')
-plt.hlines(0.388, 0.01, 100, ls='dashed', color='k')
-plt.text(10.3, 1/4-0.02, 'Ideal', fontsize=14)
-plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
-plt.text(10.3, 1-0.02,'Linear', fontsize=14)
-plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
+plt.hlines(1/4, 0.01, 100, ls='dashed', color='tab:gray', lw=2)
+plt.hlines(7/16, 0.01, 100, ls='dashed', color='tab:red', lw=2)
+plt.hlines(1, 0.01, 100, ls='dashed', color='k', lw=2)
+plt.hlines(0.388, 0.01, 100, ls='dashed', color='tab:purple', lw=2)
+# plt.text(10.3, 1/4-0.02, 'Ideal', fontsize=14)
+# plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
+# plt.text(10.3, 1-0.02,'Linear', fontsize=14)
+# plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
-plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_flat), 1e-6, 10, color='k')
-plt.vlines(1/np.mean(rGy_calyx), 1e-6, 10, color='k', ls='--')
+plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_flat), 1e-6, 10, color='k', lw=2)
+plt.vlines(1/np.mean(rGy_calyx), 1e-6, 10, color='k', ls='--', lw=2)
 
 plt.xscale('log')
 plt.ylim(0.1, 1.2)
-plt.xlim(0.01, 10)
+plt.xlim(0.03, 6)
 ax.minorticks_on()
-plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
-plt.xticks(fontsize=14)
-# plt.ylabel(r"$\nu$", fontsize=17)
-plt.yticks([])
-# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_calyx_7.pdf', dpi=300, bbox_inches='tight')
+# plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
+plt.xticks([], fontsize=14)
+plt.ylabel(r"$\nu$", fontsize=17)
+plt.yticks(fontsize=14)
+# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_calyx_8.pdf', dpi=300, bbox_inches='tight')
 plt.show()
+
 
 
 
