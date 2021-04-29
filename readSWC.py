@@ -11363,7 +11363,7 @@ nbinsy = int((np.max(yi)-np.min(yi))/nscale)
 nbinsz = int((np.max(zi)-np.min(zi))/nscale)
 
 xyz = np.vstack([xi,yi,zi])
-neuritekde = kde.gaussian_kde(xyz, bw_method=0.2)
+neuritekde = kde.gaussian_kde(xyz, bw_method=0.175)
 
 xi, yi, zi = np.mgrid[np.min(xi)-5:np.max(xi)+5:nbinsx*1j, 
                       np.min(yi)-5:np.max(yi)+5:nbinsy*1j, 
@@ -11402,6 +11402,20 @@ for i in range(len(density)):
     mlab.axes()
     # mlab.savefig(filename=Parameter.outputdir + '/' + str(i) + '.png')
     mlab.close()
+
+
+#%%
+
+figure = mlab.figure('DensityPlot')
+
+grid = mlab.pipeline.scalar_field(xi, yi, zi, density)
+vmin = density.min()
+vmax = density.max()
+# mlab.pipeline.volume(grid, vmin=(np.max(density)-np.min(density))*0.6, vmax=np.max(density)*0.7)
+mlab.pipeline.volume(grid, vmin=np.max(density)*0.5, vmax=np.max(density)*0.7)
+
+mlab.axes()
+mlab.show()
 
 
 #%% Neurite structure factor
