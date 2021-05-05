@@ -8644,10 +8644,10 @@ plt.plot(q_range[19:31], line2[19:31], lw=1.5, color='tab:gray')
 plt.plot(q_range[30:43], line3[30:43], lw=1.5, color='tab:purple')
 plt.plot(q_range[50:95], line4[50:95], lw=1.5, color='k')
 
-plt.text(0.08, 2e-5, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
+plt.text(0.03, 6e-4, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
 plt.text(0.25, 5e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
-plt.text(100, 1e-4, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
-plt.text(100, 5e-6, r'$\nu = 1$', fontsize=13)
+plt.text(0.6, 3e-3, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
+plt.text(40, 1e-5, r'$\nu = 1$', fontsize=13)
 
 
 plt.xscale('log')
@@ -10227,7 +10227,7 @@ mw_Pq_calyx_pn_err = []
 mwx_calyx_pn = []
 
 for j in range(len(Pq_calyx_pn[0])):
-    shiftN = 7
+    # shiftN = 7
     
     mw_Pq_calyx_pn_temp = []
     mw_Pq_calyx_pn_err_temp = []
@@ -10280,7 +10280,7 @@ mw_Pq_LH_pn_err = []
 mwx_LH_pn = []
 
 for j in range(len(Pq_LH_pn[0])):
-    shiftN = 7
+    # shiftN = 7
     
     mw_Pq_LH_pn_temp = []
     mw_Pq_LH_pn_err_temp = []
@@ -10333,7 +10333,7 @@ mw_Pq_AL_pn_err = []
 mwx_AL_pn = []
 
 for j in range(len(Pq_AL_pn[0])):
-    shiftN = 7
+    # shiftN = 7
     
     mw_Pq_AL_pn_temp = []
     mw_Pq_AL_pn_err_temp = []
@@ -10831,11 +10831,49 @@ plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
-plt.ylim(1e-8, 10)
+plt.ylim(1e-7, 10)
 plt.xlim(1e-2, 1e3)
 # plt.savefig(Parameter.outputdir + '/Pq_per_neuron_LH_full_5.png', dpi=600, bbox_inches='tight')
 plt.show()
 
+#%% Neuron morphology plot mPN
+
+# for k in range(len(aver)):
+fig = plt.figure(figsize=(8, 8))
+ax = plt.axes(projection='3d')
+ax.set_box_aspect((1,1,1))
+cmap = cm.get_cmap('jet', len(un_AL_MG))
+for f in range(len(glo_idx_flat)):
+    glo_n = glo_idx_flat[f]
+    isglo = [i for i, idx in enumerate(un_AL_MG) if glo_n in idx]
+    listOfPoints = MorphData.morph_dist[glo_n]
+    for p in range(len(MorphData.morph_parent[glo_n])):
+        if MorphData.morph_parent[glo_n][p] < 0:
+            pass
+        else:
+            morph_line = np.vstack((listOfPoints[MorphData.morph_id[glo_n].index(MorphData.morph_parent[glo_n][p])], listOfPoints[p]))
+            if len(isglo) > 0:
+                pass
+            else:
+                ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='gray', lw=0.25, alpha=0.25)
+                
+for f in range(len(un_AL_MG)):
+    for j in range(len(un_AL_MG[f])):
+        glo_n = un_AL_MG[f][j]
+        listOfPoints = MorphData.morph_dist[glo_n]
+        for p in range(len(MorphData.morph_parent[glo_n])):
+            if MorphData.morph_parent[glo_n][p] < 0:
+                pass
+            else:
+                morph_line = np.vstack((listOfPoints[MorphData.morph_id[glo_n].index(MorphData.morph_parent[glo_n][p])], listOfPoints[p]))
+                ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(f), lw=1.)
+ax.axis('off')
+
+ax.set_xlim(440, 580)
+ax.set_ylim(350, 210)
+ax.set_zlim(30, 170)
+# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_all_mPN_1.png'), dpi=600, bbox_inches='tight', transparent=True)
+plt.show()
 
 #%% form factor per neurite plotting
 
@@ -11674,8 +11712,9 @@ acylin = np.sort(w)[1]-np.min(w)
 aniso = 3/2*np.sum(np.square(w))/np.square(np.sum(w)) - 1/2
 
 
-#%% 16 form factor (FIGURE FORM FACTOR 16)186573
+#%% 27048 form factor (FIGURE FORM FACTOR 16)186573
 # 35 - 24726
+# 36 - 27048
 # 85 - 41308
 # 106 - 54072
 # 107 - 55085
@@ -11684,7 +11723,7 @@ aniso = 3/2*np.sum(np.square(w))/np.square(np.sum(w)) - 1/2
 # 147 - 62434
 # 159 - 775731
 
-nid = 35
+nid = 106
 
 calyxdist_trk_temp = copy.deepcopy(np.unique(MorphData.calyxdist_trk))
 calyxdist_trk_temp = np.delete(calyxdist_trk_temp, [40, 41])
@@ -11692,21 +11731,21 @@ calyxdist_trk_temp = np.delete(calyxdist_trk_temp, [40, 41])
 ALdist_trk_temp = copy.deepcopy(np.unique(MorphData.ALdist_trk))
 ALdist_trk_temp = np.delete(ALdist_trk_temp, 73)
 
+rGy_calyx_new = copy.deepcopy(rGy_calyx)
+rGy_calyx_new = np.delete(rGy_calyx_new, [40, 41])
+
+rGy_AL_new = copy.deepcopy(rGy_AL)
+rGy_AL_new = np.delete(rGy_AL_new, 73)
+
 nid_AL = np.where(ALdist_trk_temp == nid)[0][0]
 nid_calyx = np.where(calyxdist_trk_temp == nid)[0][0]
 nid_LH = np.where(np.unique(MorphData.LHdist_trk) == nid)[0][0]
 
-rGy_calyx_new = copy.deepcopy(rGy_calyx)
-rGy_calyx_new = np.delete(rGy_calyx_new, 73)
-
-rGy_AL_new = copy.deepcopy(rGy_AL)
-rGy_AL_new = np.delete(rGy_AL_new, [40, 41])
-
 
 fig = plt.figure(figsize=(4,3))
-AL_q_idx = first_consecutive(np.where(Pq_AL_pn[:,nid] > 0)[0])
-AL_q_idx = len(Pq_AL_pn[:,nid])
-plt.plot(q_range[Pq_AL_pn[:,nid]>0], Pq_AL_pn[Pq_AL_pn[:,nid]>0,nid], lw=3, color='tab:blue')
+AL_q_idx = first_consecutive(np.where(Pq_AL_pn[:,nid_AL] > 0)[0])
+AL_q_idx = len(Pq_AL_pn[:,nid_AL])
+plt.plot(q_range[Pq_AL_pn[:,nid_AL]>0], Pq_AL_pn[Pq_AL_pn[:,nid_AL]>0,nid_AL], lw=3, color='tab:blue')
 
 # plt.vlines(2*np.pi/np.mean(LengthData.length_AL_flat), 1e-9, 10, color='tab:blue')
 # plt.vlines(1/np.mean(rGy_AL), 1e-9, 10, color='tab:blue', ls='--')
@@ -11720,7 +11759,7 @@ line4 = 1/30*np.power(q_range, -1)
 
 plt.plot(q_range[27:36], line1[27:36], lw=1.5, color='tab:red')
 # plt.plot(q_range, line2, lw=1, color='tab:gray')
-# plt.plot(q_range[26:31], line3[26:31], lw=1.5, color='tab:purple')
+plt.plot(q_range[26:31], line3[26:31], lw=1.5, color='tab:purple')
 # plt.plot(q_range[45:55], line4[45:55], lw=1.5, color='k')
 
 plt.text(0.4, 3e-1, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
@@ -11734,49 +11773,14 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("S(q)", fontsize=15)
 plt.ylim(1e-3, 2)
 plt.xlim(1e-2, 1e1)
-# plt.savefig(Parameter.outputdir + '/Pq_24726_pn_AL_1.pdf', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_24726_pn_AL_2.svg', dpi=600, bbox_inches='tight')
 plt.show()
 
 
 fig = plt.figure(figsize=(4,3))
-LH_q_idx = first_consecutive(np.where(Pq_LH_pn[:,nid] > 0)[0])
-LH_q_idx = len(Pq_LH_pn[:,nid])
-plt.plot(q_range[Pq_LH_pn[:,nid]>0], Pq_LH_pn[Pq_LH_pn[:,nid]>0,nid], lw=3, color='tab:green')
-
-# plt.vlines(2*np.pi/np.mean(LengthData.length_LH_flat), 1e-9, 10, color='tab:green')
-# plt.vlines(1/np.mean(rGy_LH), 1e-9, 10, color='tab:green', ls='--')
-plt.vlines(2*np.pi/np.mean(LengthData.length_LH[nid]), 1e-6, 10, color='tab:green', lw=1.5)
-plt.vlines(1/rGy_LH[nid_AL], 1e-6, 10, color='tab:green', ls='--', lw=1.5)
-
-line1 = 1/30*np.power(q_range, -16/7)
-line2 = 1/1000000*np.power(q_range, -4/1)
-line3 = 1/50*np.power(q_range, -1/0.388)
-line4 = 1/10*np.power(q_range, -1)
-
-# plt.plot(q_range[32:38], line1[32:38], lw=1.5, color='tab:red')
-# plt.plot(q_range, line2, lw=1, color='tab:gray')
-# plt.plot(q_range[26:31], line3[26:31], lw=1.5, color='tab:purple')
-plt.plot(q_range[33:47], line4[33:47], lw=1.5, color='k')
-
-# plt.text(0.6, 1.5e-1, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
-# plt.text(0.018, 3e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
-# plt.text(0.3, 6e-1, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
-plt.text(1.1, 1.5e-1, r'$\nu = 1$', fontsize=13)
-
-plt.xscale('log')
-plt.yscale('log')
-plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("S(q)", fontsize=15)
-plt.ylim(1e-3, 2)
-plt.xlim(1e-2, 1e1)
-# plt.savefig(Parameter.outputdir + '/Pq_24726_pn_LH_1.pdf', dpi=600, bbox_inches='tight')
-plt.show()
-
-
-fig = plt.figure(figsize=(4,3))
-calyx_q_idx = first_consecutive(np.where(Pq_calyx_pn[:,nid] > 0)[0])
-calyx_q_idx = len(Pq_calyx_pn[:,nid])
-plt.plot(q_range[Pq_calyx_pn[:,nid] > 0], Pq_calyx_pn[Pq_calyx_pn[:,nid] > 0,nid], lw=3, color='tab:orange')
+calyx_q_idx = first_consecutive(np.where(Pq_calyx_pn[:,nid_calyx] > 0)[0])
+calyx_q_idx = len(Pq_calyx_pn[:,nid_calyx])
+plt.plot(q_range[Pq_calyx_pn[:,nid_calyx] > 0], Pq_calyx_pn[Pq_calyx_pn[:,nid_calyx] > 0,nid_calyx], lw=3, color='tab:orange')
 
 # plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_flat), 1e-9, 10, color='tab:orange')
 # plt.vlines(1/np.mean(rGy_calyx), 1e-9, 10, color='tab:orange', ls='--')
@@ -11788,14 +11792,14 @@ line2 = 1/1000000*np.power(q_range, -4/1)
 line3 = 1/80*np.power(q_range, -1/0.388)
 line4 = 1/20*np.power(q_range, -1)
 
-# plt.plot(q_range[42:48], line1[42:48], lw=1.5, color='tab:red')
+plt.plot(q_range[42:48], line1[42:48], lw=1.5, color='tab:red')
 # plt.plot(q_range, line2, lw=1, color='tab:gray')
-# plt.plot(q_range[26:31], line3[26:31], lw=1.5, color='tab:purple')
+plt.plot(q_range[26:31], line3[26:31], lw=1.5, color='tab:purple')
 plt.plot(q_range[30:42], line4[30:42], lw=1.5, color='k')
 
-# plt.text(2, 1.5e-2, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
+plt.text(2, 1.5e-2, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
 # plt.text(0.018, 3e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
-# plt.text(0.3, 4e-1, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
+plt.text(0.3, 4e-1, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
 plt.text(0.6, 1.2e-1, r'$\nu = 1$', fontsize=13)
 
 plt.xscale('log')
@@ -11804,7 +11808,265 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("S(q)", fontsize=15)
 plt.ylim(1e-3, 2)
 plt.xlim(1e-2, 1e1)
-# plt.savefig(Parameter.outputdir + '/Pq_24726_pn_calyx_1.pdf', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_24726_pn_calyx_2.svg', dpi=600, bbox_inches='tight')
+plt.show()
+
+
+fig = plt.figure(figsize=(4,3))
+LH_q_idx = first_consecutive(np.where(Pq_LH_pn[:,nid_LH] > 0)[0])
+LH_q_idx = len(Pq_LH_pn[:,nid_LH])
+plt.plot(q_range[Pq_LH_pn[:,nid_LH]>0], Pq_LH_pn[Pq_LH_pn[:,nid_LH]>0,nid_LH], lw=3, color='tab:green')
+
+# plt.vlines(2*np.pi/np.mean(LengthData.length_LH_flat), 1e-9, 10, color='tab:green')
+# plt.vlines(1/np.mean(rGy_LH), 1e-9, 10, color='tab:green', ls='--')
+plt.vlines(2*np.pi/np.mean(LengthData.length_LH[nid]), 1e-6, 10, color='tab:green', lw=1.5)
+plt.vlines(1/rGy_LH[nid_LH], 1e-6, 10, color='tab:green', ls='--', lw=1.5)
+
+line1 = 1/30*np.power(q_range, -16/7)
+line2 = 1/1000000*np.power(q_range, -4/1)
+line3 = 1/50*np.power(q_range, -1/0.388)
+line4 = 1/10*np.power(q_range, -1)
+
+plt.plot(q_range[32:38], line1[32:38], lw=1.5, color='tab:red')
+# plt.plot(q_range, line2, lw=1, color='tab:gray')
+# plt.plot(q_range[26:31], line3[26:31], lw=1.5, color='tab:purple')
+plt.plot(q_range[33:47], line4[33:47], lw=1.5, color='k')
+
+plt.text(0.6, 1.5e-1, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
+# plt.text(0.018, 3e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
+# plt.text(0.3, 6e-1, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
+plt.text(1.1, 1.5e-1, r'$\nu = 1$', fontsize=13)
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
+plt.ylabel("S(q)", fontsize=15)
+plt.ylim(1e-3, 2)
+plt.xlim(1e-2, 1e1)
+# plt.savefig(Parameter.outputdir + '/Pq_24726_pn_LH_2.svg', dpi=600, bbox_inches='tight')
+plt.show()
+
+
+#%% INDEXING ALL uPN S(q)
+
+
+calyxdist_trk_temp = copy.deepcopy(np.unique(MorphData.calyxdist_trk))
+calyxdist_trk_temp = np.delete(calyxdist_trk_temp, [40, 41])
+
+ALdist_trk_temp = copy.deepcopy(np.unique(MorphData.ALdist_trk))
+ALdist_trk_temp = np.delete(ALdist_trk_temp, 73)
+
+rGy_calyx_new = copy.deepcopy(rGy_calyx)
+rGy_calyx_new = np.delete(rGy_calyx_new, [40, 41])
+
+rGy_AL_new = copy.deepcopy(rGy_AL)
+rGy_AL_new = np.delete(rGy_AL_new, 73)
+
+set1 = set(calyxdist_trk_temp).intersection(ALdist_trk_temp)
+set2 = set(set1).intersection(np.unique(MorphData.LHdist_trk))
+
+set2 = list(set2)
+
+for i in glo_idx_flat:
+    nid_AL = np.where(ALdist_trk_temp == i)[0][0]
+    nid_calyx = np.where(calyxdist_trk_temp == i)[0][0]
+    nid_LH = np.where(np.unique(MorphData.LHdist_trk) == i)[0][0]
+    
+    fig = plt.figure(figsize=(4,3))
+    AL_q_idx = first_consecutive(np.where(Pq_AL_pn[:,nid_AL] > 0)[0])
+    AL_q_idx = len(Pq_AL_pn[:,nid_AL])
+    plt.plot(q_range[Pq_AL_pn[:,nid_AL]>0], Pq_AL_pn[Pq_AL_pn[:,nid_AL]>0,nid_AL], lw=3, color='tab:blue')
+    calyx_q_idx = first_consecutive(np.where(Pq_calyx_pn[:,nid_calyx] > 0)[0])
+    calyx_q_idx = len(Pq_calyx_pn[:,nid_calyx])
+    plt.plot(q_range[Pq_calyx_pn[:,nid_calyx] > 0], Pq_calyx_pn[Pq_calyx_pn[:,nid_calyx] > 0,nid_calyx], lw=3, color='tab:orange')
+    LH_q_idx = first_consecutive(np.where(Pq_LH_pn[:,nid_LH] > 0)[0])
+    LH_q_idx = len(Pq_LH_pn[:,nid_LH])
+    plt.plot(q_range[Pq_LH_pn[:,nid_LH]>0], Pq_LH_pn[Pq_LH_pn[:,nid_LH]>0,nid_LH], lw=3, color='tab:green')
+    
+    line1 = 1/30*np.power(q_range, -16/7)
+    line2 = 1/1000000*np.power(q_range, -4/1)
+    line3 = 1/50*np.power(q_range, -1/0.388)
+    line4 = 1/10*np.power(q_range, -1)
+    
+    plt.plot(q_range[37:45], line1[37:45], lw=1.5, color='tab:red')
+    # plt.plot(q_range, line2, lw=1, color='tab:gray')
+    plt.plot(q_range[26:31], line3[26:31], lw=1.5, color='tab:purple')
+    plt.plot(q_range[33:47], line4[33:47], lw=1.5, color='k')
+    
+    # plt.text(0.6, 1.5e-1, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
+    # plt.text(0.018, 3e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
+    # plt.text(0.3, 6e-1, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
+    plt.text(1.1, 1.5e-1, r'$\nu = 1$', fontsize=13)
+    
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
+    plt.ylabel("S(q)", fontsize=15)
+    plt.ylim(1e-3, 2)
+    plt.xlim(1e-2, 1e1)
+    plt.savefig(Parameter.outputdir + '/test/' + str(i) + '.png', dpi=96, bbox_inches='tight')
+    plt.close()
+
+#%% selected form factor (FIGURE FORM FACTOR 16)186573
+# 35 - 24726
+# 85 - 41308
+# 106 - 54072
+# 107 - 55085
+# 110 - 56623
+# 130 - 57402
+# 147 - 62434
+# 159 - 775731
+
+# [  0   6   8  11  12  13  14  15  16  18  19  20  21  22  23  24  25  26
+#   27  28  29  30  31  32  33  34  35  36  37  38  39  51  52  53  54  57
+#   59  60  62  63  64  66  67  68  69  70  71  72  73  74  75  76  77  78
+#   79  80  81  82  83  84  85  86  87  90  91  92  93  94  95  96  97  98
+#   99 101 102 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118
+#  119 120 121 122 123 124 125 126 127 128 129 130 131 132 133 134 135 136
+#  137 138 139 140 141 142 144 145 146 147 148 149 150 151 152 153 155 156
+#  158 159]
+
+nid = [146]#, 35, 36, 57]
+# nid = [35, 8, 21, 23, 29, 38, 54, 79, 85, 86, 95, 102]
+
+calyxdist_trk_temp = copy.deepcopy(np.unique(MorphData.calyxdist_trk))
+calyxdist_trk_temp = np.delete(calyxdist_trk_temp, [40, 41])
+
+ALdist_trk_temp = copy.deepcopy(np.unique(MorphData.ALdist_trk))
+ALdist_trk_temp = np.delete(ALdist_trk_temp, 73)
+
+rGy_AL_new = copy.deepcopy(rGy_AL)
+rGy_AL_new = np.delete(rGy_AL_new, [40, 41])
+
+
+fig = plt.figure(figsize=(4,3))
+
+for i in range(len(nid)):
+    nid_AL = np.where(ALdist_trk_temp == nid[i])[0][0]
+    AL_q_idx = first_consecutive(np.where(Pq_AL_pn[:,nid_AL] > 0)[0])
+    AL_q_idx = len(Pq_AL_pn[:,nid_AL])
+    if i == 0:
+        plt.plot(q_range[Pq_AL_pn[:,nid_AL]>0], Pq_AL_pn[Pq_AL_pn[:,nid_AL]>0,nid_AL], lw=3, color='tab:blue')
+    else:
+        plt.plot(q_range[Pq_AL_pn[:,nid_AL]>0], Pq_AL_pn[Pq_AL_pn[:,nid_AL]>0,nid_AL], lw=3, color='tab:blue', alpha=0.5)
+
+plt.vlines(2*np.pi/np.mean(LengthData.length_AL_flat), 1e-9, 10, color='tab:blue')
+
+plt.vlines(1/np.mean(rGy_AL_new), 1e-9, 10, color='tab:blue', ls='--')
+# plt.vlines(2*np.pi/np.mean(LengthData.length_AL[nid]), 1e-6, 10, color='tab:blue', lw=1.5)
+# plt.vlines(1/rGy_AL_new[nid_AL], 1e-6, 10, color='tab:blue', ls='--', lw=1.5)
+
+line1 = 1/40*np.power(q_range, -16/7)
+line2 = 1/1000000*np.power(q_range, -4/1)
+line3 = 1/1000*np.power(q_range, -1/0.388)
+line4 = 1/30*np.power(q_range, -1)
+
+plt.plot(q_range[27:36], line1[27:36], lw=1.5, color='tab:red')
+# plt.plot(q_range, line2, lw=1, color='tab:gray')
+plt.plot(q_range[26:36], line3[26:36], lw=1.5, color='tab:purple')
+plt.plot(q_range[45:55], line4[45:55], lw=1.5, color='k')
+
+plt.text(0.4, 3e-1, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
+# plt.text(0.018, 3e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
+# plt.text(0.3, 6e-1, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
+# plt.text(3, 1.3e-2, r'$\nu = 1$', fontsize=13)
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
+plt.ylabel("S(q)", fontsize=15)
+plt.ylim(1e-3, 2)
+plt.xlim(1e-2, 1e1)
+# plt.savefig(Parameter.outputdir + '/Pq_61773_pn_AL_1.svg', dpi=600, bbox_inches='tight')
+plt.show()
+
+#%%
+nid = [146]#, 35, 36, 53]
+
+fig = plt.figure(figsize=(4,3))
+for i in range(len(nid)):
+    nid_LH = np.where(np.unique(MorphData.LHdist_trk) == nid[i])[0][0]
+    LH_q_idx = first_consecutive(np.where(Pq_LH_pn[:,nid_LH] > 0)[0])
+    LH_q_idx = len(Pq_LH_pn[:,nid_LH])
+    if i == 0:
+        plt.plot(q_range[Pq_LH_pn[:,nid_LH]>0], Pq_LH_pn[Pq_LH_pn[:,nid_LH]>0,nid_LH], lw=3, color='tab:green')
+    else:
+        plt.plot(q_range[Pq_LH_pn[:,nid_LH]>0], Pq_LH_pn[Pq_LH_pn[:,nid_LH]>0,nid_LH], lw=3, color='tab:green', alpha=0.5)
+
+plt.vlines(2*np.pi/np.mean(LengthData.length_LH_flat), 1e-9, 10, color='tab:blue')
+
+plt.vlines(1/np.mean(rGy_LH), 1e-9, 10, color='tab:blue', ls='--')
+# plt.vlines(2*np.pi/np.mean(LengthData.length_LH[nid]), 1e-6, 10, color='tab:green', lw=1.5)
+# plt.vlines(1/rGy_LH[nid_AL], 1e-6, 10, color='tab:green', ls='--', lw=1.5)
+
+line1 = 1/30*np.power(q_range, -16/7)
+line2 = 1/1000000*np.power(q_range, -4/1)
+line3 = 1/50*np.power(q_range, -1/0.388)
+line4 = 1/10*np.power(q_range, -1)
+
+plt.plot(q_range[32:38], line1[32:38], lw=1.5, color='tab:red')
+# plt.plot(q_range, line2, lw=1, color='tab:gray')
+# plt.plot(q_range[26:31], line3[26:31], lw=1.5, color='tab:purple')
+plt.plot(q_range[33:47], line4[33:47], lw=1.5, color='k')
+
+plt.text(0.6, 1.5e-1, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
+# plt.text(0.018, 3e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
+# plt.text(0.3, 6e-1, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
+plt.text(1.1, 1.5e-1, r'$\nu = 1$', fontsize=13)
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
+plt.ylabel("S(q)", fontsize=15)
+plt.ylim(1e-3, 2)
+plt.xlim(1e-2, 1e1)
+# plt.savefig(Parameter.outputdir + '/Pq_61773_pn_LH_1.svg', dpi=600, bbox_inches='tight')
+plt.show()
+
+#%%
+nid = [146]#, 35, 36]
+
+rGy_calyx_new = copy.deepcopy(rGy_calyx)
+rGy_calyx_new = np.delete(rGy_calyx_new, 73)
+
+fig = plt.figure(figsize=(4,3))
+for i in range(len(nid)):
+    nid_calyx = np.where(calyxdist_trk_temp == nid[i])[0][0]
+    calyx_q_idx = first_consecutive(np.where(Pq_calyx_pn[:,nid_calyx] > 0)[0])
+    calyx_q_idx = len(Pq_calyx_pn[:,nid_calyx])
+    if i == 0:
+        plt.plot(q_range[Pq_calyx_pn[:,nid_calyx] > 0], Pq_calyx_pn[Pq_calyx_pn[:,nid_calyx] > 0,nid_calyx], lw=3, color='tab:orange')
+    else:
+        plt.plot(q_range[Pq_calyx_pn[:,nid_calyx] > 0], Pq_calyx_pn[Pq_calyx_pn[:,nid_calyx] > 0,nid_calyx], lw=3, color='tab:orange', alpha=0.5)
+
+plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_flat), 1e-9, 10, color='tab:orange')
+
+plt.vlines(1/np.mean(rGy_calyx), 1e-9, 10, color='tab:orange', ls='--')
+# plt.vlines(2*np.pi/np.mean(LengthData.length_calyx[nid]), 1e-6, 10, color='tab:orange', lw=1.5)
+# plt.vlines(1/rGy_calyx_new[nid_calyx], 1e-6, 10, color='tab:orange', ls='--', lw=1.5)
+
+line1 = 1/20*np.power(q_range, -16/7)
+line2 = 1/1000000*np.power(q_range, -4/1)
+line3 = 1/80*np.power(q_range, -1/0.388)
+line4 = 1/20*np.power(q_range, -1)
+
+plt.plot(q_range[42:48], line1[42:48], lw=1.5, color='tab:red')
+# plt.plot(q_range, line2, lw=1, color='tab:gray')
+plt.plot(q_range[26:31], line3[26:31], lw=1.5, color='tab:purple')
+plt.plot(q_range[30:42], line4[30:42], lw=1.5, color='k')
+
+plt.text(2, 1.5e-2, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
+# plt.text(0.018, 3e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
+plt.text(0.3, 4e-1, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
+plt.text(0.6, 1.2e-1, r'$\nu = 1$', fontsize=13)
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
+plt.ylabel("S(q)", fontsize=15)
+plt.ylim(1e-3, 2)
+plt.xlim(1e-2, 1e1)
+# plt.savefig(Parameter.outputdir + '/Pq_61773_pn_calyx_1.svg', dpi=600, bbox_inches='tight')
 plt.show()
 
 
@@ -11915,7 +12177,7 @@ plt.hlines(0.388, 0.01, 100, ls='dashed', color='tab:purple', lw=1.5)
 # plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
 
 plt.vlines(2*np.pi/np.mean(LengthData.length_LH[nid]), 1e-6, 10, color='tab:green', lw=1.5)
-plt.vlines(1/rGy_LH[nid_AL], 1e-6, 10, color='tab:green', ls='--', lw=1.5)
+plt.vlines(1/rGy_LH[nid_LH], 1e-6, 10, color='tab:green', ls='--', lw=1.5)
 
 plt.xscale('log')
 # plt.yscale('log')
@@ -11930,29 +12192,38 @@ plt.ylabel(r"$\nu$", fontsize=15)
 plt.show()
 
 #%%
+
+nid = [146]
+
 fig = plt.figure(figsize=(8, 8))
 ax = plt.axes(projection='3d')
 ax.set_box_aspect((1,1,1))
-tararr = np.array(MorphData.morph_dist[nid])
-somaIdx = np.where(np.array(MorphData.morph_parent[nid]) < 0)[0]
-for f in range(len(glo_idx_flat)):
-    listOfPoints = MorphData.morph_dist[glo_idx_flat[f]]
-    for p in range(len(MorphData.morph_parent[glo_idx_flat[f]])):
-        if MorphData.morph_parent[glo_idx_flat[f]][p] < 0:
+for f in glo_idx_flat:
+    listOfPoints = MorphData.morph_dist[f]
+    for p in range(len(MorphData.morph_parent[f])):
+        if MorphData.morph_parent[f][p] < 0:
             pass
         else:
-            morph_line = np.vstack((listOfPoints[MorphData.morph_id[glo_idx_flat[f]].index(MorphData.morph_parent[glo_idx_flat[f]][p])], listOfPoints[p]))
-            if glo_idx_flat[f] == nid:
+            morph_line = np.vstack((listOfPoints[MorphData.morph_id[f].index(MorphData.morph_parent[f][p])], listOfPoints[p]))
+            if f in nid:
                 pass
             else:
                 ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='gray', lw=0.25, alpha=0.25)
-listOfPoints = MorphData.morph_dist[nid]
-for p in range(len(MorphData.morph_parent[nid])):
-    if MorphData.morph_parent[nid][p] < 0:
-        pass
-    else:
-        morph_line = np.vstack((listOfPoints[MorphData.morph_id[nid].index(MorphData.morph_parent[nid][p])], listOfPoints[p]))
-        ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:red', lw=1.)
+                
+for i in nid:
+    listOfPoints = MorphData.morph_dist[i]
+    for p in range(len(MorphData.morph_parent[i])):
+        if MorphData.morph_parent[i][p] < 0:
+            pass
+        else:
+            morph_line = np.vstack((listOfPoints[MorphData.morph_id[i].index(MorphData.morph_parent[i][p])], listOfPoints[p]))
+            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:red', lw=1.)
+            # if i == 36:
+            #     ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:orange', lw=1.)
+            # elif i == 53:
+            #     ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:green', lw=1.)
+            # else:
+            #     ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:blue', lw=1.)
 ax.axis('off')
 ax.set_xlim(440, 580)
 ax.set_ylim(350, 210)
@@ -11964,12 +12235,15 @@ ax.set_zlim(30, 170)
 # ax.set_xticklabels([])
 # ax.set_yticklabels([])
 # ax.set_zticklabels([])
-# plt.savefig(Parameter.outputdir + '/neuron_' + str(nid) + '_full.png', dpi=600, bbox_inches='tight', transparent=True)
+# plt.savefig(Parameter.outputdir + '/neuron_146_full_1', dpi=600, bbox_inches='tight', transparent=True)
 plt.show()
 
 
+
+nid = 146
+
 morph_disttar = copy.deepcopy(MorphData.morph_dist[nid])
-morph_disttar[3259][0] = morph_disttar[3258][0]
+# morph_disttar[3259][0] = morph_disttar[3258][0]
 
 fig, ax = plt.subplots(figsize=(24, 24))
 plt.xlim(400, 580)
