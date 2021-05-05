@@ -11926,7 +11926,7 @@ for i in glo_idx_flat:
 #  137 138 139 140 141 142 144 145 146 147 148 149 150 151 152 153 155 156
 #  158 159]
 
-nid = [146]#, 35, 36, 57]
+nid = [36]#146]#, 35, 36, 57]
 # nid = [35, 8, 21, 23, 29, 38, 54, 79, 85, 86, 95, 102]
 
 calyxdist_trk_temp = copy.deepcopy(np.unique(MorphData.calyxdist_trk))
@@ -11977,11 +11977,11 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("S(q)", fontsize=15)
 plt.ylim(1e-3, 2)
 plt.xlim(1e-2, 1e1)
-# plt.savefig(Parameter.outputdir + '/Pq_61773_pn_AL_1.svg', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_27048_pn_AL_1.svg', dpi=600, bbox_inches='tight')
 plt.show()
 
 #%%
-nid = [146]#, 35, 36, 53]
+nid = [36]#146]#, 35, 36, 53]
 
 fig = plt.figure(figsize=(4,3))
 for i in range(len(nid)):
@@ -12020,11 +12020,11 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("S(q)", fontsize=15)
 plt.ylim(1e-3, 2)
 plt.xlim(1e-2, 1e1)
-# plt.savefig(Parameter.outputdir + '/Pq_61773_pn_LH_1.svg', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_27048_pn_LH_1.svg', dpi=600, bbox_inches='tight')
 plt.show()
 
 #%%
-nid = [146]#, 35, 36]
+nid = [36]#146]#, 35, 36]
 
 rGy_calyx_new = copy.deepcopy(rGy_calyx)
 rGy_calyx_new = np.delete(rGy_calyx_new, 73)
@@ -12066,7 +12066,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("S(q)", fontsize=15)
 plt.ylim(1e-3, 2)
 plt.xlim(1e-2, 1e1)
-# plt.savefig(Parameter.outputdir + '/Pq_61773_pn_calyx_1.svg', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_27048_pn_calyx_1.svg', dpi=600, bbox_inches='tight')
 plt.show()
 
 
@@ -12193,7 +12193,7 @@ plt.show()
 
 #%%
 
-nid = [146]
+nid = [36]
 
 fig = plt.figure(figsize=(8, 8))
 ax = plt.axes(projection='3d')
@@ -12235,12 +12235,12 @@ ax.set_zlim(30, 170)
 # ax.set_xticklabels([])
 # ax.set_yticklabels([])
 # ax.set_zticklabels([])
-# plt.savefig(Parameter.outputdir + '/neuron_146_full_1', dpi=600, bbox_inches='tight', transparent=True)
+# plt.savefig(Parameter.outputdir + '/neuron_36_full_1', dpi=600, bbox_inches='tight', transparent=True)
 plt.show()
 
 
 
-nid = 146
+nid = 36
 
 morph_disttar = copy.deepcopy(MorphData.morph_dist[nid])
 # morph_disttar[3259][0] = morph_disttar[3258][0]
@@ -12271,8 +12271,8 @@ for i in range(len(LHnid)):
     for f in range(len(listOfPoints)-1):
         morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
         plt.plot(morph_line[:,0], morph_line[:,2], color='tab:green', lw=2)
-ax.set_xlim(400, 460)
-ax.set_ylim(135, 195)
+ax.set_xlim(400, 470)
+ax.set_ylim(110, 180)
 # plt.savefig(Parameter.outputdir + '/neuron_proj_' + str(nid) + '_LH.png', dpi=600, bbox_inches='tight', transparent=True)
 plt.show()
 
@@ -12287,8 +12287,8 @@ for i in range(len(ALnid)):
     for f in range(len(listOfPoints)-1):
         morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
         plt.plot(morph_line[:,0], morph_line[:,2], color='tab:blue', lw=2)
-ax.set_xlim(525, 585)
-ax.set_ylim(25, 85)
+ax.set_xlim(490, 560)
+ax.set_ylim(25, 95)
 # plt.savefig(Parameter.outputdir + '/neuron_proj_' + str(nid) + '_AL.png', dpi=600, bbox_inches='tight', transparent=True)
 plt.show()
 
@@ -12303,8 +12303,8 @@ for i in range(len(calyxnid)):
     for f in range(len(listOfPoints)-1):
         morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
         plt.plot(morph_line[:,0], morph_line[:,2], color='tab:orange', lw=2)
-ax.set_xlim(480, 540)
-ax.set_ylim(140, 200)
+ax.set_xlim(475, 545)
+ax.set_ylim(130, 200)
 # plt.savefig(Parameter.outputdir + '/neuron_proj_' + str(nid) + '_calyx.png', dpi=600, bbox_inches='tight', transparent=True)
 plt.show()
 
