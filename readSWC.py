@@ -10834,6 +10834,68 @@ plt.vlines(1/np.mean(rGy_AL[idx_list]), 1e-8, 10, color='tab:blue', ls='--')
 plt.vlines(2*np.pi/np.mean(lAL_flat_flat_b), 1e-8, 10, color='tab:blue', ls='dotted')
 
 idx_list = []
+lAL_u = []
+lAL_u_b = []
+for i in range(len(glo_idx_flat)):
+    idx_temp = np.where(un_AL_tr == glo_idx_flat[i])[0][0]
+    idx_list.append(idx_temp)
+    lAL_u.append(LengthData.length_AL[glo_idx_flat[i]])
+    lAL_u_b.append(LengthData.length_AL_b[glo_idx_flat[i]])
+
+posavg = []
+posstd = []
+for i in range(len(Pq_AL_pn)):
+    if len(Pq_AL_pn[i][idx_list][Pq_AL_pn[i][idx_list]>0]) > 0:
+        posavg.append(np.average(Pq_AL_pn[i][idx_list][Pq_AL_pn[i][idx_list]>0]))
+        posstd.append(np.std(Pq_AL_pn[i][idx_list][Pq_AL_pn[i][idx_list]>0]))
+    else:
+        posavg.append(np.nan)
+        posstd.append(np.nan)
+plt.plot(q_range[~np.isnan(posavg)], np.array(posavg)[~np.isnan(posavg)], color='tab:gray')
+plt.fill_between(q_range[~np.isnan(posavg)], 
+                 np.array(posavg)[~np.isnan(posavg)]+np.array(posstd)[~np.isnan(posavg)],
+                 np.array(posavg)[~np.isnan(posavg)]-np.array(posstd)[~np.isnan(posavg)],
+                 alpha=0.25, color='tab:gray')
+
+lAL_flat = [item for sublist in lAL_u for item in sublist]
+lAL_flat_b = [item for sublist in lAL_u_b for item in sublist]
+lAL_flat_flat_b = [item for sublist in lAL_flat_b for item in sublist]
+plt.vlines(2*np.pi/np.mean(lAL_flat), 1e-8, 10, color='tab:gray')
+plt.vlines(1/np.mean(rGy_AL[idx_list]), 1e-8, 10, color='tab:gray', ls='--')
+plt.vlines(2*np.pi/np.mean(lAL_flat_flat_b), 1e-8, 10, color='tab:gray', ls='dotted')
+
+line1 = 1/10000*np.power(q_range, -16/7)
+line2 = 1/1000*np.power(q_range, -4/1)
+# line3 = 10*np.power(q_range, -1/0.388)
+line4 = 1/40*np.power(q_range, -1)
+line5 = 1/3*np.power(q_range, -1)
+
+plt.plot(q_range[15:25], line1[15:25], lw=1.5, color='tab:red')
+# plt.plot(q_range[25:35], line2[25:35], lw=1.5, color='tab:gray')
+# plt.plot(q_range, line3, lw=1.5, color='tab:purple')
+plt.plot(q_range[75:95], line4[75:95], lw=1.5, color='k')
+plt.plot(q_range[15:25], line5[15:25], lw=1.5, color='k')
+
+plt.text(0.02, 5e-3, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
+# plt.text(0.4, 1e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
+# plt.text(100, 1e-4, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
+plt.text(5, 3e-4, r'$\nu = 1$', fontsize=13)
+plt.text(2, 3e-1, r'$\nu = 1$', fontsize=13)
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
+plt.ylabel("S(q)", fontsize=15)
+plt.ylim(1e-3, 2)
+plt.xlim(1e-2, 1e1)
+# plt.savefig(Parameter.outputdir + '/Pq_mPN_AL_comb_1.svg', dpi=600, bbox_inches='tight')
+plt.show()
+
+
+
+idx_list = []
+
+fig = plt.figure(figsize=(6,4.5))
 lLH = []
 lLH_b = []
 for i in range(len(un_MG_all)):
@@ -10851,18 +10913,141 @@ for i in range(len(Pq_LH_pn)):
     else:
         posavg.append(np.nan)
         posstd.append(np.nan)
-plt.plot(q_range[~np.isnan(posavg)], np.array(posavg)[~np.isnan(posavg)], color='tab:green')
+plt.plot(q_range[~np.isnan(posavg)], np.array(posavg)[~np.isnan(posavg)], color='indigo')
 plt.fill_between(q_range[~np.isnan(posavg)], 
                  np.array(posavg)[~np.isnan(posavg)]+np.array(posstd)[~np.isnan(posavg)],
                  np.array(posavg)[~np.isnan(posavg)]-np.array(posstd)[~np.isnan(posavg)],
-                 alpha=0.25, color='tab:green')
+                 alpha=0.25, color='indigo')
 
 lLH_flat = [item for sublist in lLH for item in sublist]
 lLH_flat_b = [item for sublist in lLH_b for item in sublist]
 lLH_flat_flat_b = [item for sublist in lLH_flat_b for item in sublist]
-plt.vlines(2*np.pi/np.mean(lLH_flat), 1e-8, 10, color='tab:green')
-plt.vlines(1/np.mean(rGy_LH[idx_list]), 1e-8, 10, color='tab:green', ls='--')
-plt.vlines(2*np.pi/np.mean(lLH_flat_flat_b), 1e-8, 10, color='tab:green', ls='dotted')
+plt.vlines(2*np.pi/np.mean(lLH_flat), 1e-8, 10, color='indigo')
+plt.vlines(1/np.mean(rGy_LH[idx_list]), 1e-8, 10, color='indigo', ls='--')
+plt.vlines(2*np.pi/np.mean(lLH_flat_flat_b), 1e-8, 10, color='indigo', ls='dotted')
+
+idx_list = []
+lLH_u = []
+lLH_u_b = []
+for i in range(len(glo_idx_flat)):
+    idx_temp = np.where(un_LH_tr == glo_idx_flat[i])[0][0]
+    idx_list.append(idx_temp)
+    lLH_u.append(LengthData.length_LH[glo_idx_flat[i]])
+    lLH_u_b.append(LengthData.length_LH_b[glo_idx_flat[i]])
+
+posavg = []
+posstd = []
+for i in range(len(Pq_LH_pn)):
+    if len(Pq_LH_pn[i][idx_list][Pq_LH_pn[i][idx_list]>0]) > 0:
+        posavg.append(np.average(Pq_LH_pn[i][idx_list][Pq_LH_pn[i][idx_list]>0]))
+        posstd.append(np.std(Pq_LH_pn[i][idx_list][Pq_LH_pn[i][idx_list]>0]))
+    else:
+        posavg.append(np.nan)
+        posstd.append(np.nan)
+plt.plot(q_range[~np.isnan(posavg)], np.array(posavg)[~np.isnan(posavg)], color='tab:gray')
+plt.fill_between(q_range[~np.isnan(posavg)], 
+                 np.array(posavg)[~np.isnan(posavg)]+np.array(posstd)[~np.isnan(posavg)],
+                 np.array(posavg)[~np.isnan(posavg)]-np.array(posstd)[~np.isnan(posavg)],
+                 alpha=0.25, color='tab:gray')
+
+lLH_flat = [item for sublist in lLH_u for item in sublist]
+lLH_flat_b = [item for sublist in lLH_u_b for item in sublist]
+lLH_flat_flat_b = [item for sublist in lLH_flat_b for item in sublist]
+plt.vlines(2*np.pi/np.mean(lLH_flat), 1e-8, 10, color='tab:gray')
+plt.vlines(1/np.mean(rGy_LH[idx_list]), 1e-8, 10, color='tab:gray', ls='--')
+plt.vlines(2*np.pi/np.mean(lLH_flat_flat_b), 1e-8, 10, color='tab:gray', ls='dotted')
+
+line1 = 1/10000*np.power(q_range, -16/7)
+line2 = 1/1000*np.power(q_range, -4/1)
+# line3 = 10*np.power(q_range, -1/0.388)
+line4 = 1/40*np.power(q_range, -1)
+line5 = 1/100*np.power(q_range, -1)
+
+plt.plot(q_range[15:25], line1[15:25], lw=1.5, color='tab:red')
+# plt.plot(q_range[25:35], line2[25:35], lw=1.5, color='tab:gray')
+# plt.plot(q_range, line3, lw=1.5, color='tab:purple')
+plt.plot(q_range[75:95], line4[75:95], lw=1.5, color='k')
+plt.plot(q_range[15:35], line5[15:35], lw=1.5, color='k')
+
+plt.text(0.02, 5e-3, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
+# plt.text(0.4, 1e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
+# plt.text(100, 1e-4, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
+# plt.text(5, 3e-4, r'$\nu = 1$', fontsize=13)
+plt.text(2, 3e-1, r'$\nu = 1$', fontsize=13)
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
+plt.ylabel("S(q)", fontsize=15)
+plt.ylim(1e-3, 2)
+plt.xlim(1e-2, 1e1)
+# plt.savefig(Parameter.outputdir + '/Pq_mPN_LH_comb_1.svg', dpi=600, bbox_inches='tight')
+plt.show()
+
+
+idx_list = []
+
+fig = plt.figure(figsize=(6,4.5))
+lcalyx = []
+lcalyx_b = []
+for i in range(len(un_MG_all)):
+    idx_temp = np.where(un_calyx_tr == un_MG_all[i])[0][0]
+    idx_list.append(idx_temp)
+    lcalyx.append(LengthData.length_calyx[un_MG_all[i]])
+    lcalyx_b.append(LengthData.length_calyx_b[un_MG_all[i]])
+
+posavg = []
+posstd = []
+for i in range(len(Pq_calyx_pn)):
+    if len(Pq_calyx_pn[i][idx_list][Pq_calyx_pn[i][idx_list]>0]) > 0:
+        posavg.append(np.average(Pq_calyx_pn[i][idx_list][Pq_calyx_pn[i][idx_list]>0]))
+        posstd.append(np.std(Pq_calyx_pn[i][idx_list][Pq_calyx_pn[i][idx_list]>0]))
+    else:
+        posavg.append(np.nan)
+        posstd.append(np.nan)
+plt.plot(q_range[~np.isnan(posavg)], np.array(posavg)[~np.isnan(posavg)], color='tab:orange')
+plt.fill_between(q_range[~np.isnan(posavg)], 
+                 np.array(posavg)[~np.isnan(posavg)]+np.array(posstd)[~np.isnan(posavg)],
+                 np.array(posavg)[~np.isnan(posavg)]-np.array(posstd)[~np.isnan(posavg)],
+                 alpha=0.25, color='tab:orange')
+
+lcalyx_flat = [item for sublist in lcalyx for item in sublist]
+lcalyx_flat_b = [item for sublist in lcalyx_b for item in sublist]
+lcalyx_flat_flat_b = [item for sublist in lcalyx_flat_b for item in sublist]
+plt.vlines(2*np.pi/np.mean(lcalyx_flat), 1e-8, 10, color='tab:orange')
+plt.vlines(1/np.mean(rGy_calyx[idx_list]), 1e-8, 10, color='tab:orange', ls='--')
+plt.vlines(2*np.pi/np.mean(lcalyx_flat_flat_b), 1e-8, 10, color='tab:orange', ls='dotted')
+
+idx_list = []
+lcalyx_u = []
+lcalyx_u_b = []
+for i in range(len(glo_idx_flat)):
+    idx_temp = np.where(un_calyx_tr == glo_idx_flat[i])[0][0]
+    idx_list.append(idx_temp)
+    lcalyx_u.append(LengthData.length_calyx[glo_idx_flat[i]])
+    lcalyx_u_b.append(LengthData.length_calyx_b[glo_idx_flat[i]])
+
+posavg = []
+posstd = []
+for i in range(len(Pq_calyx_pn)):
+    if len(Pq_calyx_pn[i][idx_list][Pq_calyx_pn[i][idx_list]>0]) > 0:
+        posavg.append(np.average(Pq_calyx_pn[i][idx_list][Pq_calyx_pn[i][idx_list]>0]))
+        posstd.append(np.std(Pq_calyx_pn[i][idx_list][Pq_calyx_pn[i][idx_list]>0]))
+    else:
+        posavg.append(np.nan)
+        posstd.append(np.nan)
+plt.plot(q_range[~np.isnan(posavg)], np.array(posavg)[~np.isnan(posavg)], color='tab:gray')
+plt.fill_between(q_range[~np.isnan(posavg)], 
+                 np.array(posavg)[~np.isnan(posavg)]+np.array(posstd)[~np.isnan(posavg)],
+                 np.array(posavg)[~np.isnan(posavg)]-np.array(posstd)[~np.isnan(posavg)],
+                 alpha=0.25, color='tab:gray')
+
+lcalyx_flat = [item for sublist in lcalyx_u for item in sublist]
+lcalyx_flat_b = [item for sublist in lcalyx_u_b for item in sublist]
+lcalyx_flat_flat_b = [item for sublist in lcalyx_flat_b for item in sublist]
+plt.vlines(2*np.pi/np.mean(lcalyx_flat), 1e-8, 10, color='tab:gray')
+plt.vlines(1/np.mean(rGy_calyx[idx_list]), 1e-8, 10, color='tab:gray', ls='--')
+plt.vlines(2*np.pi/np.mean(lcalyx_flat_flat_b), 1e-8, 10, color='tab:gray', ls='dotted')
 
 line1 = 1/10000*np.power(q_range, -16/7)
 line2 = 1/1000*np.power(q_range, -4/1)
@@ -10874,22 +11059,23 @@ plt.plot(q_range[15:25], line1[15:25], lw=1.5, color='tab:red')
 # plt.plot(q_range[25:35], line2[25:35], lw=1.5, color='tab:gray')
 # plt.plot(q_range, line3, lw=1.5, color='tab:purple')
 plt.plot(q_range[75:95], line4[75:95], lw=1.5, color='k')
-plt.plot(q_range[40:55], line5[40:55], lw=1.5, color='k')
+plt.plot(q_range[15:25], line5[15:25], lw=1.5, color='k')
 
 plt.text(0.02, 5e-3, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
 # plt.text(0.4, 1e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
 # plt.text(100, 1e-4, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
-plt.text(130, 3e-4, r'$\nu = 1$', fontsize=13)
+plt.text(5, 3e-4, r'$\nu = 1$', fontsize=13)
 plt.text(2, 3e-1, r'$\nu = 1$', fontsize=13)
 
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("S(q)", fontsize=15)
-plt.ylim(1e-7, 10)
-plt.xlim(1e-2, 1e3)
-# plt.savefig(Parameter.outputdir + '/Pq_mPN_AL_LH_comb_1.svg', dpi=600, bbox_inches='tight')
+plt.ylim(1e-3, 2)
+plt.xlim(1e-2, 1e1)
+# plt.savefig(Parameter.outputdir + '/Pq_mPN_calyx_comb_1.svg', dpi=600, bbox_inches='tight')
 plt.show()
+
 
 #%% Neuron morphology plot mPN
 
@@ -10915,7 +11101,7 @@ for i in un_MG_all:
             pass
         else:
             morph_line = np.vstack((listOfPoints[MorphData.morph_id[i].index(MorphData.morph_parent[i][p])], listOfPoints[p]))
-            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:red', lw=1.)
+            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='indigo', lw=1.)
             # if i == 36:
             #     ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:orange', lw=1.)
             # elif i == 53:
@@ -14990,11 +15176,28 @@ plt.show()
 
 #%% S(q) based clustering
 
+dist_Pq_AL = np.zeros((len(glo_idx_flat), len(glo_idx_flat)))
+
+for i in range(len(glo_idx_flat)):
+    for j in range(len(glo_idx_flat)):
+        iidx = np.where(un_AL_tr == glo_idx_flat[i])[0][0]
+        jidx = np.where(un_AL_tr == glo_idx_flat[j])[0][0]
+        dist_Pq_AL[i][j] = np.sqrt(np.sum(np.square((np.log10(Pq_AL_pn[17:50,iidx])) - (np.log10(Pq_AL_pn[17:50,jidx])))))
+
+dist_Pq_AL = np.divide(dist_Pq_AL, np.max(dist_Pq_AL))
+
+dist_Pq_AL = pd.DataFrame(dist_Pq_AL)
 
 
+L_AL = scipy.cluster.hierarchy.linkage(scipy.spatial.distance.squareform(dist_Pq_AL), method='complete', optimal_ordering=True)
 
-L_AL = scipy.cluster.hierarchy.linkage(scipy.spatial.distance.squareform(morph_dist_AL_r_avg), method='complete', optimal_ordering=True)
+R_AL = scipy.cluster.hierarchy.dendrogram(L_AL,
+                                       orientation='top',
+                                       distance_sort='descending',
+                                       show_leaf_counts=False)
+# ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, 0.5*dist_Pq_AL.max(), 'maxclust')
+columns_AL = R_AL['leaves']
 
-ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, 0.5*morph_dist_AL_r_avg.max(), 'maxclust')
-columns_AL = R_AL['leaves']#[morph_dist_AL_r_avg_df.columns.tolist()[i] for i in list((np.argsort(ind_AL)))]
+dist_Pq_AL = dist_Pq_AL.reindex(columns_AL, axis=0)
+dist_Pq_AL = dist_Pq_AL.reindex(columns_AL, axis=1)
 
