@@ -8657,7 +8657,7 @@ plt.ylabel("S(q)", fontsize=15)
 plt.ylim(1e-7, 10)
 plt.xlim(1e-2, 1e3)
 plt.legend(['AL', 'MB calyx', 'LH'], loc='upper right', fontsize=13)
-# plt.savefig(Parameter.outputdir + '/Pq_neuropil_8.svg', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_neuropil_8.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -10527,6 +10527,17 @@ un_calyx_nUG = np.setdiff1d(un_calyx_tr, glo_idx_flat)
 un_LH_nUG = np.setdiff1d(un_LH, glo_idx_flat)
 un_AL_nUG = np.setdiff1d(un_AL_tr, glo_idx_flat)
 
+set4 = set(un_calyx_nUG)
+set5 = set(un_LH_nUG)
+set6 = set(un_AL_nUG)
+
+set45 = set4.intersection(set5)
+set456 = set45.intersection(set6)
+
+set456 = list(set456)
+
+un_MG_all = [70, 71, 93, 94, 97, 114, 115, 136, 138, 139]
+
 un_calyx_MG = np.setdiff1d(un_calyx_nUG, un_calyx_nP)
 un_LH_MG = np.setdiff1d(un_LH_nUG, un_LH_nP)
 un_AL_MG = np.setdiff1d(un_AL_nUG, un_AL_nP)
@@ -10556,15 +10567,25 @@ un_LH_nUG_MG = [70, 71, 93, 94, 97, 114, 115, 138, 139, 149]
 idx_list = []
 
 fig = plt.figure(figsize=(6,4.5))
-for i in range(len(un_AL_nUG_MG)):
-    idx_temp = np.where(un_AL_tr == un_AL_nUG_MG[i])[0][0]
+for i in range(len(un_MG_all)):
+    idx_temp = np.where(un_AL_tr == un_MG_all[i])[0][0]
     idx_list.append(idx_temp)
-    plt.plot(q_range[Pq_AL_pn[:,idx_temp]>0], Pq_AL_pn[:,idx_temp][Pq_AL_pn[:,idx_temp]>0], color='tab:blue', alpha=0.5)
+    # plt.plot(q_range[Pq_AL_pn[:,idx_temp]>0], Pq_AL_pn[:,idx_temp][Pq_AL_pn[:,idx_temp]>0], color='tab:blue', alpha=0.5)
 
 posavg = []
+posstd = []
 for i in range(len(Pq_AL_pn)):
-    posavg.append(np.average(Pq_AL_pn[i][idx_list][Pq_AL_pn[i][idx_list]>0]))
-plt.plot(q_range, posavg, color='k')
+    if len(Pq_AL_pn[i][idx_list][Pq_AL_pn[i][idx_list]>0]) > 0:
+        posavg.append(np.average(Pq_AL_pn[i][idx_list][Pq_AL_pn[i][idx_list]>0]))
+        posstd.append(np.std(Pq_AL_pn[i][idx_list][Pq_AL_pn[i][idx_list]>0]))
+    else:
+        posavg.append(np.nan)
+        posstd.append(np.nan)
+plt.plot(q_range[~np.isnan(posavg)], np.array(posavg)[~np.isnan(posavg)], color='tab:blue')
+plt.fill_between(q_range[~np.isnan(posavg)], 
+                 np.array(posavg)[~np.isnan(posavg)]+np.array(posstd)[~np.isnan(posavg)],
+                 np.array(posavg)[~np.isnan(posavg)]-np.array(posstd)[~np.isnan(posavg)],
+                 alpha=0.5)
 
 plt.vlines(2*np.pi/np.mean(LengthData.length_AL_flat), 1e-8, 10, color='tab:blue')
 plt.vlines(1/np.mean(rGy_AL), 1e-8, 10, color='tab:blue', ls='--')
@@ -10667,8 +10688,8 @@ plt.show()
 idx_list = []
 
 fig = plt.figure(figsize=(6,4.5))
-for i in range(len(un_LH_nUG_MG)):
-    idx_temp = np.where(un_LH_tr == un_LH_nUG_MG[i])[0][0]
+for i in range(len(un_MG_all)):
+    idx_temp = np.where(un_LH_tr == un_MG_all[i])[0][0]
     idx_list.append(idx_temp)
     plt.plot(q_range[Pq_LH_pn[:,idx_temp]>0], Pq_LH_pn[:,idx_temp][Pq_LH_pn[:,idx_temp]>0], color='tab:green', alpha=0.5)
 
@@ -10782,32 +10803,66 @@ plt.show()
 idx_list = []
 
 fig = plt.figure(figsize=(6,4.5))
-for i in range(len(un_AL_nUG_MG)):
-    idx_temp = np.where(un_AL_tr == un_AL_nUG_MG[i])[0][0]
+lAL = []
+lAL_b = []
+for i in range(len(un_MG_all)):
+    idx_temp = np.where(un_AL_tr == un_MG_all[i])[0][0]
     idx_list.append(idx_temp)
-    plt.plot(q_range[Pq_AL_pn[:,idx_temp]>0], Pq_AL_pn[:,idx_temp][Pq_AL_pn[:,idx_temp]>0], color='tab:blue', alpha=0.5)
+    lAL.append(LengthData.length_AL[un_MG_all[i]])
+    lAL_b.append(LengthData.length_AL_b[un_MG_all[i]])
 
 posavg = []
+posstd = []
 for i in range(len(Pq_AL_pn)):
-    posavg.append(np.average(Pq_AL_pn[i][idx_list][Pq_AL_pn[i][idx_list]>0]))
-plt.plot(np.array(q_range)[~np.isnan(posavg)], np.array(posavg)[~np.isnan(posavg)], color='k')
+    if len(Pq_AL_pn[i][idx_list][Pq_AL_pn[i][idx_list]>0]) > 0:
+        posavg.append(np.average(Pq_AL_pn[i][idx_list][Pq_AL_pn[i][idx_list]>0]))
+        posstd.append(np.std(Pq_AL_pn[i][idx_list][Pq_AL_pn[i][idx_list]>0]))
+    else:
+        posavg.append(np.nan)
+        posstd.append(np.nan)
+plt.plot(q_range[~np.isnan(posavg)], np.array(posavg)[~np.isnan(posavg)], color='tab:blue')
+plt.fill_between(q_range[~np.isnan(posavg)], 
+                 np.array(posavg)[~np.isnan(posavg)]+np.array(posstd)[~np.isnan(posavg)],
+                 np.array(posavg)[~np.isnan(posavg)]-np.array(posstd)[~np.isnan(posavg)],
+                 alpha=0.25, color='tab:blue')
 
+lAL_flat = [item for sublist in lAL for item in sublist]
+lAL_flat_b = [item for sublist in lAL_b for item in sublist]
+lAL_flat_flat_b = [item for sublist in lAL_flat_b for item in sublist]
+plt.vlines(2*np.pi/np.mean(lAL_flat), 1e-8, 10, color='tab:blue')
+plt.vlines(1/np.mean(rGy_AL[idx_list]), 1e-8, 10, color='tab:blue', ls='--')
+plt.vlines(2*np.pi/np.mean(lAL_flat_flat_b), 1e-8, 10, color='tab:blue', ls='dotted')
 
 idx_list = []
-
-for i in range(len(un_LH_nUG_MG)):
-    idx_temp = np.where(un_LH_tr == un_LH_nUG_MG[i])[0][0]
+lLH = []
+lLH_b = []
+for i in range(len(un_MG_all)):
+    idx_temp = np.where(un_LH_tr == un_MG_all[i])[0][0]
     idx_list.append(idx_temp)
-    plt.plot(q_range[Pq_LH_pn[:,idx_temp]>0], Pq_LH_pn[:,idx_temp][Pq_LH_pn[:,idx_temp]>0], color='tab:green', alpha=0.5)
+    lLH.append(LengthData.length_LH[un_MG_all[i]])
+    lLH_b.append(LengthData.length_LH_b[un_MG_all[i]])
 
 posavg = []
+posstd = []
 for i in range(len(Pq_LH_pn)):
-    posavg.append(np.average(Pq_LH_pn[i][idx_list][Pq_LH_pn[i][idx_list]>0]))
-plt.plot(np.array(q_range)[~np.isnan(posavg)], np.array(posavg)[~np.isnan(posavg)], color='k')
+    if len(Pq_LH_pn[i][idx_list][Pq_LH_pn[i][idx_list]>0]) > 0:
+        posavg.append(np.average(Pq_LH_pn[i][idx_list][Pq_LH_pn[i][idx_list]>0]))
+        posstd.append(np.std(Pq_LH_pn[i][idx_list][Pq_LH_pn[i][idx_list]>0]))
+    else:
+        posavg.append(np.nan)
+        posstd.append(np.nan)
+plt.plot(q_range[~np.isnan(posavg)], np.array(posavg)[~np.isnan(posavg)], color='tab:green')
+plt.fill_between(q_range[~np.isnan(posavg)], 
+                 np.array(posavg)[~np.isnan(posavg)]+np.array(posstd)[~np.isnan(posavg)],
+                 np.array(posavg)[~np.isnan(posavg)]-np.array(posstd)[~np.isnan(posavg)],
+                 alpha=0.25, color='tab:green')
 
-plt.vlines(2*np.pi/np.mean(LengthData.length_LH_flat), 1e-8, 10, color='tab:green')
-plt.vlines(1/np.mean(rGy_LH), 1e-8, 10, color='tab:green', ls='--')
-plt.vlines(2*np.pi/np.mean(LengthData.length_LH_b_flat), 1e-8, 10, color='tab:green', ls='dotted')
+lLH_flat = [item for sublist in lLH for item in sublist]
+lLH_flat_b = [item for sublist in lLH_b for item in sublist]
+lLH_flat_flat_b = [item for sublist in lLH_flat_b for item in sublist]
+plt.vlines(2*np.pi/np.mean(lLH_flat), 1e-8, 10, color='tab:green')
+plt.vlines(1/np.mean(rGy_LH[idx_list]), 1e-8, 10, color='tab:green', ls='--')
+plt.vlines(2*np.pi/np.mean(lLH_flat_flat_b), 1e-8, 10, color='tab:green', ls='dotted')
 
 line1 = 1/10000*np.power(q_range, -16/7)
 line2 = 1/1000*np.power(q_range, -4/1)
@@ -10830,49 +10885,55 @@ plt.text(2, 3e-1, r'$\nu = 1$', fontsize=13)
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("F(q)", fontsize=15)
+plt.ylabel("S(q)", fontsize=15)
 plt.ylim(1e-7, 10)
 plt.xlim(1e-2, 1e3)
-# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_LH_full_5.png', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_mPN_AL_LH_comb_1.svg', dpi=600, bbox_inches='tight')
 plt.show()
 
 #%% Neuron morphology plot mPN
 
-# for k in range(len(aver)):
 fig = plt.figure(figsize=(8, 8))
 ax = plt.axes(projection='3d')
 ax.set_box_aspect((1,1,1))
-cmap = cm.get_cmap('jet', len(un_AL_MG))
-for f in range(len(glo_idx_flat)):
-    glo_n = glo_idx_flat[f]
-    isglo = [i for i, idx in enumerate(un_AL_MG) if glo_n in idx]
-    listOfPoints = MorphData.morph_dist[glo_n]
-    for p in range(len(MorphData.morph_parent[glo_n])):
-        if MorphData.morph_parent[glo_n][p] < 0:
+for f in glo_idx_flat:
+    listOfPoints = MorphData.morph_dist[f]
+    for p in range(len(MorphData.morph_parent[f])):
+        if MorphData.morph_parent[f][p] < 0:
             pass
         else:
-            morph_line = np.vstack((listOfPoints[MorphData.morph_id[glo_n].index(MorphData.morph_parent[glo_n][p])], listOfPoints[p]))
-            if len(isglo) > 0:
+            morph_line = np.vstack((listOfPoints[MorphData.morph_id[f].index(MorphData.morph_parent[f][p])], listOfPoints[p]))
+            if f in un_MG_all:
                 pass
             else:
                 ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='gray', lw=0.25, alpha=0.25)
                 
-for f in range(len(un_AL_MG)):
-    for j in range(len(un_AL_MG[f])):
-        glo_n = un_AL_MG[f][j]
-        listOfPoints = MorphData.morph_dist[glo_n]
-        for p in range(len(MorphData.morph_parent[glo_n])):
-            if MorphData.morph_parent[glo_n][p] < 0:
-                pass
-            else:
-                morph_line = np.vstack((listOfPoints[MorphData.morph_id[glo_n].index(MorphData.morph_parent[glo_n][p])], listOfPoints[p]))
-                ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color=cmap(f), lw=1.)
+for i in un_MG_all:
+    listOfPoints = MorphData.morph_dist[i]
+    for p in range(len(MorphData.morph_parent[i])):
+        if MorphData.morph_parent[i][p] < 0:
+            pass
+        else:
+            morph_line = np.vstack((listOfPoints[MorphData.morph_id[i].index(MorphData.morph_parent[i][p])], listOfPoints[p]))
+            ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:red', lw=1.)
+            # if i == 36:
+            #     ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:orange', lw=1.)
+            # elif i == 53:
+            #     ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:green', lw=1.)
+            # else:
+            #     ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='tab:blue', lw=1.)
 ax.axis('off')
-
 ax.set_xlim(440, 580)
 ax.set_ylim(350, 210)
 ax.set_zlim(30, 170)
-# plt.savefig(os.path.join(Parameter.outputdir, 'neurons_all_mPN_1.png'), dpi=600, bbox_inches='tight', transparent=True)
+# ax.grid(True)
+# ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+# ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+# ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+# ax.set_xticklabels([])
+# ax.set_yticklabels([])
+# ax.set_zticklabels([])
+# plt.savefig(Parameter.outputdir + '/mPN_full_2', dpi=600, bbox_inches='tight', transparent=True)
 plt.show()
 
 #%% form factor per neurite plotting
@@ -14925,4 +14986,15 @@ plt.tight_layout()
 # plt.savefig(Parameter.outputdir + '/poster_all_2.pdf', dpi=600, bbox_inches='tight')
 # fig.clf()
 plt.show()
+
+
+#%% S(q) based clustering
+
+
+
+
+L_AL = scipy.cluster.hierarchy.linkage(scipy.spatial.distance.squareform(morph_dist_AL_r_avg), method='complete', optimal_ordering=True)
+
+ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, 0.5*morph_dist_AL_r_avg.max(), 'maxclust')
+columns_AL = R_AL['leaves']#[morph_dist_AL_r_avg_df.columns.tolist()[i] for i in list((np.argsort(ind_AL)))]
 
