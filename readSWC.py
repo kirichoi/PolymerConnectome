@@ -15184,20 +15184,112 @@ for i in range(len(glo_idx_flat)):
         jidx = np.where(un_AL_tr == glo_idx_flat[j])[0][0]
         dist_Pq_AL[i][j] = np.sqrt(np.sum(np.square((np.log10(Pq_AL_pn[17:50,iidx])) - (np.log10(Pq_AL_pn[17:50,jidx])))))
 
-dist_Pq_AL = np.divide(dist_Pq_AL, np.max(dist_Pq_AL))
+# dist_Pq_AL = np.divide(dist_Pq_AL, np.max(dist_Pq_AL))
 
-dist_Pq_AL = pd.DataFrame(dist_Pq_AL)
+
 
 
 L_AL = scipy.cluster.hierarchy.linkage(scipy.spatial.distance.squareform(dist_Pq_AL), method='complete', optimal_ordering=True)
 
+ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, 0.3*dist_Pq_AL.max(), 'distance')
+
+fig, ax = plt.subplots(figsize=(12, 4))
 R_AL = scipy.cluster.hierarchy.dendrogram(L_AL,
                                        orientation='top',
+                                       labels=ind_AL,
                                        distance_sort='descending',
                                        show_leaf_counts=False)
-# ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, 0.5*dist_Pq_AL.max(), 'maxclust')
+ax.set_yticks([])
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
+ax.spines["bottom"].set_visible(False)
+ax.spines["left"].set_visible(False)
+# plt.savefig(Parameter.outputdir + '/hier_Sq_AL.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
 columns_AL = R_AL['leaves']
+
+dist_Pq_AL = pd.DataFrame(dist_Pq_AL)
 
 dist_Pq_AL = dist_Pq_AL.reindex(columns_AL, axis=0)
 dist_Pq_AL = dist_Pq_AL.reindex(columns_AL, axis=1)
+
+
+dist_Pq_LH = np.zeros((len(glo_idx_flat), len(glo_idx_flat)))
+
+for i in range(len(glo_idx_flat)):
+    for j in range(len(glo_idx_flat)):
+        iidx = np.where(un_LH_tr == glo_idx_flat[i])[0][0]
+        jidx = np.where(un_LH_tr == glo_idx_flat[j])[0][0]
+        dist_Pq_LH[i][j] = np.sqrt(np.sum(np.square((np.log10(Pq_LH_pn[17:50,iidx])) - (np.log10(Pq_LH_pn[17:50,jidx])))))
+
+# dist_Pq_LH = np.divide(dist_Pq_LH, np.max(dist_Pq_LH))
+
+
+
+
+L_LH = scipy.cluster.hierarchy.linkage(scipy.spatial.distance.squareform(dist_Pq_LH), method='complete', optimal_ordering=True)
+
+ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, 0.3*dist_Pq_LH.max(), 'distance')
+
+fig, ax = plt.subplots(figsize=(12, 4))
+R_LH = scipy.cluster.hierarchy.dendrogram(L_LH,
+                                       orientation='top',
+                                       labels=ind_LH,
+                                       distance_sort='descending',
+                                       show_leaf_counts=False)
+ax.set_yticks([])
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
+ax.spines["bottom"].set_visible(False)
+ax.spines["left"].set_visible(False)
+# plt.savefig(Parameter.outputdir + '/hier_Sq_LH.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+columns_LH = R_LH['leaves']
+
+dist_Pq_LH = pd.DataFrame(dist_Pq_LH)
+
+dist_Pq_LH = dist_Pq_LH.reindex(columns_LH, axis=0)
+dist_Pq_LH = dist_Pq_LH.reindex(columns_LH, axis=1)
+
+
+dist_Pq_calyx = np.zeros((len(glo_idx_flat), len(glo_idx_flat)))
+
+for i in range(len(glo_idx_flat)):
+    for j in range(len(glo_idx_flat)):
+        iidx = np.where(un_calyx_tr == glo_idx_flat[i])[0][0]
+        jidx = np.where(un_calyx_tr == glo_idx_flat[j])[0][0]
+        dist_Pq_calyx[i][j] = np.sqrt(np.sum(np.square((np.log10(Pq_calyx_pn[17:50,iidx])) - (np.log10(Pq_calyx_pn[17:50,jidx])))))
+
+# dist_Pq_calyx = np.divide(dist_Pq_calyx, np.max(dist_Pq_calyx))
+
+
+
+
+L_calyx = scipy.cluster.hierarchy.linkage(scipy.spatial.distance.squareform(dist_Pq_calyx), method='complete', optimal_ordering=True)
+
+ind_calyx = scipy.cluster.hierarchy.fcluster(L_calyx, 0.3*dist_Pq_calyx.max(), 'distance')
+
+fig, ax = plt.subplots(figsize=(12, 4))
+R_calyx = scipy.cluster.hierarchy.dendrogram(L_calyx,
+                                       orientation='top',
+                                       labels=ind_calyx,
+                                       distance_sort='descending',
+                                       show_leaf_counts=False)
+ax.set_yticks([])
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
+ax.spines["bottom"].set_visible(False)
+ax.spines["left"].set_visible(False)
+# plt.savefig(Parameter.outputdir + '/hier_Sq_calyx.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+columns_calyx = R_calyx['leaves']
+
+
+dist_Pq_calyx = pd.DataFrame(dist_Pq_calyx)
+
+dist_Pq_calyx = dist_Pq_calyx.reindex(columns_calyx, axis=0)
+dist_Pq_calyx = dist_Pq_calyx.reindex(columns_calyx, axis=1)
 
