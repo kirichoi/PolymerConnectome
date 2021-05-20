@@ -8653,7 +8653,7 @@ plt.text(40, 1e-5, r'$\nu = 1$', fontsize=13)
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("S(q)", fontsize=15)
+plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-7, 10)
 plt.xlim(1e-2, 1e3)
 plt.legend(['AL', 'MB calyx', 'LH'], loc='upper right', fontsize=13)
@@ -10075,7 +10075,7 @@ plt.text(50, 6e-3, r'$\nu = 1$', fontsize=13)
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("S(q)", fontsize=15)
+plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-7, 10)
 plt.xlim(1e-2, 1e3)
 # plt.savefig(Parameter.outputdir + '/Pq_per_neuron_AL_full_6.svg', dpi=600, bbox_inches='tight')
@@ -10140,7 +10140,7 @@ plt.text(50, 6e-3, r'$\nu = 1$', fontsize=13)
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("S(q)", fontsize=15)
+plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-7, 10)
 plt.xlim(1e-2, 1e3)
 # plt.savefig(Parameter.outputdir + '/Pq_per_neuron_LH_full_6.svg', dpi=600, bbox_inches='tight')
@@ -10206,7 +10206,7 @@ plt.text(50, 6e-3, r'$\nu = 1$', fontsize=13)
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("S(q)", fontsize=15)
+plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-7, 10)
 plt.xlim(1e-2, 1e3)
 # plt.savefig(Parameter.outputdir + '/Pq_per_neuron_calyx_full_6.svg', dpi=600, bbox_inches='tight')
@@ -10885,7 +10885,7 @@ plt.text(2, 3e-1, r'$\nu = 1$', fontsize=13)
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("S(q)", fontsize=15)
+plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-3, 2)
 plt.xlim(1e-2, 1e1)
 # plt.savefig(Parameter.outputdir + '/Pq_mPN_AL_comb_1.svg', dpi=600, bbox_inches='tight')
@@ -10978,7 +10978,7 @@ plt.text(2, 3e-1, r'$\nu = 1$', fontsize=13)
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("S(q)", fontsize=15)
+plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-3, 2)
 plt.xlim(1e-2, 1e1)
 # plt.savefig(Parameter.outputdir + '/Pq_mPN_LH_comb_1.svg', dpi=600, bbox_inches='tight')
@@ -11070,7 +11070,7 @@ plt.text(2, 3e-1, r'$\nu = 1$', fontsize=13)
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("S(q)", fontsize=15)
+plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-3, 2)
 plt.xlim(1e-2, 1e1)
 # plt.savefig(Parameter.outputdir + '/Pq_mPN_calyx_comb_1.svg', dpi=600, bbox_inches='tight')
@@ -11970,7 +11970,7 @@ aniso = 3/2*np.sum(np.square(w))/np.square(np.sum(w)) - 1/2
 # 147 - 62434
 # 159 - 775731
 
-nid = 106
+nid = 36
 
 calyxdist_trk_temp = copy.deepcopy(np.unique(MorphData.calyxdist_trk))
 calyxdist_trk_temp = np.delete(calyxdist_trk_temp, [40, 41])
@@ -12017,10 +12017,10 @@ plt.text(0.4, 3e-1, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("S(q)", fontsize=15)
+plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-3, 2)
 plt.xlim(1e-2, 1e1)
-# plt.savefig(Parameter.outputdir + '/Pq_24726_pn_AL_2.svg', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_27048_pn_AL_2.svg', dpi=600, bbox_inches='tight')
 plt.show()
 
 
@@ -12052,10 +12052,10 @@ plt.text(0.6, 1.2e-1, r'$\nu = 1$', fontsize=13)
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("S(q)", fontsize=15)
+plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-3, 2)
 plt.xlim(1e-2, 1e1)
-# plt.savefig(Parameter.outputdir + '/Pq_24726_pn_calyx_2.svg', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_27048_pn_calyx_2.svg', dpi=600, bbox_inches='tight')
 plt.show()
 
 
@@ -12087,14 +12087,14 @@ plt.text(1.1, 1.5e-1, r'$\nu = 1$', fontsize=13)
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("S(q)", fontsize=15)
+plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-3, 2)
 plt.xlim(1e-2, 1e1)
-# plt.savefig(Parameter.outputdir + '/Pq_24726_pn_LH_2.svg', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_27048_pn_LH_2.svg', dpi=600, bbox_inches='tight')
 plt.show()
 
 
-#%% INDEXING ALL uPN S(q)
+#%% INDEXING ALL uPN F(q)
 
 
 calyxdist_trk_temp = copy.deepcopy(np.unique(MorphData.calyxdist_trk))
@@ -12148,7 +12148,7 @@ for i in glo_idx_flat:
     plt.xscale('log')
     plt.yscale('log')
     plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-    plt.ylabel("S(q)", fontsize=15)
+    plt.ylabel("F(q)", fontsize=15)
     plt.ylim(1e-3, 2)
     plt.xlim(1e-2, 1e1)
     plt.savefig(Parameter.outputdir + '/test/' + str(i) + '.png', dpi=96, bbox_inches='tight')
@@ -12221,7 +12221,7 @@ plt.text(0.4, 3e-1, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("S(q)", fontsize=15)
+plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-3, 2)
 plt.xlim(1e-2, 1e1)
 # plt.savefig(Parameter.outputdir + '/Pq_27048_pn_AL_1.svg', dpi=600, bbox_inches='tight')
@@ -12264,7 +12264,7 @@ plt.text(1.1, 1.5e-1, r'$\nu = 1$', fontsize=13)
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("S(q)", fontsize=15)
+plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-3, 2)
 plt.xlim(1e-2, 1e1)
 # plt.savefig(Parameter.outputdir + '/Pq_27048_pn_LH_1.svg', dpi=600, bbox_inches='tight')
@@ -12310,7 +12310,7 @@ plt.text(0.6, 1.2e-1, r'$\nu = 1$', fontsize=13)
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("S(q)", fontsize=15)
+plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-3, 2)
 plt.xlim(1e-2, 1e1)
 # plt.savefig(Parameter.outputdir + '/Pq_27048_pn_calyx_1.svg', dpi=600, bbox_inches='tight')
@@ -13652,10 +13652,6 @@ plt.text(10.3, 1-0.01,' Rigid')
 plt.vlines(2*np.pi/np.mean(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue')
 plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange')
 plt.vlines(2*np.pi/np.mean(LengthData.length_LH_flat), 1e-6, 10, color='tab:green')
-
-plt.vlines(2*np.pi/np.mean(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue', ls='dotted')
-plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange', ls='dotted')
-plt.vlines(2*np.pi/np.mean(LengthData.length_LH_flat), 1e-6, 10, color='tab:green', ls='dotted')
 
 plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
 plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
@@ -15174,29 +15170,67 @@ plt.tight_layout()
 plt.show()
 
 
-#%% S(q) based clustering
+#%% F(q) based clustering
+
+import sklearn
+
+un_calyx_tr = np.delete(un_calyx, [40, 41], 0)
+un_AL_tr = np.delete(un_AL, 73, 0)
+un_LH_tr = un_LH
 
 dist_Pq_AL = np.zeros((len(glo_idx_flat), len(glo_idx_flat)))
+
+AL_i1 = np.argmin(np.abs(q_range - 1/np.mean(rGy_AL)))
+AL_i2 = np.argmin(np.abs(q_range - 2*np.pi/np.mean(LengthData.length_AL_flat)))+1
 
 for i in range(len(glo_idx_flat)):
     for j in range(len(glo_idx_flat)):
         iidx = np.where(un_AL_tr == glo_idx_flat[i])[0][0]
         jidx = np.where(un_AL_tr == glo_idx_flat[j])[0][0]
-        dist_Pq_AL[i][j] = np.sqrt(np.sum(np.square((np.log10(Pq_AL_pn[17:50,iidx])) - (np.log10(Pq_AL_pn[17:50,jidx])))))
+        dist_Pq_AL[i][j] = np.sqrt(np.sum(np.square((np.log10(Pq_AL_pn[AL_i1:AL_i2,iidx])) 
+                                                    - (np.log10(Pq_AL_pn[AL_i1:AL_i2,jidx])))))
 
-# dist_Pq_AL = np.divide(dist_Pq_AL, np.max(dist_Pq_AL))
+L_AL = scipy.cluster.hierarchy.linkage(scipy.spatial.distance.squareform(dist_Pq_AL), 
+                                       method='complete', optimal_ordering=True)
+
+a = []
+for k in np.arange(0.1, 1, .01):
+    ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, k*dist_Pq_AL.max(), 'distance')
+    a.append(sklearn.metrics.silhouette_score(dist_Pq_AL, ind_AL, metric="precomputed"))
+
+fig, ax = plt.subplots(figsize=(4, 3))
+plt.plot(np.arange(0.1, 1, .01), a)
+plt.plot(np.arange(0.1, 1, .01)[:-1]+0.01, np.diff(a))
+plt.ylabel('Silhouette Coefficients', fontsize=12)
+plt.xlabel('Normalized Cluster Distance', fontsize=12)
+plt.show()
 
 
+for j in np.arange(2, 10, 1):
+    l = 0
+    ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, j, 'maxclust')
+    a = sklearn.metrics.silhouette_score(dist_Pq_AL, ind_AL, metric="precomputed")
+    b = sklearn.metrics.silhouette_samples(dist_Pq_AL, ind_AL, metric="precomputed")
+    fig, ax = plt.subplots(figsize=(4, 3))
+    for i in np.arange(1, j+1):
+        if len(np.where(ind_AL==i)[0]) == 1:
+            plt.scatter(np.arange(0, len(ind_AL))[l:l+len(np.where(ind_AL==i)[0])], np.sort(b[ind_AL==i]), lw=3)
+        else:
+            plt.plot(np.arange(0, len(ind_AL))[l:l+len(np.where(ind_AL==i)[0])], np.sort(b[ind_AL==i]), lw=3)
+        l = l + len(np.where(ind_AL==i)[0])
+    plt.hlines(a, 0, len(ind_AL))
+    plt.title('N = ' + str(j), fontsize=15)
+    plt.ylabel('Silhouette Coefficients', fontsize=12)
+    plt.show()
 
 
-L_AL = scipy.cluster.hierarchy.linkage(scipy.spatial.distance.squareform(dist_Pq_AL), method='complete', optimal_ordering=True)
+ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, 0.61*dist_Pq_AL.max(), 'distance')
 
-ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, 0.3*dist_Pq_AL.max(), 'distance')
-
-fig, ax = plt.subplots(figsize=(12, 4))
+fig, ax = plt.subplots(figsize=(12, 3))
 R_AL = scipy.cluster.hierarchy.dendrogram(L_AL,
                                        orientation='top',
-                                       labels=ind_AL,
+                                       labels=np.array(MorphData.neuron_id)[glo_idx_flat],
+                                       color_threshold=0.61*np.max(L_AL[:,2]),
                                        distance_sort='descending',
                                        show_leaf_counts=False)
 ax.set_yticks([])
@@ -15204,38 +15238,71 @@ ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
 ax.spines["bottom"].set_visible(False)
 ax.spines["left"].set_visible(False)
-# plt.savefig(Parameter.outputdir + '/hier_Sq_AL.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/hier_Sq_AL_2.svg', dpi=300, bbox_inches='tight')
 plt.show()
 
 columns_AL = R_AL['leaves']
 
-dist_Pq_AL = pd.DataFrame(dist_Pq_AL)
+# dist_Pq_AL = pd.DataFrame(dist_Pq_AL)
 
-dist_Pq_AL = dist_Pq_AL.reindex(columns_AL, axis=0)
-dist_Pq_AL = dist_Pq_AL.reindex(columns_AL, axis=1)
+# dist_Pq_AL = dist_Pq_AL.reindex(columns_AL, axis=0)
+# dist_Pq_AL = dist_Pq_AL.reindex(columns_AL, axis=1)
 
+
+# LH
 
 dist_Pq_LH = np.zeros((len(glo_idx_flat), len(glo_idx_flat)))
+
+LH_i1 = np.argmin(np.abs(q_range - 1/np.mean(rGy_LH)))+1
+LH_i2 = np.argmin(np.abs(q_range - 2*np.pi/np.mean(LengthData.length_LH_flat)))+1
 
 for i in range(len(glo_idx_flat)):
     for j in range(len(glo_idx_flat)):
         iidx = np.where(un_LH_tr == glo_idx_flat[i])[0][0]
         jidx = np.where(un_LH_tr == glo_idx_flat[j])[0][0]
-        dist_Pq_LH[i][j] = np.sqrt(np.sum(np.square((np.log10(Pq_LH_pn[17:50,iidx])) - (np.log10(Pq_LH_pn[17:50,jidx])))))
+        dist_Pq_LH[i][j] = np.sqrt(np.sum(np.square((np.log10(Pq_LH_pn[LH_i1:LH_i2,iidx])) 
+                                                    - (np.log10(Pq_LH_pn[LH_i1:LH_i2,jidx])))))
 
-# dist_Pq_LH = np.divide(dist_Pq_LH, np.max(dist_Pq_LH))
+L_LH = scipy.cluster.hierarchy.linkage(scipy.spatial.distance.squareform(dist_Pq_LH),
+                                       method='complete', optimal_ordering=True)
+
+a = []
+for k in np.arange(0.1, 1, .01):
+    ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, k*dist_Pq_LH.max(), 'distance')
+    a.append(sklearn.metrics.silhouette_score(dist_Pq_LH, ind_LH, metric="precomputed"))
+
+fig, ax = plt.subplots(figsize=(4, 3))
+plt.plot(np.arange(0.1, 1, .01), a)
+plt.plot(np.arange(0.1, 1, .01)[:-1]+0.01, np.diff(a))
+plt.ylabel('Silhouette Coefficients', fontsize=12)
+plt.xlabel('Normalized Cluster Distance', fontsize=12)
+plt.show()
+
+for j in np.arange(2, 10, 1):
+    l = 0
+    ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, j, 'maxclust')
+    a = sklearn.metrics.silhouette_score(dist_Pq_LH, ind_LH, metric="precomputed")
+    b = sklearn.metrics.silhouette_samples(dist_Pq_LH, ind_LH, metric="precomputed")
+    fig, ax = plt.subplots(figsize=(4, 3))
+    for i in np.arange(1, j+1):
+        if len(np.where(ind_LH==i)[0]) == 1:
+            plt.scatter(np.arange(0, len(ind_LH))[l:l+len(np.where(ind_LH==i)[0])], np.sort(b[ind_LH==i]), lw=3)
+        else:
+            plt.plot(np.arange(0, len(ind_LH))[l:l+len(np.where(ind_LH==i)[0])], np.sort(b[ind_LH==i]), lw=3)
+        l = l + len(np.where(ind_LH==i)[0])
+    plt.hlines(a, 0, len(ind_LH))
+    plt.title('N = ' + str(j), fontsize=15)
+    plt.ylabel('Silhouette Coefficients', fontsize=12)
+    plt.show()
 
 
+ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, 0.51*dist_Pq_LH.max(), 'distance')
 
-
-L_LH = scipy.cluster.hierarchy.linkage(scipy.spatial.distance.squareform(dist_Pq_LH), method='complete', optimal_ordering=True)
-
-ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, 0.3*dist_Pq_LH.max(), 'distance')
-
-fig, ax = plt.subplots(figsize=(12, 4))
+fig, ax = plt.subplots(figsize=(12, 3))
 R_LH = scipy.cluster.hierarchy.dendrogram(L_LH,
                                        orientation='top',
-                                       labels=ind_LH,
+                                       labels=np.array(MorphData.neuron_id)[glo_idx_flat],
+                                       color_threshold=0.51*np.max(L_LH[:,2]),
                                        distance_sort='descending',
                                        show_leaf_counts=False)
 ax.set_yticks([])
@@ -15243,38 +15310,71 @@ ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
 ax.spines["bottom"].set_visible(False)
 ax.spines["left"].set_visible(False)
-# plt.savefig(Parameter.outputdir + '/hier_Sq_LH.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/hier_Sq_LH_2.svg', dpi=300, bbox_inches='tight')
 plt.show()
 
 columns_LH = R_LH['leaves']
 
-dist_Pq_LH = pd.DataFrame(dist_Pq_LH)
+# dist_Pq_LH = pd.DataFrame(dist_Pq_LH)
 
-dist_Pq_LH = dist_Pq_LH.reindex(columns_LH, axis=0)
-dist_Pq_LH = dist_Pq_LH.reindex(columns_LH, axis=1)
+# dist_Pq_LH = dist_Pq_LH.reindex(columns_LH, axis=0)
+# dist_Pq_LH = dist_Pq_LH.reindex(columns_LH, axis=1)
 
+
+# Calyx
 
 dist_Pq_calyx = np.zeros((len(glo_idx_flat), len(glo_idx_flat)))
+
+calyx_i1 = np.argmin(np.abs(q_range - 1/np.mean(rGy_calyx)))
+calyx_i2 = np.argmin(np.abs(q_range - 2*np.pi/np.mean(LengthData.length_calyx_flat)))+1
 
 for i in range(len(glo_idx_flat)):
     for j in range(len(glo_idx_flat)):
         iidx = np.where(un_calyx_tr == glo_idx_flat[i])[0][0]
         jidx = np.where(un_calyx_tr == glo_idx_flat[j])[0][0]
-        dist_Pq_calyx[i][j] = np.sqrt(np.sum(np.square((np.log10(Pq_calyx_pn[17:50,iidx])) - (np.log10(Pq_calyx_pn[17:50,jidx])))))
+        dist_Pq_calyx[i][j] = np.sqrt(np.sum(np.square((np.log10(Pq_calyx_pn[calyx_i1:calyx_i2,iidx])) 
+                                                       - (np.log10(Pq_calyx_pn[calyx_i1:calyx_i2,jidx])))))
 
-# dist_Pq_calyx = np.divide(dist_Pq_calyx, np.max(dist_Pq_calyx))
+L_calyx = scipy.cluster.hierarchy.linkage(scipy.spatial.distance.squareform(dist_Pq_calyx),
+                                          method='complete', optimal_ordering=True)
+
+a = []
+for k in np.arange(0.1, 1, .01):
+    ind_calyx = scipy.cluster.hierarchy.fcluster(L_calyx, k*dist_Pq_calyx.max(), 'distance')
+    a.append(sklearn.metrics.silhouette_score(dist_Pq_calyx, ind_calyx, metric="precomputed"))
+
+fig, ax = plt.subplots(figsize=(4, 3))
+plt.plot(np.arange(0.1, 1, .01), a)
+plt.plot(np.arange(0.1, 1, .01)[:-1]+0.01, np.diff(a))
+plt.ylabel('Silhouette Coefficients', fontsize=12)
+plt.xlabel('Normalized Cluster Distance', fontsize=12)
+plt.show()
+
+for j in np.arange(2, 10, 1):
+    l = 0
+    ind_calyx = scipy.cluster.hierarchy.fcluster(L_calyx, j, 'maxclust')
+    a = sklearn.metrics.silhouette_score(dist_Pq_calyx, ind_calyx, metric="precomputed")
+    b = sklearn.metrics.silhouette_samples(dist_Pq_calyx, ind_calyx, metric="precomputed")
+    fig, ax = plt.subplots(figsize=(4, 3))
+    for i in np.arange(1, j+1):
+        if len(np.where(ind_calyx==i)[0]) == 1:
+            plt.scatter(np.arange(0, len(ind_calyx))[l:l+len(np.where(ind_calyx==i)[0])], np.sort(b[ind_calyx==i]), lw=3)
+        else:
+            plt.plot(np.arange(0, len(ind_calyx))[l:l+len(np.where(ind_calyx==i)[0])], np.sort(b[ind_calyx==i]), lw=3)
+        l = l + len(np.where(ind_calyx==i)[0])
+    plt.hlines(a, 0, len(ind_calyx))
+    plt.title('N = ' + str(j), fontsize=15)
+    plt.ylabel('Silhouette Coefficients', fontsize=12)
+    plt.show()
 
 
+ind_calyx = scipy.cluster.hierarchy.fcluster(L_calyx, 0.5*dist_Pq_calyx.max(), 'distance')
 
-
-L_calyx = scipy.cluster.hierarchy.linkage(scipy.spatial.distance.squareform(dist_Pq_calyx), method='complete', optimal_ordering=True)
-
-ind_calyx = scipy.cluster.hierarchy.fcluster(L_calyx, 0.3*dist_Pq_calyx.max(), 'distance')
-
-fig, ax = plt.subplots(figsize=(12, 4))
+fig, ax = plt.subplots(figsize=(12, 3))
 R_calyx = scipy.cluster.hierarchy.dendrogram(L_calyx,
                                        orientation='top',
-                                       labels=ind_calyx,
+                                       labels=np.array(MorphData.neuron_id)[glo_idx_flat],
+                                       color_threshold=0.5*np.max(L_calyx[:,2]),
                                        distance_sort='descending',
                                        show_leaf_counts=False)
 ax.set_yticks([])
@@ -15282,14 +15382,602 @@ ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
 ax.spines["bottom"].set_visible(False)
 ax.spines["left"].set_visible(False)
-# plt.savefig(Parameter.outputdir + '/hier_Sq_calyx.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/hier_Sq_calyx_2.svg', dpi=300, bbox_inches='tight')
 plt.show()
 
 columns_calyx = R_calyx['leaves']
 
 
-dist_Pq_calyx = pd.DataFrame(dist_Pq_calyx)
+# dist_Pq_calyx = pd.DataFrame(dist_Pq_calyx)
 
-dist_Pq_calyx = dist_Pq_calyx.reindex(columns_calyx, axis=0)
-dist_Pq_calyx = dist_Pq_calyx.reindex(columns_calyx, axis=1)
+# dist_Pq_calyx = dist_Pq_calyx.reindex(columns_calyx, axis=0)
+# dist_Pq_calyx = dist_Pq_calyx.reindex(columns_calyx, axis=1)
 
+
+#%% F(q) based clustering plotting AL
+
+# [array([ 15,  62, 123, 134, 152]),
+#  array([ 19,  22,  24,  68,  74,  86,  91,  92, 121, 127, 129, 130, 148]),
+#  array([  8,  11,  13,  20,  21,  23,  29,  30,  31,  33,  34,  37,  39,
+#          51,  54,  59,  63,  64,  66,  75,  76,  80,  81,  82,  84,  90,
+#          96,  98,  99, 101, 104, 107, 109, 110, 111, 112, 117, 119, 120,
+#         122, 124, 126, 132, 133, 137, 140, 144, 145, 150, 151, 153, 156,
+#         158, 159]),
+#  array([  6,  18,  25,  27,  35,  53,  57,  67,  69,  72,  83,  85,  87,
+#         102, 105, 106, 108, 113, 116, 118, 125, 128, 142, 147, 155]),
+#  array([ 38,  77,  79, 141]),
+#  array([ 12,  28,  32,  36,  52,  60,  78,  95, 131, 146])]
+
+
+nid = 131
+
+ALnid = np.where(np.array(MorphData.ALdist_trk) == nid)[0]
+
+fig, ax = plt.subplots(figsize=(8,8))
+ax.axis('off')
+
+for i in range(len(ALnid)):
+    listOfPoints = MorphData.ALdist[ALnid[i]]
+    for f in range(len(listOfPoints)-1):
+        morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+        plt.plot(morph_line[:,0], morph_line[:,2], color='tab:blue', lw=2)
+ax.set_xlim(510, 590)
+ax.set_ylim(0, 70)
+# plt.savefig(Parameter.outputdir + '/clust_val_AL_n_proj_' + str(nid) + '.png', dpi=600, bbox_inches='tight', transparent=True)
+plt.show()
+
+
+ALnid = np.where(un_AL_tr == nid)[0][0]
+
+fig = plt.figure(figsize=(4,3))
+AL_q_idx = first_consecutive(np.where(Pq_AL_pn[:,ALnid] > 0)[0])
+AL_q_idx = len(Pq_AL_pn[:,ALnid])
+plt.plot(q_range[Pq_AL_pn[:,ALnid]>0], Pq_AL_pn[Pq_AL_pn[:,ALnid]>0,ALnid], lw=3, color='tab:blue')
+
+plt.vlines(2*np.pi/np.mean(LengthData.length_AL[nid]), 1e-6, 10, color='tab:blue', lw=1.5)
+plt.vlines(1/rGy_AL[ALnid], 1e-6, 10, color='tab:blue', ls='--', lw=1.5)
+
+line1 = 1/30*np.power(q_range, -16/7)
+line2 = 1/30*np.power(q_range, -4/1)
+line3 = 1/50*np.power(q_range, -1/0.388)
+line4 = 1/10*np.power(q_range, -1)
+line5 = 1/20*np.power(q_range, -2/1)
+
+# plt.plot(q_range[32:38], line1[32:38], lw=1.5, color='tab:red')
+# plt.plot(q_range[32:38], line2[32:38], lw=1.5, color='tab:gray')
+# plt.plot(q_range[26:31], line3[26:31], lw=1.5, color='tab:purple')
+# plt.plot(q_range[33:47], line4[33:47], lw=1.5, color='k')
+# plt.plot(q_range[37:47], line5[37:47], lw=1.5, color='tab:pink')
+
+# plt.text(0.6, 1.5e-1, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
+# plt.text(0.8, 3e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
+# plt.text(0.3, 6e-1, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
+# plt.text(1.1, 1.5e-1, r'$\nu = 1$', fontsize=13)
+# plt.text(1.1, 0.6e-1, r'$\nu = \dfrac{1}{2}$', fontsize=13, color='tab:pink')
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
+plt.ylabel("F(q)", fontsize=15)
+plt.ylim(1e-3, 2)
+plt.xlim(1e-2, 1e1)
+# plt.savefig(Parameter.outputdir + '/sq_AL_Pq_'  + str(nid) + '.svg', dpi=600, bbox_inches='tight')
+plt.show()
+
+c_AL = []
+for i in np.unique(ind_AL):
+    c_AL.append(np.array(glo_idx_flat)[np.where(ind_AL == i)[0]])
+
+
+fig = plt.figure(figsize=(4,3))
+test = []
+templ = []
+tempg = []
+c = 0
+for nid in c_AL[c]:
+    ALnid = np.where(un_AL_tr == nid)[0][0]
+
+    AL_q_idx = first_consecutive(np.where(Pq_AL_pn[:,ALnid] > 0)[0])
+    AL_q_idx = len(Pq_AL_pn[:,ALnid])
+    test.append(np.log10(np.abs(Pq_AL_pn[:,ALnid])))
+    templ.append(LengthData.length_AL[nid])
+    tempg.append(rGy_AL[ALnid])
+    plt.plot(q_range[Pq_AL_pn[:,ALnid]>0], Pq_AL_pn[Pq_AL_pn[:,ALnid]>0,ALnid], lw=1., color='tab:blue')
+
+plt.plot(q_range, np.power(10, np.average(test, axis=0)), lw=3, color='k')
+
+plt.vlines(2*np.pi/np.mean([item for sublist in templ for item in sublist]), 1e-6, 10, color='tab:blue', lw=1.5)
+plt.vlines(1/np.mean(tempg), 1e-6, 10, color='tab:blue', ls='--', lw=1.5)
+
+line1 = 1/30*np.power(q_range, -16/7)
+line2 = 1/30*np.power(q_range, -4/1)
+line3 = 1/50*np.power(q_range, -1/0.388)
+line4 = 1/10*np.power(q_range, -1)
+line5 = 1/20*np.power(q_range, -2/1)
+
+# plt.plot(q_range[32:38], line1[32:38], lw=1.5, color='tab:red')
+# plt.plot(q_range[32:38], line2[32:38], lw=1.5, color='tab:gray')
+# plt.plot(q_range[26:31], line3[26:31], lw=1.5, color='tab:purple')
+# plt.plot(q_range[33:47], line4[33:47], lw=1.5, color='k')
+# plt.plot(q_range[37:47], line5[37:47], lw=1.5, color='tab:pink')
+
+# plt.text(0.6, 1.5e-1, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
+# plt.text(0.8, 3e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
+# plt.text(0.3, 6e-1, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
+# plt.text(1.1, 1.5e-1, r'$\nu = 1$', fontsize=13)
+# plt.text(1.1, 0.6e-1, r'$\nu = \dfrac{1}{2}$', fontsize=13, color='tab:pink')
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
+plt.ylabel("F(q)", fontsize=15)
+plt.ylim(1e-3, 2)
+plt.xlim(1e-2, 1e1)
+# plt.savefig(Parameter.outputdir + '/sq_AL_cluster_' + str(c) + '_2.svg', dpi=600, bbox_inches='tight')
+plt.show()
+
+
+
+#%% F(q) based clustering plotting LH
+
+# [array([ 28,  30,  36,  54,  60,  72,  92, 131, 141]),
+#  array([  6,   8,  18,  19,  22,  24,  25,  31,  32,  37,  77,  78,  79,
+#          83,  95, 102, 109, 113, 150, 151, 158]),
+#  array([ 11,  12,  13,  21,  23,  27,  33,  34,  35,  38,  39,  51,  57,
+#          63,  64,  66,  67,  68,  69,  74,  75,  76,  80,  81,  82,  84,
+#          86,  87,  90,  91,  96,  98,  99, 101, 104, 106, 107, 108, 110,
+#         112, 117, 124, 125, 126, 127, 129, 130, 132, 133, 134, 137, 140,
+#         142, 144, 146, 147, 152, 155, 159]),
+#  array([ 15,  20,  29,  52,  53,  59,  62,  85, 105, 111, 116, 118, 119,
+#         120, 121, 122, 123, 128, 145, 148, 153, 156])]
+
+nid = 153
+
+LHnid = np.where(np.array(MorphData.LHdist_trk) == nid)[0]
+
+fig, ax = plt.subplots(figsize=(8,8))
+ax.axis('off')
+
+for i in range(len(LHnid)):
+    listOfPoints = MorphData.LHdist[LHnid[i]]
+    for f in range(len(listOfPoints)-1):
+        morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+        plt.plot(morph_line[:,0], morph_line[:,2], color='tab:green', lw=2)
+ax.set_xlim(395, 465)
+ax.set_ylim(120, 190)
+# plt.savefig(Parameter.outputdir + '/clust_val_LH_n_proj_' + str(nid) + '.png', dpi=600, bbox_inches='tight', transparent=True)
+plt.show()
+
+
+LHnid = np.where(un_LH_tr == nid)[0][0]
+
+fig = plt.figure(figsize=(4,3))
+LH_q_idx = first_consecutive(np.where(Pq_LH_pn[:,LHnid] > 0)[0])
+LH_q_idx = len(Pq_LH_pn[:,LHnid])
+plt.plot(q_range[Pq_LH_pn[:,LHnid]>0], Pq_LH_pn[Pq_LH_pn[:,LHnid]>0,LHnid], lw=3, color='tab:green')
+
+plt.vlines(2*np.pi/np.mean(LengthData.length_LH[nid]), 1e-6, 10, color='tab:green', lw=1.5)
+plt.vlines(1/rGy_LH[LHnid], 1e-6, 10, color='tab:green', ls='--', lw=1.5)
+
+line1 = 1/30*np.power(q_range, -16/7)
+line2 = 1/30*np.power(q_range, -4/1)
+line3 = 1/50*np.power(q_range, -1/0.388)
+line4 = 1/10*np.power(q_range, -1)
+
+# plt.plot(q_range[32:38], line1[32:38], lw=1.5, color='tab:red')
+# plt.plot(q_range[32:38], line2[32:38], lw=1.5, color='tab:gray')
+# plt.plot(q_range[26:31], line3[26:31], lw=1.5, color='tab:purple')
+# plt.plot(q_range[33:47], line4[33:47], lw=1.5, color='k')
+# plt.plot(q_range[37:47], line5[37:47], lw=1.5, color='tab:pink')
+
+# plt.text(0.6, 1.5e-1, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
+# plt.text(0.8, 3e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
+# plt.text(0.3, 6e-1, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
+# plt.text(1.1, 1.5e-1, r'$\nu = 1$', fontsize=13)
+# plt.text(1.1, 0.6e-1, r'$\nu = \dfrac{1}{2}$', fontsize=13, color='tab:pink')
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
+plt.ylabel("F(q)", fontsize=15)
+plt.ylim(1e-3, 2)
+plt.xlim(1e-2, 1e1)
+# plt.savefig(Parameter.outputdir + '/sq_LH_Pq_'  + str(nid) + '.svg', dpi=600, bbox_inches='tight')
+plt.show()
+
+
+c_LH = []
+for i in np.unique(ind_LH):
+    c_LH.append(np.array(glo_idx_flat)[np.where(ind_LH == i)[0]])
+
+
+fig = plt.figure(figsize=(4,3))
+test = []
+templ = []
+tempg = []
+c = 1
+for nid in c_LH[c]:
+    LHnid = np.where(un_LH_tr == nid)[0][0]
+
+    LH_q_idx = first_consecutive(np.where(Pq_LH_pn[:,LHnid] > 0)[0])
+    LH_q_idx = len(Pq_LH_pn[:,LHnid])
+    test.append(np.log10(np.abs(Pq_LH_pn[:,LHnid])))
+    templ.append(LengthData.length_LH[nid])
+    tempg.append(rGy_LH[LHnid])
+    plt.plot(q_range[Pq_LH_pn[:,LHnid]>0], Pq_LH_pn[Pq_LH_pn[:,LHnid]>0,LHnid], lw=1., color='tab:green')
+
+plt.plot(q_range, np.power(10, np.average(test, axis=0)), lw=3, color='k')
+
+plt.vlines(2*np.pi/np.mean([item for sublist in templ for item in sublist]), 1e-6, 10, color='tab:green', lw=1.5)
+plt.vlines(1/np.mean(tempg), 1e-6, 10, color='tab:green', ls='--', lw=1.5)
+
+line1 = 1/30*np.power(q_range, -16/7)
+line2 = 1/30*np.power(q_range, -4/1)
+line3 = 1/50*np.power(q_range, -1/0.388)
+line4 = 1/10*np.power(q_range, -1)
+line5 = 1/20*np.power(q_range, -2/1)
+
+# plt.plot(q_range[32:38], line1[32:38], lw=1.5, color='tab:red')
+# plt.plot(q_range[32:38], line2[32:38], lw=1.5, color='tab:gray')
+# plt.plot(q_range[26:31], line3[26:31], lw=1.5, color='tab:purple')
+# plt.plot(q_range[33:47], line4[33:47], lw=1.5, color='k')
+# plt.plot(q_range[37:47], line5[37:47], lw=1.5, color='tab:pink')
+
+# plt.text(0.6, 1.5e-1, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
+# plt.text(0.8, 3e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
+# plt.text(0.3, 6e-1, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
+# plt.text(1.1, 1.5e-1, r'$\nu = 1$', fontsize=13)
+# plt.text(1.1, 0.6e-1, r'$\nu = \dfrac{1}{2}$', fontsize=13, color='tab:pink')
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
+plt.ylabel("F(q)", fontsize=15)
+plt.ylim(1e-3, 2)
+plt.xlim(1e-2, 1e1)
+# plt.savefig(Parameter.outputdir + '/sq_LH_cluster_' + str(c) + '_2.svg', dpi=600, bbox_inches='tight')
+plt.show()
+
+
+
+#%% F(q) based clustering plotting calyx
+
+# [array([ 21,  24,  64,  66,  99, 102, 108, 113, 116, 121, 122, 123, 127,
+#         128, 155]),
+#  array([ 12,  23,  29,  31,  32,  33,  34,  35,  38,  53,  57,  63,  67,
+#          69,  72,  75,  76,  81,  82,  84,  87,  95,  96, 104, 105, 110,
+#         111, 118, 120, 124, 125, 126, 129, 130, 133, 134, 137, 142, 145,
+#         148, 156, 159]),
+#  array([  8,  11,  13,  15,  18,  19,  20,  22,  25,  27,  37,  39,  51,
+#          52,  59,  62,  68,  74,  77,  78,  80,  83,  85,  86,  90,  91,
+#          92,  98, 101, 106, 107, 109, 112, 117, 119, 131, 132, 140, 144,
+#         146, 147, 150, 151, 152, 153]),
+#  array([  6,  28,  30,  36,  54,  60,  79, 141, 158])]
+
+nid = 92
+
+calyxnid = np.where(np.array(MorphData.calyxdist_trk) == nid)[0]
+
+fig, ax = plt.subplots(figsize=(8,8))
+ax.axis('off')
+
+for i in range(len(calyxnid)):
+    listOfPoints = MorphData.calyxdist[calyxnid[i]]
+    for f in range(len(listOfPoints)-1):
+        morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
+        plt.plot(morph_line[:,0], morph_line[:,2], color='tab:orange', lw=2)
+ax.set_xlim(480, 550)
+ax.set_ylim(140, 210)
+# plt.savefig(Parameter.outputdir + '/clust_val_calyx_n_proj_' + str(nid) + '.png', dpi=600, bbox_inches='tight', transparent=True)
+plt.show()
+
+
+calyxnid = np.where(un_calyx_tr == nid)[0][0]
+
+fig = plt.figure(figsize=(4,3))
+calyx_q_idx = first_consecutive(np.where(Pq_calyx_pn[:,calyxnid] > 0)[0])
+calyx_q_idx = len(Pq_calyx_pn[:,calyxnid])
+plt.plot(q_range[Pq_calyx_pn[:,calyxnid]>0], Pq_calyx_pn[Pq_calyx_pn[:,calyxnid]>0,calyxnid], lw=3, color='tab:orange')
+
+plt.vlines(2*np.pi/np.mean(LengthData.length_calyx[nid]), 1e-6, 10, color='tab:orange', lw=1.5)
+plt.vlines(1/rGy_calyx[calyxnid], 1e-6, 10, color='tab:orange', ls='--', lw=1.5)
+
+line1 = 1/30*np.power(q_range, -16/7)
+line2 = 1/30*np.power(q_range, -4/1)
+line3 = 1/50*np.power(q_range, -1/0.388)
+line4 = 1/10*np.power(q_range, -1)
+
+# plt.plot(q_range[32:38], line1[32:38], lw=1.5, color='tab:red')
+# plt.plot(q_range[32:38], line2[32:38], lw=1.5, color='tab:gray')
+# plt.plot(q_range[26:31], line3[26:31], lw=1.5, color='tab:purple')
+# plt.plot(q_range[33:47], line4[33:47], lw=1.5, color='k')
+# plt.plot(q_range[37:47], line5[37:47], lw=1.5, color='tab:pink')
+
+# plt.text(0.6, 1.5e-1, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
+# plt.text(0.8, 3e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
+# plt.text(0.3, 6e-1, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
+# plt.text(1.1, 1.5e-1, r'$\nu = 1$', fontsize=13)
+# plt.text(1.1, 0.6e-1, r'$\nu = \dfrac{1}{2}$', fontsize=13, color='tab:pink')
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
+plt.ylabel("F(q)", fontsize=15)
+plt.ylim(1e-3, 2)
+plt.xlim(1e-2, 1e1)
+# plt.savefig(Parameter.outputdir + '/sq_calyx_Pq_'  + str(nid) + '.svg', dpi=600, bbox_inches='tight')
+plt.show()
+
+
+c_calyx = []
+for i in np.unique(ind_calyx):
+    c_calyx.append(np.array(glo_idx_flat)[np.where(ind_calyx == i)[0]])
+
+
+fig = plt.figure(figsize=(4,3))
+test = []
+templ = []
+tempg = []
+c = 2
+for nid in c_calyx[c]:
+    calyxnid = np.where(un_calyx_tr == nid)[0][0]
+
+    calyx_q_idx = first_consecutive(np.where(Pq_calyx_pn[:,calyxnid] > 0)[0])
+    calyx_q_idx = len(Pq_calyx_pn[:,calyxnid])
+    test.append(np.log10(np.abs(Pq_calyx_pn[:,calyxnid])))
+    templ.append(LengthData.length_calyx[nid])
+    tempg.append(rGy_calyx[calyxnid])
+    plt.plot(q_range[Pq_calyx_pn[:,calyxnid]>0], Pq_calyx_pn[Pq_calyx_pn[:,calyxnid]>0,calyxnid], lw=1., color='tab:orange')
+
+plt.plot(q_range, np.power(10, np.average(test, axis=0)), lw=3, color='k')
+
+plt.vlines(2*np.pi/np.mean([item for sublist in templ for item in sublist]), 1e-6, 10, color='tab:orange', lw=1.5)
+plt.vlines(1/np.mean(tempg), 1e-6, 10, color='tab:orange', ls='--', lw=1.5)
+
+line1 = 1/30*np.power(q_range, -16/7)
+line2 = 1/30*np.power(q_range, -4/1)
+line3 = 1/50*np.power(q_range, -1/0.388)
+line4 = 1/10*np.power(q_range, -1)
+line5 = 1/20*np.power(q_range, -2/1)
+
+# plt.plot(q_range[32:38], line1[32:38], lw=1.5, color='tab:red')
+# plt.plot(q_range[32:38], line2[32:38], lw=1.5, color='tab:gray')
+# plt.plot(q_range[26:31], line3[26:31], lw=1.5, color='tab:purple')
+# plt.plot(q_range[33:47], line4[33:47], lw=1.5, color='k')
+# plt.plot(q_range[37:47], line5[37:47], lw=1.5, color='tab:pink')
+
+# plt.text(0.6, 1.5e-1, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
+# plt.text(0.8, 3e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
+# plt.text(0.3, 6e-1, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
+# plt.text(1.1, 1.5e-1, r'$\nu = 1$', fontsize=13)
+# plt.text(1.1, 0.6e-1, r'$\nu = \dfrac{1}{2}$', fontsize=13, color='tab:pink')
+
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
+plt.ylabel("F(q)", fontsize=15)
+plt.ylim(1e-3, 2)
+plt.xlim(1e-2, 1e1)
+plt.savefig(Parameter.outputdir + '/sq_calyx_cluster_' + str(c) + '_2.svg', dpi=600, bbox_inches='tight')
+plt.show()
+
+
+#%%
+
+
+ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, 4, 'maxclust')
+
+g_x_AL = []
+c_y_AL = []
+ct_AL = np.zeros((len(glo_idx), len(np.unique(ind_AL))))
+
+for i in range(len(glo_idx)):
+    if len(glo_idx[i]) > 1:
+        for j in range(len(glo_idx[i])):
+            c_y_temp = ind_AL[np.where(np.array(glo_idx_flat) == glo_idx[i][j])[0][0]]
+            c_y_AL.append(c_y_temp)
+            g_x_AL.append(i)
+            ct_AL[i][c_y_temp-1] = ct_AL[i][c_y_temp-1] + 1
+
+
+chi2, p, dof, ex = scipy.stats.chi2_contingency(ct_AL[np.argwhere(np.array(glo_len) > 1).T[0]])
+    
+
+
+ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, 3, 'maxclust')
+
+g_x_LH = []
+c_y_LH = []
+ct_LH = np.zeros((len(glo_idx), len(np.unique(ind_LH))))
+
+for i in range(len(glo_idx)):
+    if len(glo_idx[i]) > 1:
+        for j in range(len(glo_idx[i])):
+            c_y_temp = ind_LH[np.where(np.array(glo_idx_flat) == glo_idx[i][j])[0][0]]
+            c_y_LH.append(c_y_temp)
+            g_x_LH.append(i)
+            ct_LH[i][c_y_temp-1] = ct_LH[i][c_y_temp-1] + 1
+
+
+chi2, p, dof, ex = scipy.stats.chi2_contingency(ct_LH[np.argwhere(np.array(glo_len) > 1).T[0]])
+    
+
+
+ind_calyx = scipy.cluster.hierarchy.fcluster(L_calyx, 3, 'maxclust')
+
+g_x_calyx = []
+c_y_calyx = []
+ct_calyx = np.zeros((len(glo_idx), len(np.unique(ind_calyx))))
+
+for i in range(len(glo_idx)):
+    if len(glo_idx[i]) > 1:
+        for j in range(len(glo_idx[i])):
+            c_y_temp = ind_calyx[np.where(np.array(glo_idx_flat) == glo_idx[i][j])[0][0]]
+            c_y_calyx.append(c_y_temp)
+            g_x_calyx.append(i)
+            ct_calyx[i][c_y_temp-1] = ct_calyx[i][c_y_temp-1] + 1
+
+
+chi2, p, dof, ex = scipy.stats.chi2_contingency(ct_calyx[np.argwhere(np.array(glo_len) > 1).T[0]])
+
+
+#%%
+
+pher = ['DL3', 'VA1d', 'DA1', 'DC3']
+# attr = ['VM2', 'VM7d', 'VM7v']
+# aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3']
+
+# attr = ['DA3', 'DM1', 'DM2', 'DM4', 'VA1v', 'VA2', 'VA3', 'VC2', 'VM1', 'VM2', 'VM5d', 'VM5v', 'VM7d']
+attr = ['VM2', 'VM7d', 'VM7v', 'DL3', 'VA1d', 'DA1']
+# aver = ['D', 'DA2', 'DA4l', 'DC1', 'DC2', 'DC4', 'DL1', 'DL4', 'DL5', 'DM3', 'DM5', 'DP1m', 'V', 'VA6', 'VA7l', 'VM3']
+aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3', 'DC3']
+
+
+phernid = []
+pheridx = []
+
+for i in range(len(pher)):
+    phernid.append(glo_idx[glo_list.index(pher[i])])
+    for j in glo_idx[glo_list.index(pher[i])]:
+        pheridx.append(glo_idx_flat.index(j))
+
+phernid = [item for sublist in phernid for item in sublist]
+
+phernid.sort()
+pheridx.sort()
+
+attrnid = []
+attridx = []
+
+for i in range(len(attr)):
+    attrnid.append(glo_idx[glo_list.index(attr[i])])
+    for j in glo_idx[glo_list.index(attr[i])]:
+        attridx.append(glo_idx_flat.index(j))
+
+attrnid = [item for sublist in attrnid for item in sublist]
+
+attrnid.sort()
+attridx.sort()
+
+avernid = []
+averidx = []
+
+for i in range(len(aver)):
+    avernid.append(glo_idx[glo_list.index(aver[i])])
+    for j in glo_idx[glo_list.index(aver[i])]:
+        averidx.append(glo_idx_flat.index(j))
+        
+avernid = [item for sublist in avernid for item in sublist]
+
+avernid.sort()
+averidx.sort()
+
+attr_c_AL = []
+attr_c_LH = []
+attr_c_calyx = []
+aver_c_AL = []
+aver_c_LH = []
+aver_c_calyx = []
+
+ct_AL_attr = []
+ct_AL_aver = []
+ct_LH_attr = []
+ct_LH_aver = []
+ct_calyx_attr = []
+ct_calyx_aver = []
+
+for k in [2,3,4,5]:
+    ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, k, 'maxclust')
+    ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, k, 'maxclust')
+    ind_calyx = scipy.cluster.hierarchy.fcluster(L_calyx, k, 'maxclust')
+    
+    attr_c_AL.append(ind_AL[attridx])
+    attr_c_LH.append(ind_LH[attridx])
+    attr_c_calyx.append(ind_calyx[attridx])
+    aver_c_AL.append(ind_AL[averidx])
+    aver_c_LH.append(ind_LH[averidx])
+    aver_c_calyx.append(ind_calyx[averidx])
+    
+    ct_AL_attr_t = np.zeros((len(attridx), k))
+    ct_AL_aver_t = np.zeros((len(averidx), k))
+    ct_LH_attr_t = np.zeros((len(attridx), k))
+    ct_LH_aver_t = np.zeros((len(averidx), k))
+    ct_calyx_attr_t = np.zeros((len(attridx), k))
+    ct_calyx_aver_t = np.zeros((len(averidx), k))
+    
+    for i in range(len(ind_AL[attridx])):
+        ct_AL_attr_t[i][ind_AL[attridx][i]-1] = 1
+        ct_LH_attr_t[i][ind_LH[attridx][i]-1] = 1
+        ct_calyx_attr_t[i][ind_calyx[attridx][i]-1] = 1
+    
+    for i in range(len(ind_AL[averidx])):
+        ct_AL_aver_t[i][ind_AL[averidx][i]-1] = 1
+        ct_LH_aver_t[i][ind_LH[averidx][i]-1] = 1
+        ct_calyx_aver_t[i][ind_calyx[averidx][i]-1] = 1
+        
+    ct_AL_attr.append(ct_AL_attr_t)
+    ct_AL_aver.append(ct_AL_aver_t)
+    ct_LH_attr.append(ct_LH_attr_t)
+    ct_LH_aver.append(ct_LH_aver_t)
+    ct_calyx_attr.append(ct_calyx_attr_t)
+    ct_calyx_aver.append(ct_calyx_aver_t)
+    
+for i in range(len(ct_AL_attr)):
+    fig = plt.figure(figsize=(3,5))
+    plt.imshow(ct_AL_attr[i])
+    plt.yticks(np.arange(len(ct_AL_attr[i])), np.array(MorphData.neuron_id)[attrnid])
+    plt.ylabel('Neuron ID', fontsize=12)
+    plt.xticks(np.arange(len(ct_AL_attr[i][0])))
+    plt.xlabel('Cluster', fontsize=12)
+    plt.title('AL Attractive', fontsize=15)
+    plt.show()    
+
+for i in range(len(ct_AL_aver)):
+    fig = plt.figure(figsize=(3,5))
+    plt.imshow(ct_AL_aver[i])
+    plt.yticks(np.arange(len(ct_AL_aver[i])), np.array(MorphData.neuron_id)[avernid])
+    plt.ylabel('Neuron ID', fontsize=12)
+    plt.xticks(np.arange(len(ct_AL_aver[i][0])))
+    plt.xlabel('Cluster', fontsize=12)
+    plt.title('AL Aversive', fontsize=15)
+    plt.show()
+
+for i in range(len(ct_LH_attr)):
+    fig = plt.figure(figsize=(3,5))
+    plt.imshow(ct_LH_attr[i])
+    plt.yticks(np.arange(len(ct_LH_attr[i])), np.array(MorphData.neuron_id)[attrnid])
+    plt.ylabel('Neuron ID', fontsize=12)
+    plt.xticks(np.arange(len(ct_LH_attr[i][0])))
+    plt.xlabel('Cluster', fontsize=12)
+    plt.title('LH Attractive', fontsize=15)
+    plt.show()
+    
+for i in range(len(ct_LH_aver)):
+    fig = plt.figure(figsize=(3,5))
+    plt.imshow(ct_LH_aver[i])
+    plt.yticks(np.arange(len(ct_LH_aver[i])), np.array(MorphData.neuron_id)[avernid])
+    plt.ylabel('Neuron ID', fontsize=12)
+    plt.xticks(np.arange(len(ct_LH_aver[i][0])))
+    plt.xlabel('Cluster', fontsize=12)
+    plt.title('LH Aversive', fontsize=15)
+    plt.show()
+
+for i in range(len(ct_calyx_attr)):
+    fig = plt.figure(figsize=(3,5))
+    plt.imshow(ct_calyx_attr[i])
+    plt.yticks(np.arange(len(ct_calyx_attr[i])), np.array(MorphData.neuron_id)[attrnid])
+    plt.ylabel('Neuron ID', fontsize=12)
+    plt.xticks(np.arange(len(ct_calyx_attr[i][0])))
+    plt.xlabel('Cluster', fontsize=12)
+    plt.title('Calyx Attractive', fontsize=15)
+    plt.show()
+
+for i in range(len(ct_calyx_aver)):
+    fig = plt.figure(figsize=(3,5))
+    plt.imshow(ct_calyx_aver[i])
+    plt.yticks(np.arange(len(ct_calyx_aver[i])), np.array(MorphData.neuron_id)[avernid])
+    plt.ylabel('Neuron ID', fontsize=12)
+    plt.xticks(np.arange(len(ct_calyx_aver[i][0])))
+    plt.xlabel('Cluster', fontsize=12)
+    plt.title('Calyx Aversive', fontsize=15)
+    plt.show()
