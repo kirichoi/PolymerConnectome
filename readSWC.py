@@ -8653,7 +8653,7 @@ plt.text(40, 1e-5, r'$\nu = 1$', fontsize=13)
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("F(q)", fontsize=15)
+plt.ylabel("S(q)", fontsize=15)
 plt.ylim(1e-7, 10)
 plt.xlim(1e-2, 1e3)
 plt.legend(['AL', 'MB calyx', 'LH'], loc='upper right', fontsize=13)
@@ -10170,19 +10170,20 @@ plt.vlines(1/np.mean(rGy_calyx), 1e-9, 10, color='tab:orange', ls='--')
 plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_b_flat), 1e-9, 10, color='tab:orange', ls=':')
 
 # line1 = 1/7500*np.power(q_range, -16/7)
-# # line2 = 1/1000000*np.power(q_range, -4/1)
+# line2 = 1/3000*np.power(q_range, -4/1)
 # line3 = 1/5000*np.power(q_range, -2/1)
 # line4 = 1/2500*np.power(q_range, -1)
+# line5 = 1/2500*np.power(q_range, -1/0.388)
 
-# # plt.plot(q_range[10:17], line2[10:17], lw=2, color='k')
-# plt.plot(q_range[19:27], line1[19:27], lw=2, color='k')
-# plt.plot(q_range[28:36], line3[28:36], lw=2, color='k')
-# plt.plot(q_range[38:48], line4[38:48], lw=2, color='k')
+# plt.plot(q_range[19:27], line2[19:27], lw=2, color='tab:gray')
+# plt.plot(q_range[19:27], line1[19:27], lw=2, color='tab:red')
+# plt.plot(q_range[28:36], line3[28:36], lw=2, color='tab:pink')
+# plt.plot(q_range[38:48], line5[38:48], lw=2, color='tab:purple')
 
-# # plt.text(0.025, 7e-3, r'$\nu = \dfrac{1}{4}$', fontsize=13)
-# plt.text(0.05, 0.8e-2, r'$\nu = \dfrac{7}{16}$', fontsize=13)
-# plt.text(0.16, 0.8e-3, r'$\nu = \dfrac{1}{2}$', fontsize=13)
-# plt.text(0.7, 1.5e-4, r'$\nu = 1$', fontsize=13)
+# plt.text(0.025, 7e-3, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
+# plt.text(0.05, 0.8e-2, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
+# plt.text(0.16, 0.8e-3, r'$\nu = \dfrac{1}{2}$', fontsize=13, color='tab:pink')
+# plt.text(0.7, 1.5e-4, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
 
 
 line1 = 1/10000*np.power(q_range, -16/7)
@@ -11785,6 +11786,17 @@ for i in range(len(calyxdist_short)):
             ax.scatter3D(CM[0][0], CM[0][1], CM[0][2], color=cval, marker='.')
 ylim = ax.get_ylim()
 ax.set_ylim((ylim[1], ylim[0]))
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+ax.xaxis._axinfo["grid"]['color'] = (1,1,1,0)
+ax.yaxis._axinfo["grid"]['color'] = (1,1,1,0)
+ax.zaxis._axinfo["grid"]['color'] = (1,1,1,0)
+ax.set_xticks([])
+ax.w_xaxis.line.set_lw(0.)
+ax.set_yticks([])
+ax.w_yaxis.line.set_lw(0.)
+# plt.savefig(Parameter.outputdir + '/neurite_all_CM_1.png', dpi=600, bbox_inches='tight', transparent=True)
 plt.show()
         
 
@@ -11804,9 +11816,19 @@ for i in range(len(calyxdist_short)):
 # ax.set_xlim(515, 520)
 # ax.set_ylim(330, 325)
 # ax.set_zlim(71, 76)
-# plt.savefig(Parameter.outputdir + '/neurite_comp_calyx_' + str(idx) + '_2.png', dpi=600, bbox_inches='tight', transparent=True)
 ylim = ax.get_ylim()
 ax.set_ylim((ylim[1], ylim[0]))
+ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+ax.xaxis._axinfo["grid"]['color'] = (1,1,1,0)
+ax.yaxis._axinfo["grid"]['color'] = (1,1,1,0)
+ax.zaxis._axinfo["grid"]['color'] = (1,1,1,0)
+ax.set_xticks([])
+ax.w_xaxis.line.set_lw(0.)
+ax.set_yticks([])
+ax.w_yaxis.line.set_lw(0.)
+# plt.savefig(Parameter.outputdir + '/neurite_all_1.png', dpi=600, bbox_inches='tight', transparent=True)
 plt.show()
 
 #%% Neurite cluster spatial distribution MB calyx using mayavi
@@ -11825,7 +11847,7 @@ nbinsy = int((np.max(yi)-np.min(yi))/nscale)
 nbinsz = int((np.max(zi)-np.min(zi))/nscale)
 
 xyz = np.vstack([xi,yi,zi])
-neuritekde = kde.gaussian_kde(xyz, bw_method=0.175)
+neuritekde = kde.gaussian_kde(xyz, bw_method=0.15)
 
 xi, yi, zi = np.mgrid[np.min(xi)-5:np.max(xi)+5:nbinsx*1j, 
                       np.min(yi)-5:np.max(yi)+5:nbinsy*1j, 
@@ -11840,9 +11862,9 @@ grid = mlab.pipeline.scalar_field(xi, yi, zi, density)
 vmin = density.min()
 vmax = density.max()
 # mlab.pipeline.volume(grid)
-# mlab.volume_slice(density, plane_orientation='x_axes', slice_index=20, vmax=np.max(density)*0.8)
-# mlab.volume_slice(density, plane_orientation='y_axes', slice_index=25, vmax=np.max(density)*0.8)
-# mlab.volume_slice(density, plane_orientation='z_axes', slice_index=20, vmax=np.max(density)*0.8)
+mlab.volume_slice(density, plane_orientation='x_axes', slice_index=20, vmin=np.max(density)*0.3, vmax=np.max(density)*0.7)
+mlab.volume_slice(density, plane_orientation='y_axes', slice_index=25, vmin=np.max(density)*0.3, vmax=np.max(density)*0.7)
+mlab.volume_slice(density, plane_orientation='z_axes', slice_index=20, vmin=np.max(density)*0.3, vmax=np.max(density)*0.7)
 # mlab.contour3d(xi, yi, zi, density)
 
 mlab.axes()
@@ -11874,7 +11896,7 @@ grid = mlab.pipeline.scalar_field(xi, yi, zi, density)
 vmin = density.min()
 vmax = density.max()
 # mlab.pipeline.volume(grid, vmin=(np.max(density)-np.min(density))*0.6, vmax=np.max(density)*0.7)
-mlab.pipeline.volume(grid, vmin=np.max(density)*0.5, vmax=np.max(density)*0.7)
+mlab.pipeline.volume(grid, vmin=np.max(density)*0.2, vmax=np.max(density)*0.8)
 
 mlab.axes()
 mlab.show()
@@ -11891,19 +11913,20 @@ for q in range(len(q_range)):
     qrvec = qrvec[np.triu_indices_from(qrvec, k=1)]
     Pq_calyx_neurite[q] = np.divide(np.divide(2*np.sum(np.sin(qrvec)/qrvec), len(CM_neurite)), len(CM_neurite))
 
+
 fig, ax = plt.subplots(figsize=(6,4.5))
 
-plt.plot(q_range, Pq_calyx_neurite+1e-3)
+plt.plot(q_range[Pq_calyx_neurite > 0], Pq_calyx_neurite[Pq_calyx_neurite > 0])
 plt.xscale('log')
 plt.yscale('log')
 
-# plt.ylim(0.1, 1.2)
-# plt.xlim(0.01, 10)
+plt.ylim(1e-5, 10)
+plt.xlim(0.01, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
-plt.ylabel(r"$F(q)$", fontsize=17)
+plt.ylabel(r"$S(q)$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_' + str(MorphData.neuron_id[nid]) + '_pn_AL_mv_4.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/neurite_Fq.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 #%% P(r)
@@ -11912,14 +11935,21 @@ CM_CM_neurite = np.average(CM_neurite, axis=0)
 
 dist = scipy.spatial.distance.cdist([CM_CM_neurite], CM_neurite)[0]
 
-val,edge = np.histogram(dist, bins=75, density=True)
+val,edge = np.histogram(dist, bins=60, density=True)
 
-fig, ax = plt.subplots(figsize=(6,4.5))
+fig, ax1 = plt.subplots(figsize=(6,4.5))
 
-plt.plot(edge[:-1] - np.diff(edge), val)
-plt.xlabel('$r_{CM}$ ($\mu\mathrm{m}$)', fontsize=13)
-plt.ylabel('$P(r_{CM})$', fontsize=13)
+ax1.plot(edge[:-1] - np.diff(edge), val, color='tab:blue')
+ax1.set_ylabel('$P(r_{CM})$', fontsize=17)
+ax1.set_xlabel('$r_{CM}$ ($\mu\mathrm{m}$)', fontsize=17)
+plt.xticks(fontsize=14)
+plt.yticks(fontsize=14)
+ax2 = ax1.twinx()
 
+ax2.plot(edge[:-1] - np.diff(edge), np.cumsum(val)*np.diff(edge)[0], color='tab:red')
+plt.yticks(fontsize=14)
+fig.tight_layout()
+# plt.savefig(Parameter.outputdir + '/neurite_Rp_CM.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -11927,14 +11957,21 @@ dist = scipy.spatial.distance.cdist(CM_neurite, CM_neurite)
 
 dist = dist[np.triu_indices_from(dist, k=1)]
 
-val,edge = np.histogram(dist, bins=75, density=True)
+val,edge = np.histogram(dist, bins=60, density=True)
 
-fig, ax = plt.subplots(figsize=(6,4.5))
+fig, ax1 = plt.subplots(figsize=(6,4.5))
 
-plt.plot(edge[:-1] - np.diff(edge), val)
-plt.xlabel('$r$ ($\mu\mathrm{m}$)', fontsize=13)
-plt.ylabel('$P(r)$', fontsize=13)
+ax1.plot(edge[:-1] - np.diff(edge), val)
+ax1.set_xlabel('$r$ ($\mu\mathrm{m}$)', fontsize=17)
+ax1.set_ylabel('$P(r)$', fontsize=17)
+plt.xticks(fontsize=14)
+plt.yticks(fontsize=14)
+ax2 = ax1.twinx()
 
+ax2.plot(edge[:-1] - np.diff(edge), np.cumsum(val)*np.diff(edge)[0], color='tab:red')
+plt.yticks(fontsize=14)
+fig.tight_layout()
+# plt.savefig(Parameter.outputdir + '/neurite_Rp.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -15205,14 +15242,17 @@ plt.ylabel('Silhouette Coefficients', fontsize=12)
 plt.xlabel('Normalized Cluster Distance', fontsize=12)
 plt.show()
 
+ss_AL = []
 
 for j in np.arange(2, 10, 1):
     l = 0
+    ss_AL_temp = []
     ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, j, 'maxclust')
     a = sklearn.metrics.silhouette_score(dist_Pq_AL, ind_AL, metric="precomputed")
     b = sklearn.metrics.silhouette_samples(dist_Pq_AL, ind_AL, metric="precomputed")
     fig, ax = plt.subplots(figsize=(4, 3))
     for i in np.arange(1, j+1):
+        ss_AL_temp.append(np.max(b[ind_AL==i])-a)
         if len(np.where(ind_AL==i)[0]) == 1:
             plt.scatter(np.arange(0, len(ind_AL))[l:l+len(np.where(ind_AL==i)[0])], np.sort(b[ind_AL==i]), lw=3)
         else:
@@ -15222,6 +15262,7 @@ for j in np.arange(2, 10, 1):
     plt.title('N = ' + str(j), fontsize=15)
     plt.ylabel('Silhouette Coefficients', fontsize=12)
     plt.show()
+    ss_AL.append(ss_AL_temp)
 
 
 ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, 0.61*dist_Pq_AL.max(), 'distance')
@@ -15278,13 +15319,17 @@ plt.ylabel('Silhouette Coefficients', fontsize=12)
 plt.xlabel('Normalized Cluster Distance', fontsize=12)
 plt.show()
 
+ss_LH = []
+
 for j in np.arange(2, 10, 1):
     l = 0
+    ss_LH_temp = []
     ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, j, 'maxclust')
     a = sklearn.metrics.silhouette_score(dist_Pq_LH, ind_LH, metric="precomputed")
     b = sklearn.metrics.silhouette_samples(dist_Pq_LH, ind_LH, metric="precomputed")
     fig, ax = plt.subplots(figsize=(4, 3))
     for i in np.arange(1, j+1):
+        ss_LH_temp.append(np.max(b[ind_LH==i])-a)
         if len(np.where(ind_LH==i)[0]) == 1:
             plt.scatter(np.arange(0, len(ind_LH))[l:l+len(np.where(ind_LH==i)[0])], np.sort(b[ind_LH==i]), lw=3)
         else:
@@ -15294,6 +15339,7 @@ for j in np.arange(2, 10, 1):
     plt.title('N = ' + str(j), fontsize=15)
     plt.ylabel('Silhouette Coefficients', fontsize=12)
     plt.show()
+    ss_LH.append(ss_LH_temp)
 
 
 ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, 0.51*dist_Pq_LH.max(), 'distance')
@@ -15350,13 +15396,17 @@ plt.ylabel('Silhouette Coefficients', fontsize=12)
 plt.xlabel('Normalized Cluster Distance', fontsize=12)
 plt.show()
 
+ss_calyx = []
+
 for j in np.arange(2, 10, 1):
     l = 0
+    ss_calyx_temp = []
     ind_calyx = scipy.cluster.hierarchy.fcluster(L_calyx, j, 'maxclust')
     a = sklearn.metrics.silhouette_score(dist_Pq_calyx, ind_calyx, metric="precomputed")
     b = sklearn.metrics.silhouette_samples(dist_Pq_calyx, ind_calyx, metric="precomputed")
     fig, ax = plt.subplots(figsize=(4, 3))
     for i in np.arange(1, j+1):
+        ss_calyx_temp.append(np.max(b[ind_calyx==i])-a)
         if len(np.where(ind_calyx==i)[0]) == 1:
             plt.scatter(np.arange(0, len(ind_calyx))[l:l+len(np.where(ind_calyx==i)[0])], np.sort(b[ind_calyx==i]), lw=3)
         else:
@@ -15366,6 +15416,7 @@ for j in np.arange(2, 10, 1):
     plt.title('N = ' + str(j), fontsize=15)
     plt.ylabel('Silhouette Coefficients', fontsize=12)
     plt.show()
+    ss_calyx.append(ss_calyx_temp)
 
 
 ind_calyx = scipy.cluster.hierarchy.fcluster(L_calyx, 0.5*dist_Pq_calyx.max(), 'distance')
@@ -15687,17 +15738,17 @@ line2 = 1/30*np.power(q_range, -4/1)
 line3 = 1/50*np.power(q_range, -1/0.388)
 line4 = 1/10*np.power(q_range, -1)
 
-# plt.plot(q_range[32:38], line1[32:38], lw=1.5, color='tab:red')
-# plt.plot(q_range[32:38], line2[32:38], lw=1.5, color='tab:gray')
-# plt.plot(q_range[26:31], line3[26:31], lw=1.5, color='tab:purple')
-# plt.plot(q_range[33:47], line4[33:47], lw=1.5, color='k')
-# plt.plot(q_range[37:47], line5[37:47], lw=1.5, color='tab:pink')
+plt.plot(q_range[32:38], line1[32:38], lw=1.5, color='tab:red')
+plt.plot(q_range[32:38], line2[32:38], lw=1.5, color='tab:gray')
+plt.plot(q_range[26:31], line3[26:31], lw=1.5, color='tab:purple')
+plt.plot(q_range[33:47], line4[33:47], lw=1.5, color='k')
+plt.plot(q_range[37:47], line5[37:47], lw=1.5, color='tab:pink')
 
-# plt.text(0.6, 1.5e-1, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
-# plt.text(0.8, 3e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
-# plt.text(0.3, 6e-1, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
-# plt.text(1.1, 1.5e-1, r'$\nu = 1$', fontsize=13)
-# plt.text(1.1, 0.6e-1, r'$\nu = \dfrac{1}{2}$', fontsize=13, color='tab:pink')
+plt.text(0.6, 1.5e-1, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
+plt.text(0.8, 3e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
+plt.text(0.3, 6e-1, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
+plt.text(1.1, 1.5e-1, r'$\nu = 1$', fontsize=13)
+plt.text(1.1, 0.6e-1, r'$\nu = \dfrac{1}{2}$', fontsize=13, color='tab:pink')
 
 plt.xscale('log')
 plt.yscale('log')
@@ -15734,11 +15785,11 @@ plt.plot(q_range, np.power(10, np.average(test, axis=0)), lw=3, color='k')
 plt.vlines(2*np.pi/np.mean([item for sublist in templ for item in sublist]), 1e-6, 10, color='tab:orange', lw=1.5)
 plt.vlines(1/np.mean(tempg), 1e-6, 10, color='tab:orange', ls='--', lw=1.5)
 
-line1 = 1/30*np.power(q_range, -16/7)
-line2 = 1/30*np.power(q_range, -4/1)
-line3 = 1/50*np.power(q_range, -1/0.388)
-line4 = 1/10*np.power(q_range, -1)
-line5 = 1/20*np.power(q_range, -2/1)
+# line1 = 1/30*np.power(q_range, -16/7)
+# line2 = 1/30*np.power(q_range, -4/1)
+# line3 = 1/50*np.power(q_range, -1/0.388)
+# line4 = 1/10*np.power(q_range, -1)
+# line5 = 1/20*np.power(q_range, -2/1)
 
 # plt.plot(q_range[32:38], line1[32:38], lw=1.5, color='tab:red')
 # plt.plot(q_range[32:38], line2[32:38], lw=1.5, color='tab:gray')
@@ -15827,10 +15878,10 @@ pher = ['DL3', 'VA1d', 'DA1', 'DC3']
 # attr = ['VM2', 'VM7d', 'VM7v']
 # aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3']
 
-# attr = ['DA3', 'DM1', 'DM2', 'DM4', 'VA1v', 'VA2', 'VA3', 'VC2', 'VM1', 'VM2', 'VM5d', 'VM5v', 'VM7d']
-attr = ['VM2', 'VM7d', 'VM7v', 'DL3', 'VA1d', 'DA1']
-# aver = ['D', 'DA2', 'DA4l', 'DC1', 'DC2', 'DC4', 'DL1', 'DL4', 'DL5', 'DM3', 'DM5', 'DP1m', 'V', 'VA6', 'VA7l', 'VM3']
-aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3', 'DC3']
+attr = ['DA1', 'DA3', 'DL3', 'DM1', 'DM2', 'DM4', 'VA1d', 'VA1v', 'VA2', 'VA3', 'VC2', 'VL2a', 'VM1', 'VM2', 'VM5d', 'VM5v', 'VM7d', 'VM7v']
+# attr = ['VM2', 'VM7d', 'VM7v', 'DL3', 'VA1d', 'DA1']
+aver = ['D', 'DA2', 'DA4l', 'DC1', 'DC2', 'DC3', 'DC4', 'DL1', 'DL4', 'DL5', 'DM3', 'DM5', 'DM6', 'DP1m', 'V', 'VA5', 'VA6', 'VA7l', 'VA7m', 'VM3']
+# aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3', 'DC3']
 
 
 phernid = []
@@ -15907,12 +15958,12 @@ for k in [2,3,4,5]:
     
     for i in range(len(ind_AL[attridx])):
         ct_AL_attr_t[i][ind_AL[attridx][i]-1] = 1
-        ct_LH_attr_t[i][ind_LH[attridx][i]-1] = 1
+        ct_LH_attr_t[i][np.abs(ind_LH[attridx]-(k+1))[i]-1] = 1
         ct_calyx_attr_t[i][ind_calyx[attridx][i]-1] = 1
     
     for i in range(len(ind_AL[averidx])):
         ct_AL_aver_t[i][ind_AL[averidx][i]-1] = 1
-        ct_LH_aver_t[i][ind_LH[averidx][i]-1] = 1
+        ct_LH_aver_t[i][np.abs(ind_LH[averidx]-(k+1))[i]-1] = 1
         ct_calyx_aver_t[i][ind_calyx[averidx][i]-1] = 1
         
     ct_AL_attr.append(ct_AL_attr_t)
@@ -15922,62 +15973,299 @@ for k in [2,3,4,5]:
     ct_calyx_attr.append(ct_calyx_attr_t)
     ct_calyx_aver.append(ct_calyx_aver_t)
     
-for i in range(len(ct_AL_attr)):
-    fig = plt.figure(figsize=(3,5))
-    plt.imshow(ct_AL_attr[i])
-    plt.yticks(np.arange(len(ct_AL_attr[i])), np.array(MorphData.neuron_id)[attrnid])
-    plt.ylabel('Neuron ID', fontsize=12)
-    plt.xticks(np.arange(len(ct_AL_attr[i][0])))
-    plt.xlabel('Cluster', fontsize=12)
-    plt.title('AL Attractive', fontsize=15)
-    plt.show()    
+# for i in range(len(ct_AL_attr)):
+fig = plt.figure(figsize=(3,8))
+plt.imshow(ct_AL_attr[3])
+plt.yticks(np.arange(len(ct_AL_attr[3])), np.array(MorphData.neuron_id)[attrnid])
+plt.ylabel('Neuron ID', fontsize=12)
+plt.xticks(np.arange(len(ct_AL_attr[3][0])))
+plt.xlabel('Cluster', fontsize=12)
+plt.title('AL Attractive', fontsize=15)
+plt.show()    
 
-for i in range(len(ct_AL_aver)):
-    fig = plt.figure(figsize=(3,5))
-    plt.imshow(ct_AL_aver[i])
-    plt.yticks(np.arange(len(ct_AL_aver[i])), np.array(MorphData.neuron_id)[avernid])
-    plt.ylabel('Neuron ID', fontsize=12)
-    plt.xticks(np.arange(len(ct_AL_aver[i][0])))
-    plt.xlabel('Cluster', fontsize=12)
-    plt.title('AL Aversive', fontsize=15)
-    plt.show()
+# for i in range(len(ct_AL_aver)):
+fig = plt.figure(figsize=(3,8))
+plt.imshow(ct_AL_aver[3])
+plt.yticks(np.arange(len(ct_AL_aver[3])), np.array(MorphData.neuron_id)[avernid])
+plt.ylabel('Neuron ID', fontsize=12)
+plt.xticks(np.arange(len(ct_AL_aver[3][0])))
+plt.xlabel('Cluster', fontsize=12)
+plt.title('AL Aversive', fontsize=15)
+plt.show()
 
-for i in range(len(ct_LH_attr)):
-    fig = plt.figure(figsize=(3,5))
-    plt.imshow(ct_LH_attr[i])
-    plt.yticks(np.arange(len(ct_LH_attr[i])), np.array(MorphData.neuron_id)[attrnid])
-    plt.ylabel('Neuron ID', fontsize=12)
-    plt.xticks(np.arange(len(ct_LH_attr[i][0])))
-    plt.xlabel('Cluster', fontsize=12)
-    plt.title('LH Attractive', fontsize=15)
-    plt.show()
+# for i in range(len(ct_LH_attr)):
+fig = plt.figure(figsize=(3,8))
+plt.imshow(ct_LH_attr[1])
+plt.yticks(np.arange(len(ct_LH_attr[1])), np.array(MorphData.neuron_id)[attrnid])
+plt.ylabel('Neuron ID', fontsize=12)
+plt.xticks(np.arange(len(ct_LH_attr[1][0])))
+plt.xlabel('Cluster', fontsize=12)
+plt.title('LH Attractive', fontsize=15)
+plt.show()
     
-for i in range(len(ct_LH_aver)):
-    fig = plt.figure(figsize=(3,5))
-    plt.imshow(ct_LH_aver[i])
-    plt.yticks(np.arange(len(ct_LH_aver[i])), np.array(MorphData.neuron_id)[avernid])
-    plt.ylabel('Neuron ID', fontsize=12)
-    plt.xticks(np.arange(len(ct_LH_aver[i][0])))
-    plt.xlabel('Cluster', fontsize=12)
-    plt.title('LH Aversive', fontsize=15)
-    plt.show()
+# for i in range(len(ct_LH_aver)):
+fig = plt.figure(figsize=(3,8))
+plt.imshow(ct_LH_aver[1])
+plt.yticks(np.arange(len(ct_LH_aver[1])), np.array(MorphData.neuron_id)[avernid])
+plt.ylabel('Neuron ID', fontsize=12)
+plt.xticks(np.arange(len(ct_LH_aver[1][0])))
+plt.xlabel('Cluster', fontsize=12)
+plt.title('LH Aversive', fontsize=15)
+plt.show()
 
-for i in range(len(ct_calyx_attr)):
-    fig = plt.figure(figsize=(3,5))
-    plt.imshow(ct_calyx_attr[i])
-    plt.yticks(np.arange(len(ct_calyx_attr[i])), np.array(MorphData.neuron_id)[attrnid])
-    plt.ylabel('Neuron ID', fontsize=12)
-    plt.xticks(np.arange(len(ct_calyx_attr[i][0])))
-    plt.xlabel('Cluster', fontsize=12)
-    plt.title('Calyx Attractive', fontsize=15)
-    plt.show()
+# for i in range(len(ct_calyx_attr)):
+fig = plt.figure(figsize=(3,8))
+plt.imshow(ct_calyx_attr[1])
+plt.yticks(np.arange(len(ct_calyx_attr[1])), np.array(MorphData.neuron_id)[attrnid])
+plt.ylabel('Neuron ID', fontsize=12)
+plt.xticks(np.arange(len(ct_calyx_attr[1][0])))
+plt.xlabel('Cluster', fontsize=12)
+plt.title('Calyx Attractive', fontsize=15)
+plt.show()
 
-for i in range(len(ct_calyx_aver)):
-    fig = plt.figure(figsize=(3,5))
-    plt.imshow(ct_calyx_aver[i])
-    plt.yticks(np.arange(len(ct_calyx_aver[i])), np.array(MorphData.neuron_id)[avernid])
-    plt.ylabel('Neuron ID', fontsize=12)
-    plt.xticks(np.arange(len(ct_calyx_aver[i][0])))
-    plt.xlabel('Cluster', fontsize=12)
-    plt.title('Calyx Aversive', fontsize=15)
-    plt.show()
+# for i in range(len(ct_calyx_aver)):
+fig = plt.figure(figsize=(3,8))
+plt.imshow(ct_calyx_aver[1])
+plt.yticks(np.arange(len(ct_calyx_aver[1])), np.array(MorphData.neuron_id)[avernid])
+plt.ylabel('Neuron ID', fontsize=12)
+plt.xticks(np.arange(len(ct_calyx_aver[1][0])))
+plt.xlabel('Cluster', fontsize=12)
+plt.title('Calyx Aversive', fontsize=15)
+plt.show()
+
+
+attr_c_LH[1] = np.abs(attr_c_LH[1]-4)
+aver_c_LH[1] = np.abs(aver_c_LH[1]-4)
+
+
+fig = plt.figure(figsize=(3,5))
+plt.scatter(0, np.average(attr_c_AL[3])/5, color='tab:green')
+plt.scatter(0, np.average(aver_c_AL[3])/5, color='tab:red')
+plt.errorbar(0, np.average(attr_c_AL[3])/5, yerr=scipy.stats.sem(attr_c_AL[3])/5, color='tab:green')
+plt.errorbar(0, np.average(aver_c_AL[3])/5, yerr=scipy.stats.sem(aver_c_AL[3])/5, color='tab:red')
+plt.scatter(2, np.average(attr_c_LH[1])/3, color='tab:green')
+plt.scatter(2, np.average(aver_c_LH[1])/3, color='tab:red')
+plt.errorbar(2, np.average(attr_c_LH[1])/3, yerr=scipy.stats.sem(attr_c_LH[1])/3, color='tab:green')
+plt.errorbar(2, np.average(aver_c_LH[1])/3, yerr=scipy.stats.sem(aver_c_LH[1])/3, color='tab:red')
+plt.scatter(1, np.average(attr_c_calyx[1])/3, color='tab:green')
+plt.scatter(1, np.average(aver_c_calyx[1])/3, color='tab:red')
+plt.errorbar(1, np.average(attr_c_calyx[1])/3, yerr=scipy.stats.sem(attr_c_calyx[1])/3, color='tab:green')
+plt.errorbar(1, np.average(aver_c_calyx[1])/3, yerr=scipy.stats.sem(aver_c_calyx[1])/3, color='tab:red')
+plt.xticks([0, 1, 2], ['AL', 'MB calyx', 'LH'], fontsize=15)
+plt.xlim(-.5, 2.5)
+plt.legend(['Attractive', 'Aversive'], fontsize=12)
+plt.ylabel('Scaled Structural Compactness Index', fontsize=12)
+plt.show()
+
+#%% 
+
+attr_un_AL_x = []
+attr_un_AL_pq = []
+
+for i in range(len(attrnid)):
+    taridx = np.argwhere(un_AL_tr==attrnid[i])[0][0]
+    attr_un_AL_pq.append(Pq_calyx_pn[:,taridx])
+    attr_un_AL_x.append(-1/np.array(mw_Pq_calyx_pn[taridx]))
+
+attr_un_LH_x = []
+attr_un_LH_pq = []
+
+for i in range(len(attrnid)):
+    taridx = np.argwhere(un_LH_tr==attrnid[i])[0][0]
+    attr_un_LH_pq.append(Pq_calyx_pn[:,taridx])
+    attr_un_LH_x.append(-1/np.array(mw_Pq_calyx_pn[taridx]))
+
+attr_un_calyx_x = []
+attr_un_calyx_pq = []
+
+for i in range(len(attrnid)):
+    taridx = np.argwhere(un_calyx_tr==attrnid[i])[0][0]
+    attr_un_calyx_pq.append(Pq_calyx_pn[:,taridx])
+    attr_un_calyx_x.append(-1/np.array(mw_Pq_calyx_pn[taridx]))
+
+fig, ax = plt.subplots(figsize=(6,4.5))
+plt.plot(q_range[tolerant_mean(pherlist_pq).data > 0], 
+         tolerant_mean(pherlist_pq).data[tolerant_mean(pherlist_pq).data > 0], 
+         color='tab:blue', lw=2)
+plt.plot(q_range[tolerant_mean(attrlist_pq).data > 0], 
+         tolerant_mean(attrlist_pq).data[tolerant_mean(attrlist_pq).data > 0], 
+         color='tab:green', lw=2)
+plt.plot(q_range[tolerant_mean(averlist_pq).data > 0],
+         tolerant_mean(averlist_pq).data[tolerant_mean(averlist_pq).data > 0],
+         color='tab:red', lw=2)
+# plt.fill_between(q_range[tolerant_mean(pherlist_pq).data > 0], 
+#                   tolerant_mean(pherlist_pq).data[tolerant_mean(pherlist_pq).data > 0]-tolerant_std_error(pherlist_pq)[tolerant_mean(pherlist_pq).data > 0], 
+#                   tolerant_mean(pherlist_pq).data[tolerant_mean(pherlist_pq).data > 0]+tolerant_std_error(pherlist_pq)[tolerant_mean(pherlist_pq).data > 0],
+#                   alpha=0.3,
+#                   color='tab:blue')
+# plt.fill_between(q_range[tolerant_mean(attrlist_pq).data > 0], 
+#                   tolerant_mean(attrlist_pq).data[tolerant_mean(attrlist_pq).data > 0]-tolerant_std_error(attrlist_pq)[tolerant_mean(attrlist_pq).data > 0], 
+#                   tolerant_mean(attrlist_pq).data[tolerant_mean(attrlist_pq).data > 0]+tolerant_std_error(attrlist_pq)[tolerant_mean(attrlist_pq).data > 0],
+#                   alpha=0.3,
+#                   color='tab:green')
+# plt.fill_between(q_range[tolerant_mean(averlist_pq).data > 0], 
+#                   tolerant_mean(averlist_pq).data[tolerant_mean(averlist_pq).data > 0]-tolerant_std_error(averlist_pq)[tolerant_mean(averlist_pq).data > 0], 
+#                   tolerant_mean(averlist_pq).data[tolerant_mean(averlist_pq).data > 0]+tolerant_std_error(averlist_pq)[tolerant_mean(averlist_pq).data > 0],
+#                   alpha=0.3,
+#                   color='tab:red')
+
+plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_flat), 1e-9, 10, color='k')
+plt.vlines(1/rgy_calyx_full[0], 1e-9, 10, color='k', ls='--')
+plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_b_flat), 1e-9, 10, color='k', ls=':')
+
+line1 = 1/10*np.power(q_range, -16/7)
+line2 = 1/1000*np.power(q_range, -4/1)
+# line3 = 10*np.power(q_range, -1/0.388)
+line4 = 1/5*np.power(q_range, -1)
+
+# plt.plot(q_range[25:35], line1[25:35], lw=1.5, color='tab:red')
+# plt.plot(q_range[25:35], line2[25:35], lw=1.5, color='tab:gray')
+# plt.plot(q_range, line3, lw=1.5, color='tab:purple')
+plt.plot(q_range[45:65], line4[45:65], lw=1.5, color='k')
+
+# plt.text(0.3, 2e-0, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
+# plt.text(0.4, 1e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
+# plt.text(100, 1e-4, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
+plt.text(5, 7e-2, r'$\nu = 1$', fontsize=13)
+
+plt.xscale('log')
+plt.yscale('log')
+labels = [item.get_text() for item in ax.get_yticklabels()]
+empty_string_labels = ['']*len(labels)
+ax.set_yticklabels(empty_string_labels)
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
+# plt.ylabel("F(q)", fontsize=15)
+plt.ylim(1e-8, 10)
+plt.xlim(1e-2, 1e3)
+plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_calyx_raw_1.pdf', dpi=600, bbox_inches='tight')
+plt.show()
+    
+#%% 
+
+ct_AL_glo = []
+ct_LH_glo = []
+ct_calyx_glo = []
+
+for k in [2,3,4,5]:
+    ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, k, 'maxclust')
+    ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, k, 'maxclust')
+    ind_calyx = scipy.cluster.hierarchy.fcluster(L_calyx, k, 'maxclust')
+    
+    ct_AL_glo_temp = np.zeros((k, len(glo_idx_flat)))
+    ct_LH_glo_temp = np.zeros((k, len(glo_idx_flat)))
+    ct_calyx_glo_temp = np.zeros((k, len(glo_idx_flat)))
+    
+    ix = 0
+    
+    for i in range(len(glo_idx)):
+        for j in range(len(glo_idx[i])):
+            ct_AL_glo_temp[ind_AL[ix]-1][ix] = 1
+            ct_LH_glo_temp[ind_LH[ix]-1][ix] = 1
+            ct_calyx_glo_temp[ind_calyx[ix]-1][ix] = 1
+            ix += 1
+    
+    ct_AL_glo.append(ct_AL_glo_temp)
+    ct_LH_glo.append(ct_LH_glo_temp)
+    ct_calyx_glo.append(ct_calyx_glo_temp)
+
+glo_len_cluster = np.array(glo_len)
+glo_lb_cluster = [sum(glo_len_cluster[0:i]) for i in range(len(glo_len_cluster)+1)]
+glo_lb_cluster_s = np.subtract(glo_lb_cluster, glo_lb_cluster[0])
+glo_float_cluster = np.divide(glo_lb_cluster_s, glo_lb_cluster_s[-1])
+
+fig = plt.figure(figsize=(10,1))
+ax1 = SubplotHost(fig, 111)
+fig.add_subplot(ax1)
+im = plt.imshow(ct_AL_glo[3])
+ax1.set_xticks([]) 
+ax1.set_yticks([]) 
+ax2 = ax1.twiny()
+ax3 = ax1.twinx()
+offset1 = 0, 10
+offset2 = -10, 0
+new_axisline1 = ax2.get_grid_helper().new_fixed_axis
+new_axisline2 = ax3.get_grid_helper().new_fixed_axis
+ax2.axis["top"] = new_axisline1(loc="top", axes=ax2, offset=offset1)
+ax3.axis["left"] = new_axisline2(loc="left", axes=ax3, offset=offset2)
+ax2.axis["top"].minor_ticks.set_ticksize(0)
+ax3.axis["left"].minor_ticks.set_ticksize(0)
+ax2.axis["bottom"].set_visible(False)
+ax3.axis["right"].set_visible(False)
+ax2.set_xticks(glo_float_cluster)
+ax3.set_yticks([0., 1., 2., 3., 4., 5])
+ax3.invert_yaxis()
+ax2.xaxis.set_major_formatter(ticker.NullFormatter())
+ax3.yaxis.set_major_formatter(ticker.NullFormatter())
+ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster[1:] + glo_float_cluster[:-1])/2))
+ax3.yaxis.set_minor_locator(ticker.FixedLocator(([0.5, 1.5, 2.5, 3.5, 4.5])))
+ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster))
+ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(['C1', 'C2', 'C3', 'C4', 'C5']))
+ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=5, rotation_mode='default')
+ax3.axis["left"].minor_ticklabels.set(fontsize=5, rotation_mode='default')
+# plt.savefig(Parameter.outputdir + '/ct_AL_glo_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig = plt.figure(figsize=(10,1))
+ax1 = SubplotHost(fig, 111)
+fig.add_subplot(ax1)
+im = plt.imshow(ct_LH_glo[1][[2,1,0]])
+ax1.set_xticks([]) 
+ax1.set_yticks([]) 
+ax2 = ax1.twiny()
+ax3 = ax1.twinx()
+offset1 = 0, 10
+offset2 = -10, 0
+new_axisline1 = ax2.get_grid_helper().new_fixed_axis
+new_axisline2 = ax3.get_grid_helper().new_fixed_axis
+ax2.axis["top"] = new_axisline1(loc="top", axes=ax2, offset=offset1)
+ax3.axis["left"] = new_axisline2(loc="left", axes=ax3, offset=offset2)
+ax2.axis["top"].minor_ticks.set_ticksize(0)
+ax3.axis["left"].minor_ticks.set_ticksize(0)
+ax2.axis["bottom"].set_visible(False)
+ax3.axis["right"].set_visible(False)
+ax2.set_xticks(glo_float_cluster)
+ax3.set_yticks([0., 1., 2., 3.])
+ax3.invert_yaxis()
+ax2.xaxis.set_major_formatter(ticker.NullFormatter())
+ax3.yaxis.set_major_formatter(ticker.NullFormatter())
+ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster[1:] + glo_float_cluster[:-1])/2))
+ax3.yaxis.set_minor_locator(ticker.FixedLocator(([0.5, 1.5, 2.5])))
+ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster))
+ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(['C1', 'C2', 'C3']))
+ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=5, rotation_mode='default')
+ax3.axis["left"].minor_ticklabels.set(fontsize=5, rotation_mode='default')
+# plt.savefig(Parameter.outputdir + '/ct_AL_glo_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+fig = plt.figure(figsize=(10,1))
+ax1 = SubplotHost(fig, 111)
+fig.add_subplot(ax1)
+im = plt.imshow(ct_calyx_glo[1])
+ax1.set_xticks([]) 
+ax1.set_yticks([]) 
+ax2 = ax1.twiny()
+ax3 = ax1.twinx()
+offset1 = 0, 10
+offset2 = -10, 0
+new_axisline1 = ax2.get_grid_helper().new_fixed_axis
+new_axisline2 = ax3.get_grid_helper().new_fixed_axis
+ax2.axis["top"] = new_axisline1(loc="top", axes=ax2, offset=offset1)
+ax3.axis["left"] = new_axisline2(loc="left", axes=ax3, offset=offset2)
+ax2.axis["top"].minor_ticks.set_ticksize(0)
+ax3.axis["left"].minor_ticks.set_ticksize(0)
+ax2.axis["bottom"].set_visible(False)
+ax3.axis["right"].set_visible(False)
+ax2.set_xticks(glo_float_cluster)
+ax3.set_yticks([0., 1., 2., 3.])
+ax3.invert_yaxis()
+ax2.xaxis.set_major_formatter(ticker.NullFormatter())
+ax3.yaxis.set_major_formatter(ticker.NullFormatter())
+ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster[1:] + glo_float_cluster[:-1])/2))
+ax3.yaxis.set_minor_locator(ticker.FixedLocator(([0.5, 1.5, 2.5])))
+ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster))
+ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(['C1', 'C2', 'C3']))
+ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=5, rotation_mode='default')
+ax3.axis["left"].minor_ticklabels.set(fontsize=5, rotation_mode='default')
+# plt.savefig(Parameter.outputdir + '/ct_AL_glo_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
