@@ -5147,7 +5147,7 @@ glo_float = np.divide(glo_lbs, glo_lbs[-1])
 glo_idx_flat = [item for sublist in glo_idx for item in sublist]
 glo_idx_flat.sort()
 
-glo_list_neuron = np.repeat(glo_list, glo_len)
+# glo_list_neuron = np.repeat(glo_list, glo_len)
 glo_lb_idx = []
 
 for i in range(len(glo_lb)-1):
@@ -15872,6 +15872,53 @@ for i in range(len(glo_idx)):
 chi2, p, dof, ex = scipy.stats.chi2_contingency(ct_calyx[np.argwhere(np.array(glo_len) > 1).T[0]])
 
 
+#%% branch number per contour length
+
+
+AL_branchNum = []
+AL_total_l = []
+LH_branchNum = []
+LH_total_l = []
+calyx_branchNum = []
+calyx_total_l = []
+
+for i in range(len(glo_idx_flat)):
+    AL_branchNum.append(len(MorphData.ALdist_per_n[glo_idx_flat[i]]))
+    AL_total_l.append(np.sum(LengthData.length_AL[glo_idx_flat[i]]))
+    LH_branchNum.append(len(MorphData.LHdist_per_n[glo_idx_flat[i]]))
+    LH_total_l.append(np.sum(LengthData.length_LH[glo_idx_flat[i]]))
+    calyx_branchNum.append(len(MorphData.calyxdist_per_n[glo_idx_flat[i]]))
+    calyx_total_l.append(np.sum(LengthData.length_calyx[glo_idx_flat[i]]))
+
+AL_l_per_bn = np.divide(AL_total_l, AL_branchNum)
+LH_l_per_bn = np.divide(LH_total_l, LH_branchNum)
+calyx_l_per_bn = np.divide(calyx_total_l, calyx_branchNum)
+
+ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, 2, 'maxclust')
+ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, 2, 'maxclust')
+ind_LH = np.abs(ind_LH-4)
+ind_calyx = scipy.cluster.hierarchy.fcluster(L_calyx, 3, 'maxclust')
+
+
+fig = plt.figure(figsize=(6,4.5))
+for i in range(3):
+    plt.scatter(i+1, np.mean(AL_l_per_bn[ind_AL==i+1]))
+    plt.errorbar(i+1, np.mean(AL_l_per_bn[ind_AL==i+1]), yerr=scipy.stats.sem(AL_l_per_bn[ind_AL==i+1]))
+plt.show()
+
+fig = plt.figure(figsize=(6,4.5))
+for i in range(3):
+    plt.scatter(i+1, np.mean(LH_l_per_bn[ind_LH==i+1]))
+    plt.errorbar(i+1, np.mean(LH_l_per_bn[ind_LH==i+1]), yerr=scipy.stats.sem(LH_l_per_bn[ind_LH==i+1]))
+plt.show()
+
+fig = plt.figure(figsize=(6,4.5))
+for i in range(4):
+    plt.scatter(i+1, np.mean(calyx_l_per_bn[ind_calyx==i+1]))
+    plt.errorbar(i+1, np.mean(calyx_l_per_bn[ind_calyx==i+1]), yerr=scipy.stats.sem(calyx_l_per_bn[ind_calyx==i+1]))
+plt.show()
+
+
 #%%
 
 pher = ['DL3', 'VA1d', 'DA1', 'DC3']
@@ -16137,7 +16184,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 # plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-8, 10)
 plt.xlim(1e-2, 1e3)
-plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_calyx_raw_1.pdf', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_calyx_raw_1.pdf', dpi=600, bbox_inches='tight')
 plt.show()
     
 #%% 
