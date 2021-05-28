@@ -15890,12 +15890,12 @@ for i in range(len(glo_idx_flat)):
     calyx_branchNum.append(len(MorphData.calyxdist_per_n[glo_idx_flat[i]]))
     calyx_total_l.append(np.sum(LengthData.length_calyx[glo_idx_flat[i]]))
 
-AL_l_per_bn = np.divide(AL_total_l, AL_branchNum)
-LH_l_per_bn = np.divide(LH_total_l, LH_branchNum)
-calyx_l_per_bn = np.divide(calyx_total_l, calyx_branchNum)
+AL_l_per_bn = np.divide(AL_branchNum, AL_total_l)
+LH_l_per_bn = np.divide(LH_branchNum, LH_total_l)
+calyx_l_per_bn = np.divide(calyx_branchNum, calyx_total_l)
 
-ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, 2, 'maxclust')
-ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, 2, 'maxclust')
+ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, 3, 'maxclust')
+ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, 3, 'maxclust')
 ind_LH = np.abs(ind_LH-4)
 ind_calyx = scipy.cluster.hierarchy.fcluster(L_calyx, 3, 'maxclust')
 
@@ -15918,6 +15918,64 @@ for i in range(4):
     plt.errorbar(i+1, np.mean(calyx_l_per_bn[ind_calyx==i+1]), yerr=scipy.stats.sem(calyx_l_per_bn[ind_calyx==i+1]))
 plt.show()
 
+
+#%% branch number per rGy
+
+
+AL_branchNum = []
+AL_upn_rgy = []
+LH_branchNum = []
+LH_upn_rgy = []
+calyx_branchNum = []
+calyx_upn_rgy = []
+
+for i in range(len(glo_idx_flat)):
+    idx = np.where(un_AL == glo_idx_flat[i])[0][0]
+    AL_branchNum.append(len(MorphData.ALdist_per_n[glo_idx_flat[i]]))
+    AL_upn_rgy.append(rGy_AL[idx])
+    idx = np.where(un_LH == glo_idx_flat[i])[0][0]
+    LH_branchNum.append(len(MorphData.LHdist_per_n[glo_idx_flat[i]]))
+    LH_upn_rgy.append(rGy_LH[idx])
+    idx = np.where(un_calyx == glo_idx_flat[i])[0][0]
+    calyx_branchNum.append(len(MorphData.calyxdist_per_n[glo_idx_flat[i]]))
+    calyx_upn_rgy.append(rGy_calyx[idx])
+
+AL_bn_per_rgy = np.divide(AL_branchNum, AL_upn_rgy)
+LH_bn_per_rgy = np.divide(LH_branchNum, LH_upn_rgy)
+calyx_bn_per_rgy = np.divide(calyx_branchNum, calyx_upn_rgy)
+
+ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, 3, 'maxclust')
+ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, 3, 'maxclust')
+ind_LH = np.abs(ind_LH-4)
+ind_calyx = scipy.cluster.hierarchy.fcluster(L_calyx, 3, 'maxclust')
+
+
+fig = plt.figure(figsize=(2,3))
+for i in range(5):
+    plt.scatter(i+1, np.mean(AL_bn_per_rgy[ind_AL==i+1]))
+    plt.errorbar(i+1, np.mean(AL_bn_per_rgy[ind_AL==i+1]), yerr=scipy.stats.sem(AL_bn_per_rgy[ind_AL==i+1]))
+plt.ylabel(r'$N_{b}/R_{gy}$', fontsize=13)
+plt.xlim(0.5, 3.5)
+plt.xlabel('Cluster Number', fontsize=13)
+plt.show()
+
+fig = plt.figure(figsize=(2,3))
+for i in range(5):
+    plt.scatter(i+1, np.mean(LH_bn_per_rgy[ind_LH==i+1]))
+    plt.errorbar(i+1, np.mean(LH_bn_per_rgy[ind_LH==i+1]), yerr=scipy.stats.sem(LH_bn_per_rgy[ind_LH==i+1]))
+plt.ylabel(r'$N_{b}/R_{gy}$', fontsize=13)
+plt.xlim(0.5, 3.5)
+plt.xlabel('Cluster Number', fontsize=13)
+plt.show()
+
+fig = plt.figure(figsize=(2,3))
+for i in range(5):
+    plt.scatter(i+1, np.mean(calyx_bn_per_rgy[ind_calyx==i+1]))
+    plt.errorbar(i+1, np.mean(calyx_bn_per_rgy[ind_calyx==i+1]), yerr=scipy.stats.sem(calyx_bn_per_rgy[ind_calyx==i+1]))
+plt.ylabel(r'$N_{b}/R_{gy}$', fontsize=13)
+plt.xlim(0.5, 3.5)
+plt.xlabel('Cluster Number', fontsize=13)
+plt.show()
 
 #%%
 
@@ -15970,6 +16028,15 @@ avernid = [item for sublist in avernid for item in sublist]
 avernid.sort()
 averidx.sort()
 
+score_AL = []
+score_LH = []
+score_calyx = []
+
+for i in range(len(glo_idx_flat)):
+    score_AL.append(np.mean(AL_bn_per_rgy[ind_AL==ind_AL[i]]))
+    score_LH.append(np.mean(LH_bn_per_rgy[ind_LH==ind_LH[i]]))
+    score_calyx.append(np.mean(calyx_bn_per_rgy[ind_calyx==ind_calyx[i]]))
+
 attr_c_AL = []
 attr_c_LH = []
 attr_c_calyx = []
@@ -15984,17 +16051,17 @@ ct_LH_aver = []
 ct_calyx_attr = []
 ct_calyx_aver = []
 
-for k in [2,3,4,5]:
+for k in [3]:
     ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, k, 'maxclust')
     ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, k, 'maxclust')
     ind_calyx = scipy.cluster.hierarchy.fcluster(L_calyx, k, 'maxclust')
     
-    attr_c_AL.append(ind_AL[attridx])
-    attr_c_LH.append(ind_LH[attridx])
-    attr_c_calyx.append(ind_calyx[attridx])
-    aver_c_AL.append(ind_AL[averidx])
-    aver_c_LH.append(ind_LH[averidx])
-    aver_c_calyx.append(ind_calyx[averidx])
+    attr_c_AL.append(np.array(AL_bn_per_rgy)[attridx])
+    attr_c_LH.append(np.array(LH_bn_per_rgy)[attridx])
+    attr_c_calyx.append(np.array(calyx_bn_per_rgy)[attridx])
+    aver_c_AL.append(np.array(AL_bn_per_rgy)[averidx])
+    aver_c_LH.append(np.array(LH_bn_per_rgy)[averidx])
+    aver_c_calyx.append(np.array(calyx_bn_per_rgy)[averidx])
     
     ct_AL_attr_t = np.zeros((len(attridx), k))
     ct_AL_aver_t = np.zeros((len(averidx), k))
@@ -16022,82 +16089,82 @@ for k in [2,3,4,5]:
     
 # for i in range(len(ct_AL_attr)):
 fig = plt.figure(figsize=(3,8))
-plt.imshow(ct_AL_attr[3])
-plt.yticks(np.arange(len(ct_AL_attr[3])), np.array(MorphData.neuron_id)[attrnid])
+plt.imshow(ct_AL_attr[0])
+plt.yticks(np.arange(len(ct_AL_attr[0])), np.array(MorphData.neuron_id)[attrnid])
 plt.ylabel('Neuron ID', fontsize=12)
-plt.xticks(np.arange(len(ct_AL_attr[3][0])))
+plt.xticks(np.arange(len(ct_AL_attr[0][0])))
 plt.xlabel('Cluster', fontsize=12)
 plt.title('AL Attractive', fontsize=15)
 plt.show()    
 
 # for i in range(len(ct_AL_aver)):
 fig = plt.figure(figsize=(3,8))
-plt.imshow(ct_AL_aver[3])
-plt.yticks(np.arange(len(ct_AL_aver[3])), np.array(MorphData.neuron_id)[avernid])
+plt.imshow(ct_AL_aver[0])
+plt.yticks(np.arange(len(ct_AL_aver[0])), np.array(MorphData.neuron_id)[avernid])
 plt.ylabel('Neuron ID', fontsize=12)
-plt.xticks(np.arange(len(ct_AL_aver[3][0])))
+plt.xticks(np.arange(len(ct_AL_aver[0][0])))
 plt.xlabel('Cluster', fontsize=12)
 plt.title('AL Aversive', fontsize=15)
 plt.show()
 
 # for i in range(len(ct_LH_attr)):
 fig = plt.figure(figsize=(3,8))
-plt.imshow(ct_LH_attr[1])
-plt.yticks(np.arange(len(ct_LH_attr[1])), np.array(MorphData.neuron_id)[attrnid])
+plt.imshow(ct_LH_attr[0])
+plt.yticks(np.arange(len(ct_LH_attr[0])), np.array(MorphData.neuron_id)[attrnid])
 plt.ylabel('Neuron ID', fontsize=12)
-plt.xticks(np.arange(len(ct_LH_attr[1][0])))
+plt.xticks(np.arange(len(ct_LH_attr[0][0])))
 plt.xlabel('Cluster', fontsize=12)
 plt.title('LH Attractive', fontsize=15)
 plt.show()
     
 # for i in range(len(ct_LH_aver)):
 fig = plt.figure(figsize=(3,8))
-plt.imshow(ct_LH_aver[1])
-plt.yticks(np.arange(len(ct_LH_aver[1])), np.array(MorphData.neuron_id)[avernid])
+plt.imshow(ct_LH_aver[0])
+plt.yticks(np.arange(len(ct_LH_aver[0])), np.array(MorphData.neuron_id)[avernid])
 plt.ylabel('Neuron ID', fontsize=12)
-plt.xticks(np.arange(len(ct_LH_aver[1][0])))
+plt.xticks(np.arange(len(ct_LH_aver[0][0])))
 plt.xlabel('Cluster', fontsize=12)
 plt.title('LH Aversive', fontsize=15)
 plt.show()
 
 # for i in range(len(ct_calyx_attr)):
 fig = plt.figure(figsize=(3,8))
-plt.imshow(ct_calyx_attr[1])
-plt.yticks(np.arange(len(ct_calyx_attr[1])), np.array(MorphData.neuron_id)[attrnid])
+plt.imshow(ct_calyx_attr[0])
+plt.yticks(np.arange(len(ct_calyx_attr[0])), np.array(MorphData.neuron_id)[attrnid])
 plt.ylabel('Neuron ID', fontsize=12)
-plt.xticks(np.arange(len(ct_calyx_attr[1][0])))
+plt.xticks(np.arange(len(ct_calyx_attr[0][0])))
 plt.xlabel('Cluster', fontsize=12)
 plt.title('Calyx Attractive', fontsize=15)
 plt.show()
 
 # for i in range(len(ct_calyx_aver)):
 fig = plt.figure(figsize=(3,8))
-plt.imshow(ct_calyx_aver[1])
-plt.yticks(np.arange(len(ct_calyx_aver[1])), np.array(MorphData.neuron_id)[avernid])
+plt.imshow(ct_calyx_aver[0])
+plt.yticks(np.arange(len(ct_calyx_aver[0])), np.array(MorphData.neuron_id)[avernid])
 plt.ylabel('Neuron ID', fontsize=12)
-plt.xticks(np.arange(len(ct_calyx_aver[1][0])))
+plt.xticks(np.arange(len(ct_calyx_aver[0][0])))
 plt.xlabel('Cluster', fontsize=12)
 plt.title('Calyx Aversive', fontsize=15)
 plt.show()
 
 
-attr_c_LH[1] = np.abs(attr_c_LH[1]-4)
-aver_c_LH[1] = np.abs(aver_c_LH[1]-4)
+# attr_c_LH[1] = np.abs(attr_c_LH[1]-4)
+# aver_c_LH[1] = np.abs(aver_c_LH[1]-4)
 
 
 fig = plt.figure(figsize=(3,5))
-plt.scatter(0, np.average(attr_c_AL[3])/5, color='tab:green')
-plt.scatter(0, np.average(aver_c_AL[3])/5, color='tab:red')
-plt.errorbar(0, np.average(attr_c_AL[3])/5, yerr=scipy.stats.sem(attr_c_AL[3])/5, color='tab:green')
-plt.errorbar(0, np.average(aver_c_AL[3])/5, yerr=scipy.stats.sem(aver_c_AL[3])/5, color='tab:red')
-plt.scatter(2, np.average(attr_c_LH[1])/3, color='tab:green')
-plt.scatter(2, np.average(aver_c_LH[1])/3, color='tab:red')
-plt.errorbar(2, np.average(attr_c_LH[1])/3, yerr=scipy.stats.sem(attr_c_LH[1])/3, color='tab:green')
-plt.errorbar(2, np.average(aver_c_LH[1])/3, yerr=scipy.stats.sem(aver_c_LH[1])/3, color='tab:red')
-plt.scatter(1, np.average(attr_c_calyx[1])/3, color='tab:green')
-plt.scatter(1, np.average(aver_c_calyx[1])/3, color='tab:red')
-plt.errorbar(1, np.average(attr_c_calyx[1])/3, yerr=scipy.stats.sem(attr_c_calyx[1])/3, color='tab:green')
-plt.errorbar(1, np.average(aver_c_calyx[1])/3, yerr=scipy.stats.sem(aver_c_calyx[1])/3, color='tab:red')
+plt.scatter(0, np.average(attr_c_AL[0]), color='tab:green')
+plt.scatter(0, np.average(aver_c_AL[0]), color='tab:red')
+plt.errorbar(0, np.average(attr_c_AL[0]), yerr=scipy.stats.sem(attr_c_AL[0]), color='tab:green')
+plt.errorbar(0, np.average(aver_c_AL[0]), yerr=scipy.stats.sem(aver_c_AL[0]), color='tab:red')
+plt.scatter(2, np.average(attr_c_LH[0]), color='tab:green')
+plt.scatter(2, np.average(aver_c_LH[0]), color='tab:red')
+plt.errorbar(2, np.average(attr_c_LH[0]), yerr=scipy.stats.sem(attr_c_LH[0]), color='tab:green')
+plt.errorbar(2, np.average(aver_c_LH[0]), yerr=scipy.stats.sem(aver_c_LH[0]), color='tab:red')
+plt.scatter(1, np.average(attr_c_calyx[0]), color='tab:green')
+plt.scatter(1, np.average(aver_c_calyx[0]), color='tab:red')
+plt.errorbar(1, np.average(attr_c_calyx[0]), yerr=scipy.stats.sem(attr_c_calyx[0]), color='tab:green')
+plt.errorbar(1, np.average(aver_c_calyx[0]), yerr=scipy.stats.sem(aver_c_calyx[0]), color='tab:red')
 plt.xticks([0, 1, 2], ['AL', 'MB calyx', 'LH'], fontsize=15)
 plt.xlim(-.5, 2.5)
 plt.legend(['Attractive', 'Aversive'], fontsize=12)
@@ -16189,11 +16256,13 @@ plt.show()
     
 #%% 
 
+glo_list_cluster = np.array(glo_list)
+
 ct_AL_glo = []
 ct_LH_glo = []
 ct_calyx_glo = []
 
-for k in [2,3,4,5]:
+for k in [3]:
     ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, k, 'maxclust')
     ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, k, 'maxclust')
     ind_calyx = scipy.cluster.hierarchy.fcluster(L_calyx, k, 'maxclust')
@@ -16223,7 +16292,7 @@ glo_float_cluster = np.divide(glo_lb_cluster_s, glo_lb_cluster_s[-1])
 fig = plt.figure(figsize=(10,1))
 ax1 = SubplotHost(fig, 111)
 fig.add_subplot(ax1)
-im = plt.imshow(ct_AL_glo[3])
+im = plt.imshow(ct_AL_glo[0])
 ax1.set_xticks([]) 
 ax1.set_yticks([]) 
 ax2 = ax1.twiny()
@@ -16239,14 +16308,14 @@ ax3.axis["left"].minor_ticks.set_ticksize(0)
 ax2.axis["bottom"].set_visible(False)
 ax3.axis["right"].set_visible(False)
 ax2.set_xticks(glo_float_cluster)
-ax3.set_yticks([0., 1., 2., 3., 4., 5])
+ax3.set_yticks([0., 1., 2., 3.])
 ax3.invert_yaxis()
 ax2.xaxis.set_major_formatter(ticker.NullFormatter())
 ax3.yaxis.set_major_formatter(ticker.NullFormatter())
 ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster[1:] + glo_float_cluster[:-1])/2))
-ax3.yaxis.set_minor_locator(ticker.FixedLocator(([0.5, 1.5, 2.5, 3.5, 4.5])))
+ax3.yaxis.set_minor_locator(ticker.FixedLocator(([0.5, 1.5, 2.5])))
 ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster))
-ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(['C1', 'C2', 'C3', 'C4', 'C5']))
+ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(['C1', 'C2', 'C3']))
 ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=5, rotation_mode='default')
 ax3.axis["left"].minor_ticklabels.set(fontsize=5, rotation_mode='default')
 # plt.savefig(Parameter.outputdir + '/ct_AL_glo_1.pdf', dpi=300, bbox_inches='tight')
@@ -16255,7 +16324,7 @@ plt.show()
 fig = plt.figure(figsize=(10,1))
 ax1 = SubplotHost(fig, 111)
 fig.add_subplot(ax1)
-im = plt.imshow(ct_LH_glo[1][[2,1,0]])
+im = plt.imshow(ct_LH_glo[0][[2,1,0]])
 ax1.set_xticks([]) 
 ax1.set_yticks([]) 
 ax2 = ax1.twiny()
@@ -16288,7 +16357,7 @@ plt.show()
 fig = plt.figure(figsize=(10,1))
 ax1 = SubplotHost(fig, 111)
 fig.add_subplot(ax1)
-im = plt.imshow(ct_calyx_glo[1])
+im = plt.imshow(ct_calyx_glo[0])
 ax1.set_xticks([]) 
 ax1.set_yticks([]) 
 ax2 = ax1.twiny()
