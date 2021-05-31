@@ -11902,6 +11902,80 @@ mlab.axes()
 mlab.show()
 
 
+#%% P(r)
+
+def pnt_in_cvex_hull(hull, pnt):
+    new_hull = ConvexHull(np.concatenate((hull.points, [pnt])))
+    if np.array_equal(new_hull.vertices, hull.vertices): 
+        return True
+    return False
+
+rand_neurite = []
+
+t = 0
+while len(rand_neurite) < len(calyxdist_short_flat):
+    t+=1
+    rx = np.random.uniform(np.min(hull_calyx.points[:,0]), np.max(hull_calyx.points[:,0]))
+    ry = np.random.uniform(np.min(hull_calyx.points[:,1]), np.max(hull_calyx.points[:,1]))
+    rz = np.random.uniform(np.min(hull_calyx.points[:,2]), np.max(hull_calyx.points[:,2]))
+    if pnt_in_cvex_hull(hull_calyx, [rx,ry,rz]):
+        rand_neurite.append([rx,ry,rz])
+
+
+CM_CM_neurite = np.average(CM_neurite, axis=0)
+CM_rand_neurite = np.average(rand_neurite, axis=0)
+
+dist = scipy.spatial.distance.cdist([CM_CM_neurite], CM_neurite)[0]
+dist_rand = scipy.spatial.distance.cdist([CM_rand_neurite], rand_neurite)[0]
+
+val,edge = np.histogram(dist, bins=60, density=True)
+val_rand,edge_rand = np.histogram(dist_rand, bins=60, density=True)
+
+fig, ax1 = plt.subplots(figsize=(6,4.5))
+
+ax1.plot(edge[:-1] - np.diff(edge), val, color='tab:blue')
+ax1.plot(edge_rand[:-1] - np.diff(edge_rand), val_rand, color='tab:red')
+ax1.set_ylabel('$P(r_{CM})$', fontsize=17)
+ax1.set_xlabel('$r_{CM}$ ($\mu\mathrm{m}$)', fontsize=17)
+plt.xticks(fontsize=14)
+plt.yticks(fontsize=14)
+ax2 = ax1.twinx()
+
+ax2.plot(edge[:-1] - np.diff(edge), np.cumsum(val)*np.diff(edge)[0], ls='--', color='tab:blue')
+ax2.plot(edge_rand[:-1] - np.diff(edge_rand), np.cumsum(val_rand)*np.diff(edge_rand)[0], ls='--', color='tab:red')
+plt.yticks(fontsize=14)
+fig.tight_layout()
+# plt.savefig(Parameter.outputdir + '/neurite_Rp_CM_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+dist = scipy.spatial.distance.cdist(CM_neurite, CM_neurite)
+dist_rand = scipy.spatial.distance.cdist(rand_neurite, rand_neurite)
+
+dist = dist[np.triu_indices_from(dist, k=1)]
+dist_rand = dist_rand[np.triu_indices_from(dist_rand, k=1)]
+
+val,edge = np.histogram(dist, bins=60, density=True)
+val_rand,edge_rand = np.histogram(dist_rand, bins=60, density=True)
+
+fig, ax1 = plt.subplots(figsize=(6,4.5))
+
+ax1.plot(edge[:-1] - np.diff(edge), val, color='tab:blue')
+ax1.plot(edge_rand[:-1] - np.diff(edge_rand), val_rand, color='tab:red')
+ax1.set_xlabel('$r$ ($\mu\mathrm{m}$)', fontsize=17)
+ax1.set_ylabel('$P(r)$', fontsize=17)
+plt.xticks(fontsize=14)
+plt.yticks(fontsize=14)
+ax2 = ax1.twinx()
+
+ax2.plot(edge[:-1] - np.diff(edge), np.cumsum(val)*np.diff(edge)[0], ls='--', color='tab:blue')
+ax2.plot(edge_rand[:-1] - np.diff(edge_rand), np.cumsum(val_rand)*np.diff(edge_rand)[0], ls='--', color='tab:red')
+plt.yticks(fontsize=14)
+fig.tight_layout()
+# plt.savefig(Parameter.outputdir + '/neurite_Rp_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
 #%% Neurite structure factor
 
 q_range = np.logspace(-2,1,500)
@@ -11913,10 +11987,18 @@ for q in range(len(q_range)):
     qrvec = qrvec[np.triu_indices_from(qrvec, k=1)]
     Pq_calyx_neurite[q] = np.divide(np.divide(2*np.sum(np.sin(qrvec)/qrvec), len(CM_neurite)), len(CM_neurite))
 
+Pq_calyx_neurite_rand = np.empty(len(q_range))
+
+for q in range(len(q_range)):
+    qrvec = q_range[q]*scipy.spatial.distance.cdist(rand_neurite, rand_neurite)
+    qrvec = qrvec[np.triu_indices_from(qrvec, k=1)]
+    Pq_calyx_neurite_rand[q] = np.divide(np.divide(2*np.sum(np.sin(qrvec)/qrvec), len(rand_neurite)), len(rand_neurite))
+
 
 fig, ax = plt.subplots(figsize=(6,4.5))
 
-plt.plot(q_range[Pq_calyx_neurite > 0], Pq_calyx_neurite[Pq_calyx_neurite > 0])
+plt.plot(q_range[Pq_calyx_neurite > 0], Pq_calyx_neurite[Pq_calyx_neurite > 0], color='tab:blue')
+plt.plot(q_range[Pq_calyx_neurite_rand > 0], Pq_calyx_neurite_rand[Pq_calyx_neurite_rand > 0], color='tab:red')
 plt.xscale('log')
 plt.yscale('log')
 
@@ -11929,50 +12011,7 @@ plt.yticks(fontsize=14)
 # plt.savefig(Parameter.outputdir + '/neurite_Fq.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
-#%% P(r)
 
-CM_CM_neurite = np.average(CM_neurite, axis=0)
-
-dist = scipy.spatial.distance.cdist([CM_CM_neurite], CM_neurite)[0]
-
-val,edge = np.histogram(dist, bins=60, density=True)
-
-fig, ax1 = plt.subplots(figsize=(6,4.5))
-
-ax1.plot(edge[:-1] - np.diff(edge), val, color='tab:blue')
-ax1.set_ylabel('$P(r_{CM})$', fontsize=17)
-ax1.set_xlabel('$r_{CM}$ ($\mu\mathrm{m}$)', fontsize=17)
-plt.xticks(fontsize=14)
-plt.yticks(fontsize=14)
-ax2 = ax1.twinx()
-
-ax2.plot(edge[:-1] - np.diff(edge), np.cumsum(val)*np.diff(edge)[0], color='tab:red')
-plt.yticks(fontsize=14)
-fig.tight_layout()
-# plt.savefig(Parameter.outputdir + '/neurite_Rp_CM.pdf', dpi=300, bbox_inches='tight')
-plt.show()
-
-
-dist = scipy.spatial.distance.cdist(CM_neurite, CM_neurite)
-
-dist = dist[np.triu_indices_from(dist, k=1)]
-
-val,edge = np.histogram(dist, bins=60, density=True)
-
-fig, ax1 = plt.subplots(figsize=(6,4.5))
-
-ax1.plot(edge[:-1] - np.diff(edge), val)
-ax1.set_xlabel('$r$ ($\mu\mathrm{m}$)', fontsize=17)
-ax1.set_ylabel('$P(r)$', fontsize=17)
-plt.xticks(fontsize=14)
-plt.yticks(fontsize=14)
-ax2 = ax1.twinx()
-
-ax2.plot(edge[:-1] - np.diff(edge), np.cumsum(val)*np.diff(edge)[0], color='tab:red')
-plt.yticks(fontsize=14)
-fig.tight_layout()
-# plt.savefig(Parameter.outputdir + '/neurite_Rp.pdf', dpi=300, bbox_inches='tight')
-plt.show()
 
 
 #%% Gyration tensor
