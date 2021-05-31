@@ -15929,9 +15929,9 @@ for i in range(len(glo_idx_flat)):
     calyx_branchNum.append(len(MorphData.calyxdist_per_n[glo_idx_flat[i]]))
     calyx_total_l.append(np.sum(LengthData.length_calyx[glo_idx_flat[i]]))
 
-AL_l_per_bn = np.divide(AL_branchNum, AL_total_l)
-LH_l_per_bn = np.divide(LH_branchNum, LH_total_l)
-calyx_l_per_bn = np.divide(calyx_branchNum, calyx_total_l)
+AL_bn_per_l = np.divide(AL_branchNum, AL_total_l)
+LH_bn_per_l = np.divide(LH_branchNum, LH_total_l)
+calyx_bn_per_l = np.divide(calyx_branchNum, calyx_total_l)
 
 ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, 3, 'maxclust')
 ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, 3, 'maxclust')
@@ -15939,22 +15939,31 @@ ind_LH = np.abs(ind_LH-4)
 ind_calyx = scipy.cluster.hierarchy.fcluster(L_calyx, 3, 'maxclust')
 
 
-fig = plt.figure(figsize=(6,4.5))
-for i in range(3):
-    plt.scatter(i+1, np.mean(AL_l_per_bn[ind_AL==i+1]))
-    plt.errorbar(i+1, np.mean(AL_l_per_bn[ind_AL==i+1]), yerr=scipy.stats.sem(AL_l_per_bn[ind_AL==i+1]))
+fig = plt.figure(figsize=(2,3))
+for i in range(5):
+    plt.scatter(i+1, np.mean(AL_bn_per_l[ind_AL==i+1]))
+    plt.errorbar(i+1, np.mean(AL_bn_per_l[ind_AL==i+1]), yerr=scipy.stats.sem(AL_bn_per_l[ind_AL==i+1]))
+plt.ylabel(r'$N_{b}/l$', fontsize=13)
+plt.xlim(0.5, 3.5)
+plt.xlabel('Cluster Number', fontsize=13)
 plt.show()
 
-fig = plt.figure(figsize=(6,4.5))
-for i in range(3):
-    plt.scatter(i+1, np.mean(LH_l_per_bn[ind_LH==i+1]))
-    plt.errorbar(i+1, np.mean(LH_l_per_bn[ind_LH==i+1]), yerr=scipy.stats.sem(LH_l_per_bn[ind_LH==i+1]))
+fig = plt.figure(figsize=(2,3))
+for i in range(5):
+    plt.scatter(i+1, np.mean(LH_bn_per_l[ind_LH==i+1]))
+    plt.errorbar(i+1, np.mean(LH_bn_per_l[ind_LH==i+1]), yerr=scipy.stats.sem(LH_bn_per_l[ind_LH==i+1]))
+plt.ylabel(r'$N_{b}/l$', fontsize=13)
+plt.xlim(0.5, 3.5)
+plt.xlabel('Cluster Number', fontsize=13)
 plt.show()
 
-fig = plt.figure(figsize=(6,4.5))
-for i in range(4):
-    plt.scatter(i+1, np.mean(calyx_l_per_bn[ind_calyx==i+1]))
-    plt.errorbar(i+1, np.mean(calyx_l_per_bn[ind_calyx==i+1]), yerr=scipy.stats.sem(calyx_l_per_bn[ind_calyx==i+1]))
+fig = plt.figure(figsize=(2,3))
+for i in range(5):
+    plt.scatter(i+1, np.mean(calyx_bn_per_l[ind_calyx==i+1]))
+    plt.errorbar(i+1, np.mean(calyx_bn_per_l[ind_calyx==i+1]), yerr=scipy.stats.sem(calyx_bn_per_l[ind_calyx==i+1]))
+plt.ylabel(r'$N_{b}/l$', fontsize=13)
+plt.xlim(0.5, 3.5)
+plt.xlabel('Cluster Number', fontsize=13)
 plt.show()
 
 
@@ -16067,15 +16076,6 @@ avernid = [item for sublist in avernid for item in sublist]
 avernid.sort()
 averidx.sort()
 
-score_AL = []
-score_LH = []
-score_calyx = []
-
-for i in range(len(glo_idx_flat)):
-    score_AL.append(np.mean(AL_bn_per_rgy[ind_AL==ind_AL[i]]))
-    score_LH.append(np.mean(LH_bn_per_rgy[ind_LH==ind_LH[i]]))
-    score_calyx.append(np.mean(calyx_bn_per_rgy[ind_calyx==ind_calyx[i]]))
-
 attr_c_AL = []
 attr_c_LH = []
 attr_c_calyx = []
@@ -16095,12 +16095,12 @@ for k in [3]:
     ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, k, 'maxclust')
     ind_calyx = scipy.cluster.hierarchy.fcluster(L_calyx, k, 'maxclust')
     
-    attr_c_AL.append(np.array(AL_bn_per_rgy)[attridx])
-    attr_c_LH.append(np.array(LH_bn_per_rgy)[attridx])
-    attr_c_calyx.append(np.array(calyx_bn_per_rgy)[attridx])
-    aver_c_AL.append(np.array(AL_bn_per_rgy)[averidx])
-    aver_c_LH.append(np.array(LH_bn_per_rgy)[averidx])
-    aver_c_calyx.append(np.array(calyx_bn_per_rgy)[averidx])
+    attr_c_AL.append(np.array(AL_bn_per_l)[attridx])
+    attr_c_LH.append(np.array(LH_bn_per_l)[attridx])
+    attr_c_calyx.append(np.array(calyx_bn_per_l)[attridx])
+    aver_c_AL.append(np.array(AL_bn_per_l)[averidx])
+    aver_c_LH.append(np.array(LH_bn_per_l)[averidx])
+    aver_c_calyx.append(np.array(calyx_bn_per_l)[averidx])
     
     ct_AL_attr_t = np.zeros((len(attridx), k))
     ct_AL_aver_t = np.zeros((len(averidx), k))
@@ -16207,7 +16207,7 @@ plt.errorbar(1, np.average(aver_c_calyx[0]), yerr=scipy.stats.sem(aver_c_calyx[0
 plt.xticks([0, 1, 2], ['AL', 'MB calyx', 'LH'], fontsize=15)
 plt.xlim(-.5, 2.5)
 plt.legend(['Attractive', 'Aversive'], fontsize=12)
-plt.ylabel('Scaled Structural Compactness Index', fontsize=12)
+plt.ylabel(r'$N_{b}/l$', fontsize=12)
 plt.show()
 
 #%% 
