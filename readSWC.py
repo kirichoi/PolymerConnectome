@@ -10806,11 +10806,11 @@ idx_list = []
 fig = plt.figure(figsize=(6,4.5))
 lAL = []
 lAL_b = []
-for i in range(len(un_MG_all)):
-    idx_temp = np.where(un_AL_tr == un_MG_all[i])[0][0]
+for i in range(len(un_AL_nUG)):
+    idx_temp = np.where(un_AL_tr == un_AL_nUG[i])[0][0]
     idx_list.append(idx_temp)
-    lAL.append(LengthData.length_AL[un_MG_all[i]])
-    lAL_b.append(LengthData.length_AL_b[un_MG_all[i]])
+    lAL.append(LengthData.length_AL[un_AL_nUG[i]])
+    lAL_b.append(LengthData.length_AL_b[un_AL_nUG[i]])
 
 posavg = []
 posstd = []
@@ -10899,11 +10899,11 @@ idx_list = []
 fig = plt.figure(figsize=(6,4.5))
 lLH = []
 lLH_b = []
-for i in range(len(un_MG_all)):
-    idx_temp = np.where(un_LH_tr == un_MG_all[i])[0][0]
+for i in range(len(un_LH_nUG)):
+    idx_temp = np.where(un_LH_tr == un_LH_nUG[i])[0][0]
     idx_list.append(idx_temp)
-    lLH.append(LengthData.length_LH[un_MG_all[i]])
-    lLH_b.append(LengthData.length_LH_b[un_MG_all[i]])
+    lLH.append(LengthData.length_LH[un_LH_nUG[i]])
+    lLH_b.append(LengthData.length_LH_b[un_LH_nUG[i]])
 
 posavg = []
 posstd = []
@@ -10982,7 +10982,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-3, 2)
 plt.xlim(1e-2, 1e1)
-# plt.savefig(Parameter.outputdir + '/Pq_mPN_LH_comb_1.svg', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_mGN_LH_comb_2.svg', dpi=600, bbox_inches='tight')
 plt.show()
 
 
@@ -10991,11 +10991,11 @@ idx_list = []
 fig = plt.figure(figsize=(6,4.5))
 lcalyx = []
 lcalyx_b = []
-for i in range(len(un_MG_all)):
-    idx_temp = np.where(un_calyx_tr == un_MG_all[i])[0][0]
+for i in range(len(un_calyx_nUG)):
+    idx_temp = np.where(un_calyx_tr == un_calyx_nUG[i])[0][0]
     idx_list.append(idx_temp)
-    lcalyx.append(LengthData.length_calyx[un_MG_all[i]])
-    lcalyx_b.append(LengthData.length_calyx_b[un_MG_all[i]])
+    lcalyx.append(LengthData.length_calyx[un_calyx_nUG[i]])
+    lcalyx_b.append(LengthData.length_calyx_b[un_calyx_nUG[i]])
 
 posavg = []
 posstd = []
@@ -11090,12 +11090,12 @@ for f in glo_idx_flat:
             pass
         else:
             morph_line = np.vstack((listOfPoints[MorphData.morph_id[f].index(MorphData.morph_parent[f][p])], listOfPoints[p]))
-            if f in un_MG_all:
+            if f in un_LH_nUG:
                 pass
             else:
                 ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], color='gray', lw=0.25, alpha=0.25)
                 
-for i in un_MG_all:
+for i in un_LH_nUG:
     listOfPoints = MorphData.morph_dist[i]
     for p in range(len(MorphData.morph_parent[i])):
         if MorphData.morph_parent[i][p] < 0:
@@ -11120,7 +11120,7 @@ ax.set_zlim(30, 170)
 # ax.set_xticklabels([])
 # ax.set_yticklabels([])
 # ax.set_zticklabels([])
-# plt.savefig(Parameter.outputdir + '/mPN_full_2', dpi=600, bbox_inches='tight', transparent=True)
+# plt.savefig(Parameter.outputdir + '/mGN_full_1', dpi=600, bbox_inches='tight', transparent=True)
 plt.show()
 
 #%% form factor per neurite plotting
@@ -11945,7 +11945,7 @@ ax2.plot(edge[:-1] - np.diff(edge), np.cumsum(val)*np.diff(edge)[0], ls='--', co
 ax2.plot(edge_rand[:-1] - np.diff(edge_rand), np.cumsum(val_rand)*np.diff(edge_rand)[0], ls='--', color='tab:red')
 plt.yticks(fontsize=14)
 fig.tight_layout()
-# plt.savefig(Parameter.outputdir + '/neurite_Rp_CM_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/neurite_Rp_CM_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -11972,7 +11972,7 @@ ax2.plot(edge[:-1] - np.diff(edge), np.cumsum(val)*np.diff(edge)[0], ls='--', co
 ax2.plot(edge_rand[:-1] - np.diff(edge_rand), np.cumsum(val_rand)*np.diff(edge_rand)[0], ls='--', color='tab:red')
 plt.yticks(fontsize=14)
 fig.tight_layout()
-# plt.savefig(Parameter.outputdir + '/neurite_Rp_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/neurite_Rp_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -12008,7 +12008,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$S(q)$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/neurite_Fq.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/neurite_Fq_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
