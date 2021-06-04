@@ -10547,12 +10547,12 @@ un_calyx_nUG_right_hem = [0, 14, 16, 73]
 un_calyx_nUG_SG = [1, 2, 3, 7, 9, 10, 17, 40, 45, 48, 49, 58, 61, 65, 88, 89, 100, 154, 157, 160]
 un_calyx_nUG_LH = [4, 47, 103, 143]
 un_calyx_nUG_AL = [26, 135]
-un_calyx_nUG_MG = [70, 71, 93, 94, 97, 114, 115, 138, 139, 149]
+un_calyx_nUG_MG = [70, 71, 93, 94, 97, 114, 115, 136, 138, 139, 149, 26, 135]
 
 un_AL_nUG_right_hem = [0, 14, 16, 73]
 un_AL_nUG_calyx = [26, 135]
-un_AL_nUG_LH = [136]
-un_AL_nUG_MG = [70, 71, 93, 94, 97, 114, 115, 138, 139, 149]
+un_AL_nUG_LH = []
+un_AL_nUG_MG = [70, 71, 93, 94, 97, 114, 115, 136, 138, 139, 149, 26, 135]
 
 #left [71, 97, 114, 115]
 #right [93, 138, 139, 149]
@@ -10561,244 +10561,8 @@ un_AL_nUG_MG = [70, 71, 93, 94, 97, 114, 115, 138, 139, 149]
 un_LH_nUG_right_hem = [0, 14, 16, 73]
 un_LH_nUG_SG = [42]
 un_LH_nUG_calyx = [4, 47, 103, 143]
-un_LH_nUG_AL = [136]
+un_LH_nUG_AL = []
 un_LH_nUG_MG = [70, 71, 93, 94, 97, 114, 115, 138, 139, 149]
-
-
-idx_list = []
-
-fig = plt.figure(figsize=(6,4.5))
-for i in range(len(un_MG_all)):
-    idx_temp = np.where(un_AL_tr == un_MG_all[i])[0][0]
-    idx_list.append(idx_temp)
-    # plt.plot(q_range[Pq_AL_pn[:,idx_temp]>0], Pq_AL_pn[:,idx_temp][Pq_AL_pn[:,idx_temp]>0], color='tab:blue', alpha=0.5)
-
-posavg = []
-posstd = []
-for i in range(len(Pq_AL_pn)):
-    if len(Pq_AL_pn[i][idx_list][Pq_AL_pn[i][idx_list]>0]) > 0:
-        posavg.append(np.average(Pq_AL_pn[i][idx_list][Pq_AL_pn[i][idx_list]>0]))
-        posstd.append(np.std(Pq_AL_pn[i][idx_list][Pq_AL_pn[i][idx_list]>0]))
-    else:
-        posavg.append(np.nan)
-        posstd.append(np.nan)
-plt.plot(q_range[~np.isnan(posavg)], np.array(posavg)[~np.isnan(posavg)], color='tab:blue')
-plt.fill_between(q_range[~np.isnan(posavg)], 
-                 np.array(posavg)[~np.isnan(posavg)]+np.array(posstd)[~np.isnan(posavg)],
-                 np.array(posavg)[~np.isnan(posavg)]-np.array(posstd)[~np.isnan(posavg)],
-                 alpha=0.5)
-
-plt.vlines(2*np.pi/np.mean(LengthData.length_AL_flat), 1e-8, 10, color='tab:blue')
-plt.vlines(1/np.mean(rGy_AL), 1e-8, 10, color='tab:blue', ls='--')
-plt.vlines(2*np.pi/np.mean(LengthData.length_AL_b_flat), 1e-8, 10, color='tab:blue', ls='dotted')
-
-line1 = 1/3*np.power(q_range, -16/7)
-line2 = 1/10*np.power(q_range, -4/1)
-# line3 = 10*np.power(q_range, -1/0.388)
-line4 = 1/40*np.power(q_range, -1)
-
-plt.plot(q_range[35:45], line1[35:45], lw=1.5, color='tab:red')
-# plt.plot(q_range[32:38], line2[32:38], lw=1.5, color='tab:gray')
-# plt.plot(q_range, line3, lw=1.5, color='tab:purple')
-plt.plot(q_range[75:95], line4[75:95], lw=1.5, color='k')
-
-plt.text(1.2, 4e-1, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
-# plt.text(0.4, 1e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
-# plt.text(100, 1e-4, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
-plt.text(130, 3e-4, r'$\nu = 1$', fontsize=13)
-
-plt.xscale('log')
-plt.yscale('log')
-plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("F(q)", fontsize=15)
-plt.ylim(1e-8, 10)
-plt.xlim(1e-2, 1e3)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_MG_1.pdf', dpi=600, bbox_inches='tight')
-plt.show()
-
-mw_Pq_AL_pn = []
-mw_Pq_AL_pn_err = []
-mwx_AL_pn = []
-shiftN = 15
-
-for j in range(len(un_AL_nUG_MG)):
-    mw_Pq_AL_pn_temp = []
-    mw_Pq_AL_pn_err_temp = []
-    mwx_AL_pn_temp = []
-    
-    idx_temp = np.where(un_AL_tr == un_AL_nUG_MG[j])[0]
-    
-    Pq_AL_posidx = np.where(Pq_AL_pn[:,idx_temp] > 0)[0]
-    
-    AL_q_idx_new = Pq_AL_posidx[Pq_AL_posidx < AL_q_idx]
-    
-    for i in range(len(AL_q_idx_new) - shiftN):
-        mwx_AL_pn_temp.append(np.average(q_range[AL_q_idx_new][i:i+shiftN]))
-        
-        poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                    np.log10(q_range[AL_q_idx_new][i:i+shiftN]), 
-                                                    np.log10(Pq_AL_pn[AL_q_idx_new,idx_temp][i:i+shiftN]), 
-                                                    p0=[1., 0.], 
-                                                    maxfev=100000)
-        mw_Pq_AL_pn_temp.append(poptmxc[0])
-        mw_Pq_AL_pn_err_temp.append(np.sqrt(np.diag(pcovmxc))[0])
-    
-    mw_Pq_AL_pn.append(mw_Pq_AL_pn_temp)
-    mw_Pq_AL_pn_err.append(mw_Pq_AL_pn_err_temp)
-    mwx_AL_pn.append(mwx_AL_pn_temp)
-
-
-fig = plt.figure(figsize=(4,3))
-
-for i in range(len(mw_Pq_AL_pn)):
-    plt.plot(np.array(mwx_AL_pn[i])[np.array(mwx_AL_pn[i])<2*np.pi/np.mean(LengthData.length_AL_flat)],
-             -1/np.array(mw_Pq_AL_pn[i])[np.array(mwx_AL_pn[i])<2*np.pi/np.mean(LengthData.length_AL_flat)],
-             color='tab:blue', lw=2, alpha=0.5)
-
-xmax = max(mwx_AL_pn, key = len)
-
-plt.plot(np.array(xmax)[xmax<2*np.pi/np.mean(LengthData.length_AL_flat)],
-         -1/tolerant_mean(mw_Pq_AL_pn).data[xmax<2*np.pi/np.mean(LengthData.length_AL_flat)],
-         color='k', lw=2)
-
-plt.hlines(1/4, 0.01, 100, ls='dashed', color='tab:gray', lw=1.5)
-plt.hlines(7/16, 0.01, 100, ls='dashed', color='tab:red', lw=1.5)
-plt.hlines(1, 0.01, 100, ls='dashed', color='k', lw=1.5)
-plt.hlines(0.388, 0.01, 100, ls='dashed', color='tab:purple', lw=1.5)
-# plt.text(10.3, 1/4-0.02, 'Ideal', fontsize=14)
-# plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
-# plt.text(10.3, 1-0.02,'Linear', fontsize=14)
-# plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
-
-plt.vlines(2*np.pi/np.mean(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue', lw=1.5)
-plt.vlines(1/np.mean(rGy_AL), 1e-6, 10, color='tab:blue', ls='--', lw=1.5)
-
-plt.xscale('log')
-# plt.yscale('log')
-plt.ylim(0.1, 1.2)
-plt.xlim(0.03, 6)
-# plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
-plt.xticks([], fontsize=14)
-plt.ylabel(r"$\nu$", fontsize=17)
-plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_AL_MG_mv_2.pdf', dpi=300, bbox_inches='tight')
-plt.show()
-
-
-
-idx_list = []
-
-fig = plt.figure(figsize=(6,4.5))
-for i in range(len(un_MG_all)):
-    idx_temp = np.where(un_LH_tr == un_MG_all[i])[0][0]
-    idx_list.append(idx_temp)
-    plt.plot(q_range[Pq_LH_pn[:,idx_temp]>0], Pq_LH_pn[:,idx_temp][Pq_LH_pn[:,idx_temp]>0], color='tab:green', alpha=0.5)
-
-posavg = []
-for i in range(len(Pq_LH_pn)):
-    posavg.append(np.average(Pq_LH_pn[i][idx_list][Pq_LH_pn[i][idx_list]>0]))
-plt.plot(q_range, posavg, color='k')
-
-plt.vlines(2*np.pi/np.mean(LengthData.length_LH_flat), 1e-8, 10, color='tab:green')
-plt.vlines(1/np.mean(rGy_LH), 1e-8, 10, color='tab:green', ls='--')
-plt.vlines(2*np.pi/np.mean(LengthData.length_LH_b_flat), 1e-8, 10, color='tab:green', ls='dotted')
-
-line1 = 1/10000*np.power(q_range, -16/7)
-line2 = 1/1000*np.power(q_range, -4/1)
-# line3 = 10*np.power(q_range, -1/0.388)
-line4 = 1/40*np.power(q_range, -1)
-line5 = 1/3*np.power(q_range, -1)
-
-plt.plot(q_range[15:25], line1[15:25], lw=1.5, color='tab:red')
-# plt.plot(q_range[25:35], line2[25:35], lw=1.5, color='tab:gray')
-# plt.plot(q_range, line3, lw=1.5, color='tab:purple')
-plt.plot(q_range[75:95], line4[75:95], lw=1.5, color='k')
-plt.plot(q_range[40:55], line5[40:55], lw=1.5, color='k')
-
-plt.text(0.02, 5e-3, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
-# plt.text(0.4, 1e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
-# plt.text(100, 1e-4, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
-plt.text(130, 3e-4, r'$\nu = 1$', fontsize=13)
-plt.text(2, 3e-1, r'$\nu = 1$', fontsize=13)
-
-plt.xscale('log')
-plt.yscale('log')
-plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
-plt.ylabel("F(q)", fontsize=15)
-plt.ylim(1e-8, 10)
-plt.xlim(1e-2, 1e3)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_LH_MG_1.pdf', dpi=600, bbox_inches='tight')
-plt.show()
-
-
-mw_Pq_LH_pn = []
-mw_Pq_LH_pn_err = []
-mwx_LH_pn = []
-shiftN = 15
-
-for j in range(len(un_LH_nUG_MG)):
-    mw_Pq_LH_pn_temp = []
-    mw_Pq_LH_pn_err_temp = []
-    mwx_LH_pn_temp = []
-    
-    idx_temp = np.where(un_LH_tr == un_LH_nUG_MG[j])[0]
-    
-    Pq_LH_posidx = np.where(Pq_LH_pn[:,idx_temp] > 0)[0]
-    
-    LH_q_idx_new = Pq_LH_posidx[Pq_LH_posidx < LH_q_idx]
-    
-    for i in range(len(LH_q_idx_new) - shiftN):
-        mwx_LH_pn_temp.append(np.average(q_range[LH_q_idx_new][i:i+shiftN]))
-        
-        poptmxc, pcovmxc = scipy.optimize.curve_fit(objFuncGL, 
-                                                    np.log10(q_range[LH_q_idx_new][i:i+shiftN]), 
-                                                    np.log10(Pq_LH_pn[LH_q_idx_new,idx_temp][i:i+shiftN]), 
-                                                    p0=[1., 0.], 
-                                                    maxfev=100000)
-        mw_Pq_LH_pn_temp.append(poptmxc[0])
-        mw_Pq_LH_pn_err_temp.append(np.sqrt(np.diag(pcovmxc))[0])
-    
-    mw_Pq_LH_pn.append(mw_Pq_LH_pn_temp)
-    mw_Pq_LH_pn_err.append(mw_Pq_LH_pn_err_temp)
-    mwx_LH_pn.append(mwx_LH_pn_temp)
-
-
-fig = plt.figure(figsize=(4,3))
-
-for i in range(len(mw_Pq_LH_pn)):
-    plt.plot(np.array(mwx_LH_pn[i])[np.array(mwx_LH_pn[i])<2*np.pi/np.mean(LengthData.length_LH_flat)],
-             -1/np.array(mw_Pq_LH_pn[i])[np.array(mwx_LH_pn[i])<2*np.pi/np.mean(LengthData.length_LH_flat)],
-             color='tab:green', lw=2, alpha=0.5)
-
-xmax = max(mwx_LH_pn, key = len)
-
-plt.plot(np.array(xmax)[xmax<2*np.pi/np.mean(LengthData.length_LH_flat)],
-         -1/tolerant_mean(mw_Pq_LH_pn).data[xmax<2*np.pi/np.mean(LengthData.length_LH_flat)],
-         color='k', lw=2)
-
-plt.hlines(1/4, 0.01, 100, ls='dashed', color='tab:gray', lw=1.5)
-plt.hlines(7/16, 0.01, 100, ls='dashed', color='tab:red', lw=1.5)
-plt.hlines(1, 0.01, 100, ls='dashed', color='k', lw=1.5)
-plt.hlines(0.388, 0.01, 100, ls='dashed', color='tab:purple', lw=1.5)
-# plt.text(10.3, 1/4-0.02, 'Ideal', fontsize=14)
-# plt.text(10.3, 7/16-0.02, '$\Theta$ Solvent', fontsize=14)
-# plt.text(10.3, 1-0.02,'Linear', fontsize=14)
-# plt.text(10.3, 0.388-0.02,'Solution', fontsize=14)
-
-plt.vlines(2*np.pi/np.mean(LengthData.length_LH_flat), 1e-6, 10, color='tab:green', lw=1.5)
-plt.vlines(1/np.mean(rGy_LH), 1e-6, 10, color='tab:green', ls='--', lw=1.5)
-
-plt.xscale('log')
-# plt.yscale('log')
-plt.ylim(0.1, 1.2)
-plt.xlim(0.03, 6)
-# plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
-plt.xticks([], fontsize=14)
-plt.ylabel(r"$\nu$", fontsize=17)
-plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/Pq_all_pn_LH_MG_mv_2.pdf', dpi=300, bbox_inches='tight')
-plt.show()
-
 
 
 idx_list = []
@@ -10806,11 +10570,11 @@ idx_list = []
 fig = plt.figure(figsize=(6,4.5))
 lAL = []
 lAL_b = []
-for i in range(len(un_AL_nUG)):
-    idx_temp = np.where(un_AL_tr == un_AL_nUG[i])[0][0]
+for i in range(len(un_AL_nUG_MG)):
+    idx_temp = np.where(un_AL_tr == un_AL_nUG_MG[i])[0][0]
     idx_list.append(idx_temp)
-    lAL.append(LengthData.length_AL[un_AL_nUG[i]])
-    lAL_b.append(LengthData.length_AL_b[un_AL_nUG[i]])
+    lAL.append(LengthData.length_AL[un_AL_nUG_MG[i]])
+    lAL_b.append(LengthData.length_AL_b[un_AL_nUG_MG[i]])
 
 posavg = []
 posstd = []
@@ -10899,11 +10663,11 @@ idx_list = []
 fig = plt.figure(figsize=(6,4.5))
 lLH = []
 lLH_b = []
-for i in range(len(un_LH_nUG)):
-    idx_temp = np.where(un_LH_tr == un_LH_nUG[i])[0][0]
+for i in range(len(un_LH_nUG_MG)):
+    idx_temp = np.where(un_LH_tr == un_LH_nUG_MG[i])[0][0]
     idx_list.append(idx_temp)
-    lLH.append(LengthData.length_LH[un_LH_nUG[i]])
-    lLH_b.append(LengthData.length_LH_b[un_LH_nUG[i]])
+    lLH.append(LengthData.length_LH[un_LH_nUG_MG[i]])
+    lLH_b.append(LengthData.length_LH_b[un_LH_nUG_MG[i]])
 
 posavg = []
 posstd = []
@@ -10982,7 +10746,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-3, 2)
 plt.xlim(1e-2, 1e1)
-# plt.savefig(Parameter.outputdir + '/Pq_mGN_LH_comb_2.svg', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_mPN_LH_comb_2.svg', dpi=600, bbox_inches='tight')
 plt.show()
 
 
@@ -10991,11 +10755,11 @@ idx_list = []
 fig = plt.figure(figsize=(6,4.5))
 lcalyx = []
 lcalyx_b = []
-for i in range(len(un_calyx_nUG)):
-    idx_temp = np.where(un_calyx_tr == un_calyx_nUG[i])[0][0]
+for i in range(len(un_calyx_nUG_MG)):
+    idx_temp = np.where(un_calyx_tr == un_calyx_nUG_MG[i])[0][0]
     idx_list.append(idx_temp)
-    lcalyx.append(LengthData.length_calyx[un_calyx_nUG[i]])
-    lcalyx_b.append(LengthData.length_calyx_b[un_calyx_nUG[i]])
+    lcalyx.append(LengthData.length_calyx[un_calyx_nUG_MG[i]])
+    lcalyx_b.append(LengthData.length_calyx_b[un_calyx_nUG_MG[i]])
 
 posavg = []
 posstd = []
@@ -15933,9 +15697,9 @@ AL_bn_per_l = np.divide(AL_branchNum, AL_total_l)
 LH_bn_per_l = np.divide(LH_branchNum, LH_total_l)
 calyx_bn_per_l = np.divide(calyx_branchNum, calyx_total_l)
 
-ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, 3, 'maxclust')
-ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, 3, 'maxclust')
-ind_LH = np.abs(ind_LH-4)
+ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, 2, 'maxclust')
+ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, 2, 'maxclust')
+ind_LH = np.abs(ind_LH-3)
 ind_calyx = scipy.cluster.hierarchy.fcluster(L_calyx, 3, 'maxclust')
 
 
@@ -15944,7 +15708,7 @@ for i in range(5):
     plt.scatter(i+1, np.mean(AL_bn_per_l[ind_AL==i+1]))
     plt.errorbar(i+1, np.mean(AL_bn_per_l[ind_AL==i+1]), yerr=scipy.stats.sem(AL_bn_per_l[ind_AL==i+1]))
 plt.ylabel(r'$N_{b}/l$', fontsize=13)
-plt.xlim(0.5, 3.5)
+plt.xlim(0.5, 2.5)
 plt.xlabel('Cluster Number', fontsize=13)
 plt.show()
 
@@ -15953,7 +15717,7 @@ for i in range(5):
     plt.scatter(i+1, np.mean(LH_bn_per_l[ind_LH==i+1]))
     plt.errorbar(i+1, np.mean(LH_bn_per_l[ind_LH==i+1]), yerr=scipy.stats.sem(LH_bn_per_l[ind_LH==i+1]))
 plt.ylabel(r'$N_{b}/l$', fontsize=13)
-plt.xlim(0.5, 3.5)
+plt.xlim(0.5, 2.5)
 plt.xlabel('Cluster Number', fontsize=13)
 plt.show()
 
@@ -15992,9 +15756,9 @@ AL_bn_per_rgy = np.divide(AL_branchNum, AL_upn_rgy)
 LH_bn_per_rgy = np.divide(LH_branchNum, LH_upn_rgy)
 calyx_bn_per_rgy = np.divide(calyx_branchNum, calyx_upn_rgy)
 
-ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, 3, 'maxclust')
-ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, 3, 'maxclust')
-ind_LH = np.abs(ind_LH-4)
+ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, 2, 'maxclust')
+ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, 2, 'maxclust')
+ind_LH = np.abs(ind_LH-3)
 ind_calyx = scipy.cluster.hierarchy.fcluster(L_calyx, 3, 'maxclust')
 
 
@@ -16090,41 +15854,41 @@ ct_LH_aver = []
 ct_calyx_attr = []
 ct_calyx_aver = []
 
-for k in [3]:
-    ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, k, 'maxclust')
-    ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, k, 'maxclust')
-    ind_calyx = scipy.cluster.hierarchy.fcluster(L_calyx, k, 'maxclust')
+# for k in [3]:
+ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, 2, 'maxclust')
+ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, 2, 'maxclust')
+ind_calyx = scipy.cluster.hierarchy.fcluster(L_calyx, 3, 'maxclust')
+
+attr_c_AL.append(np.array(AL_bn_per_l)[attridx])
+attr_c_LH.append(np.array(LH_bn_per_l)[attridx])
+attr_c_calyx.append(np.array(calyx_bn_per_l)[attridx])
+aver_c_AL.append(np.array(AL_bn_per_l)[averidx])
+aver_c_LH.append(np.array(LH_bn_per_l)[averidx])
+aver_c_calyx.append(np.array(calyx_bn_per_l)[averidx])
+
+ct_AL_attr_t = np.zeros((len(attridx), 2))
+ct_AL_aver_t = np.zeros((len(averidx), 2))
+ct_LH_attr_t = np.zeros((len(attridx), 2))
+ct_LH_aver_t = np.zeros((len(averidx), 2))
+ct_calyx_attr_t = np.zeros((len(attridx), 3))
+ct_calyx_aver_t = np.zeros((len(averidx), 3))
+
+for i in range(len(ind_AL[attridx])):
+    ct_AL_attr_t[i][ind_AL[attridx][i]-1] = 1
+    ct_LH_attr_t[i][np.abs(ind_LH[attridx]-(2+1))[i]-1] = 1
+    ct_calyx_attr_t[i][ind_calyx[attridx][i]-1] = 1
+
+for i in range(len(ind_AL[averidx])):
+    ct_AL_aver_t[i][ind_AL[averidx][i]-1] = 1
+    ct_LH_aver_t[i][np.abs(ind_LH[averidx]-(2+1))[i]-1] = 1
+    ct_calyx_aver_t[i][ind_calyx[averidx][i]-1] = 1
     
-    attr_c_AL.append(np.array(AL_bn_per_l)[attridx])
-    attr_c_LH.append(np.array(LH_bn_per_l)[attridx])
-    attr_c_calyx.append(np.array(calyx_bn_per_l)[attridx])
-    aver_c_AL.append(np.array(AL_bn_per_l)[averidx])
-    aver_c_LH.append(np.array(LH_bn_per_l)[averidx])
-    aver_c_calyx.append(np.array(calyx_bn_per_l)[averidx])
-    
-    ct_AL_attr_t = np.zeros((len(attridx), k))
-    ct_AL_aver_t = np.zeros((len(averidx), k))
-    ct_LH_attr_t = np.zeros((len(attridx), k))
-    ct_LH_aver_t = np.zeros((len(averidx), k))
-    ct_calyx_attr_t = np.zeros((len(attridx), k))
-    ct_calyx_aver_t = np.zeros((len(averidx), k))
-    
-    for i in range(len(ind_AL[attridx])):
-        ct_AL_attr_t[i][ind_AL[attridx][i]-1] = 1
-        ct_LH_attr_t[i][np.abs(ind_LH[attridx]-(k+1))[i]-1] = 1
-        ct_calyx_attr_t[i][ind_calyx[attridx][i]-1] = 1
-    
-    for i in range(len(ind_AL[averidx])):
-        ct_AL_aver_t[i][ind_AL[averidx][i]-1] = 1
-        ct_LH_aver_t[i][np.abs(ind_LH[averidx]-(k+1))[i]-1] = 1
-        ct_calyx_aver_t[i][ind_calyx[averidx][i]-1] = 1
-        
-    ct_AL_attr.append(ct_AL_attr_t)
-    ct_AL_aver.append(ct_AL_aver_t)
-    ct_LH_attr.append(ct_LH_attr_t)
-    ct_LH_aver.append(ct_LH_aver_t)
-    ct_calyx_attr.append(ct_calyx_attr_t)
-    ct_calyx_aver.append(ct_calyx_aver_t)
+ct_AL_attr.append(ct_AL_attr_t)
+ct_AL_aver.append(ct_AL_aver_t)
+ct_LH_attr.append(ct_LH_attr_t)
+ct_LH_aver.append(ct_LH_aver_t)
+ct_calyx_attr.append(ct_calyx_attr_t)
+ct_calyx_aver.append(ct_calyx_aver_t)
     
 # for i in range(len(ct_AL_attr)):
 fig = plt.figure(figsize=(3,8))
