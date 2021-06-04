@@ -10511,6 +10511,10 @@ un_calyx_tr = np.delete(un_calyx, [40, 41], 0)
 un_AL_tr = np.delete(un_AL, 73, 0)
 un_LH_tr = un_LH
 
+rGy_calyx_tr = np.delete(rGy_calyx, [40, 41], 0)
+rGy_AL_tr = np.delete(rGy_AL, 73, 0)
+rGy_LH_tr = rGy_LH
+
 set1 = set(un_calyx_tr)
 set2 = set(un_LH)
 set3 = set(un_AL_tr)
@@ -10575,6 +10579,7 @@ for i in range(len(un_AL_nUG_MG)):
     idx_list.append(idx_temp)
     lAL.append(LengthData.length_AL[un_AL_nUG_MG[i]])
     lAL_b.append(LengthData.length_AL_b[un_AL_nUG_MG[i]])
+    # plt.plot(q_range, Pq_AL_pn[:,idx_temp], color='tab:blue')
 
 posavg = []
 posstd = []
@@ -10587,15 +10592,15 @@ for i in range(len(Pq_AL_pn)):
         posstd.append(np.nan)
 plt.plot(q_range[~np.isnan(posavg)], np.array(posavg)[~np.isnan(posavg)], color='tab:blue')
 plt.fill_between(q_range[~np.isnan(posavg)], 
-                 np.array(posavg)[~np.isnan(posavg)]+np.array(posstd)[~np.isnan(posavg)],
-                 np.array(posavg)[~np.isnan(posavg)]-np.array(posstd)[~np.isnan(posavg)],
-                 alpha=0.25, color='tab:blue')
+                  np.array(posavg)[~np.isnan(posavg)]+np.array(posstd)[~np.isnan(posavg)],
+                  np.array(posavg)[~np.isnan(posavg)]-np.array(posstd)[~np.isnan(posavg)],
+                  alpha=0.25, color='tab:blue')
 
 lAL_flat = [item for sublist in lAL for item in sublist]
 lAL_flat_b = [item for sublist in lAL_b for item in sublist]
 lAL_flat_flat_b = [item for sublist in lAL_flat_b for item in sublist]
 plt.vlines(2*np.pi/np.mean(lAL_flat), 1e-8, 10, color='tab:blue')
-plt.vlines(1/np.mean(rGy_AL[idx_list]), 1e-8, 10, color='tab:blue', ls='--')
+plt.vlines(1/np.mean(rGy_AL_tr[idx_list]), 1e-8, 10, color='tab:blue', ls='--')
 plt.vlines(2*np.pi/np.mean(lAL_flat_flat_b), 1e-8, 10, color='tab:blue', ls='dotted')
 
 idx_list = []
@@ -10626,7 +10631,7 @@ lAL_flat = [item for sublist in lAL_u for item in sublist]
 lAL_flat_b = [item for sublist in lAL_u_b for item in sublist]
 lAL_flat_flat_b = [item for sublist in lAL_flat_b for item in sublist]
 plt.vlines(2*np.pi/np.mean(lAL_flat), 1e-8, 10, color='tab:gray')
-plt.vlines(1/np.mean(rGy_AL[idx_list]), 1e-8, 10, color='tab:gray', ls='--')
+plt.vlines(1/np.mean(rGy_AL_tr[idx_list]), 1e-8, 10, color='tab:gray', ls='--')
 plt.vlines(2*np.pi/np.mean(lAL_flat_flat_b), 1e-8, 10, color='tab:gray', ls='dotted')
 
 line1 = 1/10000*np.power(q_range, -16/7)
@@ -10688,7 +10693,7 @@ lLH_flat = [item for sublist in lLH for item in sublist]
 lLH_flat_b = [item for sublist in lLH_b for item in sublist]
 lLH_flat_flat_b = [item for sublist in lLH_flat_b for item in sublist]
 plt.vlines(2*np.pi/np.mean(lLH_flat), 1e-8, 10, color='indigo')
-plt.vlines(1/np.mean(rGy_LH[idx_list]), 1e-8, 10, color='indigo', ls='--')
+plt.vlines(1/np.mean(rGy_LH_tr[idx_list]), 1e-8, 10, color='indigo', ls='--')
 plt.vlines(2*np.pi/np.mean(lLH_flat_flat_b), 1e-8, 10, color='indigo', ls='dotted')
 
 idx_list = []
@@ -10719,7 +10724,7 @@ lLH_flat = [item for sublist in lLH_u for item in sublist]
 lLH_flat_b = [item for sublist in lLH_u_b for item in sublist]
 lLH_flat_flat_b = [item for sublist in lLH_flat_b for item in sublist]
 plt.vlines(2*np.pi/np.mean(lLH_flat), 1e-8, 10, color='tab:gray')
-plt.vlines(1/np.mean(rGy_LH[idx_list]), 1e-8, 10, color='tab:gray', ls='--')
+plt.vlines(1/np.mean(rGy_LH_tr[idx_list]), 1e-8, 10, color='tab:gray', ls='--')
 plt.vlines(2*np.pi/np.mean(lLH_flat_flat_b), 1e-8, 10, color='tab:gray', ls='dotted')
 
 line1 = 1/10000*np.power(q_range, -16/7)
@@ -10780,7 +10785,7 @@ lcalyx_flat = [item for sublist in lcalyx for item in sublist]
 lcalyx_flat_b = [item for sublist in lcalyx_b for item in sublist]
 lcalyx_flat_flat_b = [item for sublist in lcalyx_flat_b for item in sublist]
 plt.vlines(2*np.pi/np.mean(lcalyx_flat), 1e-8, 10, color='tab:orange')
-plt.vlines(1/np.mean(rGy_calyx[idx_list]), 1e-8, 10, color='tab:orange', ls='--')
+plt.vlines(1/np.mean(rGy_calyx_tr[idx_list]), 1e-8, 10, color='tab:orange', ls='--')
 plt.vlines(2*np.pi/np.mean(lcalyx_flat_flat_b), 1e-8, 10, color='tab:orange', ls='dotted')
 
 idx_list = []
@@ -10811,7 +10816,7 @@ lcalyx_flat = [item for sublist in lcalyx_u for item in sublist]
 lcalyx_flat_b = [item for sublist in lcalyx_u_b for item in sublist]
 lcalyx_flat_flat_b = [item for sublist in lcalyx_flat_b for item in sublist]
 plt.vlines(2*np.pi/np.mean(lcalyx_flat), 1e-8, 10, color='tab:gray')
-plt.vlines(1/np.mean(rGy_calyx[idx_list]), 1e-8, 10, color='tab:gray', ls='--')
+plt.vlines(1/np.mean(rGy_calyx_tr[idx_list]), 1e-8, 10, color='tab:gray', ls='--')
 plt.vlines(2*np.pi/np.mean(lcalyx_flat_flat_b), 1e-8, 10, color='tab:gray', ls='dotted')
 
 line1 = 1/10000*np.power(q_range, -16/7)
@@ -15705,29 +15710,32 @@ ind_calyx = scipy.cluster.hierarchy.fcluster(L_calyx, 3, 'maxclust')
 
 fig = plt.figure(figsize=(2,3))
 for i in range(5):
-    plt.scatter(i+1, np.mean(AL_bn_per_l[ind_AL==i+1]))
-    plt.errorbar(i+1, np.mean(AL_bn_per_l[ind_AL==i+1]), yerr=scipy.stats.sem(AL_bn_per_l[ind_AL==i+1]))
+    plt.scatter(i+1, np.mean(AL_bn_per_l[ind_AL==i+1]), color='tab:blue')
+    plt.errorbar(i+1, np.mean(AL_bn_per_l[ind_AL==i+1]), yerr=scipy.stats.sem(AL_bn_per_l[ind_AL==i+1]), color='tab:blue')
 plt.ylabel(r'$N_{b}/l$', fontsize=13)
 plt.xlim(0.5, 2.5)
 plt.xlabel('Cluster Number', fontsize=13)
+# plt.savefig(Parameter.outputdir + '/cluster_bn_per_l_AL.pdf', dpi=600, bbox_inches='tight')
 plt.show()
 
 fig = plt.figure(figsize=(2,3))
 for i in range(5):
-    plt.scatter(i+1, np.mean(LH_bn_per_l[ind_LH==i+1]))
-    plt.errorbar(i+1, np.mean(LH_bn_per_l[ind_LH==i+1]), yerr=scipy.stats.sem(LH_bn_per_l[ind_LH==i+1]))
+    plt.scatter(i+1, np.mean(LH_bn_per_l[ind_LH==i+1]), color='tab:green')
+    plt.errorbar(i+1, np.mean(LH_bn_per_l[ind_LH==i+1]), yerr=scipy.stats.sem(LH_bn_per_l[ind_LH==i+1]), color='tab:green')
 plt.ylabel(r'$N_{b}/l$', fontsize=13)
 plt.xlim(0.5, 2.5)
 plt.xlabel('Cluster Number', fontsize=13)
+# plt.savefig(Parameter.outputdir + '/cluster_bn_per_l_LH.pdf', dpi=600, bbox_inches='tight')
 plt.show()
 
 fig = plt.figure(figsize=(2,3))
 for i in range(5):
-    plt.scatter(i+1, np.mean(calyx_bn_per_l[ind_calyx==i+1]))
-    plt.errorbar(i+1, np.mean(calyx_bn_per_l[ind_calyx==i+1]), yerr=scipy.stats.sem(calyx_bn_per_l[ind_calyx==i+1]))
+    plt.scatter(i+1, np.mean(calyx_bn_per_l[ind_calyx==i+1]), color='tab:orange')
+    plt.errorbar(i+1, np.mean(calyx_bn_per_l[ind_calyx==i+1]), yerr=scipy.stats.sem(calyx_bn_per_l[ind_calyx==i+1]), color='tab:orange')
 plt.ylabel(r'$N_{b}/l$', fontsize=13)
 plt.xlim(0.5, 3.5)
 plt.xlabel('Cluster Number', fontsize=13)
+# plt.savefig(Parameter.outputdir + '/cluster_bn_per_l_calyx.pdf', dpi=600, bbox_inches='tight')
 plt.show()
 
 
@@ -15972,6 +15980,7 @@ plt.xticks([0, 1, 2], ['AL', 'MB calyx', 'LH'], fontsize=15)
 plt.xlim(-.5, 2.5)
 plt.legend(['Attractive', 'Aversive'], fontsize=12)
 plt.ylabel(r'$N_{b}/l$', fontsize=12)
+# plt.savefig(Parameter.outputdir + '/attr_aver_bn_l_comp.pdf', dpi=600, bbox_inches='tight')
 plt.show()
 
 #%% 
