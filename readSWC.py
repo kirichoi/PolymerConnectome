@@ -10016,6 +10016,10 @@ LengthData.length_calyx_flat = np.array([item for sublist in LengthData.length_c
 LengthData.length_LH_flat = np.array([item for sublist in LengthData.length_LH for item in sublist])
 LengthData.length_AL_flat = np.array([item for sublist in LengthData.length_AL for item in sublist])
 
+rGy_calyx_tr = np.delete(rGy_calyx, [40, 41], 0)
+rGy_AL_tr = np.delete(rGy_AL, 73, 0)
+rGy_LH_tr = rGy_LH
+
 calyx_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_calyx_flat, 2))[0][-1]
 LH_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_LH_flat, 2))[0][-1]
 AL_q_idx = np.where(q_range < 2*np.pi/np.percentile(LengthData.length_AL_flat, 2))[0][-1]
@@ -10054,7 +10058,7 @@ plt.vlines(2*np.pi/np.mean(LengthData.length_AL_flat), 1e-9, 10, color='tab:blue
 # plt.vlines(2*np.pi/np.median(LengthData.length_AL_flat), 1e-6, 10, color='tab:blue', ls='dotted')
 
 # plt.vlines(1/rgy_AL_full[0], 1e-6, 10, color='tab:blue', ls='--')
-plt.vlines(1/np.mean(rGy_AL), 1e-9, 10, color='tab:blue', ls='--')
+plt.vlines(1/np.mean(rGy_AL_tr), 1e-9, 10, color='tab:blue', ls='--')
 plt.vlines(2*np.pi/np.mean(LengthData.length_AL_b_flat), 1e-9, 10, color='tab:blue', ls=':')
 
 line1 = 1/8*np.power(q_range, -16/7)
@@ -10101,7 +10105,7 @@ plt.vlines(2*np.pi/np.mean(LengthData.length_LH_flat), 1e-9, 10, color='tab:gree
 # plt.vlines(2*np.pi/np.median(LengthData.length_LH_flat), 1e-6, 10, color='tab:green', ls='dotted')
 
 # plt.vlines(1/rgy_LH_full[0], 1e-6, 10, color='tab:green', ls='--')
-plt.vlines(1/np.mean(rGy_LH), 1e-9, 10, color='tab:green', ls='--')
+plt.vlines(1/np.mean(rGy_LH_tr), 1e-9, 10, color='tab:green', ls='--')
 plt.vlines(2*np.pi/np.mean(LengthData.length_LH_b_flat), 1e-9, 10, color='tab:green', ls=':')
 
 # line1 = 1/7500*np.power(q_range, -16/7)
@@ -10166,7 +10170,7 @@ plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_flat), 1e-9, 10, color='tab:o
 # plt.vlines(2*np.pi/np.median(LengthData.length_calyx_flat), 1e-6, 10, color='tab:orange', ls='dotted')
 
 # plt.vlines(1/rgy_calyx_full[0], 1e-6, 10, color='tab:orange', ls='--')
-plt.vlines(1/np.mean(rGy_calyx), 1e-9, 10, color='tab:orange', ls='--')
+plt.vlines(1/np.mean(rGy_calyx_tr), 1e-9, 10, color='tab:orange', ls='--')
 plt.vlines(2*np.pi/np.mean(LengthData.length_calyx_b_flat), 1e-9, 10, color='tab:orange', ls=':')
 
 # line1 = 1/7500*np.power(q_range, -16/7)
@@ -10221,7 +10225,7 @@ def first_consecutive(lst):
         if i!=j:
             return i
 
-shiftN = 7
+shiftN = 15
 
 mw_Pq_calyx_pn = []
 mw_Pq_calyx_pn_err = []
@@ -10566,7 +10570,7 @@ un_LH_nUG_right_hem = [0, 14, 16, 73]
 un_LH_nUG_SG = [42]
 un_LH_nUG_calyx = [4, 47, 103, 143]
 un_LH_nUG_AL = []
-un_LH_nUG_MG = [70, 71, 93, 94, 97, 114, 115, 138, 139, 149]
+un_LH_nUG_MG = [70, 71, 93, 94, 97, 114, 115, 136, 138, 139, 149]
 
 
 idx_list = []
@@ -10649,7 +10653,7 @@ plt.plot(q_range[15:25], line5[15:25], lw=1.5, color='k')
 plt.text(0.02, 5e-3, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
 # plt.text(0.4, 1e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
 # plt.text(100, 1e-4, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
-plt.text(5, 3e-4, r'$\nu = 1$', fontsize=13)
+# plt.text(5, 3e-4, r'$\nu = 1$', fontsize=13)
 plt.text(2, 3e-1, r'$\nu = 1$', fontsize=13)
 
 plt.xscale('log')
@@ -10658,7 +10662,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-3, 2)
 plt.xlim(1e-2, 1e1)
-# plt.savefig(Parameter.outputdir + '/Pq_mPN_AL_comb_1.svg', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_mPN_AL_comb_2.svg', dpi=600, bbox_inches='tight')
 plt.show()
 
 
@@ -10683,18 +10687,18 @@ for i in range(len(Pq_LH_pn)):
     else:
         posavg.append(np.nan)
         posstd.append(np.nan)
-plt.plot(q_range[~np.isnan(posavg)], np.array(posavg)[~np.isnan(posavg)], color='indigo')
+plt.plot(q_range[~np.isnan(posavg)], np.array(posavg)[~np.isnan(posavg)], color='tab:green')
 plt.fill_between(q_range[~np.isnan(posavg)], 
                  np.array(posavg)[~np.isnan(posavg)]+np.array(posstd)[~np.isnan(posavg)],
                  np.array(posavg)[~np.isnan(posavg)]-np.array(posstd)[~np.isnan(posavg)],
-                 alpha=0.25, color='indigo')
+                 alpha=0.25, color='tab:green')
 
 lLH_flat = [item for sublist in lLH for item in sublist]
 lLH_flat_b = [item for sublist in lLH_b for item in sublist]
 lLH_flat_flat_b = [item for sublist in lLH_flat_b for item in sublist]
-plt.vlines(2*np.pi/np.mean(lLH_flat), 1e-8, 10, color='indigo')
-plt.vlines(1/np.mean(rGy_LH_tr[idx_list]), 1e-8, 10, color='indigo', ls='--')
-plt.vlines(2*np.pi/np.mean(lLH_flat_flat_b), 1e-8, 10, color='indigo', ls='dotted')
+plt.vlines(2*np.pi/np.mean(lLH_flat), 1e-8, 10, color='tab:green')
+plt.vlines(1/np.mean(rGy_LH_tr[idx_list]), 1e-8, 10, color='tab:green', ls='--')
+plt.vlines(2*np.pi/np.mean(lLH_flat_flat_b), 1e-8, 10, color='tab:green', ls='dotted')
 
 idx_list = []
 lLH_u = []
@@ -10834,7 +10838,7 @@ plt.plot(q_range[15:25], line5[15:25], lw=1.5, color='k')
 plt.text(0.02, 5e-3, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
 # plt.text(0.4, 1e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
 # plt.text(100, 1e-4, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
-plt.text(5, 3e-4, r'$\nu = 1$', fontsize=13)
+# plt.text(5, 3e-4, r'$\nu = 1$', fontsize=13)
 plt.text(2, 3e-1, r'$\nu = 1$', fontsize=13)
 
 plt.xscale('log')
@@ -10843,7 +10847,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-3, 2)
 plt.xlim(1e-2, 1e1)
-# plt.savefig(Parameter.outputdir + '/Pq_mPN_calyx_comb_1.svg', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_mPN_calyx_comb_2.svg', dpi=600, bbox_inches='tight')
 plt.show()
 
 
@@ -12627,8 +12631,10 @@ pher = ['DL3', 'VA1d', 'DA1', 'DC3']
 # attr = ['VM2', 'VM7d', 'VM7v']
 # aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3']
 
-attr = ['VM2', 'VM7d', 'VM7v', 'DL3', 'VA1d', 'DA1']
-aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3', 'DC3']
+# attr = ['VM2', 'VM7d', 'VM7v', 'DL3', 'VA1d', 'DA1']
+# aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3', 'DC3']
+attr = ['DA1', 'DA3', 'DL3', 'DM1', 'DM4', 'VA1v', 'VA2', 'VC1', 'VC2', 'VM1', 'VM4', 'VM5d', 'VM5v', 'VM7d', 'VM7v']
+aver = ['DA2', 'DC1', 'DC3', 'DC4', 'DL1', 'DL5', 'DM2', 'DM3', 'DM5', 'DM6', 'DP1m', 'V', 'VA5', 'VA6', 'VA7m', 'VL2a', 'VL2p', 'VM3']
 
 
 pherlist = []
@@ -12712,8 +12718,8 @@ ax.set_yticklabels(empty_string_labels)
 
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 # plt.ylabel("F(q)", fontsize=15)
-plt.ylim(1e-8, 10)
-plt.xlim(1e-2, 1e3)
+plt.ylim(1e-3, 2)
+plt.xlim(1e-2, 1e1)
 # plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_LH_raw_1.pdf', dpi=600, bbox_inches='tight')
 plt.show()
 
@@ -12779,8 +12785,10 @@ pher = ['DL3', 'VA1d', 'DA1', 'DC3']
 # attr = ['VM2', 'VM7d', 'VM7v']
 # aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3']
 
-attr = ['VM2', 'VM7d', 'VM7v', 'DL3', 'VA1d', 'DA1']
-aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3', 'DC3']
+# attr = ['VM2', 'VM7d', 'VM7v', 'DL3', 'VA1d', 'DA1']
+# aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3', 'DC3']
+attr = ['DA1', 'DA3', 'DL3', 'DM1', 'DM4', 'VA1v', 'VA2', 'VC1', 'VC2', 'VM1', 'VM4', 'VM5d', 'VM5v', 'VM7d', 'VM7v']
+aver = ['DA2', 'DC1', 'DC3', 'DC4', 'DL1', 'DL5', 'DM2', 'DM3', 'DM5', 'DM6', 'DP1m', 'V', 'VA5', 'VA6', 'VA7m', 'VL2a', 'VL2p', 'VM3']
 
 ALdist_trk_temp = copy.deepcopy(np.unique(MorphData.ALdist_trk))
 ALdist_trk_temp = np.delete(ALdist_trk_temp, 73)
@@ -12862,8 +12870,8 @@ plt.xscale('log')
 plt.yscale('log')
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
-plt.ylim(1e-8, 10)
-plt.xlim(1e-2, 1e3)
+plt.ylim(1e-3, 2)
+plt.xlim(1e-2, 1e1)
 # plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_AL_raw_1.pdf', dpi=600, bbox_inches='tight')
 plt.show()
 
@@ -12931,8 +12939,10 @@ pher = ['DL3', 'VA1d', 'DA1', 'DC3']
 # attr = ['VM2', 'VM7d', 'VM7v']
 # aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3']
 
-attr = ['VM2', 'VM7d', 'VM7v', 'DL3', 'VA1d', 'DA1']
-aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3', 'DC3']
+# attr = ['VM2', 'VM7d', 'VM7v', 'DL3', 'VA1d', 'DA1']
+# aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3', 'DC3']
+attr = ['DA1', 'DA3', 'DL3', 'DM1', 'DM4', 'VA1v', 'VA2', 'VC1', 'VC2', 'VM1', 'VM4', 'VM5d', 'VM5v', 'VM7d', 'VM7v']
+aver = ['DA2', 'DC1', 'DC3', 'DC4', 'DL1', 'DL5', 'DM2', 'DM3', 'DM5', 'DM6', 'DP1m', 'V', 'VA5', 'VA6', 'VA7m', 'VL2a', 'VL2p', 'VM3']
 
 calyxdist_trk_temp = copy.deepcopy(np.unique(MorphData.calyxdist_trk))
 calyxdist_trk_temp = np.delete(calyxdist_trk_temp, [40, 41])
@@ -13017,9 +13027,9 @@ empty_string_labels = ['']*len(labels)
 ax.set_yticklabels(empty_string_labels)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 # plt.ylabel("F(q)", fontsize=15)
-plt.ylim(1e-8, 10)
-plt.xlim(1e-2, 1e3)
-plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_calyx_raw_1.pdf', dpi=600, bbox_inches='tight')
+plt.ylim(1e-3, 2)
+plt.xlim(1e-2, 1e1)
+# plt.savefig(Parameter.outputdir + '/Pq_lIIDd_avg_calyx_raw_1.pdf', dpi=600, bbox_inches='tight')
 plt.show()
 
 
@@ -15023,9 +15033,13 @@ un_calyx_tr = np.delete(un_calyx, [40, 41], 0)
 un_AL_tr = np.delete(un_AL, 73, 0)
 un_LH_tr = un_LH
 
+rGy_calyx_tr = np.delete(rGy_calyx, [40, 41], 0)
+rGy_AL_tr = np.delete(rGy_AL, 73, 0)
+rGy_LH_tr = rGy_LH
+
 dist_Pq_AL = np.zeros((len(glo_idx_flat), len(glo_idx_flat)))
 
-AL_i1 = np.argmin(np.abs(q_range - 1/np.mean(rGy_AL)))
+AL_i1 = np.argmin(np.abs(q_range - 1/np.mean(rGy_AL_tr)))
 AL_i2 = np.argmin(np.abs(q_range - 2*np.pi/np.mean(LengthData.length_AL_flat)))+1
 
 for i in range(len(glo_idx_flat)):
@@ -15102,7 +15116,7 @@ columns_AL = R_AL['leaves']
 
 dist_Pq_LH = np.zeros((len(glo_idx_flat), len(glo_idx_flat)))
 
-LH_i1 = np.argmin(np.abs(q_range - 1/np.mean(rGy_LH)))+1
+LH_i1 = np.argmin(np.abs(q_range - 1/np.mean(rGy_LH_tr)))+1
 LH_i2 = np.argmin(np.abs(q_range - 2*np.pi/np.mean(LengthData.length_LH_flat)))+1
 
 for i in range(len(glo_idx_flat)):
@@ -15179,7 +15193,7 @@ columns_LH = R_LH['leaves']
 
 dist_Pq_calyx = np.zeros((len(glo_idx_flat), len(glo_idx_flat)))
 
-calyx_i1 = np.argmin(np.abs(q_range - 1/np.mean(rGy_calyx)))
+calyx_i1 = np.argmin(np.abs(q_range - 1/np.mean(rGy_calyx_tr)))
 calyx_i2 = np.argmin(np.abs(q_range - 2*np.pi/np.mean(LengthData.length_calyx_flat)))+1
 
 for i in range(len(glo_idx_flat)):
@@ -15803,9 +15817,9 @@ pher = ['DL3', 'VA1d', 'DA1', 'DC3']
 # attr = ['VM2', 'VM7d', 'VM7v']
 # aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3']
 
-attr = ['DA1', 'DA3', 'DL3', 'DM1', 'DM2', 'DM4', 'VA1d', 'VA1v', 'VA2', 'VA3', 'VC2', 'VL2a', 'VM1', 'VM2', 'VM5d', 'VM5v', 'VM7d', 'VM7v']
+attr = ['DA1', 'DA3', 'DL3', 'DM1', 'DM4', 'VA1v', 'VA2', 'VC1', 'VC2', 'VM1', 'VM4', 'VM5d', 'VM5v', 'VM7d', 'VM7v']
 # attr = ['VM2', 'VM7d', 'VM7v', 'DL3', 'VA1d', 'DA1']
-aver = ['D', 'DA2', 'DA4l', 'DC1', 'DC2', 'DC3', 'DC4', 'DL1', 'DL4', 'DL5', 'DM3', 'DM5', 'DM6', 'DP1m', 'V', 'VA5', 'VA6', 'VA7l', 'VA7m', 'VM3']
+aver = ['DA2', 'DC1', 'DC3', 'DC4', 'DL1', 'DL5', 'DM2', 'DM3', 'DM5', 'DM6', 'DP1m', 'V', 'VA5', 'VA6', 'VA7m', 'VL2a', 'VL2p', 'VM3']
 # aver = ['DA2', 'DM6', 'VA5', 'VA7m', 'VM3', 'DC3']
 
 
@@ -15963,7 +15977,7 @@ plt.show()
 # aver_c_LH[1] = np.abs(aver_c_LH[1]-4)
 
 
-fig = plt.figure(figsize=(3,5))
+fig = plt.figure(figsize=(3,3))
 plt.scatter(0, np.average(attr_c_AL[0]), color='tab:green')
 plt.scatter(0, np.average(aver_c_AL[0]), color='tab:red')
 plt.errorbar(0, np.average(attr_c_AL[0]), yerr=scipy.stats.sem(attr_c_AL[0]), color='tab:green')
@@ -15976,10 +15990,11 @@ plt.scatter(1, np.average(attr_c_calyx[0]), color='tab:green')
 plt.scatter(1, np.average(aver_c_calyx[0]), color='tab:red')
 plt.errorbar(1, np.average(attr_c_calyx[0]), yerr=scipy.stats.sem(attr_c_calyx[0]), color='tab:green')
 plt.errorbar(1, np.average(aver_c_calyx[0]), yerr=scipy.stats.sem(aver_c_calyx[0]), color='tab:red')
-plt.xticks([0, 1, 2], ['AL', 'MB calyx', 'LH'], fontsize=15)
+plt.xticks([0, 1, 2], ['AL', 'MB calyx', 'LH'], fontsize=13)
 plt.xlim(-.5, 2.5)
-plt.legend(['Attractive', 'Aversive'], fontsize=12)
-plt.ylabel(r'$N_{b}/l$', fontsize=12)
+plt.ylim(0.25, 0.5)
+plt.legend(['Attractive', 'Aversive'], fontsize=11)
+plt.ylabel(r'$N_{b}/l$', fontsize=11)
 # plt.savefig(Parameter.outputdir + '/attr_aver_bn_l_comp.pdf', dpi=600, bbox_inches='tight')
 plt.show()
 
@@ -16074,27 +16089,27 @@ ct_AL_glo = []
 ct_LH_glo = []
 ct_calyx_glo = []
 
-for k in [3]:
-    ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, k, 'maxclust')
-    ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, k, 'maxclust')
-    ind_calyx = scipy.cluster.hierarchy.fcluster(L_calyx, k, 'maxclust')
-    
-    ct_AL_glo_temp = np.zeros((k, len(glo_idx_flat)))
-    ct_LH_glo_temp = np.zeros((k, len(glo_idx_flat)))
-    ct_calyx_glo_temp = np.zeros((k, len(glo_idx_flat)))
-    
-    ix = 0
-    
-    for i in range(len(glo_idx)):
-        for j in range(len(glo_idx[i])):
-            ct_AL_glo_temp[ind_AL[ix]-1][ix] = 1
-            ct_LH_glo_temp[ind_LH[ix]-1][ix] = 1
-            ct_calyx_glo_temp[ind_calyx[ix]-1][ix] = 1
-            ix += 1
-    
-    ct_AL_glo.append(ct_AL_glo_temp)
-    ct_LH_glo.append(ct_LH_glo_temp)
-    ct_calyx_glo.append(ct_calyx_glo_temp)
+# for k in [3]:
+ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, 2, 'maxclust')
+ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, 2, 'maxclust')
+ind_calyx = scipy.cluster.hierarchy.fcluster(L_calyx, 3, 'maxclust')
+
+ct_AL_glo_temp = np.zeros((2, len(glo_idx_flat)))
+ct_LH_glo_temp = np.zeros((2, len(glo_idx_flat)))
+ct_calyx_glo_temp = np.zeros((3, len(glo_idx_flat)))
+
+ix = 0
+
+for i in range(len(glo_idx)):
+    for j in range(len(glo_idx[i])):
+        ct_AL_glo_temp[ind_AL[ix]-1][ix] = 1
+        ct_LH_glo_temp[ind_LH[ix]-1][ix] = 1
+        ct_calyx_glo_temp[ind_calyx[ix]-1][ix] = 1
+        ix += 1
+
+ct_AL_glo.append(ct_AL_glo_temp)
+ct_LH_glo.append(ct_LH_glo_temp)
+ct_calyx_glo.append(ct_calyx_glo_temp)
 
 glo_len_cluster = np.array(glo_len)
 glo_lb_cluster = [sum(glo_len_cluster[0:i]) for i in range(len(glo_len_cluster)+1)]
@@ -16120,14 +16135,14 @@ ax3.axis["left"].minor_ticks.set_ticksize(0)
 ax2.axis["bottom"].set_visible(False)
 ax3.axis["right"].set_visible(False)
 ax2.set_xticks(glo_float_cluster)
-ax3.set_yticks([0., 1., 2., 3.])
+ax3.set_yticks([0., 1., 2.])
 ax3.invert_yaxis()
 ax2.xaxis.set_major_formatter(ticker.NullFormatter())
 ax3.yaxis.set_major_formatter(ticker.NullFormatter())
 ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster[1:] + glo_float_cluster[:-1])/2))
-ax3.yaxis.set_minor_locator(ticker.FixedLocator(([0.5, 1.5, 2.5])))
+ax3.yaxis.set_minor_locator(ticker.FixedLocator(([0.5, 1.5])))
 ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster))
-ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(['C1', 'C2', 'C3']))
+ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(['C1', 'C2']))
 ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=5, rotation_mode='default')
 ax3.axis["left"].minor_ticklabels.set(fontsize=5, rotation_mode='default')
 # plt.savefig(Parameter.outputdir + '/ct_AL_glo_1.pdf', dpi=300, bbox_inches='tight')
@@ -16136,7 +16151,7 @@ plt.show()
 fig = plt.figure(figsize=(10,1))
 ax1 = SubplotHost(fig, 111)
 fig.add_subplot(ax1)
-im = plt.imshow(ct_LH_glo[0][[2,1,0]])
+im = plt.imshow(ct_LH_glo[0][[1,0]])
 ax1.set_xticks([]) 
 ax1.set_yticks([]) 
 ax2 = ax1.twiny()
@@ -16152,14 +16167,14 @@ ax3.axis["left"].minor_ticks.set_ticksize(0)
 ax2.axis["bottom"].set_visible(False)
 ax3.axis["right"].set_visible(False)
 ax2.set_xticks(glo_float_cluster)
-ax3.set_yticks([0., 1., 2., 3.])
+ax3.set_yticks([0., 1., 2.])
 ax3.invert_yaxis()
 ax2.xaxis.set_major_formatter(ticker.NullFormatter())
 ax3.yaxis.set_major_formatter(ticker.NullFormatter())
 ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster[1:] + glo_float_cluster[:-1])/2))
-ax3.yaxis.set_minor_locator(ticker.FixedLocator(([0.5, 1.5, 2.5])))
+ax3.yaxis.set_minor_locator(ticker.FixedLocator(([0.5, 1.5])))
 ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster))
-ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(['C1', 'C2', 'C3']))
+ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(['C1', 'C2']))
 ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=5, rotation_mode='default')
 ax3.axis["left"].minor_ticklabels.set(fontsize=5, rotation_mode='default')
 # plt.savefig(Parameter.outputdir + '/ct_AL_glo_1.pdf', dpi=300, bbox_inches='tight')
