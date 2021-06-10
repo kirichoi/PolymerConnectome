@@ -5100,22 +5100,87 @@ plt.tight_layout()
 plt.show()
 
 
-fig, ax = plt.subplots(figsize=(8,6))
+fig, ax = plt.subplots(figsize=(4,3))
 lab = ['AL', 'MB calyx', 'LH', 'Total']
 medianprops = dict(linestyle='-', linewidth=1.5, color='k')
-bp = ax.boxplot([LengthData.length_AL_total, LengthData.length_calyx_total, 
-             LengthData.length_LH_total, LengthData.length_total], 
+bp = ax.boxplot([LengthData.length_AL_flat, LengthData.length_calyx_flat, 
+             LengthData.length_LH_flat, LengthData.length_branch_flat], 
             notch=False, vert=False, patch_artist=True, labels=lab,
             medianprops=medianprops, positions=[4,3,2,1])
 colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red']
 for patch, color in zip(bp['boxes'], colors):
     patch.set_facecolor(color)
-ax.tick_params(axis = 'y', which = 'major', labelsize = 15)
-ax.tick_params(axis = 'y', which = 'minor', labelsize = 15)
-ax.set_xlabel('L', fontsize=15)
+ax.tick_params(axis = 'y', which = 'major', labelsize = 12)
+ax.tick_params(axis = 'y', which = 'minor', labelsize = 12)
+# ax.set_xlabel(r'$L (\mu\text(m))$', fontsize=15)
+# ax.set_xscale('log')
 plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/total_length_box_2.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/total_length_box_3.pdf', dpi=300, bbox_inches='tight')
 plt.show()
+
+
+un_calyx = np.unique(MorphData.calyxdist_trk)
+un_LH = np.unique(MorphData.LHdist_trk)
+un_AL = np.unique(MorphData.ALdist_trk)
+
+un_calyx_tr = np.delete(un_calyx, [40, 41], 0)
+un_AL_tr = np.delete(un_AL, 73, 0)
+un_LH_tr = un_LH
+
+lAL_noemp = [x for x in LengthData.length_AL if x]
+lAL_noemp.pop(73)
+
+fig, ax = plt.subplots(figsize=(5,len(lAL_noemp)*0.175))
+# lab = ['AL', 'MB calyx', 'LH', 'Total']
+# medianprops = dict(linestyle='-', linewidth=1.5, color='k')
+bp = ax.boxplot(lAL_noemp, 
+                notch=False, vert=False, patch_artist=True, labels=np.array(MorphData.neuron_id)[un_AL_tr])
+                # medianprops=medianprops)#, positions=[4,3,2,1])
+# colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red']
+# for patch, color in zip(bp['boxes'], colors):
+#     patch.set_facecolor(color)
+ax.tick_params(axis = 'y', which = 'major', labelsize = 12)
+ax.tick_params(axis = 'y', which = 'minor', labelsize = 12)
+# ax.set_xlabel(r'$L (\mu\text(m))$', fontsize=15)
+# ax.set_xscale('log')
+ax.set_xlim(0, 20)
+plt.tight_layout()
+# plt.savefig(Parameter.outputdir + '/AL_branch_length_box.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+test1 = np.delete(MorphData.ALdist_trk, 15249, 0)
+test2 = np.delete(LengthData.length_AL_flat, 15249, 0)
+
+df = pd.DataFrame(dict(x=test2, g=str(np.array(MorphData.neuron_id)[test1])))
+
+# Initialize the FacetGrid object
+pal = sns.cubehelix_palette(10, rot=-.25, light=.7)
+g = sns.FacetGrid(df, row="g", hue="g", aspect=15, height=.5, palette=pal)
+g.set(xlim=(0, 20))
+
+# Draw the densities in a few steps
+g.map(sns.kdeplot, "x",
+      bw_adjust=.5, clip_on=False,
+      fill=True, alpha=1, linewidth=1.5)
+g.map(sns.kdeplot, "x", clip_on=False, color="w", lw=2, bw_adjust=.5)
+g.map(plt.axhline, y=0, lw=2, clip_on=False)
+
+# Define and use a simple function to label the plot in axes coordinates
+def label(x, color, label):
+    ax = plt.gca()
+    ax.text(0, .2, label, fontweight="bold", color=color,
+            ha="left", va="center", transform=ax.transAxes)
+
+g.map(label, r"Length $(\mu m)$")
+
+# Set the subplots to overlap
+g.fig.subplots_adjust(hspace=-.25)
+
+# Remove axes details that don't play well with overlap
+g.set_titles("")
+g.set(yticks=[])
+g.despine(bottom=True, left=True)
 
 
 #%% Regional dist categorization
@@ -6483,9 +6548,9 @@ ax3.hist(LHdist_noncluster_u_full_flat_new, bins=20, alpha=0.5, density=True)
 # ax3.vlines(np.median(LHdist_noncluster_u_full_flat), 0, 0.2, ls='--', color='tab:orange')
 ax3.set_ylim(0, 0.4)
 ax3.set_ylabel('LH', fontsize=15)
-ax3.set_xlabel('Distance', fontsize=15)
+ax3.set_xlabel(r'Distance $(\mu m)$', fontsize=15)
 plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/skewed_dist_new_2.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/skewed_dist_new_3.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 #%%
@@ -10039,7 +10104,7 @@ Pq_AL_pn = np.delete(Pq_AL_pn, 73, 1)
 # Pq_LH_pn = np.abs(Pq_LH_pn)
 # Pq_AL_pn = np.abs(Pq_AL_pn)
 
-fig = plt.figure(figsize=(6,4.5))
+fig = plt.figure(figsize=(3,2.25))
 for i in range(len(Pq_AL_pn[0])):
     AL_q_idx = first_consecutive(np.where(Pq_AL_pn[:,i] > 0)[0])
     AL_q_idx = len(Pq_AL_pn[:,i])
@@ -10069,7 +10134,7 @@ line4 = 1/6*np.power(q_range, -1)
 # plt.plot(q_range[26:40], line1[26:40], lw=1.5, color='tab:red')
 # plt.plot(q_range[32:38], line2[32:38], lw=1.5, color='tab:gray')
 # plt.plot(q_range, line3, lw=1.5, color='tab:purple')
-plt.plot(q_range[50:97], line4[50:97], lw=1.5, color='k')
+plt.plot(q_range[65:97], line4[65:97], lw=1.5, color='k')
 
 # plt.text(0.5, 1e-0, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
 # plt.text(0.4, 1e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
@@ -10082,11 +10147,11 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-7, 10)
 plt.xlim(1e-2, 1e3)
-# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_AL_full_6.svg', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_AL_full_7.svg', dpi=600, bbox_inches='tight')
 plt.show()
 
 
-fig = plt.figure(figsize=(6,4.5))
+fig = plt.figure(figsize=(3,2.25))
 for i in range(len(Pq_LH_pn[0])):
     LH_q_idx = first_consecutive(np.where(Pq_LH_pn[:,i] > 0)[0])
     LH_q_idx = len(Pq_LH_pn[:,i])
@@ -10132,7 +10197,7 @@ line5 = 1/3*np.power(q_range, -1)
 # plt.plot(q_range[17:30], line1[17:30], lw=1.5, color='tab:red')
 # plt.plot(q_range[25:35], line2[25:35], lw=1.5, color='tab:gray')
 # plt.plot(q_range, line3, lw=1.5, color='tab:purple')
-plt.plot(q_range[50:97], line4[50:97], lw=1.5, color='k')
+plt.plot(q_range[65:97], line4[65:97], lw=1.5, color='k')
 # plt.plot(q_range[40:55], line5[40:55], lw=1.5, color='k')
 
 # plt.text(0.03, 2e-3, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
@@ -10147,11 +10212,11 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-7, 10)
 plt.xlim(1e-2, 1e3)
-# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_LH_full_6.svg', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_LH_full_7.svg', dpi=600, bbox_inches='tight')
 plt.show()
 
 
-fig = plt.figure(figsize=(6,4.5))
+fig = plt.figure(figsize=(3,2.25))
 for i in range(len(Pq_calyx_pn[0])):
     calyx_q_idx = first_consecutive(np.where(Pq_calyx_pn[:,i] > 0)[0])
     calyx_q_idx = len(Pq_calyx_pn[:,i])
@@ -10199,7 +10264,7 @@ line5 = 1/3*np.power(q_range, -1)
 # plt.plot(q_range[17:30], line1[17:30], lw=1.5, color='tab:red')
 # plt.plot(q_range[25:35], line2[25:35], lw=1.5, color='tab:gray')
 # plt.plot(q_range, line3, lw=1.5, color='tab:purple')
-plt.plot(q_range[50:97], line4[50:97], lw=1.5, color='k')
+plt.plot(q_range[65:97], line4[65:97], lw=1.5, color='k')
 # plt.plot(q_range[40:55], line5[40:55], lw=1.5, color='k')
 
 # plt.text(0.03, 2e-3, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
@@ -10214,7 +10279,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-7, 10)
 plt.xlim(1e-2, 1e3)
-# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_calyx_full_6.svg', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/Pq_per_neuron_calyx_full_7.svg', dpi=600, bbox_inches='tight')
 plt.show()
 
 
@@ -10594,18 +10659,18 @@ for i in range(len(Pq_AL_pn)):
     else:
         posavg.append(np.nan)
         posstd.append(np.nan)
-plt.plot(q_range[~np.isnan(posavg)], np.array(posavg)[~np.isnan(posavg)], color='tab:blue')
+plt.plot(q_range[~np.isnan(posavg)], np.array(posavg)[~np.isnan(posavg)], color='tab:purple')
 plt.fill_between(q_range[~np.isnan(posavg)], 
                   np.array(posavg)[~np.isnan(posavg)]+np.array(posstd)[~np.isnan(posavg)],
                   np.array(posavg)[~np.isnan(posavg)]-np.array(posstd)[~np.isnan(posavg)],
-                  alpha=0.25, color='tab:blue')
+                  alpha=0.25, color='tab:purple')
 
 lAL_flat = [item for sublist in lAL for item in sublist]
 lAL_flat_b = [item for sublist in lAL_b for item in sublist]
 lAL_flat_flat_b = [item for sublist in lAL_flat_b for item in sublist]
-plt.vlines(2*np.pi/np.mean(lAL_flat), 1e-8, 10, color='tab:blue')
-plt.vlines(1/np.mean(rGy_AL_tr[idx_list]), 1e-8, 10, color='tab:blue', ls='--')
-plt.vlines(2*np.pi/np.mean(lAL_flat_flat_b), 1e-8, 10, color='tab:blue', ls='dotted')
+plt.vlines(2*np.pi/np.mean(lAL_flat), 1e-8, 10, color='tab:purple')
+plt.vlines(1/np.mean(rGy_AL_tr[idx_list]), 1e-8, 10, color='tab:purple', ls='--')
+plt.vlines(2*np.pi/np.mean(lAL_flat_flat_b), 1e-8, 10, color='tab:purple', ls='dotted')
 
 idx_list = []
 lAL_u = []
@@ -10687,18 +10752,18 @@ for i in range(len(Pq_LH_pn)):
     else:
         posavg.append(np.nan)
         posstd.append(np.nan)
-plt.plot(q_range[~np.isnan(posavg)], np.array(posavg)[~np.isnan(posavg)], color='tab:green')
+plt.plot(q_range[~np.isnan(posavg)], np.array(posavg)[~np.isnan(posavg)], color='tab:purple')
 plt.fill_between(q_range[~np.isnan(posavg)], 
                  np.array(posavg)[~np.isnan(posavg)]+np.array(posstd)[~np.isnan(posavg)],
                  np.array(posavg)[~np.isnan(posavg)]-np.array(posstd)[~np.isnan(posavg)],
-                 alpha=0.25, color='tab:green')
+                 alpha=0.25, color='tab:purple')
 
 lLH_flat = [item for sublist in lLH for item in sublist]
 lLH_flat_b = [item for sublist in lLH_b for item in sublist]
 lLH_flat_flat_b = [item for sublist in lLH_flat_b for item in sublist]
-plt.vlines(2*np.pi/np.mean(lLH_flat), 1e-8, 10, color='tab:green')
-plt.vlines(1/np.mean(rGy_LH_tr[idx_list]), 1e-8, 10, color='tab:green', ls='--')
-plt.vlines(2*np.pi/np.mean(lLH_flat_flat_b), 1e-8, 10, color='tab:green', ls='dotted')
+plt.vlines(2*np.pi/np.mean(lLH_flat), 1e-8, 10, color='tab:purple')
+plt.vlines(1/np.mean(rGy_LH_tr[idx_list]), 1e-8, 10, color='tab:purple', ls='--')
+plt.vlines(2*np.pi/np.mean(lLH_flat_flat_b), 1e-8, 10, color='tab:purple', ls='dotted')
 
 idx_list = []
 lLH_u = []
@@ -10779,18 +10844,18 @@ for i in range(len(Pq_calyx_pn)):
     else:
         posavg.append(np.nan)
         posstd.append(np.nan)
-plt.plot(q_range[~np.isnan(posavg)], np.array(posavg)[~np.isnan(posavg)], color='tab:orange')
+plt.plot(q_range[~np.isnan(posavg)], np.array(posavg)[~np.isnan(posavg)], color='tab:purple')
 plt.fill_between(q_range[~np.isnan(posavg)], 
                  np.array(posavg)[~np.isnan(posavg)]+np.array(posstd)[~np.isnan(posavg)],
                  np.array(posavg)[~np.isnan(posavg)]-np.array(posstd)[~np.isnan(posavg)],
-                 alpha=0.25, color='tab:orange')
+                 alpha=0.25, color='tab:purple')
 
 lcalyx_flat = [item for sublist in lcalyx for item in sublist]
 lcalyx_flat_b = [item for sublist in lcalyx_b for item in sublist]
 lcalyx_flat_flat_b = [item for sublist in lcalyx_flat_b for item in sublist]
-plt.vlines(2*np.pi/np.mean(lcalyx_flat), 1e-8, 10, color='tab:orange')
-plt.vlines(1/np.mean(rGy_calyx_tr[idx_list]), 1e-8, 10, color='tab:orange', ls='--')
-plt.vlines(2*np.pi/np.mean(lcalyx_flat_flat_b), 1e-8, 10, color='tab:orange', ls='dotted')
+plt.vlines(2*np.pi/np.mean(lcalyx_flat), 1e-8, 10, color='tab:purple')
+plt.vlines(1/np.mean(rGy_calyx_tr[idx_list]), 1e-8, 10, color='tab:purple', ls='--')
+plt.vlines(2*np.pi/np.mean(lcalyx_flat_flat_b), 1e-8, 10, color='tab:purple', ls='dotted')
 
 idx_list = []
 lcalyx_u = []
@@ -10827,12 +10892,12 @@ line1 = 1/10000*np.power(q_range, -16/7)
 line2 = 1/1000*np.power(q_range, -4/1)
 # line3 = 10*np.power(q_range, -1/0.388)
 line4 = 1/40*np.power(q_range, -1)
-line5 = 1/3*np.power(q_range, -1)
+line5 = 1/1000*np.power(q_range, -1)
 
 plt.plot(q_range[15:25], line1[15:25], lw=1.5, color='tab:red')
 # plt.plot(q_range[25:35], line2[25:35], lw=1.5, color='tab:gray')
 # plt.plot(q_range, line3, lw=1.5, color='tab:purple')
-plt.plot(q_range[75:95], line4[75:95], lw=1.5, color='k')
+# plt.plot(q_range[75:95], line4[75:95], lw=1.5, color='k')
 plt.plot(q_range[15:25], line5[15:25], lw=1.5, color='k')
 
 plt.text(0.02, 5e-3, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
@@ -15053,13 +15118,13 @@ L_AL = scipy.cluster.hierarchy.linkage(scipy.spatial.distance.squareform(dist_Pq
                                        method='complete', optimal_ordering=True)
 
 a = []
-for k in np.arange(0.1, 1, .01):
-    ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, k*dist_Pq_AL.max(), 'distance')
+for k in np.arange(2, 6):
+    ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, k, 'maxclust')
     a.append(sklearn.metrics.silhouette_score(dist_Pq_AL, ind_AL, metric="precomputed"))
 
 fig, ax = plt.subplots(figsize=(4, 3))
-plt.plot(np.arange(0.1, 1, .01), a)
-plt.plot(np.arange(0.1, 1, .01)[:-1]+0.01, np.diff(a))
+plt.plot(np.arange(2, 6), a)
+# plt.plot(np.arange(2, 6)[:-1]+0.5, np.diff(a))
 plt.ylabel('Silhouette Coefficients', fontsize=12)
 plt.xlabel('Normalized Cluster Distance', fontsize=12)
 plt.show()
@@ -15267,6 +15332,32 @@ columns_calyx = R_calyx['leaves']
 # dist_Pq_calyx = dist_Pq_calyx.reindex(columns_calyx, axis=1)
 
 
+
+AL_t = []
+LH_t = []
+calyx_t = []
+
+for k in np.arange(2, 10):
+    ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, k, 'maxclust')
+    AL_t.append(sklearn.metrics.silhouette_score(dist_Pq_AL, ind_AL, metric="precomputed"))
+    ind_calyx = scipy.cluster.hierarchy.fcluster(L_calyx, k, 'maxclust')
+    calyx_t.append(sklearn.metrics.silhouette_score(dist_Pq_calyx, ind_calyx, metric="precomputed"))
+    ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, k, 'maxclust')
+    LH_t.append(sklearn.metrics.silhouette_score(dist_Pq_LH, ind_LH, metric="precomputed"))
+
+fig, ax = plt.subplots(figsize=(4, 3))
+plt.plot(np.arange(2, 10), AL_t, color='tab:blue')
+plt.plot(np.arange(2, 10), calyx_t, color='tab:orange')
+plt.plot(np.arange(2, 10), LH_t, color='tab:green')
+# plt.plot(np.arange(2, 6)[:-1]+0.5, np.diff(a))
+plt.legend(['AL', 'MB calyx', 'LH'], fontsize=12)
+plt.ylabel('Average Silhouette Coefficients', fontsize=12)
+plt.xlabel('Number of Clusters', fontsize=12)
+# plt.savefig(Parameter.outputdir + '/silhouette.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+
 #%% F(q) based clustering plotting AL
 
 # [array([ 15,  62, 123, 134, 152]),
@@ -15342,7 +15433,7 @@ for i in np.unique(ind_AL):
     c_AL.append(np.array(glo_idx_flat)[np.where(ind_AL == i)[0]])
 
 
-fig = plt.figure(figsize=(4,3))
+fig = plt.figure(figsize=(3,2.25))
 test = []
 templ = []
 tempg = []
@@ -15355,7 +15446,7 @@ for nid in c_AL[c]:
     test.append(np.log10(np.abs(Pq_AL_pn[:,ALnid])))
     templ.append(LengthData.length_AL[nid])
     tempg.append(rGy_AL[ALnid])
-    plt.plot(q_range[Pq_AL_pn[:,ALnid]>0], Pq_AL_pn[Pq_AL_pn[:,ALnid]>0,ALnid], lw=1., color='tab:blue')
+    plt.plot(q_range[:60][Pq_AL_pn[:60,ALnid]>0], Pq_AL_pn[:60][Pq_AL_pn[:60,ALnid]>0,ALnid], lw=1., color='tab:blue')
 
 plt.plot(q_range, np.power(10, np.average(test, axis=0)), lw=3, color='k')
 
@@ -15386,7 +15477,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-3, 2)
 plt.xlim(1e-2, 1e1)
-# plt.savefig(Parameter.outputdir + '/sq_AL_cluster_' + str(c) + '_2.svg', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/sq_AL_cluster_' + str(c) + '_3.svg', dpi=600, bbox_inches='tight')
 plt.show()
 
 
@@ -15464,11 +15555,11 @@ for i in np.unique(ind_LH):
     c_LH.append(np.array(glo_idx_flat)[np.where(ind_LH == i)[0]])
 
 
-fig = plt.figure(figsize=(4,3))
+fig = plt.figure(figsize=(3,2.25))
 test = []
 templ = []
 tempg = []
-c = 1
+c = 0
 for nid in c_LH[c]:
     LHnid = np.where(un_LH_tr == nid)[0][0]
 
@@ -15477,7 +15568,7 @@ for nid in c_LH[c]:
     test.append(np.log10(np.abs(Pq_LH_pn[:,LHnid])))
     templ.append(LengthData.length_LH[nid])
     tempg.append(rGy_LH[LHnid])
-    plt.plot(q_range[Pq_LH_pn[:,LHnid]>0], Pq_LH_pn[Pq_LH_pn[:,LHnid]>0,LHnid], lw=1., color='tab:green')
+    plt.plot(q_range[:60][Pq_LH_pn[:60,LHnid]>0], Pq_LH_pn[:60][Pq_LH_pn[:60,LHnid]>0,LHnid], lw=1., color='tab:green')
 
 plt.plot(q_range, np.power(10, np.average(test, axis=0)), lw=3, color='k')
 
@@ -15508,7 +15599,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-3, 2)
 plt.xlim(1e-2, 1e1)
-# plt.savefig(Parameter.outputdir + '/sq_LH_cluster_' + str(c) + '_2.svg', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/sq_LH_cluster_' + str(c) + '_3.svg', dpi=600, bbox_inches='tight')
 plt.show()
 
 
@@ -15587,11 +15678,11 @@ for i in np.unique(ind_calyx):
     c_calyx.append(np.array(glo_idx_flat)[np.where(ind_calyx == i)[0]])
 
 
-fig = plt.figure(figsize=(4,3))
+fig = plt.figure(figsize=(3,2.25))
 test = []
 templ = []
 tempg = []
-c = 2
+c = 0
 for nid in c_calyx[c]:
     calyxnid = np.where(un_calyx_tr == nid)[0][0]
 
@@ -15600,7 +15691,7 @@ for nid in c_calyx[c]:
     test.append(np.log10(np.abs(Pq_calyx_pn[:,calyxnid])))
     templ.append(LengthData.length_calyx[nid])
     tempg.append(rGy_calyx[calyxnid])
-    plt.plot(q_range[Pq_calyx_pn[:,calyxnid]>0], Pq_calyx_pn[Pq_calyx_pn[:,calyxnid]>0,calyxnid], lw=1., color='tab:orange')
+    plt.plot(q_range[:60][Pq_calyx_pn[:60,calyxnid]>0], Pq_calyx_pn[:60][Pq_calyx_pn[:60,calyxnid]>0,calyxnid], lw=1., color='tab:orange')
 
 plt.plot(q_range, np.power(10, np.average(test, axis=0)), lw=3, color='k')
 
@@ -15631,7 +15722,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=15)
 plt.ylabel("F(q)", fontsize=15)
 plt.ylim(1e-3, 2)
 plt.xlim(1e-2, 1e1)
-plt.savefig(Parameter.outputdir + '/sq_calyx_cluster_' + str(c) + '_2.svg', dpi=600, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/sq_calyx_cluster_' + str(c) + '_3.svg', dpi=600, bbox_inches='tight')
 plt.show()
 
 
