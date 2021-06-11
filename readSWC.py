@@ -5031,6 +5031,10 @@ for i in range(len(BranchData.calyx_branchdist)):
 
 #%% Length study
 
+LengthData.length_calyx_flat = np.array([item for sublist in LengthData.length_calyx for item in sublist])
+LengthData.length_LH_flat = np.array([item for sublist in LengthData.length_LH for item in sublist])
+LengthData.length_AL_flat = np.array([item for sublist in LengthData.length_AL for item in sublist])
+
 fig = plt.figure(figsize=(6,4.5))
 plt.hist(LengthData.length_AL_total, 
           bins=int((np.max(LengthData.length_AL_total) - np.min(LengthData.length_AL_total))/100),
@@ -5149,38 +5153,100 @@ plt.tight_layout()
 plt.show()
 
 
-test1 = np.delete(MorphData.ALdist_trk, 15249, 0)
-test2 = np.delete(LengthData.length_AL_flat, 15249, 0)
 
-df = pd.DataFrame(dict(x=test2, g=str(np.array(MorphData.neuron_id)[test1])))
+fig, ax = plt.subplots(figsize=(4,len(glo_idx_flat)*0.175))
+# lab = ['AL', 'MB calyx', 'LH', 'Total']
+medianprops = dict(linestyle='-', linewidth=1.5, color='k')
+bp = ax.boxplot(np.array(LengthData.length_branch, dtype='object')[glo_idx_flat], 
+                notch=False, 
+                vert=False, 
+                patch_artist=True, 
+                labels=np.array(MorphData.neuron_id)[glo_idx_flat],
+                medianprops=medianprops,
+                showfliers=False)
+colors = np.repeat('tab:red', len(glo_idx_flat))
+for patch, color in zip(bp['boxes'], colors):
+    patch.set_facecolor(color)
+ax.tick_params(axis = 'y', which = 'major', labelsize = 14)
+ax.tick_params(axis = 'y', which = 'minor', labelsize = 14)
+ax.tick_params(axis = 'x', which = 'major', labelsize = 14)
+ax.set_xlabel(r'Length $(\mu m)$', fontsize=17)
+# ax.set_xscale('log')
+# ax.set_xlim(0, 20)
+plt.tight_layout()
+# plt.savefig(Parameter.outputdir + '/length_total_branch_glo.pdf', dpi=300, bbox_inches='tight')
+plt.show()
 
-# Initialize the FacetGrid object
-pal = sns.cubehelix_palette(10, rot=-.25, light=.7)
-g = sns.FacetGrid(df, row="g", hue="g", aspect=15, height=.5, palette=pal)
-g.set(xlim=(0, 20))
 
-# Draw the densities in a few steps
-g.map(sns.kdeplot, "x",
-      bw_adjust=.5, clip_on=False,
-      fill=True, alpha=1, linewidth=1.5)
-g.map(sns.kdeplot, "x", clip_on=False, color="w", lw=2, bw_adjust=.5)
-g.map(plt.axhline, y=0, lw=2, clip_on=False)
+fig, ax = plt.subplots(figsize=(4,len(glo_idx_flat)*0.175))
+# lab = ['AL', 'MB calyx', 'LH', 'Total']
+medianprops = dict(linestyle='-', linewidth=1.5, color='k')
+bp = ax.boxplot(np.array(LengthData.length_AL, dtype='object')[glo_idx_flat], 
+                notch=False, 
+                vert=False, 
+                patch_artist=True, 
+                labels=np.array(MorphData.neuron_id)[glo_idx_flat],
+                medianprops=medianprops,
+                showfliers=False)
+colors = np.repeat('tab:blue', len(glo_idx_flat))
+for patch, color in zip(bp['boxes'], colors):
+    patch.set_facecolor(color)
+ax.tick_params(axis = 'y', which = 'major', labelsize = 14)
+ax.tick_params(axis = 'y', which = 'minor', labelsize = 14)
+ax.tick_params(axis = 'x', which = 'major', labelsize = 14)
+ax.set_xlabel(r'Length $(\mu m)$', fontsize=17)
+# ax.set_xscale('log')
+# ax.set_xlim(0, 20)
+plt.tight_layout()
+# plt.savefig(Parameter.outputdir + '/length_AL_branch_glo.pdf', dpi=300, bbox_inches='tight')
+plt.show()
 
-# Define and use a simple function to label the plot in axes coordinates
-def label(x, color, label):
-    ax = plt.gca()
-    ax.text(0, .2, label, fontweight="bold", color=color,
-            ha="left", va="center", transform=ax.transAxes)
+fig, ax = plt.subplots(figsize=(4,len(glo_idx_flat)*0.175))
+# lab = ['AL', 'MB calyx', 'LH', 'Total']
+medianprops = dict(linestyle='-', linewidth=1.5, color='k')
+bp = ax.boxplot(np.array(LengthData.length_calyx, dtype='object')[glo_idx_flat], 
+                notch=False, 
+                vert=False, 
+                patch_artist=True, 
+                labels=np.array(MorphData.neuron_id)[glo_idx_flat],
+                medianprops=medianprops,
+                showfliers=False)
+colors = np.repeat('tab:orange', len(glo_idx_flat))
+for patch, color in zip(bp['boxes'], colors):
+    patch.set_facecolor(color)
+ax.tick_params(axis = 'y', which = 'major', labelsize = 14)
+ax.tick_params(axis = 'y', which = 'minor', labelsize = 14)
+ax.tick_params(axis = 'x', which = 'major', labelsize = 14)
+ax.set_xlabel(r'Length $(\mu m)$', fontsize=17)
+# ax.set_xscale('log')
+# ax.set_xlim(0, 20)
+plt.tight_layout()
+# plt.savefig(Parameter.outputdir + '/length_calyx_branch_glo.pdf', dpi=300, bbox_inches='tight')
+plt.show()
 
-g.map(label, r"Length $(\mu m)$")
 
-# Set the subplots to overlap
-g.fig.subplots_adjust(hspace=-.25)
-
-# Remove axes details that don't play well with overlap
-g.set_titles("")
-g.set(yticks=[])
-g.despine(bottom=True, left=True)
+fig, ax = plt.subplots(figsize=(4,len(glo_idx_flat)*0.175))
+# lab = ['AL', 'MB calyx', 'LH', 'Total']
+medianprops = dict(linestyle='-', linewidth=1.5, color='k')
+bp = ax.boxplot(np.array(LengthData.length_LH, dtype='object')[glo_idx_flat], 
+                notch=False, 
+                vert=False, 
+                patch_artist=True, 
+                labels=np.array(MorphData.neuron_id)[glo_idx_flat],
+                medianprops=medianprops,
+                showfliers=False)
+colors = np.repeat('tab:green', len(glo_idx_flat))
+for patch, color in zip(bp['boxes'], colors):
+    patch.set_facecolor(color)
+ax.tick_params(axis = 'y', which = 'major', labelsize = 14)
+ax.tick_params(axis = 'y', which = 'minor', labelsize = 14)
+ax.tick_params(axis = 'x', which = 'major', labelsize = 14)
+ax.set_xlabel(r'Length $(\mu m)$', fontsize=17)
+# ax.set_xscale('log')
+# ax.set_xlim(0, 20)
+plt.tight_layout()
+# plt.savefig(Parameter.outputdir + '/length_LH_branch_glo.pdf', dpi=300, bbox_inches='tight')
+plt.show()
 
 
 #%% Regional dist categorization
