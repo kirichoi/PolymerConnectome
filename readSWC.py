@@ -6497,18 +6497,22 @@ plt.show()
 
 
 fig, ax = plt.subplots(figsize=(6,6))
-labels = ['MB calyx', 'LH', 'AL']
+labels = ['AL', 'MB calyx', 'LH']
 x = np.arange(len(labels))
 width = .4
 
-cmeans = [np.mean(calyxdist_cluster_u_full_flat_new), np.mean(LHdist_cluster_u_full_flat_new), np.mean(ALdist_cluster_u_full_flat_new)]
-cerr = [np.std(calyxdist_cluster_u_full_flat_new), 
-        np.std(LHdist_cluster_u_full_flat_new), 
-        np.std(ALdist_cluster_u_full_flat_new)]
-ncmeans = [np.mean(calyxdist_noncluster_u_full_flat_new), np.mean(LHdist_noncluster_u_full_flat_new), np.mean(ALdist_noncluster_u_full_flat_new)]
-ncerr = [np.std(calyxdist_noncluster_u_full_flat_new), 
-         np.std(LHdist_noncluster_u_full_flat_new), 
-         np.std(ALdist_noncluster_u_full_flat_new)]
+cmeans = [np.mean(ALdist_cluster_u_full_flat_new), 
+          np.mean(calyxdist_cluster_u_full_flat_new), 
+          np.mean(LHdist_cluster_u_full_flat_new)]
+cerr = [np.std(ALdist_cluster_u_full_flat_new),
+        np.std(calyxdist_cluster_u_full_flat_new), 
+        np.std(LHdist_cluster_u_full_flat_new)]
+ncmeans = [np.mean(ALdist_noncluster_u_full_flat_new), 
+           np.mean(calyxdist_noncluster_u_full_flat_new), 
+           np.mean(LHdist_noncluster_u_full_flat_new)]
+ncerr = [np.std(ALdist_noncluster_u_full_flat_new),
+         np.std(calyxdist_noncluster_u_full_flat_new), 
+         np.std(LHdist_noncluster_u_full_flat_new)]
 
 ax.bar(x - width/2, cmeans, width, yerr=cerr, capsize=5, label='Identical Glomerulus')
 ax.bar(x + width/2, ncmeans, width, yerr=ncerr, capsize=5, label='Different Glomeruli')
@@ -6519,7 +6523,7 @@ ax.tick_params(axis="y", labelsize=15)
 ax.legend(fontsize=15)
 #ax.set_title('Median distance within and outside cluster')
 plt.tight_layout()
-# plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_average_nnmetric_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/glomerulus_dist_diff_average_nnmetric_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -11671,6 +11675,11 @@ plt.show()
 
 #%% Neurite cluster spatial distribution MB calyx
 
+def point_in_hull(point, hull, tolerance=1e-12):
+    return all(
+        (np.dot(eq[:-1], point) + eq[-1] <= tolerance)
+        for eq in hull.equations)
+
 # cmap = cm.get_cmap('jet', len(calyxdist_short))
 cmap = []
 
@@ -11686,8 +11695,9 @@ for i in range(len(calyxdist_short)):
         for j in range(len(calyxdist_short[i])):
             flat = [item for sublist in calyxdist_short[i][j] for item in sublist]
             rgy, CM = utils.radiusOfGyration([flat])
-            CM_neurite.append(CM[0])
-            ax.scatter3D(CM[0][0], CM[0][1], CM[0][2], color=cval, marker='.')
+            if point_in_hull(CM[0], hull_calyx):
+                CM_neurite.append(CM[0])
+                ax.scatter3D(CM[0][0], CM[0][1], CM[0][2], color=cval, marker='.')
 ylim = ax.get_ylim()
 ax.set_ylim((ylim[1], ylim[0]))
 ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
@@ -11712,11 +11722,15 @@ ax.set_box_aspect((1,1,1))
 for i in range(len(calyxdist_short)):
     if len(calyxdist_short[i]) > 0:
         for j in range(len(calyxdist_short[i])):
+            flat = [item for sublist in calyxdist_short[i][j] for item in sublist]
+            rgy, CM = utils.radiusOfGyration([flat])
+            # if point_in_hull(CM[0], hull_calyx):
             for k in range(len(calyxdist_short[i][j])):
                 listOfPoints = calyxdist_short[i][j][k]
                 for f in range(len(listOfPoints)-1):
                     morph_line = np.vstack((listOfPoints[f], listOfPoints[f+1]))
                     ax.plot3D(morph_line[:,0], morph_line[:,1], morph_line[:,2], lw=0.5, color=cmap[i])
+                    
 # ax.set_xlim(515, 520)
 # ax.set_ylim(330, 325)
 # ax.set_zlim(71, 76)
@@ -11732,7 +11746,7 @@ ax.set_xticks([])
 ax.w_xaxis.line.set_lw(0.)
 ax.set_yticks([])
 ax.w_yaxis.line.set_lw(0.)
-# plt.savefig(Parameter.outputdir + '/neurite_all_1.png', dpi=600, bbox_inches='tight', transparent=True)
+# plt.savefig(Parameter.outputdir + '/neurite_all_3.png', dpi=600, bbox_inches='tight', transparent=True)
 plt.show()
 
 #%% Neurite cluster spatial distribution MB calyx using mayavi
@@ -11815,9 +11829,8 @@ def pnt_in_cvex_hull(hull, pnt):
     return False
 
 rand_neurite = []
-
 t = 0
-while len(rand_neurite) < len(calyxdist_short_flat):
+while len(rand_neurite) < len(CM_neurite):
     t+=1
     rx = np.random.uniform(np.min(hull_calyx.points[:,0]), np.max(hull_calyx.points[:,0]))
     ry = np.random.uniform(np.min(hull_calyx.points[:,1]), np.max(hull_calyx.points[:,1]))
@@ -11827,10 +11840,11 @@ while len(rand_neurite) < len(calyxdist_short_flat):
 
 
 CM_CM_neurite = np.average(CM_neurite, axis=0)
-CM_rand_neurite = np.average(rand_neurite, axis=0)
-
 dist = scipy.spatial.distance.cdist([CM_CM_neurite], CM_neurite)[0]
-dist_rand = scipy.spatial.distance.cdist([CM_rand_neurite], rand_neurite)[0]
+
+dist_rand = []
+CM_rand_neurite = np.average(rand_neurite, axis=0)
+dist_rand = dist_rand + list(scipy.spatial.distance.cdist([CM_rand_neurite], rand_neurite)[0])
 
 val,edge = np.histogram(dist, bins=60, density=True)
 val_rand,edge_rand = np.histogram(dist_rand, bins=60, density=True)
@@ -11849,12 +11863,44 @@ ax2.plot(edge[:-1] - np.diff(edge), np.cumsum(val)*np.diff(edge)[0], ls='--', co
 ax2.plot(edge_rand[:-1] - np.diff(edge_rand), np.cumsum(val_rand)*np.diff(edge_rand)[0], ls='--', color='tab:red')
 plt.yticks(fontsize=14)
 fig.tight_layout()
-# plt.savefig(Parameter.outputdir + '/neurite_Rp_CM_2.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/neurite_Rp_CM_3.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
 dist = scipy.spatial.distance.cdist(CM_neurite, CM_neurite)
 dist_rand = scipy.spatial.distance.cdist(rand_neurite, rand_neurite)
+
+fig = plt.figure(figsize=(6, 6))
+ax1 = SubplotHost(fig, 111)
+fig.add_subplot(ax1)
+ax1.set_xticks([])
+ax1.set_yticks([])
+im = plt.imshow(dist, cmap='viridis_r')
+# plt.savefig(Parameter.outputdir + '/neurite_Rp_grid_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig = plt.figure(figsize=(6, 6))
+ax1 = SubplotHost(fig, 111)
+fig.add_subplot(ax1)
+ax1.set_xticks([])
+ax1.set_yticks([])
+im = plt.imshow(dist_rand, cmap='viridis_r')
+# plt.savefig(Parameter.outputdir + '/neurite_Rp_rand_grid_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+dist[np.tril_indices_from(dist, k=-1)] = dist_rand[np.tril_indices_from(dist_rand, k=-1)]
+
+fig = plt.figure(figsize=(6, 6))
+ax1 = SubplotHost(fig, 111)
+fig.add_subplot(ax1)
+ax1.set_xticks([])
+ax1.set_yticks([])
+im = plt.imshow(dist, cmap='jet')
+plt.colorbar(im, fraction=0.045)
+# plt.savefig(Parameter.outputdir + '/neurite_Rp_grid_comb_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
 
 dist = dist[np.triu_indices_from(dist, k=1)]
 dist_rand = dist_rand[np.triu_indices_from(dist_rand, k=1)]
@@ -11876,8 +11922,11 @@ ax2.plot(edge[:-1] - np.diff(edge), np.cumsum(val)*np.diff(edge)[0], ls='--', co
 ax2.plot(edge_rand[:-1] - np.diff(edge_rand), np.cumsum(val_rand)*np.diff(edge_rand)[0], ls='--', color='tab:red')
 plt.yticks(fontsize=14)
 fig.tight_layout()
-# plt.savefig(Parameter.outputdir + '/neurite_Rp_2.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/neurite_Rp_4.pdf', dpi=300, bbox_inches='tight')
 plt.show()
+
+
+
 
 
 #%% Neurite structure factor
@@ -11891,6 +11940,7 @@ for q in range(len(q_range)):
     qrvec = qrvec[np.triu_indices_from(qrvec, k=1)]
     Pq_calyx_neurite[q] = np.divide(np.divide(2*np.sum(np.sin(qrvec)/qrvec), len(CM_neurite)), len(CM_neurite))
 
+
 Pq_calyx_neurite_rand = np.empty(len(q_range))
 
 for q in range(len(q_range)):
@@ -11898,11 +11948,10 @@ for q in range(len(q_range)):
     qrvec = qrvec[np.triu_indices_from(qrvec, k=1)]
     Pq_calyx_neurite_rand[q] = np.divide(np.divide(2*np.sum(np.sin(qrvec)/qrvec), len(rand_neurite)), len(rand_neurite))
 
-
 fig, ax = plt.subplots(figsize=(6,4.5))
 
 plt.plot(q_range[Pq_calyx_neurite > 0], Pq_calyx_neurite[Pq_calyx_neurite > 0], color='tab:blue')
-plt.plot(q_range[Pq_calyx_neurite_rand > 0], Pq_calyx_neurite_rand[Pq_calyx_neurite_rand > 0], color='tab:red')
+plt.plot(q_range, Pq_calyx_neurite_rand, color='tab:red')
 plt.xscale('log')
 plt.yscale('log')
 
@@ -11912,7 +11961,7 @@ plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$S(q)$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/neurite_Fq_2.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/neurite_Fq_4.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -15883,7 +15932,7 @@ fig = plt.figure(figsize=(2,3))
 for i in range(5):
     plt.scatter(i+1, np.mean(AL_bn_per_l[ind_AL==i+1]), color='tab:blue')
     plt.errorbar(i+1, np.mean(AL_bn_per_l[ind_AL==i+1]), yerr=scipy.stats.sem(AL_bn_per_l[ind_AL==i+1]), color='tab:blue')
-plt.ylabel(r'$N_{b}/l$', fontsize=13)
+plt.ylabel(r'$N_{b}/L$', fontsize=13)
 plt.xlim(0.5, 2.5)
 plt.xlabel('Cluster Number', fontsize=13)
 # plt.savefig(Parameter.outputdir + '/cluster_bn_per_l_AL.pdf', dpi=600, bbox_inches='tight')
@@ -15893,7 +15942,7 @@ fig = plt.figure(figsize=(2,3))
 for i in range(5):
     plt.scatter(i+1, np.mean(LH_bn_per_l[ind_LH==i+1]), color='tab:green')
     plt.errorbar(i+1, np.mean(LH_bn_per_l[ind_LH==i+1]), yerr=scipy.stats.sem(LH_bn_per_l[ind_LH==i+1]), color='tab:green')
-plt.ylabel(r'$N_{b}/l$', fontsize=13)
+plt.ylabel(r'$N_{b}/L$', fontsize=13)
 plt.xlim(0.5, 2.5)
 plt.xlabel('Cluster Number', fontsize=13)
 # plt.savefig(Parameter.outputdir + '/cluster_bn_per_l_LH.pdf', dpi=600, bbox_inches='tight')
@@ -15903,7 +15952,7 @@ fig = plt.figure(figsize=(2,3))
 for i in range(5):
     plt.scatter(i+1, np.mean(calyx_bn_per_l[ind_calyx==i+1]), color='tab:orange')
     plt.errorbar(i+1, np.mean(calyx_bn_per_l[ind_calyx==i+1]), yerr=scipy.stats.sem(calyx_bn_per_l[ind_calyx==i+1]), color='tab:orange')
-plt.ylabel(r'$N_{b}/l$', fontsize=13)
+plt.ylabel(r'$N_{b}/L$', fontsize=13)
 plt.xlim(0.5, 3.5)
 plt.xlabel('Cluster Number', fontsize=13)
 # plt.savefig(Parameter.outputdir + '/cluster_bn_per_l_calyx.pdf', dpi=600, bbox_inches='tight')
