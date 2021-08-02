@@ -6847,7 +6847,7 @@ fig, ax = plt.subplots(figsize=(15, 3))
 R_AL_new = scipy.cluster.hierarchy.dendrogram(L_AL_new,
                                         orientation='top',
                                         labels=glo_list,
-                                        distance_sort='descending',
+                                        distance_sort='ascending',
                                         show_leaf_counts=False,
                                         leaf_font_size=15)
 ax.set_yticks([])
@@ -6861,14 +6861,13 @@ plt.show()
 ind_AL_new = scipy.cluster.hierarchy.fcluster(L_AL_new, 0.5*morph_dist_AL_r_new_avg.max(), 'maxclust')
 columns_AL_new = R_AL_new['leaves']#[morph_dist_AL_r_new_avg_df.columns.tolist()[i] for i in list((np.argsort(ind_AL_new)))]
 
-
 L_calyx_new = scipy.cluster.hierarchy.linkage(scipy.spatial.distance.squareform(morph_dist_calyx_r_new_avg), method='complete', optimal_ordering=True)
 
 fig, ax = plt.subplots(figsize=(15, 3))
 R_calyx_new = scipy.cluster.hierarchy.dendrogram(L_calyx_new,
                                         orientation='top',
                                         labels=glo_list,
-                                        distance_sort='descending',
+                                        distance_sort='ascending',
                                         show_leaf_counts=False,
                                         leaf_font_size=10)
 ax.set_yticks([])
@@ -6890,7 +6889,7 @@ fig, ax = plt.subplots(figsize=(15, 3))
 R_LH_new = scipy.cluster.hierarchy.dendrogram(L_LH_new,
                                         orientation='top',
                                         labels=glo_list,
-                                        distance_sort='descending',
+                                        distance_sort='ascending',
                                         show_leaf_counts=False,
                                         leaf_font_size=10)
 ax.set_yticks([])
@@ -6932,7 +6931,7 @@ morph_dist_AL_r_new_df = morph_dist_AL_r_new_df.reindex(glo_idx_cluster_new_flat
 fig = plt.figure(figsize=(6,6))
 ax1 = SubplotHost(fig, 111)
 fig.add_subplot(ax1)
-im = plt.imshow(morph_dist_calyx_r_new_df, cmap='viridis_r')#, vmax=np.max(morph_dist_calyx_r_new))
+im = plt.imshow(morph_dist_calyx_r_new_df, vmax=np.max(morph_dist_AL_r_new), cmap='viridis_r')#, vmax=np.max(morph_dist_calyx_r_new))
 ax1.set_xticks([]) 
 ax1.set_yticks([]) 
 ax1.axis["left"].set_visible(False)
@@ -6961,13 +6960,13 @@ ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
 ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=8, rotation_mode='default')
 ax3.axis["left"].minor_ticklabels.set(fontsize=8, rotation_mode='default')
 plt.colorbar(im, fraction=0.045)
-# plt.savefig(Parameter.outputdir + '/distance_grid_calyx_fixed_nnmetric_clst_2.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/distance_grid_calyx_fixed_nnmetric_clst_3.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 fig = plt.figure(figsize=(6,6))
 ax1 = SubplotHost(fig, 111)
 fig.add_subplot(ax1)
-im = plt.imshow(morph_dist_LH_r_new_df, cmap='viridis_r')#, vmax=np.max(morph_dist_LH_r_new))
+im = plt.imshow(morph_dist_LH_r_new_df, vmax=np.max(morph_dist_AL_r_new), cmap='viridis_r')#, vmax=np.max(morph_dist_LH_r_new))
 ax1.set_xticks([])
 ax1.set_yticks([])
 ax1.axis["left"].set_visible(False)
@@ -6996,7 +6995,7 @@ ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
 ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=8, rotation_mode='default')
 ax3.axis["left"].minor_ticklabels.set(fontsize=8, rotation_mode='default')
 plt.colorbar(im, fraction=0.045)
-# plt.savefig(Parameter.outputdir + '/distance_grid_LH_fixed_nnmetric_clst_2.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/distance_grid_LH_fixed_nnmetric_clst_3.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 fig = plt.figure(figsize=(6,6))
@@ -7073,6 +7072,238 @@ plt.xlim(0-0.5, len(glo_list)-0.5)
 plt.tight_layout()
 # plt.savefig(Parameter.outputdir + '/correlation_glomeruli_fixed_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
+
+
+#%% HiC
+
+AL_cnc_mid = (np.mean(ALdist_cluster_u_full_flat_new))# + np.std(ALdist_cluster_u_full_flat_new)# + np.mean(ALdist_noncluster_u_full_flat_new))/2
+LH_cnc_mid = (np.mean(LHdist_cluster_u_full_flat_new))# + np.std(LHdist_cluster_u_full_flat_new)# + np.mean(LHdist_noncluster_u_full_flat_new))/2
+calyx_cnc_mid = (np.mean(calyxdist_cluster_u_full_flat_new))# + np.std(calyxdist_cluster_u_full_flat_new)# + np.mean(calyxdist_noncluster_u_full_flat_new))/2
+
+morph_dist_AL_r_new_df_bool = np.array(copy.deepcopy(morph_dist_AL_r_new_df))
+morph_dist_AL_r_new_df_bool[morph_dist_AL_r_new_df_bool <= AL_cnc_mid] = 1
+morph_dist_AL_r_new_df_bool[morph_dist_AL_r_new_df_bool > AL_cnc_mid] = 0#np.nan
+
+morph_dist_LH_r_new_df_bool = np.array(copy.deepcopy(morph_dist_LH_r_new_df))
+morph_dist_LH_r_new_df_bool[morph_dist_LH_r_new_df_bool <= LH_cnc_mid] = 1
+morph_dist_LH_r_new_df_bool[morph_dist_LH_r_new_df_bool > LH_cnc_mid] = 0#np.nan
+
+morph_dist_calyx_r_new_df_bool = np.array(copy.deepcopy(morph_dist_calyx_r_new_df))
+morph_dist_calyx_r_new_df_bool[morph_dist_calyx_r_new_df_bool <= calyx_cnc_mid] = 1
+morph_dist_calyx_r_new_df_bool[morph_dist_calyx_r_new_df_bool > calyx_cnc_mid] = 0#np.nan
+
+morph_dist_AL_r_triu = morph_dist_AL_r_new_df_bool[np.triu_indices_from(morph_dist_AL_r_new_df_bool, k=1)]
+morph_dist_LH_r_triu = morph_dist_LH_r_new_df_bool[np.triu_indices_from(morph_dist_LH_r_new_df_bool, k=1)]
+morph_dist_calyx_r_triu = morph_dist_calyx_r_new_df_bool[np.triu_indices_from(morph_dist_calyx_r_new_df_bool, k=1)]
+
+ideal = np.zeros(np.shape(morph_dist_AL_r_new_df_bool))
+
+idx = 0
+
+for i in range(len(glo_list_cluster_new)):
+    ideal[idx:idx+glo_len_cluster_new[i],idx:idx+glo_len_cluster_new[i]] = 1
+    idx += glo_len_cluster_new[i]
+    
+# morph_dist_AL_r_new_df_bool[~ideal.astype(bool)] = np.nan
+# morph_dist_LH_r_new_df_bool[~ideal.astype(bool)] = np.nan
+# morph_dist_calyx_r_new_df_bool[~ideal.astype(bool)] = np.nan
+
+morph_dist_AL_r_new_df_copy = np.array(copy.deepcopy(morph_dist_AL_r_new_df))
+morph_dist_LH_r_new_df_copy = np.array(copy.deepcopy(morph_dist_LH_r_new_df))
+morph_dist_calyx_r_new_df_copy = np.array(copy.deepcopy(morph_dist_calyx_r_new_df))
+ 
+morph_dist_AL_r_new_df_copy[~ideal.astype(bool)] = np.nan
+morph_dist_LH_r_new_df_copy[~ideal.astype(bool)] = np.nan
+morph_dist_calyx_r_new_df_copy[~ideal.astype(bool)] = np.nan
+
+
+# morph_dist_AL_r_raw = np.array(morph_dist_AL_r_new_df)[np.nonzero(ideal)]
+# morph_dist_LH_r_raw = np.array(morph_dist_LH_r_new_df)[np.nonzero(ideal)]
+# morph_dist_calyx_r_raw = np.array(morph_dist_calyx_r_new_df)[np.nonzero(ideal)]
+
+# mask = np.zeros(np.shape(morph_dist_AL_r_new_df_bool))
+
+# for i in range(len(morph_dist_AL_r_new_df_bool)):
+#     mask[i:i+8,i:i+8] = 1
+    
+# morph_dist_AL_r_new_df_bool[~mask.astype(bool)] = 0
+# morph_dist_LH_r_new_df_bool[~mask.astype(bool)] = 0
+# morph_dist_calyx_r_new_df_bool[~mask.astype(bool)] = 0
+
+fig = plt.figure(figsize=(6,6))
+ax1 = SubplotHost(fig, 111)
+fig.add_subplot(ax1)
+im = plt.imshow(ideal, cmap='viridis')#, vmax=np.max(morph_dist_calyx_r_new))
+ax1.set_xticks([]) 
+ax1.set_yticks([]) 
+ax1.axis["left"].set_visible(False)
+ax1.axis["bottom"].set_visible(False)
+ax2 = ax1.twiny()
+ax3 = ax1.twinx()
+offset1 = 0, 10
+offset2 = -10, 0
+new_axisline1 = ax2.get_grid_helper().new_fixed_axis
+new_axisline2 = ax3.get_grid_helper().new_fixed_axis
+ax2.axis["top"] = new_axisline1(loc="top", axes=ax2, offset=offset1)
+ax3.axis["left"] = new_axisline2(loc="left", axes=ax3, offset=offset2)
+ax2.axis["top"].minor_ticks.set_ticksize(0)
+ax3.axis["left"].minor_ticks.set_ticksize(0)
+ax2.axis["bottom"].set_visible(False)
+ax3.axis["right"].set_visible(False)
+ax2.set_xticks(glo_float_cluster_new)
+ax3.set_yticks(glo_float_cluster_new)
+ax3.invert_yaxis()
+ax2.xaxis.set_major_formatter(ticker.NullFormatter())
+ax3.yaxis.set_major_formatter(ticker.NullFormatter())
+ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster_new[1:] + glo_float_cluster_new[:-1])/2))
+ax3.yaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster_new[1:] + glo_float_cluster_new[:-1])/2))
+ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
+ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
+ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=8, rotation_mode='default')
+ax3.axis["left"].minor_ticklabels.set(fontsize=8, rotation_mode='default')
+plt.colorbar(im, fraction=0.045)
+# plt.savefig(Parameter.outputdir + '/test.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+fig = plt.figure(figsize=(6,6))
+ax1 = SubplotHost(fig, 111)
+fig.add_subplot(ax1)
+im = plt.imshow(morph_dist_calyx_r_new_df_copy, 
+                vmax=np.max(morph_dist_AL_r_new_df_copy[~np.isnan(morph_dist_AL_r_new_df_copy)]), 
+                cmap='viridis_r')#, vmax=np.max(morph_dist_calyx_r_new))
+ax1.set_xticks([]) 
+ax1.set_yticks([]) 
+ax1.axis["left"].set_visible(False)
+ax1.axis["bottom"].set_visible(False)
+ax2 = ax1.twiny()
+ax3 = ax1.twinx()
+offset1 = 0, 10
+offset2 = -10, 0
+new_axisline1 = ax2.get_grid_helper().new_fixed_axis
+new_axisline2 = ax3.get_grid_helper().new_fixed_axis
+ax2.axis["top"] = new_axisline1(loc="top", axes=ax2, offset=offset1)
+ax3.axis["left"] = new_axisline2(loc="left", axes=ax3, offset=offset2)
+ax2.axis["top"].minor_ticks.set_ticksize(0)
+ax3.axis["left"].minor_ticks.set_ticksize(0)
+ax2.axis["bottom"].set_visible(False)
+ax3.axis["right"].set_visible(False)
+ax2.set_xticks(glo_float_cluster_new)
+ax3.set_yticks(glo_float_cluster_new)
+ax3.invert_yaxis()
+ax2.xaxis.set_major_formatter(ticker.NullFormatter())
+ax3.yaxis.set_major_formatter(ticker.NullFormatter())
+ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster_new[1:] + glo_float_cluster_new[:-1])/2))
+ax3.yaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster_new[1:] + glo_float_cluster_new[:-1])/2))
+ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
+ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
+ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=8, rotation_mode='default')
+ax3.axis["left"].minor_ticklabels.set(fontsize=8, rotation_mode='default')
+plt.colorbar(im, fraction=0.045)
+# plt.savefig(Parameter.outputdir + '/distance_grid_calyx_ideal_2.svg', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig = plt.figure(figsize=(6,6))
+ax1 = SubplotHost(fig, 111)
+fig.add_subplot(ax1)
+im = plt.imshow(morph_dist_LH_r_new_df_copy, 
+                vmax=np.max(morph_dist_AL_r_new_df_copy[~np.isnan(morph_dist_AL_r_new_df_copy)]), 
+                cmap='viridis_r')#, vmax=np.max(morph_dist_LH_r_new))
+ax1.set_xticks([])
+ax1.set_yticks([])
+ax1.axis["left"].set_visible(False)
+ax1.axis["bottom"].set_visible(False)
+ax2 = ax1.twiny()
+ax3 = ax1.twinx()
+offset1 = 0, 10
+offset2 = -10, 0
+new_axisline1 = ax2.get_grid_helper().new_fixed_axis
+new_axisline2 = ax3.get_grid_helper().new_fixed_axis
+ax2.axis["top"] = new_axisline1(loc="top", axes=ax2, offset=offset1)
+ax3.axis["left"] = new_axisline2(loc="left", axes=ax3, offset=offset2)
+ax2.axis["top"].minor_ticks.set_ticksize(0)
+ax3.axis["left"].minor_ticks.set_ticksize(0)
+ax2.axis["bottom"].set_visible(False)
+ax3.axis["right"].set_visible(False)
+ax2.set_xticks(glo_float_cluster_new)
+ax3.set_yticks(glo_float_cluster_new)
+ax3.invert_yaxis()
+ax2.xaxis.set_major_formatter(ticker.NullFormatter())
+ax3.yaxis.set_major_formatter(ticker.NullFormatter())
+ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster_new[1:] + glo_float_cluster_new[:-1])/2))
+ax3.yaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster_new[1:] + glo_float_cluster_new[:-1])/2))
+ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
+ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
+ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=8, rotation_mode='default')
+ax3.axis["left"].minor_ticklabels.set(fontsize=8, rotation_mode='default')
+plt.colorbar(im, fraction=0.045)
+# plt.savefig(Parameter.outputdir + '/distance_grid_LH_ideal_2.svg', dpi=300, bbox_inches='tight')
+plt.show()
+
+fig = plt.figure(figsize=(6,6))
+ax1 = SubplotHost(fig, 111)
+fig.add_subplot(ax1)
+im = plt.imshow(morph_dist_AL_r_new_df_copy, cmap='viridis_r')#, vmax=np.max(morph_dist_AL_r_new))
+ax1.set_xticks([])
+ax1.set_yticks([])
+ax1.axis["left"].set_visible(False)
+ax1.axis["bottom"].set_visible(False)
+ax2 = ax1.twiny()
+ax3 = ax1.twinx()
+offset1 = 0, 10
+offset2 = -10, 0
+new_axisline1 = ax2.get_grid_helper().new_fixed_axis
+new_axisline2 = ax3.get_grid_helper().new_fixed_axis
+ax2.axis["top"] = new_axisline1(loc="top", axes=ax2, offset=offset1)
+ax3.axis["left"] = new_axisline2(loc="left", axes=ax3, offset=offset2)
+ax2.axis["top"].minor_ticks.set_ticksize(0)
+ax3.axis["left"].minor_ticks.set_ticksize(0)
+ax2.axis["bottom"].set_visible(False)
+ax3.axis["right"].set_visible(False)
+ax2.set_xticks(glo_float_cluster_new)
+ax3.set_yticks(glo_float_cluster_new)
+ax3.invert_yaxis()
+ax2.xaxis.set_major_formatter(ticker.NullFormatter())
+ax3.yaxis.set_major_formatter(ticker.NullFormatter())
+ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster_new[1:] + glo_float_cluster_new[:-1])/2))
+ax3.yaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster_new[1:] + glo_float_cluster_new[:-1])/2))
+ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
+ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
+ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=8, rotation_mode='default')
+ax3.axis["left"].minor_ticklabels.set(fontsize=8, rotation_mode='default')
+plt.colorbar(im, fraction=0.045)
+# plt.savefig(Parameter.outputdir + '/distance_grid_AL_ideal_1.svg', dpi=300, bbox_inches='tight')
+plt.show()
+
+
+print(scipy.stats.pearsonr(morph_dist_AL_r_new.flatten(), morph_dist_LH_r_new.flatten()))
+print(scipy.stats.pearsonr(morph_dist_AL_r_new.flatten(), morph_dist_calyx_r_new.flatten()))
+
+print(scipy.stats.pearsonr(morph_dist_AL_r_new_df_bool.flatten(), morph_dist_LH_r_new_df_bool.flatten()))
+print(scipy.stats.pearsonr(morph_dist_AL_r_new_df_bool.flatten(), morph_dist_calyx_r_new_df_bool.flatten()))
+
+print(scipy.stats.pearsonr(morph_dist_AL_r_new_df_copy.flatten()[~np.isnan(morph_dist_AL_r_new_df_copy.flatten())], 
+                           morph_dist_LH_r_new_df_copy.flatten()[~np.isnan(morph_dist_LH_r_new_df_copy.flatten())]))
+print(scipy.stats.pearsonr(morph_dist_AL_r_new_df_copy.flatten()[~np.isnan(morph_dist_AL_r_new_df_copy.flatten())], 
+                           morph_dist_calyx_r_new_df_copy.flatten()[~np.isnan(morph_dist_calyx_r_new_df_copy.flatten())]))
+
+
+print(scipy.stats.pearsonr(morph_dist_AL_r_new[np.triu_indices_from(morph_dist_AL_r_new, k=1)],
+                           morph_dist_LH_r_new[np.triu_indices_from(morph_dist_LH_r_new, k=1)]))
+print(scipy.stats.pearsonr(morph_dist_AL_r_new[np.triu_indices_from(morph_dist_AL_r_new, k=1)],
+                           morph_dist_calyx_r_new[np.triu_indices_from(morph_dist_calyx_r_new, k=1)]))
+
+print(scipy.stats.pearsonr(morph_dist_AL_r_triu, morph_dist_LH_r_triu))
+print(scipy.stats.pearsonr(morph_dist_AL_r_triu, morph_dist_calyx_r_triu))
+
+morph_dist_AL_r_triu_nan = morph_dist_AL_r_new_df_copy[np.triu_indices_from(morph_dist_AL_r_new_df_copy, k=1)]
+morph_dist_LH_r_triu_nan = morph_dist_LH_r_new_df_copy[np.triu_indices_from(morph_dist_LH_r_new_df_copy, k=1)]
+morph_dist_calyx_r_triu_nan = morph_dist_calyx_r_new_df_copy[np.triu_indices_from(morph_dist_calyx_r_new_df_copy, k=1)]
+
+print(scipy.stats.pearsonr(morph_dist_AL_r_triu_nan[~np.isnan(morph_dist_AL_r_triu_nan)],
+                           morph_dist_LH_r_triu_nan[~np.isnan(morph_dist_LH_r_triu_nan)]))
+print(scipy.stats.pearsonr(morph_dist_AL_r_triu_nan[~np.isnan(morph_dist_AL_r_triu_nan)],
+                           morph_dist_calyx_r_triu_nan[~np.isnan(morph_dist_calyx_r_triu_nan)]))
 
 
 #%% Plotting of LH glomeruli with high LH-AL correlations
@@ -8770,19 +9001,19 @@ plt.vlines(2*np.pi/np.mean(LengthData.length_LH_b_flat), 1e-9, 10, color='tab:gr
 plt.axvspan(0.24, 0.64, alpha=0.5, color='tab:blue')
 
 line1 = 1/30000*np.power(q_range, -16/7)
-line2 = 1/5000*np.power(q_range, -4/1)
-line3 = 1/2000*np.power(q_range, -1/0.388)
-line4 = 1/3000*np.power(q_range, -1)
+line2 = 1/4000*np.power(q_range, -4/1)
+line3 = 1/1000*np.power(q_range, -1/0.388)
+line4 = 1/2000*np.power(q_range, -1)
 
 plt.plot(q_range[18:26], line1[18:26], lw=1.5, color='tab:red')
-plt.plot(q_range[19:31], line2[19:31], lw=1.5, color='tab:gray')
+plt.plot(q_range[19:30], line2[19:30], lw=1.5, color='tab:gray')
 plt.plot(q_range[30:43], line3[30:43], lw=1.5, color='tab:purple')
-plt.plot(q_range[50:95], line4[50:95], lw=1.5, color='k')
+plt.plot(q_range[50:75], line4[50:75], lw=1.5, color='k')
 
 plt.text(0.03, 6e-4, r'$\nu = \dfrac{7}{16}$', fontsize=13, color='tab:red')
 plt.text(0.25, 5e-1, r'$\nu = \dfrac{1}{4}$', fontsize=13, color='tab:gray')
 plt.text(0.6, 3e-3, r'$\nu = 0.388$', fontsize=13, color='tab:purple')
-plt.text(40, 1e-5, r'$\nu = 1$', fontsize=13)
+plt.text(10, 5e-5, r'$\nu = 1$', fontsize=13)
 
 
 plt.xscale('log')
@@ -11683,6 +11914,8 @@ def point_in_hull(point, hull, tolerance=1e-12):
 # cmap = cm.get_cmap('jet', len(calyxdist_short))
 cmap = []
 
+neurite_trk = []
+
 CM_neurite = []
 
 fig = plt.figure(figsize=(8, 8))
@@ -11697,6 +11930,7 @@ for i in range(len(calyxdist_short)):
             rgy, CM = utils.radiusOfGyration([flat])
             if point_in_hull(CM[0], hull_calyx):
                 CM_neurite.append(CM[0])
+                neurite_trk.append(i)
                 ax.scatter3D(CM[0][0], CM[0][1], CM[0][2], color=cval, marker='.')
 ylim = ax.get_ylim()
 ax.set_ylim((ylim[1], ylim[0]))
@@ -11870,21 +12104,59 @@ plt.show()
 dist = scipy.spatial.distance.cdist(CM_neurite, CM_neurite)
 dist_rand = scipy.spatial.distance.cdist(rand_neurite, rand_neurite)
 
-fig = plt.figure(figsize=(6, 6))
+dist[np.where(dist < np.quantile(dist, 0.2))] = 1
+
+dist[np.where(dist >= np.quantile(dist, 0.2))] = 0
+
+a,b = np.unique(neurite_trk, return_counts=True)
+a = a.astype(str)
+bb = [sum(b[0:i]) for i in range(len(b)+1)]
+bbb = np.subtract(bb, bb[0])
+bbbb = np.divide(bbb, bbb[-1])
+
+
+fig = plt.figure(figsize=(24, 24))
 ax1 = SubplotHost(fig, 111)
 fig.add_subplot(ax1)
 ax1.set_xticks([])
 ax1.set_yticks([])
-im = plt.imshow(dist, cmap='viridis_r')
+im = plt.imshow(dist, cmap='jet')
+ax1.axis["left"].set_visible(False)
+ax1.axis["bottom"].set_visible(False)
+ax2 = ax1.twiny()
+ax3 = ax1.twinx()
+offset1 = 0, 10
+offset2 = -10, 0
+new_axisline1 = ax2.get_grid_helper().new_fixed_axis
+new_axisline2 = ax3.get_grid_helper().new_fixed_axis
+ax2.axis["top"] = new_axisline1(loc="top", axes=ax2, offset=offset1)
+ax3.axis["left"] = new_axisline2(loc="left", axes=ax3, offset=offset2)
+ax2.axis["top"].minor_ticks.set_ticksize(0)
+ax3.axis["left"].minor_ticks.set_ticksize(0)
+ax2.axis["bottom"].set_visible(False)
+ax3.axis["right"].set_visible(False)
+ax2.set_xticks(bbbb)
+ax3.set_yticks(bbbb)
+ax3.invert_yaxis()
+ax2.xaxis.set_major_formatter(ticker.NullFormatter())
+ax3.yaxis.set_major_formatter(ticker.NullFormatter())
+ax2.xaxis.set_minor_locator(ticker.FixedLocator((bbbb[1:] + bbbb[:-1])/2))
+ax3.yaxis.set_minor_locator(ticker.FixedLocator((bbbb[1:] + bbbb[:-1])/2))
+ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(a))
+ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(a))
+ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=8, rotation_mode='default')
+ax3.axis["left"].minor_ticklabels.set(fontsize=8, rotation_mode='default')
+plt.colorbar(im, fraction=0.045)
 # plt.savefig(Parameter.outputdir + '/neurite_Rp_grid_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
+
 
 fig = plt.figure(figsize=(6, 6))
 ax1 = SubplotHost(fig, 111)
 fig.add_subplot(ax1)
 ax1.set_xticks([])
 ax1.set_yticks([])
-im = plt.imshow(dist_rand, cmap='viridis_r')
+im = plt.imshow(dist_rand, cmap='jet')
 # plt.savefig(Parameter.outputdir + '/neurite_Rp_rand_grid_1.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
@@ -11898,7 +12170,7 @@ ax1.set_xticks([])
 ax1.set_yticks([])
 im = plt.imshow(dist, cmap='jet')
 plt.colorbar(im, fraction=0.045)
-# plt.savefig(Parameter.outputdir + '/neurite_Rp_grid_comb_1.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/neurite_Rp_grid_comb_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -11921,8 +12193,9 @@ ax2 = ax1.twinx()
 ax2.plot(edge[:-1] - np.diff(edge), np.cumsum(val)*np.diff(edge)[0], ls='--', color='tab:blue')
 ax2.plot(edge_rand[:-1] - np.diff(edge_rand), np.cumsum(val_rand)*np.diff(edge_rand)[0], ls='--', color='tab:red')
 plt.yticks(fontsize=14)
+plt.legend(['Real', 'Random'], loc=(0.6, 0.6), fontsize=15)
 fig.tight_layout()
-# plt.savefig(Parameter.outputdir + '/neurite_Rp_4.pdf', dpi=300, bbox_inches='tight')
+# plt.savefig(Parameter.outputdir + '/neurite_Rp_5.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -11950,22 +12223,116 @@ for q in range(len(q_range)):
 
 fig, ax = plt.subplots(figsize=(6,4.5))
 
-plt.plot(q_range[Pq_calyx_neurite > 0], Pq_calyx_neurite[Pq_calyx_neurite > 0], color='tab:blue')
+plt.plot(q_range, Pq_calyx_neurite, color='tab:blue')
 plt.plot(q_range, Pq_calyx_neurite_rand, color='tab:red')
 plt.xscale('log')
 plt.yscale('log')
 
-plt.ylim(1e-5, 10)
+plt.ylim(1e-6, 10)
 plt.xlim(0.01, 10)
 plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
 plt.xticks(fontsize=14)
 plt.ylabel(r"$S(q)$", fontsize=17)
 plt.yticks(fontsize=14)
-# plt.savefig(Parameter.outputdir + '/neurite_Fq_4.pdf', dpi=300, bbox_inches='tight')
+plt.legend(['Real', 'Random'], fontsize=15)
+# plt.savefig(Parameter.outputdir + '/neurite_Fq_5.pdf', dpi=300, bbox_inches='tight')
 plt.show()
 
 
 
+#%% Neurite comb
+
+rand_neurite0 = np.load(r'./rand_neurite_0.npy')
+rand_neurite1 = np.load(r'./rand_neurite_1.npy')
+rand_neurite2 = np.load(r'./rand_neurite_2.npy')
+rand_neurite3 = np.load(r'./rand_neurite_3.npy')
+rand_neurite4 = np.load(r'./rand_neurite_4.npy')
+rand_neurite5 = np.load(r'./rand_neurite_5.npy')
+rand_neurite6 = np.load(r'./rand_neurite_6.npy')
+rand_neurite7 = np.load(r'./rand_neurite_7.npy')
+rand_neurite8 = np.load(r'./rand_neurite_8.npy')
+rand_neurite9 = np.load(r'./rand_neurite_9.npy')
+
+rand_neurite_comb = [rand_neurite0, rand_neurite1, rand_neurite2, rand_neurite3, 
+                     rand_neurite4, rand_neurite5, rand_neurite6, rand_neurite7, 
+                     rand_neurite8, rand_neurite9]
+
+q_range = np.logspace(-2,1,500)
+
+Pq_calyx_neurite = np.empty(len(q_range))
+
+for q in range(len(q_range)):
+    qrvec = q_range[q]*scipy.spatial.distance.cdist(CM_neurite, CM_neurite)
+    qrvec = qrvec[np.triu_indices_from(qrvec, k=1)]
+    Pq_calyx_neurite[q] = np.divide(np.divide(2*np.sum(np.sin(qrvec)/qrvec), 
+                                              len(CM_neurite)), 
+                                    len(CM_neurite))
+
+
+Pq_calyx_neurite_rand_a = np.empty((10, len(q_range)))
+
+for i in range(10):
+    for q in range(len(q_range)):
+        qrvec = q_range[q]*scipy.spatial.distance.cdist(rand_neurite_comb[i], 
+                                                        rand_neurite_comb[i])
+        qrvec = qrvec[np.triu_indices_from(qrvec, k=1)]
+        Pq_calyx_neurite_rand_a[i][q] = np.divide(np.divide(2*np.sum(np.sin(qrvec)/qrvec), 
+                                                          len(rand_neurite_comb[i])), 
+                                                len(rand_neurite_comb[i]))
+
+Pq_calyx_neurite_rand = np.average(Pq_calyx_neurite_rand_a, axis=0)
+
+fig, ax = plt.subplots(figsize=(6,4.5))
+
+plt.plot(q_range, Pq_calyx_neurite, color='tab:red')
+plt.plot(q_range, Pq_calyx_neurite_rand, color='tab:blue')
+plt.xscale('log')
+plt.yscale('log')
+
+plt.ylim(1e-6, 10)
+plt.xlim(0.01, 10)
+plt.xlabel("q ($\mu\mathrm{m}^{-1}$)", fontsize=17)
+plt.xticks(fontsize=14)
+plt.ylabel(r"$S(q)$", fontsize=17)
+plt.yticks(fontsize=14)
+plt.legend(['Real', 'Random'], fontsize=15)
+# plt.savefig(Parameter.outputdir + '/neurite_Fq_comb_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+dist = scipy.spatial.distance.cdist(CM_neurite, CM_neurite)
+dist = dist[np.triu_indices_from(dist, k=1)]
+val,edge = np.histogram(dist, bins=60, density=True)
+
+val_rand = np.empty((10, 60))
+edge_rand = np.empty((10, 61))
+
+for i in range(10):
+    dist_rand = scipy.spatial.distance.cdist(rand_neurite_comb[i], rand_neurite_comb[i])
+    dist_rand = dist_rand[np.triu_indices_from(dist_rand, k=1)]
+    val_rand_i,edge_rand_i = np.histogram(dist_rand, bins=60, density=True)
+    val_rand[i] = val_rand_i
+    edge_rand[i] = edge_rand_i
+    
+val_rand = np.average(val_rand, axis=0)
+edge_rand = np.average(edge_rand, axis=0)
+
+fig, ax1 = plt.subplots(figsize=(6,4.5))
+
+ax1.plot(edge[:-1] - np.diff(edge), val, color='tab:red')
+ax1.plot(edge_rand[:-1] - np.diff(edge_rand), val_rand, color='tab:blue')
+ax1.set_xlabel('$r$ ($\mu\mathrm{m}$)', fontsize=17)
+ax1.set_ylabel('$P(r)$', fontsize=17)
+plt.xticks(fontsize=14)
+plt.yticks(fontsize=14)
+# ax2 = ax1.twinx()
+
+# ax2.plot(edge[:-1] - np.diff(edge), np.cumsum(val)*np.diff(edge)[0], ls='--', color='tab:red')
+# ax2.plot(edge_rand[:-1] - np.diff(edge_rand), np.cumsum(val_rand)*np.diff(edge_rand)[0], ls='--', color='tab:blue')
+plt.yticks(fontsize=14)
+plt.legend(['Real', 'Random'], fontsize=15)
+fig.tight_layout()
+# plt.savefig(Parameter.outputdir + '/neurite_Rp_comb_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
 
 #%% Gyration tensor
 
@@ -16289,7 +16656,20 @@ plt.show()
     
 #%% 
 
-glo_list_cluster = np.array(glo_list)
+columns_AL_new = [5, 48, 12, 22, 26, 9, 29, 24, 25, 44, 37, 36, 27, 43, 23, 14,
+                  17, 34, 21, 8, 47, 11, 16, 39, 41, 28, 31, 6, 4, 7, 32, 0, 38,
+                  2, 20, 18, 45, 3, 50, 46, 40, 10, 15, 42, 33, 19, 30, 35, 49, 
+                  13, 1]
+
+glo_list_cluster = np.array(glo_list)[columns_AL_new]
+
+L_AL = scipy.cluster.hierarchy.linkage(scipy.spatial.distance.squareform(dist_Pq_AL), 
+                                       method='complete', optimal_ordering=True)
+L_LH = scipy.cluster.hierarchy.linkage(scipy.spatial.distance.squareform(dist_Pq_LH),
+                                       method='complete', optimal_ordering=True)
+L_calyx = scipy.cluster.hierarchy.linkage(scipy.spatial.distance.squareform(dist_Pq_calyx),
+                                          method='complete', optimal_ordering=True)
+
 
 ct_AL_glo = []
 ct_LH_glo = []
@@ -16299,6 +16679,12 @@ ct_calyx_glo = []
 ind_AL = scipy.cluster.hierarchy.fcluster(L_AL, 2, 'maxclust')
 ind_LH = scipy.cluster.hierarchy.fcluster(L_LH, 2, 'maxclust')
 ind_calyx = scipy.cluster.hierarchy.fcluster(L_calyx, 3, 'maxclust')
+
+glo_idx_cluster_new = []
+for i in range(len(glo_list)):
+    glo_idx_cluster_new.append(glo_lb_idx[np.argwhere(np.array(glo_list)[columns_AL_new][i] == np.array(glo_list))[0][0]])
+
+glo_idx_cluster_new_flat = [item for sublist in glo_idx_cluster_new for item in sublist]
 
 ct_AL_glo_temp = np.zeros((2, len(glo_idx_flat)))
 ct_LH_glo_temp = np.zeros((2, len(glo_idx_flat)))
@@ -16313,11 +16699,11 @@ for i in range(len(glo_idx)):
         ct_calyx_glo_temp[ind_calyx[ix]-1][ix] = 1
         ix += 1
 
-ct_AL_glo.append(ct_AL_glo_temp)
-ct_LH_glo.append(ct_LH_glo_temp)
-ct_calyx_glo.append(ct_calyx_glo_temp)
+ct_AL_glo.append(np.array(ct_AL_glo_temp)[:,glo_idx_cluster_new_flat])
+ct_LH_glo.append(np.array(ct_LH_glo_temp)[:,glo_idx_cluster_new_flat])
+ct_calyx_glo.append(np.array(ct_calyx_glo_temp)[:,glo_idx_cluster_new_flat])
 
-glo_len_cluster = np.array(glo_len)
+glo_len_cluster = np.array(glo_len)[columns_AL_new]
 glo_lb_cluster = [sum(glo_len_cluster[0:i]) for i in range(len(glo_len_cluster)+1)]
 glo_lb_cluster_s = np.subtract(glo_lb_cluster, glo_lb_cluster[0])
 glo_float_cluster = np.divide(glo_lb_cluster_s, glo_lb_cluster_s[-1])
@@ -16417,4 +16803,44 @@ ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(['C1', 'C2', 'C3']))
 ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=5, rotation_mode='default')
 ax3.axis["left"].minor_ticklabels.set(fontsize=5, rotation_mode='default')
 # plt.savefig(Parameter.outputdir + '/ct_AL_glo_1.pdf', dpi=300, bbox_inches='tight')
+plt.show()
+
+comb_cdat = np.zeros(np.shape(morph_dist_AL_r_new_df))
+np.fill_diagonal(comb_cdat, ind_AL[glo_idx_cluster_new_flat])
+comb_cdat[comb_cdat == 0] = np.nan
+
+fig = plt.figure(figsize=(6,6))
+ax1 = SubplotHost(fig, 111)
+fig.add_subplot(ax1)
+im = plt.imshow(morph_dist_AL_r_new_df, cmap='viridis_r', alpha=0.5)
+im = plt.imshow(comb_cdat, cmap='cool', vmin=1, vmax=2)
+ax1.set_xticks([])
+ax1.set_yticks([])
+ax1.axis["left"].set_visible(False)
+ax1.axis["bottom"].set_visible(False)
+ax2 = ax1.twiny()
+ax3 = ax1.twinx()
+offset1 = 0, 10
+offset2 = -10, 0
+new_axisline1 = ax2.get_grid_helper().new_fixed_axis
+new_axisline2 = ax3.get_grid_helper().new_fixed_axis
+ax2.axis["top"] = new_axisline1(loc="top", axes=ax2, offset=offset1)
+ax3.axis["left"] = new_axisline2(loc="left", axes=ax3, offset=offset2)
+ax2.axis["top"].minor_ticks.set_ticksize(0)
+ax3.axis["left"].minor_ticks.set_ticksize(0)
+ax2.axis["bottom"].set_visible(False)
+ax3.axis["right"].set_visible(False)
+ax2.set_xticks(glo_float_cluster_new)
+ax3.set_yticks(glo_float_cluster_new)
+ax3.invert_yaxis()
+ax2.xaxis.set_major_formatter(ticker.NullFormatter())
+ax3.yaxis.set_major_formatter(ticker.NullFormatter())
+ax2.xaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster_new[1:] + glo_float_cluster_new[:-1])/2))
+ax3.yaxis.set_minor_locator(ticker.FixedLocator((glo_float_cluster_new[1:] + glo_float_cluster_new[:-1])/2))
+ax2.xaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
+ax3.yaxis.set_minor_formatter(ticker.FixedFormatter(glo_list_cluster_new))
+ax2.axis["top"].minor_ticklabels.set(rotation=-90, fontsize=8, rotation_mode='default')
+ax3.axis["left"].minor_ticklabels.set(fontsize=8, rotation_mode='default')
+plt.colorbar(im, fraction=0.045)
+# plt.savefig(Parameter.outputdir + '/distance_grid_AL_fixed_nnmetric_clst_2.pdf', dpi=300, bbox_inches='tight')
 plt.show()
